@@ -39,6 +39,11 @@ Individual customisation for headers is also possible.
 
 #### Header 4
 
+##### Header 5
+
+###### Header 6
+
+
 From icons to background color, sign everything is individually customisable.
 
 
@@ -96,3 +101,54 @@ void main() {
 </html>
 ```
 Unfortunately, this breaks indents in `normal mode`. So, it's not for everyone.
+
+
+
+
+
+A [Hyperlink](https://example.com) in a normal line
+
+[Source](https://example.com)
+
+
+![IMG](https://image.com)
+
+
+
+This is an inline `code`.
+
+- Hi
+
++ Hi
+
+* Hi
+
+
+- [ ] A checkbox
+- [X] A checkbox
+-  ✔ 
+-  ✘ 
+
+
+
+| Name        | Num | Num |
+|-------------|-----|-----|
+| 1           | 2   | 2   |
+| 3           | 4   | 4   |
+
+
+
+| Name   | Num | Num |
+|--------|-----|-----|
+| 1      | 2   | 2   |
+| 3      | 4   | 4   |
+
+
+| Name   | Num |
+|--------|-----|
+| 1      | 2   |
+| 1      | 2   |
+| 1      | 2   |
+| 1      | 2   |
+| 3      | 4   |
+
