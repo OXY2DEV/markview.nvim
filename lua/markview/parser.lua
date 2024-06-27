@@ -20,14 +20,10 @@ parser.md = function (buffer, TStree)
 
 		((pipe_table) @table)
 
-		(list_item [
-			(list_marker_minus)
-			(list_marker_plus)
-			(list_marker_star)
-		] @list_item)
-
 		((task_list_marker_unchecked) @checkbox_off)
 		((task_list_marker_checked) @checkbox_on)
+
+		((list_item) @list_item)
 	]]);
 
 	for capture_id, capture_node, metadata, query in scanned_queies:iter_captures(TStree:root()) do
@@ -118,9 +114,12 @@ parser.md = function (buffer, TStree)
 				col_end = col_end
 			})
 		elseif capture_name == "list_item" then
+			local marker = capture_node:named_child(0);
+			local symbol = string.gsub(vim.treesitter.get_node_text(marker, buffer), " ", "");
+
 			table.insert(renderer.views[buffer], {
 				type = "list_item",
-				marker = capture_text,
+				marker_symbol = symbol,
 
 				row_start = row_start,
 				row_end = row_end,

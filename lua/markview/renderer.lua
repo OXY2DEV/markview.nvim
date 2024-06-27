@@ -48,42 +48,44 @@ renderer.config = {
 
 			sign = "󰌕 ", sign_hl = "rainbow1",
 
-			icon = "󰼏 ",
+			icon = "󰼏 ", icon_width = 1,
 			icon_hl = "markview_h1_icon",
 		},
 		{
 			style = "padded_icon",
 			line_hl = "markview_h2",
 
-			icon = "󰎨 ",
+			sign = "󰌕 ", sign_hl = "rainbow2",
+
+			icon = "󰎨 ", icon_width = 1,
 			icon_hl = "markview_h2_icon",
 		},
 		{
 			style = "padded_icon",
 			line_hl = "markview_h3",
 
-			icon = "󰼑 ",
+			icon = "󰼑 ", icon_width = 1,
 			icon_hl = "markview_h3_icon",
 		},
 		{
 			style = "padded_icon",
 			line_hl = "markview_h4",
 
-			icon = "󰎲 ",
+			icon = "󰎲 ", icon_width = 1,
 			icon_hl = "markview_h4_icon",
 		},
 		{
 			style = "padded_icon",
 			line_hl = "markview_h5",
 
-			icon = "󰼓 ",
+			icon = "󰼓 ", icon_width = 1,
 			icon_hl = "markview_h5_icon",
 		},
 		{
 			style = "padded_icon",
 			line_hl = "markview_h6",
 
-			icon = "󰎴 ",
+			icon = "󰎴 ", icon_width = 1,
 			icon_hl = "markview_h6_icon",
 		},
 		-- {
@@ -116,7 +118,7 @@ renderer.config = {
 		before = " ",
 		after = " ",
 
-		hl = "code_block"
+		hl = "inline_code_block"
 	},
 
 	block_quote = {
@@ -131,6 +133,20 @@ renderer.config = {
 				callout_preview_hl = "rainbow5",
 
 				border = "▋ ", border_hl = "rainbow5"
+			},
+			{
+				match_string = "[!IMPORTANT]",
+				callout_preview = "󰀨  Important",
+				callout_preview_hl = "rainbow2",
+
+				border = "▋ ", border_hl = "rainbow2"
+			},
+			{
+				match_string = "[!WARNING]",
+				callout_preview = "  Warning",
+				callout_preview_hl = "rainbow1",
+
+				border = "▋ ", border_hl = "rainbow1"
 			},
 			{
 				match_string = "[!TIP]",
@@ -202,8 +218,18 @@ renderer.config = {
 		},
 		marker_minus = {
 			add_padding = true,
+			check_indent_level = true,
+
+			marker = "•",
+			marker_hl = "rainbow4"
 		},
-		marker_star = {},
+		marker_star = {
+			add_padding = true,
+			check_indent_level = true,
+
+			marker = "•",
+			marker_hl = "rainbow2"
+		},
 	},
 
 	checkbox = {
@@ -222,7 +248,6 @@ renderer.views = {};
 renderer.render_header = function (buffer, component)
 	local header_config = tbl_clamp(renderer.config.header, component.level);
 
-	-- vim.print(header_config)
 	if header_config.style == "simple" then
 		vim.api.nvim_buf_set_extmark(buffer, renderer.namespace, component.row_start, component.col_start, {
 			line_hl_group = header_config.line_hl,
@@ -248,6 +273,8 @@ renderer.render_header = function (buffer, component)
 			}
 		});
 	elseif header_config.style == "padded_icon" then
+		local icon_width = header_config.icon_width or vim.fn.strchars(header_config.icon);
+
 		vim.api.nvim_buf_set_extmark(buffer, renderer.namespace, component.row_start, component.col_start + component.level + vim.fn.strchars(header_config.icon) - 1, {
 			virt_text_pos = "inline",
 			virt_text = {
@@ -265,7 +292,7 @@ renderer.render_header = function (buffer, component)
 
 			virt_text_pos = "overlay",
 			virt_text = {
-				{ string.rep(header_config.pad_char or " ", component.level - 1), header_config.pad_hl or header_config.icon_hl },
+				{ string.rep(header_config.pad_char or " ", component.col_start + component.level - icon_width < 0 and 0 or component.col_start + component.level - icon_width ), header_config.pad_hl or header_config.icon_hl },
 				{ header_config.icon, header_config.icon_hl }
 			}
 		});
@@ -279,10 +306,8 @@ renderer.render_code_block = function (buffer, component)
 		vim.api.nvim_buf_set_extmark(buffer, renderer.namespace, component.row_start, component.col_start, {
 			virt_text_pos = "overlay",
 			virt_text = {
-				{ string.rep( block_config.space_char or " ", 3 + vim.fn.strchars(component.language)), block_config.block_hl }
-			},
-
-			line_hl_group = block_config.block_hl
+				{ string.rep( block_config.pad_char or " ", 3 + vim.fn.strchars(component.language)), block_config.block_hl }
+			}
 		});
 
 		vim.api.nvim_buf_set_extmark(buffer, renderer.namespace, component.row_start + 1, component.col_start, {
@@ -295,7 +320,7 @@ renderer.render_code_block = function (buffer, component)
 		vim.api.nvim_buf_set_extmark(buffer, renderer.namespace, component.row_end - 1, component.col_start, {
 			virt_text_pos = "overlay",
 			virt_text = {
-				{ string.rep( block_config.space_char or " ", 3 + vim.fn.strchars(component.language)), block_config.block_hl }
+				{ string.rep( block_config.pad_char or " ", 3 + vim.fn.strchars(component.language)), block_config.block_hl }
 			},
 
 			line_hl_group = block_config.block_hl
@@ -304,21 +329,17 @@ renderer.render_code_block = function (buffer, component)
 		vim.api.nvim_buf_set_extmark(buffer, renderer.namespace, component.row_start, component.col_start, {
 			virt_text_pos = "overlay",
 			virt_text = {
-				{ string.rep( block_config.space_char or " ", 3 + vim.fn.strchars(component.language)), block_config.block_hl }
+				{ string.rep( block_config.pad_char or " ", 3 + vim.fn.strchars(component.language)), block_config.block_hl }
 			},
 
 			line_hl_group = block_config.block_hl
 		});
 
 		for line = 1, component.row_end - component.row_start - 1 do
-			if component.col_start ~= 0 then
-				break;
-			end
-
 			vim.api.nvim_buf_set_extmark(buffer, renderer.namespace, component.row_start + line, component.col_start, {
 				virt_text_pos = "inline",
 				virt_text = {
-					{ block_config.padding or " ", block_config.block_hl }
+					{ block_config.pad_char or " ", block_config.block_hl }
 				},
 
 				line_hl_group = block_config.block_hl
@@ -328,7 +349,7 @@ renderer.render_code_block = function (buffer, component)
 		vim.api.nvim_buf_set_extmark(buffer, renderer.namespace, component.row_end - 1, component.col_start, {
 			virt_text_pos = "overlay",
 			virt_text = {
-				{ string.rep( block_config.space_char or " ", 3 + vim.fn.strchars(component.language)), block_config.block_hl }
+				{ string.rep( block_config.pad_char or " ", 3 + vim.fn.strchars(component.language)), block_config.block_hl }
 			},
 
 			line_hl_group = block_config.block_hl
@@ -349,14 +370,10 @@ renderer.render_code_block = function (buffer, component)
 		});
 
 		for line = 1, component.row_end - component.row_start - 1 do
-			if component.col_start ~= 0 then
-				break;
-			end
-
 			vim.api.nvim_buf_set_extmark(buffer, renderer.namespace, component.row_start + line, component.col_start, {
 				virt_text_pos = "inline",
 				virt_text = {
-					{ block_config.padding or " ", block_config.block_hl }
+					{ block_config.pad_char or " ", block_config.block_hl }
 				},
 
 				line_hl_group = block_config.block_hl
@@ -366,7 +383,7 @@ renderer.render_code_block = function (buffer, component)
 		vim.api.nvim_buf_set_extmark(buffer, renderer.namespace, component.row_end - 1, component.col_start, {
 			virt_text_pos = "overlay",
 			virt_text = {
-				{ string.rep( block_config.space_char or " ", 3 + vim.fn.strchars(component.language)), block_config.block_hl }
+				{ string.rep( block_config.pad_char or " ", 3 + vim.fn.strchars(component.language)), block_config.block_hl }
 			},
 
 			line_hl_group = block_config.block_hl
@@ -488,13 +505,17 @@ renderer.render_inline_code = function (buffer, component)
 	local inl_config = renderer.config.inline_code;
 
 	vim.api.nvim_buf_set_extmark(buffer, renderer.namespace, component.row_start, component.col_start, {
-		virt_text_pos = "overlay",
+		virt_text_pos = "inline",
 
 		virt_text = {
 			{ inl_config.before, inl_config.hl },
 			{ component.text, inl_config.hl },
 			{ inl_config.after, inl_config.hl },
-		}
+		},
+		conceal = "",
+
+		end_row = component.row_end,
+		end_col = component.col_end
 	})
 end
 
@@ -662,34 +683,55 @@ end
 renderer.render_list = function (buffer, component)
 	local ls_conf = {};
 
-	if string.match(component.marker, "-") then
+	if string.match(component.marker_symbol, "-") then
 		ls_conf = renderer.config.list_item.marker_minus or {};
-	elseif string.match(component.marker, "+") then
+	elseif string.match(component.marker_symbol, "+") then
 		ls_conf = renderer.config.list_item.marker_plus or {};
-	elseif string.match(component.marker, "*") then
+	elseif string.match(component.marker_symbol, "*") then
 		ls_conf = renderer.config.list_item.marker_star or {};
 	end
 
-	if ls_conf.add_padding == true and ls_conf.check_indent_level == true then
+	if ls_conf.add_padding == true then
 		local shiftwidth = vim.bo[buffer].shiftwidth or 4;
 
-		if component.col_start == 0 then
-			vim.api.nvim_buf_set_extmark(buffer, renderer.namespace, component.row_start, component.col_start, {
+		for i = 0, (component.row_end - component.row_start) - 1 do
+			local line = vim.api.nvim_buf_get_lines(buffer, component.row_start + i, component.row_start + i + 1, false)[1];
+
+			vim.api.nvim_buf_set_extmark(buffer, renderer.namespace, component.row_start + i, 0, {
 				virt_text_pos = "inline",
 				virt_text = {
-					{ string.rep(" ", shiftwidth) }
-				}
-			});
-		end
-	elseif ls_conf.add_padding == true then
-		local shiftwidth = vim.bo[buffer].shiftwidth or 4;
+					{ string.rep(" ", shiftwidth - component.col_start), "Normal" }
+				},
 
-		vim.api.nvim_buf_set_extmark(buffer, renderer.namespace, component.row_start, component.col_start, {
-			virt_text_pos = "inline",
-			virt_text = {
-				{ string.rep(" ", shiftwidth) }
-			}
-		});
+				hl_mode = "combine"
+			});
+
+			if i ~= 0 and vim.fn.strchars(line) > component.col_start then
+				vim.api.nvim_buf_set_extmark(buffer, renderer.namespace, component.row_start + i, component.col_start, {
+					virt_text_pos = "overlay",
+					virt_text = {
+						{ string.rep(" ", 2), "Normal" }
+					},
+
+					hl_mode = "combine"
+				});
+			end
+		end
+	else
+		for i = 1, (component.row_end - component.row_start) - 1 do
+			local line = vim.api.nvim_buf_get_lines(buffer, component.row_start + i, component.row_start + i + 1, false)[1];
+
+			if vim.fn.strchars(line) > component.col_start then
+				vim.api.nvim_buf_set_extmark(buffer, renderer.namespace, component.row_start + i, component.col_start, {
+					virt_text_pos = "overlay",
+					virt_text = {
+						{ string.rep(" ", 2), "Normal" }
+					},
+
+					hl_mode = "combine"
+				});
+			end
+		end
 	end
 
 	if ls_conf.marker ~= nil then
