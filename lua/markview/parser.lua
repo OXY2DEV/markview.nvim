@@ -1,6 +1,10 @@
 local parser = {};
 local renderer = require("markview/renderer");
 
+--- Function to parse the markdown document
+---
+---@param buffer number
+---@param TStree any
 parser.md = function (buffer, TStree)
 	local scanned_queies = vim.treesitter.query.parse("markdown", [[
 		(atx_heading [
@@ -26,7 +30,8 @@ parser.md = function (buffer, TStree)
 		((list_item) @list_item)
 	]]);
 
-	for capture_id, capture_node, metadata, query in scanned_queies:iter_captures(TStree:root()) do
+	-- The last 2 _ represent the metadata & query
+	for capture_id, capture_node, _, _ in scanned_queies:iter_captures(TStree:root()) do
 		local capture_name = scanned_queies.captures[capture_id];
 		local capture_text = vim.treesitter.get_node_text(capture_node, buffer);
 		local row_start, col_start, row_end, col_end = capture_node:range();
@@ -74,7 +79,7 @@ parser.md = function (buffer, TStree)
 				col_end = col_end
 			})
 		elseif capture_name == "table" then
-			local cells = {};
+			local rows = {};
 			local table_structure = {};
 
 			for row in capture_node:iter_children() do
@@ -90,22 +95,23 @@ parser.md = function (buffer, TStree)
 					table.insert(table_structure, "unknown");
 				end
 
-				for column in row:iter_children() do
-					if column:type() == "pipe_table_cell" then
-						table.insert(tmp, " " .. vim.treesitter.get_node_text(column, buffer))
-					else
-						table.insert(tmp, vim.treesitter.get_node_text(column, buffer))
+				for col in vim.treesitter.get_node_text(row, buffer):gmatch("%s*|([^|\n]*)") do
+					if col ~= "" then
+						table.insert(tmp, "|")
+						table.insert(tmp, col)
 					end
 				end
 
-				table.insert(cells, tmp)
+				table.insert(tmp, "|")
+
+				table.insert(rows, tmp)
 			end
 
 			table.insert(renderer.views[buffer], {
 				type = "table",
 
 				table_structure = table_structure;
-				cells = cells,
+				rows = rows,
 
 				row_start = row_start,
 				row_end = row_end,
@@ -115,11 +121,10 @@ parser.md = function (buffer, TStree)
 			})
 		elseif capture_name == "list_item" then
 			local marker = capture_node:named_child(0);
-			local symbol = string.gsub(vim.treesitter.get_node_text(marker, buffer), " ", "");
 
 			table.insert(renderer.views[buffer], {
 				type = "list_item",
-				marker_symbol = symbol,
+				marker_symbol = vim.treesitter.get_node_text(marker, buffer),
 
 				row_start = row_start,
 				row_end = row_end,
@@ -153,6 +158,10 @@ parser.md = function (buffer, TStree)
 	end
 end
 
+--- Function to parse inline_markdown
+---
+---@param buffer number
+---@param TStree any
 parser.md_inline = function (buffer, TStree)
 	local scanned_queies = vim.treesitter.query.parse("markdown_inline", [[
 		((shortcut_link) @callout)
@@ -164,7 +173,8 @@ parser.md_inline = function (buffer, TStree)
 		((code_span) @code)
 	]]);
 
-	for capture_id, capture_node, metadata, query in scanned_queies:iter_captures(TStree:root()) do
+	-- The last 2 _ represent the metadata & query
+	for capture_id, capture_node, _, _ in scanned_queies:iter_captures(TStree:root()) do
 		local capture_name = scanned_queies.captures[capture_id];
 		local capture_text = vim.treesitter.get_node_text(capture_node, buffer);
 		local row_start, col_start, row_end, col_end = capture_node:range();
@@ -191,7 +201,6 @@ parser.md_inline = function (buffer, TStree)
 				col_start = col_start,
 				col_end = col_end
 			})
-			-- vim.print(string.match(capture_text, "%((.-)%)"))
 		elseif capture_name == "image" then
 			local link_text = string.match(capture_text, "%[(.-)%]");
 			local link_address = string.match(capture_text, "%((.-)%)")
@@ -208,8 +217,8 @@ parser.md_inline = function (buffer, TStree)
 				col_start = col_start,
 				col_end = col_end
 			})
-			-- vim.print(string.match(capture_text, "%((.-)%)"))
 		elseif capture_name == "code" then
+			-- vim.print(row_start)
 			table.insert(renderer.views[buffer], {
 				type = "inline_code",
 
@@ -225,10 +234,15 @@ parser.md_inline = function (buffer, TStree)
 	end
 end
 
+--- Initializes the parsers on the specified buffer
+--- Parsed data is stored as a "view" in renderer.lua
+---
+---@param buffer number
 parser.init = function (buffer)
 	local root_parser = vim.treesitter.get_parser(buffer);
 	root_parser:parse(true);
 
+	-- Clear the previous view
 	renderer.views[buffer] = {};
 
 	root_parser:for_each_tree(function (TStree, language_tree)
@@ -238,10 +252,7 @@ parser.init = function (buffer)
 			parser.md(buffer, TStree)
 		elseif tree_language == "markdown_inline" then
 			parser.md_inline(buffer, TStree);
-		else
-			-- vim.print(tree_language);
 		end
-		-- Hi
 	end)
 end
 
