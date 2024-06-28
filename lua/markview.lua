@@ -14,11 +14,13 @@ markview.setup = function (user_config)
 
 	local ts_available, treesitter_parsers = pcall(require, "nvim-treesitter.parsers");
 
-	-- Check for support
-	if vim.version.ge(vim.version().build, vim.version.parse("v0.10.0")) == false then
-		vim.print("[markview.nvim] : Neovim version 0.10.0 or higher required")
-		return;
-	elseif ts_available == false then
+	-- Check for version support
+	-- TODO: add support for newer version
+	--
+	-- if vim.version.ge(vim.version().build, vim.version.parse("v0.10.0")) == false then
+	-- 	vim.print("[markview.nvim] : Neovim version 0.10.0 or higher required")
+	-- 	return;
+	if ts_available == false then
 		vim.print("[markview.nvim] : `nvim-treesitter` isn't available")
 		return;
 	elseif treesitter_parsers.has_parser("markdown") == false then
