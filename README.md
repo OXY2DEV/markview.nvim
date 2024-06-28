@@ -2,13 +2,17 @@
 
 <p style="text-align: center;">Yet another markdown previewer for neovim</p>
 
+![preview_1](./images/preview_1.png)
+![preview_2](./images/preview_1.png)
+![preview_3](./images/preview_1.png)
+
 >[!WARNING]
 > This plugin is still in it's **alpha phase** so breaking changes **WILL** occur frequently.
 
 ## 🌟 Features
 
 >[!NOTE]
-> This plugin is *purely* for aesthetics purposes. If you want something simpler you can check out `markdown.nvim` & `headlines.nvim`.
+> This plugin was created mainly for `personal use` and is *purely* for aesthetics purposes. If you want something simpler you can check out `markdown.nvim` & `headlines.nvim`.
 
 - Fancy icons, text colors & background colors for `headers`
 - Fully customisable `callouts` & `block quotes` plus custom `callout` support
