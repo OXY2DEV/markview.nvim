@@ -3,8 +3,8 @@
 <p style="text-align: center;">Yet another markdown previewer for neovim</p>
 
 ![preview_1](./images/preview_1.png)
-![preview_2](./images/preview_1.png)
-![preview_3](./images/preview_1.png)
+![preview_2](./images/preview_2.png)
+![preview_3](./images/preview_3.png)
 
 >[!WARNING]
 > This plugin is still in it's **alpha phase** so breaking changes **WILL** occur frequently.
