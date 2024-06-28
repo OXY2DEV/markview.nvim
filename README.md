@@ -470,7 +470,7 @@ checkbox = {
         marker = " ✔ ", marker_hl = "@markup.list.checked"
     },
     unchecked = {
-        marker = " ✔ ", marker_hl = "@markup.list.checked"
+        marker = " ✘ ", marker_hl = "@markup.list.unchecked"
     }
 }
 ```
