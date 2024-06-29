@@ -79,6 +79,7 @@ Use the `setup()` function to set the various options.
 
 ```lua
 require("markview").setup({
+    modes = {},
     highlight_groups = {},
 
 
@@ -120,6 +121,17 @@ All the options have `individual configuration tables`. As such, they are explai
 >   header = header_conf
 > });
 > ```
+
+### 🚥 Modes
+
+Selects the mode where the plugin should be enabled. Check `nvim_set_keymap()` and `:map` help files for all the possible values.
+
+```lua
+require("markview").setup({
+    -- Preview will be enabled only in normal mode
+    modes = { "n" }
+})
+```
 
 ### 🎨 Highlight groups
 
@@ -410,7 +422,9 @@ table = {
     table_chars = {
         "╭", "─", "╮", "┬",
         "├", "│", "┤", "┼",
-        "╰", "─", "╯", "┴"
+        "╰", "─", "╯", "┴",
+
+        "╼", "╾", "╴", "╶"
     },
     table_hls = { "rainbow1" },
 
@@ -423,6 +437,10 @@ Here's what all the options do,
 - `table_chars`, characters to create the table itself
 - `table_hls`, highlight group for the `table_chars`, the item's index is used for selecting the highlight group, the last non-nil value is used if the item is nil
 - `use_virt_lines`, will make the plugin use `overlay` virtual text for the top and bottom border, instead of virtual lines, may reduce cursor jumps
+
+>[!TIP]
+> The last 4 values in `table_chars` represent `left align`, `right align` and `center align`(the last 2 values are used).
+> The same goes for `table_hls`, however if the highlight group is nil then the value for the `top border`(the 2nd value) is used.
 
 ### 🧾 List
 

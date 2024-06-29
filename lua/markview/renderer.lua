@@ -20,6 +20,13 @@ local tbl_clamp = function (entry, index)
 	return entry[#entry];
 end
 
+local list_shift = function (tbl)
+	local tmp = table.remove(tbl, 1);
+	table.insert(tbl, tmp)
+
+	return tbl;
+end
+
 --- Used internally for making custom horizontal rules
 ---
 ---@param str string
@@ -39,8 +46,8 @@ end
 --- Used internally to add extra spacing to the tezxt
 ---
 ---@param text string
----@return string
-local concealed_text = function (text)
+---@return number
+local concealed_chars = function (text)
 	local _o = 0;
 
 	for _ in text:gmatch("%b**") do
@@ -55,7 +62,7 @@ local concealed_text = function (text)
 		_o = _o + 2;
 	end
 
-	return string.rep(" ", _o);
+	return _o;
 end
 
 renderer.namespace = vim.api.nvim_create_namespace("markview");
@@ -132,6 +139,7 @@ renderer.hls = {
 };
 
 renderer.config = {
+	modes = { "n" },
 	header = {
 		{
 			style = "padded_icon",
@@ -268,21 +276,16 @@ renderer.config = {
 		table_chars = {
 			"╭", "─", "╮", "┬",
 			"├", "│", "┤", "┼",
-			"╰", "─", "╯", "┴"
+			"╰", "─", "╯", "┴",
+
+			"╼", "╾", "╴", "╶"
 		},
 		table_hls = {
-			"rainbow1",
-			"rainbow1",
-			"rainbow1",
-			"rainbow1",
-			"rainbow1",
-			"rainbow1",
-			"rainbow1",
-			"rainbow1",
-			"rainbow1",
-			"rainbow1",
-			"rainbow1",
-			"rainbow1",
+			"rainbow1", "rainbow1", "rainbow1", "rainbow1",
+			"rainbow1", "rainbow1", "rainbow1", "rainbow1",
+			"rainbow1", "rainbow1", "rainbow1", "rainbow1",
+
+			"rainbow1", "rainbow1", "rainbow1", "rainbow1"
 		},
 
 		use_virt_lines = false,
@@ -307,11 +310,14 @@ renderer.config = {
 			marker = "•",
 			marker_hl = "rainbow2"
 		},
+		marker_dot = {
+			add_padding = true
+		},
 	},
 
 	checkbox = {
 		checked = {
-			marker = " ✔ ", marker_hl = "@markup.list.checked"
+			marker = " ✔ ", marker_hl = "rainbow2"
 		},
 		uncheked = {
 			marker = " ✘ ", marker_hl = "@markup.list.unchecked"
@@ -456,6 +462,7 @@ renderer.render_code_block = function (buffer, component)
 					{ block_config.pad_char or " ", block_config.block_hl }
 				},
 
+				priority = 1,
 				line_hl_group = block_config.block_hl
 			});
 		end
@@ -600,20 +607,21 @@ end
 
 renderer.render_table = function (buffer, component)
 	local table_config = renderer.config.table;
+	local column_text_alignment = {};
 
 	for r_index, row in ipairs(component.rows) do
-		local c_index = 0;
+		local char_index = 0;
 		local virt_line = {};
 
 		local r_prev = r_index == 1 and 1 or r_index - 1;
 
 		for cell_num, col in ipairs(row) do
-			c_index = c_index + vim.fn.strchars(col);
+			char_index = char_index + vim.fn.strchars(col);
 
 
 			if r_index == 1 and col == "|" then
 				if cell_num == 1 then
-					vim.api.nvim_buf_set_extmark(buffer, renderer.namespace, component.row_start + (r_index - 1), component.col_start + (c_index - 1), {
+					vim.api.nvim_buf_set_extmark(buffer, renderer.namespace, component.row_start + (r_index - 1), component.col_start + (char_index - 1), {
 						virt_text_pos = "overlay",
 						virt_text = {
 							{ table_config.table_chars[6], table_config.table_hls[6] }
@@ -622,7 +630,7 @@ renderer.render_table = function (buffer, component)
 
 					table.insert(virt_line, { table_config.table_chars[1], table_config.table_hls[1] })
 				elseif cell_num == #row then
-					vim.api.nvim_buf_set_extmark(buffer, renderer.namespace, component.row_start + (r_index - 1), component.col_start + (c_index - 1), {
+					vim.api.nvim_buf_set_extmark(buffer, renderer.namespace, component.row_start + (r_index - 1), component.col_start + (char_index - 1), {
 						virt_text_pos = "overlay",
 						virt_text = {
 							{ table_config.table_chars[6], table_config.table_hls[6] }
@@ -631,8 +639,12 @@ renderer.render_table = function (buffer, component)
 
 					table.insert(virt_line, { table_config.table_chars[3], table_config.table_hls[3] })
 
+					if component.row_start + (r_index - 2) < 0 then
+						goto cell_skip;
+					end
+
 					if table_config.use_virt_lines == true then
-						vim.api.nvim_buf_set_extmark(buffer, renderer.namespace, component.row_start + (r_index - 1), component.col_start + (c_index - 1), {
+						vim.api.nvim_buf_set_extmark(buffer, renderer.namespace, component.row_start + (r_index - 1), component.col_start + (char_index - 1), {
 							virt_lines_above = true,
 							virt_lines = { virt_line }
 						})
@@ -644,7 +656,7 @@ renderer.render_table = function (buffer, component)
 					end
 
 				else
-					vim.api.nvim_buf_set_extmark(buffer, renderer.namespace, component.row_start + (r_index - 1), component.col_start + (c_index - 1), {
+					vim.api.nvim_buf_set_extmark(buffer, renderer.namespace, component.row_start + (r_index - 1), component.col_start + (char_index - 1), {
 						virt_text_pos = "overlay",
 						virt_text = {
 							{ table_config.table_chars[6], table_config.table_hls[6] }
@@ -655,10 +667,10 @@ renderer.render_table = function (buffer, component)
 				end
 				-- Clear
 			elseif r_index == 1 and col:match("^[%s%-]*$") == nil then
-				vim.api.nvim_buf_set_extmark(buffer, renderer.namespace, component.row_start + (r_index - 1), component.col_start + (c_index - 1), {
+				vim.api.nvim_buf_set_extmark(buffer, renderer.namespace, component.row_start + (r_index - 1), component.col_start + (char_index - 1), {
 					virt_text_pos = "inline",
 					virt_text = {
-						{ concealed_text(col) }
+						{ string.rep(" ", concealed_chars(col)) }
 					}
 				})
 
@@ -666,7 +678,7 @@ renderer.render_table = function (buffer, component)
 				-- Clear
 			elseif r_index == #component.rows and col == "|" then
 				if cell_num == 1 then
-					vim.api.nvim_buf_set_extmark(buffer, renderer.namespace, component.row_start + (r_index - 1), component.col_start + (c_index - 1), {
+					vim.api.nvim_buf_set_extmark(buffer, renderer.namespace, component.row_start + (r_index - 1), component.col_start + (char_index - 1), {
 						virt_text_pos = "overlay",
 						virt_text = {
 							{ table_config.table_chars[6], table_config.table_hls[6] }
@@ -675,7 +687,7 @@ renderer.render_table = function (buffer, component)
 
 					table.insert(virt_line, { table_config.table_chars[9], table_config.table_hls[9] })
 				elseif cell_num == #row then
-					vim.api.nvim_buf_set_extmark(buffer, renderer.namespace, component.row_start + (r_index - 1), component.col_start + (c_index - 1), {
+					vim.api.nvim_buf_set_extmark(buffer, renderer.namespace, component.row_start + (r_index - 1), component.col_start + (char_index - 1), {
 						virt_text_pos = "overlay",
 						virt_text = {
 							{ table_config.table_chars[6], table_config.table_hls[6] }
@@ -685,7 +697,7 @@ renderer.render_table = function (buffer, component)
 					table.insert(virt_line, { table_config.table_chars[11], table_config.table_hls[11] })
 
 					if table_config.use_virt_lines == true then
-						vim.api.nvim_buf_set_extmark(buffer, renderer.namespace, component.row_start + (r_index - 1), component.col_start + (c_index - 1), {
+						vim.api.nvim_buf_set_extmark(buffer, renderer.namespace, component.row_start + (r_index - 1), component.col_start + (char_index - 1), {
 							virt_lines_above = false,
 							virt_lines = { virt_line }
 						})
@@ -697,7 +709,7 @@ renderer.render_table = function (buffer, component)
 					end
 
 				else
-					vim.api.nvim_buf_set_extmark(buffer, renderer.namespace, component.row_start + (r_index - 1), component.col_start + (c_index - 1), {
+					vim.api.nvim_buf_set_extmark(buffer, renderer.namespace, component.row_start + (r_index - 1), component.col_start + (char_index - 1), {
 						virt_text_pos = "overlay",
 						virt_text = {
 							{ table_config.table_chars[6], table_config.table_hls[6] }
@@ -707,32 +719,61 @@ renderer.render_table = function (buffer, component)
 					table.insert(virt_line, { table_config.table_chars[12], table_config.table_hls[12] })
 				end
 			elseif r_index == #component.rows and col:match("^[%s%-]*$") == nil then
-				vim.api.nvim_buf_set_extmark(buffer, renderer.namespace, component.row_start + (r_index - 1), component.col_start + (c_index - 1), {
-					virt_text_pos = "inline",
-					virt_text = {
-						{ concealed_text(col) }
-					}
-				})
+				-- vim.print(column_text_alignment)
+
+				if column_text_alignment[1] == "left" or column_text_alignment[1] == nil then
+					vim.api.nvim_buf_set_extmark(buffer, renderer.namespace, component.row_start + (r_index - 1), component.col_start + (char_index - 1), {
+						virt_text_pos = "inline",
+						virt_text = {
+							{ string.rep(" ", concealed_chars(col)) }
+						}
+					})
+				elseif column_text_alignment[1] == "center"  then
+					vim.api.nvim_buf_set_extmark(buffer, renderer.namespace, component.row_start + (r_index - 1), component.col_start + (char_index - 1), {
+						virt_text_pos = "inline",
+						virt_text = {
+							{ string.rep(" ", math.floor(concealed_chars(col) / 2)) }
+						}
+					})
+				end
 
 				table.insert(virt_line, { string.rep(table_config.table_chars[10], vim.fn.strchars(col)), table_config.table_hls[10] })
+
+				if column_text_alignment[1] == "right" then
+					vim.api.nvim_buf_set_extmark(buffer, renderer.namespace, component.row_start + (r_index - 1), component.col_start + (char_index - vim.fn.strchars(col)), {
+						virt_text_pos = "inline",
+						virt_text = {
+							{ string.rep(" ", concealed_chars(col)) }
+						}
+					})
+				elseif column_text_alignment[1] == "center" then
+					vim.api.nvim_buf_set_extmark(buffer, renderer.namespace, component.row_start + (r_index - 1), component.col_start + (char_index - vim.fn.strchars(col)), {
+						virt_text_pos = "inline",
+						virt_text = {
+							{ string.rep(" ", math.ceil(concealed_chars(col) / 2)) }
+						}
+					})
+				end
+
+				column_text_alignment = list_shift(column_text_alignment)
 				-- Clear
 			elseif col == "|" and component.table_structure[r_index] == "seperator" then
 				if cell_num == 1 then
-					vim.api.nvim_buf_set_extmark(buffer, renderer.namespace, component.row_start + (r_index - 1), component.col_start + (c_index - 1), {
+					vim.api.nvim_buf_set_extmark(buffer, renderer.namespace, component.row_start + (r_index - 1), component.col_start + (char_index - 1), {
 						virt_text_pos = "overlay",
 						virt_text = {
 							{ table_config.table_chars[5], table_config.table_hls[5] }
 						}
 					})
 				elseif cell_num == #row then
-					vim.api.nvim_buf_set_extmark(buffer, renderer.namespace, component.row_start + (r_index - 1), component.col_start + (c_index - 1), {
+					vim.api.nvim_buf_set_extmark(buffer, renderer.namespace, component.row_start + (r_index - 1), component.col_start + (char_index - 1), {
 						virt_text_pos = "overlay",
 						virt_text = {
 							{ table_config.table_chars[7], table_config.table_hls[7] }
 						}
 					})
 				else
-					vim.api.nvim_buf_set_extmark(buffer, renderer.namespace, component.row_start + (r_index - 1), component.col_start + (c_index - 1), {
+					vim.api.nvim_buf_set_extmark(buffer, renderer.namespace, component.row_start + (r_index - 1), component.col_start + (char_index - 1), {
 						virt_text_pos = "overlay",
 						virt_text = {
 							{ table_config.table_chars[8], table_config.table_hls[8] }
@@ -741,21 +782,21 @@ renderer.render_table = function (buffer, component)
 				end
 			elseif col == "|" then
 				if cell_num == 1 then
-					vim.api.nvim_buf_set_extmark(buffer, renderer.namespace, component.row_start + (r_index - 1), component.col_start + (c_index - 1), {
+					vim.api.nvim_buf_set_extmark(buffer, renderer.namespace, component.row_start + (r_index - 1), component.col_start + (char_index - 1), {
 						virt_text_pos = "overlay",
 						virt_text = {
 							{ table_config.table_chars[6], table_config.table_hls[6] }
 						}
 					})
 				elseif cell_num == #row then
-					vim.api.nvim_buf_set_extmark(buffer, renderer.namespace, component.row_start + (r_index - 1), component.col_start + (c_index - 1), {
+					vim.api.nvim_buf_set_extmark(buffer, renderer.namespace, component.row_start + (r_index - 1), component.col_start + (char_index - 1), {
 						virt_text_pos = "overlay",
 						virt_text = {
 							{ table_config.table_chars[6], table_config.table_hls[6] }
 						}
 					})
 				else
-					vim.api.nvim_buf_set_extmark(buffer, renderer.namespace, component.row_start + (r_index - 1), component.col_start + (c_index - 1), {
+					vim.api.nvim_buf_set_extmark(buffer, renderer.namespace, component.row_start + (r_index - 1), component.col_start + (char_index - 1), {
 						virt_text_pos = "overlay",
 						virt_text = {
 							{ table_config.table_chars[6], table_config.table_hls[6] }
@@ -764,26 +805,76 @@ renderer.render_table = function (buffer, component)
 				end
 			elseif col:match("^[%s%-]*$") and col:match("^%s*$") == nil then
 				local prev_size = vim.fn.strchars(component.rows[r_prev][cell_num]);
-				local prev_con = vim.fn.strchars(concealed_text(component.rows[r_prev][cell_num]));
+				local prev_con = concealed_chars(component.rows[r_prev][cell_num]);
 
 				-- Here
-				vim.api.nvim_buf_set_extmark(buffer, renderer.namespace, component.row_start + (r_index - 1), component.col_start + (c_index - vim.fn.strchars(col)), {
+				vim.api.nvim_buf_set_extmark(buffer, renderer.namespace, component.row_start + (r_index - 1), component.col_start + (char_index - vim.fn.strchars(col)), {
 					virt_text_pos = "overlay",
 					virt_text = {
 						{
-							string.rep(table_config.table_chars[2], prev_size + prev_con), table_config.table_hls[2]
+							string.rep(table_config.table_chars[2], prev_size), table_config.table_hls[2]
 						}
 					}
 				})
-			else
-				local concealed_ver = concealed_text(col);
 
-				-- vim.print(c_index)
-				vim.api.nvim_buf_set_extmark(buffer, renderer.namespace, component.row_start + (r_index - 1), component.col_start + (c_index), {
+				table.insert(column_text_alignment, "left")
+			elseif col:match("^[%s%-:]*$") and col:match("^%s*$") == nil then
+				local prev_size = vim.fn.strchars(component.rows[r_prev][cell_num]);
+				local prev_con = concealed_chars(component.rows[r_prev][cell_num]);
+
+				if string.sub(col, 1, 1) == ":" and string.sub(col, -1, -1) == ":" then
+					vim.api.nvim_buf_set_extmark(buffer, renderer.namespace, component.row_start + (r_index - 1), component.col_start + (char_index - vim.fn.strchars(col)), {
+						virt_text_pos = "overlay",
+						virt_text = {
+							{ table_config.table_chars[15], table_config.table_hls[15] or table_config.table_hls[2] },
+							{ string.rep(table_config.table_chars[2], prev_size - 2), table_config.table_hls[2] },
+							{ table_config.table_chars[16], table_config.table_hls[16] or table_config.table_hls[2] },
+						}
+					})
+
+					table.insert(column_text_alignment, "center")
+				elseif string.sub(col, 1, 1) == ":" then
+					vim.api.nvim_buf_set_extmark(buffer, renderer.namespace, component.row_start + (r_index - 1), component.col_start + (char_index - vim.fn.strchars(col)), {
+						virt_text_pos = "overlay",
+						virt_text = {
+							{ table_config.table_chars[13], table_config.table_hls[13] or table_config.table_hls[2] },
+							{ string.rep(table_config.table_chars[2], prev_size - 1), table_config.table_hls[2] }
+						}
+					})
+
+					table.insert(column_text_alignment, "left")
+				elseif string.sub(col, -1, -1) == ":" then
+					vim.api.nvim_buf_set_extmark(buffer, renderer.namespace, component.row_start + (r_index - 1), component.col_start + (char_index - vim.fn.strchars(col)), {
+						virt_text_pos = "overlay",
+						virt_text = {
+							{ string.rep(table_config.table_chars[2], prev_size - 1), table_config.table_hls[2] },
+							{ table_config.table_chars[14], table_config.table_hls[14] or table_config.table_hls[2] },
+						}
+					})
+
+					table.insert(column_text_alignment, "right")
+				else
+					vim.api.nvim_buf_set_extmark(buffer, renderer.namespace, component.row_start + (r_index - 1), component.col_start + (char_index - vim.fn.strchars(col)), {
+						virt_text_pos = "overlay",
+						virt_text = {
+							{
+								string.rep(table_config.table_chars[2], prev_size + prev_con), table_config.table_hls[2]
+							}
+						}
+					})
+				end
+				-- Here
+			else
+				local concealed_ver = string.rep(" ", concealed_chars(col));
+
+				-- vim.print(char_index)
+				vim.api.nvim_buf_set_extmark(buffer, renderer.namespace, component.row_start + (r_index - 1), component.col_start + (char_index), {
 					virt_text_pos = "inline",
 					virt_text = { {concealed_ver} }
 				})
 			end
+
+			::cell_skip::
 		end
 	end
 end
@@ -797,6 +888,8 @@ renderer.render_list = function (buffer, component)
 		ls_conf = renderer.config.list_item.marker_plus or {};
 	elseif string.match(component.marker_symbol, "*") then
 		ls_conf = renderer.config.list_item.marker_star or {};
+	elseif string.match(component.marker_symbol, "[.]") then
+		ls_conf = renderer.config.list_item.marker_dot or {};
 	end
 
 	if ls_conf.add_padding == true then
@@ -850,14 +943,18 @@ renderer.render_list = function (buffer, component)
 				virt_text_pos = "overlay",
 				virt_text = {
 					{ ls_conf.marker, ls_conf.marker_hl }
-				}
+				},
+
+				hl_mode = "combine"
 			});
 		else
 			vim.api.nvim_buf_set_extmark(buffer, renderer.namespace, component.row_start, component.col_start, {
 				virt_text_pos = "overlay",
 				virt_text = {
 					{ ls_conf.marker, ls_conf.marker_hl }
-				}
+				},
+
+				hl_mode = "combine"
 			});
 		end
 	end
@@ -871,14 +968,18 @@ renderer.render_checkbox = function (buffer, component)
 			virt_text_pos = "overlay",
 			virt_text = {
 				{ chk_conf.checked.marker, chk_conf.checked.marker_hl }
-			}
+			},
+
+			hl_mode = "combine"
 		});
 	elseif component.checked == false then
 		vim.api.nvim_buf_set_extmark(buffer, renderer.namespace, component.row_start, component.col_start, {
 			virt_text_pos = "overlay",
 			virt_text = {
 				{ chk_conf.uncheked.marker, chk_conf.uncheked.marker_hl }
-			}
+			},
+
+			hl_mode = "combine"
 		});
 	end
 end

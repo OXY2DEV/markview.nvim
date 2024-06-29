@@ -12,10 +12,14 @@ markview.setup = function (user_config)
 	---@type markview_config
 	renderer.config = vim.tbl_deep_extend("keep", user_config or {}, renderer.config);
 
+	local version = vim.version();
 	local ts_available, treesitter_parsers = pcall(require, "nvim-treesitter.parsers");
 
-	-- Check for support
-	if vim.version.ge(vim.version().build, vim.version.parse("v0.10.0")) == false then
+	-- Fix: version checking issue fixed
+	if type(version) ~= "table" then
+		vim.print("[markview.nvim] : vim.version() returned unexpected value")
+		return;
+	elseif vim.version.ge({ version.major, version.minor, version.patch }, { 0, 10, 0 }) == false then
 		vim.print("[markview.nvim] : Neovim version 0.10.0 or higher required")
 		return;
 	elseif ts_available == false then
@@ -39,6 +43,7 @@ markview.setup = function (user_config)
 		pattern = "*.md",
 		callback = function (event)
 			local windows = vim.api.nvim_list_wins();
+			renderer.clear(event.buf);
 
 			-- Check for windows that have this buffer and set the necessary options in them
 			for _, window in ipairs(windows) do
@@ -59,28 +64,33 @@ markview.setup = function (user_config)
 		end
 	})
 
-	vim.api.nvim_create_autocmd({ "InsertLeave" }, {
-		pattern = "*.md",
+	vim.api.nvim_create_autocmd({ "ModeChanged" }, {
 		callback = function (event)
-			vim.cmd.syntax("match markdownCode /`[^`]\\+`/ conceal")
-			vim.wo.conceallevel = 2;
-			vim.wo.concealcursor = "nc";
+			local mode = vim.api.nvim_get_mode().mode;
 
-			parser.init(event.buf);
-			renderer.render(event.buf);
+			if vim.bo.filetype ~= "markdown" then
+				return;
+			end
+
+			if vim.tbl_contains(renderer.config.modes or {}, mode) then
+ 				vim.cmd.syntax("match markdownCode /`[^`]\\+`/ conceal")
+ 				vim.wo.conceallevel = 2;
+ 				vim.wo.concealcursor = "nc";
+
+				renderer.clear(event.buf)
+
+ 				parser.init(event.buf);
+ 				renderer.render(event.buf);
+			else
+				vim.cmd("syntax clear markdownCode")
+				vim.wo.conceallevel = 0;
+				vim.wo.concealcursor = "nc";
+
+				renderer.clear(event.buf)
+			end
 		end
 	})
 
-	vim.api.nvim_create_autocmd({ "InsertEnter" }, {
-		pattern = "*.md",
-		callback = function (event)
-			vim.cmd("syntax clear markdownCode")
-			vim.wo.conceallevel = 0;
-			vim.wo.concealcursor = "nc";
-
-			renderer.clear(event.buf)
-		end
-	})
 end
 
 return markview;

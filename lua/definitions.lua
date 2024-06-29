@@ -3,6 +3,7 @@
 ---@class markview_config
 --- Configuration table for markview.nvim
 ---
+---@field modes string[]
 ---@field highlight_groups false | table[]
 ---@field header markview_header_config?
 ---@field code_block markview_code_config?
