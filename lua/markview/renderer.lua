@@ -504,6 +504,8 @@ renderer.render_block_quote = function (buffer, component)
 				{ tbl_clamp(quote_config.border, 1), tbl_clamp(quote_config.border_hl, 1) },
 				{ quote_config.callout_preview, quote_config.callout_preview_hl },
 			},
+
+			hl_mode = "combine"
 		});
 
 		-- Experimental: Needs more testing
@@ -513,6 +515,8 @@ renderer.render_block_quote = function (buffer, component)
 				virt_text = {
 					{ string.rep(" ", (vim.fn.strchars(tbl_clamp(quote_config.border, 1) .. quote_config.callout_preview) + 1) - vim.fn.strchars(quote_config.match_string)) }
 				},
+
+				hl_mode = "combine"
 			});
 		end
 	else
@@ -520,7 +524,9 @@ renderer.render_block_quote = function (buffer, component)
 			virt_text_pos = "overlay",
 			virt_text = {
 				{ tbl_clamp(quote_config.border, 1), tbl_clamp(quote_config.border_hl, 1) },
-			}
+			},
+
+				hl_mode = "combine"
 		});
 	end
 
@@ -529,7 +535,9 @@ renderer.render_block_quote = function (buffer, component)
 			virt_text_pos = "overlay",
 			virt_text = {
 				{ tbl_clamp(quote_config.border, line + 1), tbl_clamp(quote_config.border_hl, line + 1) }
-			}
+			},
+
+			hl_mode = "combine"
 		});
 	end
 end
@@ -543,7 +551,9 @@ renderer.render_horizontal_rule = function (buffer, component)
 			virt_text_pos = "overlay",
 			virt_text = {
 				{ str_rep(hr_config.border_char, columns), hr_config.border_hl },
-			}
+			},
+
+			hl_mode = "combine"
 		});
 	elseif hr_config.style == "fancy" then
 		local seg_left = hr_config.segments ~= nil and hr_config.segments[1] or "─";
@@ -559,7 +569,9 @@ renderer.render_horizontal_rule = function (buffer, component)
 				{ str_rep(seg_left, side_width_l), hr_config.segments_hl ~= nil and hr_config.segments_hl[1] or hr_config.border_hl },
 				{ seg_mid, hr_config.segments_hl ~= nil and hr_config.segments_hl[2] or hr_config.border_hl },
 				{ str_rep(seg_right, side_width_r), hr_config.segments_hl ~= nil and hr_config.segments_hl[3] or hr_config.border_hl },
-			}
+			},
+
+			hl_mode = "combine"
 		});
 	end
 end
@@ -656,12 +668,16 @@ renderer.render_table = function (buffer, component)
 					if table_config.use_virt_lines == true then
 						vim.api.nvim_buf_set_extmark(buffer, renderer.namespace, component.row_start + (r_index - 1), component.col_start + (char_index - 1), {
 							virt_lines_above = true,
-							virt_lines = { virt_line }
+							virt_lines = { virt_line },
+
+							hl_mode = "combine"
 						})
 					else
 						vim.api.nvim_buf_set_extmark(buffer, renderer.namespace, component.row_start + (r_index - 2), 0, {
 							virt_text_pos = "overlay",
-							virt_text = virt_line
+							virt_text = virt_line,
+
+							hl_mode = "combine"
 						})
 					end
 
@@ -709,12 +725,16 @@ renderer.render_table = function (buffer, component)
 					if table_config.use_virt_lines == true then
 						vim.api.nvim_buf_set_extmark(buffer, renderer.namespace, component.row_start + (r_index - 1), component.col_start + (char_index - 1), {
 							virt_lines_above = false,
-							virt_lines = { virt_line }
+							virt_lines = { virt_line },
+
+							hl_mode = "combine"
 						})
 					else
 						vim.api.nvim_buf_set_extmark(buffer, renderer.namespace, component.row_start + r_index, 0, {
 							virt_text_pos = "overlay",
-							virt_text = virt_line
+							virt_text = virt_line,
+
+							hl_mode = "combine"
 						})
 					end
 
