@@ -313,7 +313,7 @@ renderer.config = {
 		checked = {
 			marker = " ✔ ", marker_hl = "@markup.list.checked"
 		},
-		uncheked = {
+		unchecked = {
 			marker = " ✘ ", marker_hl = "@markup.list.unchecked"
 		}
 	}
@@ -877,7 +877,7 @@ renderer.render_checkbox = function (buffer, component)
 		vim.api.nvim_buf_set_extmark(buffer, renderer.namespace, component.row_start, component.col_start, {
 			virt_text_pos = "overlay",
 			virt_text = {
-				{ chk_conf.uncheked.marker, chk_conf.uncheked.marker_hl }
+				{ chk_conf.unchecked.marker, chk_conf.unchecked.marker_hl }
 			}
 		});
 	end
