@@ -245,10 +245,10 @@ renderer.config = {
 			},
 			{
 				match_string = "[!CUSTOM]",
-				callout_preview = "󰠳 Custom",
+				callout_preview = " 󰠳 Custom",
 				callout_preview_hl = "rainbow3",
 
-				border = "▋ ", border_hl = "rainbow3"
+				border = "▋", border_hl = "rainbow3"
 			}
 		}
 	},
@@ -502,9 +502,19 @@ renderer.render_block_quote = function (buffer, component)
 			virt_text_pos = "overlay",
 			virt_text = {
 				{ tbl_clamp(quote_config.border, 1), tbl_clamp(quote_config.border_hl, 1) },
-				{ quote_config.callout_preview, quote_config.callout_preview_hl }
-			}
+				{ quote_config.callout_preview, quote_config.callout_preview_hl },
+			},
 		});
+
+		-- Experimental: Needs more testing
+		if (vim.fn.strchars(quote_config.callout_preview .. tbl_clamp(quote_config.border, 1))) >= vim.fn.strchars(quote_config.match_string) then
+			vim.api.nvim_buf_set_extmark(buffer, renderer.namespace, component.row_start, component.col_start + vim.fn.strchars(tbl_clamp(quote_config.border, 1) .. quote_config.callout_preview) - 1, {
+				virt_text_pos = "inline",
+				virt_text = {
+					{ string.rep(" ", (vim.fn.strchars(tbl_clamp(quote_config.border, 1) .. quote_config.callout_preview) + 1) - vim.fn.strchars(quote_config.match_string)) }
+				},
+			});
+		end
 	else
 		vim.api.nvim_buf_set_extmark(buffer, renderer.namespace, component.row_start, component.col_start, {
 			virt_text_pos = "overlay",
