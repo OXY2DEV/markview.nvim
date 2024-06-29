@@ -36,29 +36,25 @@
 
 ### 💤 Lazy.nvim
 
+For `plugin.lua` users:
+
 ```lua
--- For plugin.lua users
 {
     "OXY2DEV/markview.nvim",
     dependencies = {
-        "nvim-tree/nvim-web-devicons", -- Used by the code bloxks
+        "nvim-tree/nvim-web-devicons", -- Used by the code blocks
     },
-
-    config = function ()
-        require("markview").setup();
-    end
 }
+```
 
--- For plugins/markview.lua users
+For `plugins/markview.lua` users:
+
+```lua
 return {
     "OXY2DEV/markview.nvim",
     dependencies = {
-        "nvim-tree/nvim-web-devicons", -- Used by the code bloxks
+        "nvim-tree/nvim-web-devicons", -- Used by the code blocks
     },
-
-    config = function ()
-        require("markview").setup();
-    end
 }
 ```
 
