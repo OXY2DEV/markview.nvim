@@ -48,9 +48,26 @@ parser.md = function (buffer, TStree)
 				col_end = col_end
 			})
 		elseif capture_name == "code" then
+			local line_lens = {};
+			local highest_len = 0;
+
+			for i = 1,(row_end - row_start) - 2 do
+				local this_code = vim.api.nvim_buf_get_lines(buffer, row_start + i, row_start + i + 1, false)[1];
+				local len = vim.fn.strchars(this_code) or 0;
+
+				if len > highest_len then
+					highest_len = len;
+				end
+
+				table.insert(line_lens, len);
+			end
+
 			table.insert(renderer.views[buffer], {
 				type = "code_block",
 				language = vim.treesitter.get_node_text(capture_node:named_child(1), buffer),
+
+				line_lengths = line_lens,
+				largest_line = highest_len,
 
 				row_start = row_start,
 				row_end = row_end,
@@ -180,9 +197,15 @@ parser.md_inline = function (buffer, TStree)
 		local row_start, col_start, row_end, col_end = capture_node:range();
 
 		if capture_name == "callout" then
+			local line = vim.api.nvim_buf_get_lines(buffer, row_start, row_start + 1, false);
+			local title = string.match(line ~= nil and line[1] or "", "%b[]%s*(.*)$")
+
 			for _, extmark in ipairs(renderer.views[buffer]) do
 				if extmark.type == "block_quote" and extmark.row_start == row_start then
-					extmark.callout = capture_text;
+					extmark.callout = string.match(capture_text, "%[!([^%]]+)%]");
+					extmark.title = title;
+
+					extmark.line_width = vim.fn.strchars(line[1])
 				end
 			end
 		elseif capture_name == "link" then

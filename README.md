@@ -145,8 +145,8 @@ It can also be used to set your own highlight groups.
 require("markview").setup({
     highlight_groups = {
         {
-	    	group_name = "markview_h1",
-		    value = { bg = "#453244", fg = "#f38ba8" }
+            group_name = "markview_h1",
+            value = { bg = "#453244", fg = "#f38ba8" }
         }
     }
 })
