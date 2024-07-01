@@ -42,6 +42,7 @@
     "OXY2DEV/markview.nvim",
     dependencies = {
         "nvim-tree/nvim-web-devicons", -- Used by the code bloxks
+        "nvim-treesitter/nvim-treesitter",
     },
 
     config = function ()
@@ -54,6 +55,7 @@ return {
     "OXY2DEV/markview.nvim",
     dependencies = {
         "nvim-tree/nvim-web-devicons", -- Used by the code bloxks
+        "nvim-treesitter/nvim-treesitter",
     },
 
     config = function ()
@@ -69,6 +71,7 @@ require("mini.deps").add({
     source = "OXY2DEV/markview.nvim",
     depends = {
         "nvim-tree/nvim-web-devicons", -- Used by the code bloxks
+        "nvim-treesitter/nvim-treesitter",
     }
 })
 ```
