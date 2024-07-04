@@ -136,7 +136,7 @@ require("markview").setup({
 });
 ```
 
-For customisation related options check the [wiki pages](https://).
+ For customisation related options check the [wiki pages](https://github.com/OXY2DEV/markview.nvim/wiki).
 
 ## 👾 Showcases
 
