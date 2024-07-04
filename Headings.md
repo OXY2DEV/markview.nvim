@@ -1,6 +1,14 @@
 # Headings
 
-You can customise how `markdown headinge` are shown among other things
+This plugin provides custom headings whuch can be configured through this option.
+
+![h_1](./wiki_img/heading_1.jpg)
+![h_2](./wiki_img/heading_2.jpg)
+![h_3](./wiki_img/heading_3.jpg)
+![h_4](./wiki_img/heading_4.jpg)
+![h_5](./wiki_img/heading_5.jpg)
+![h_6](./wiki_img/heading_6.jpg)
+![h_7](./wiki_img/heading_7.jpg)
 
 >[!IMPORTANT]
 > Do not use `italics`, `bold` texts or `inline codes` in your headings.
