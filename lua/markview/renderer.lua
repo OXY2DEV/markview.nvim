@@ -55,7 +55,7 @@ end
 
 local display_width = function (text, config)
 	local d_width = vim.fn.strchars(text);
-	local inl_conf = config.inline_code;
+	local inl_conf = config.inline_codes;
 
 	for inline_code in text:gmatch("`([^`]+)`") do
 		d_width = d_width - (vim.fn.strchars("`" .. inline_code .. "`"));

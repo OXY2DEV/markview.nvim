@@ -3,6 +3,8 @@
 <p text-align="center">Simple markdown previewer for neovim</p>
 
 ![headings](./images/headings.jpg)
+![lists](./images/lists.jpg)
+![tables](./images/tables.jpg)
 
 >[!WARNING]
 > This plugin is in it's alpha stage and may go through breaking changes.
