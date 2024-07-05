@@ -1,5 +1,7 @@
 # Code blocks
 
+![code_blocks](./wiki_img/code_blocks.jpg)
+
 You can customise how `code blocks` are shown.
 
 ## Configuration
