@@ -583,7 +583,7 @@ renderer.render_headers = function (buffer, content, config)
 	elseif conf.style == "label" then
 		-- Adds icons, seperators, paddings etc
 		vim.api.nvim_buf_set_extmark(buffer, renderer.namespace, content.row_start, 0, {
-			virt_text_pos = conf.position "overlay",
+			virt_text_pos = conf.position or "overlay",
 			virt_text = {
 				{ string.rep(conf.shift_char or " ", shift * (content.level - 1)), conf.shift_hl },
 
