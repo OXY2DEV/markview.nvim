@@ -104,10 +104,10 @@ local display_width = function (text, config)
 		end
 	end
 
-	for str_a, str_b in text:gmatch("([*_]*)%a+([*_]*)") do
+	for str_a, str_b in text:gmatch("([*_]*)%w+([*_]*)") do
 		local min_signs = vim.fn.strchars(str_a) > vim.fn.strchars(str_b) and vim.fn.strchars(str_a) or vim.fn.strchars(str_b);
 
-		local start_pos, _ = text:find("([*_]*)%a+([*_]*)");
+		local start_pos, _ = text:find("([*_]*)%w+([*_]*)");
 
 		local c_before = text:sub(start_pos - 1, start_pos - 1);
 		-- local c_after = text:sub(end_pos + 1, end_pos + 1);
@@ -128,6 +128,7 @@ local display_width = function (text, config)
 
 		::invalid::
 	end
+
 
 	return d_width, vim.fn.strchars(text);
 end
@@ -759,7 +760,6 @@ renderer.render_code_blocks = function (buffer, content, config_table)
 		-- NOTE: The last line with ``` doesn't need this so we don't add it to that line
 		for line, text in ipairs(content.lines) do
 			if 1 > 2 then
-				vim.print(text)
 				goto skipCode
 			end
 
