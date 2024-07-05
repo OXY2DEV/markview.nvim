@@ -5,9 +5,9 @@ markview.renderer = require("markview/renderer");
 markview.add_hls = function (usr_hls)
 	local hl_list = usr_hls or renderer.hls;
 
-  for group_name, tbl in pairs(hl_list) do
-    vim.api.nvim_set_hl(0, "Markview_" .. group_name, tbl.value)
-  end
+	for group_name, tbl in pairs(hl_list) do
+		vim.api.nvim_set_hl(0, "Markview_" .. group_name, tbl.value)
+	end
 end
 
 markview.attached_buffers = {};
@@ -476,7 +476,7 @@ end
 
 vim.api.nvim_create_autocmd({ "colorscheme" }, {
 	callback = function ()
-			markview.add_hls(markview.configuration.highlight_groups);
+		markview.add_hls(markview.configuration.highlight_groups);
 	end
 })
 
@@ -499,7 +499,7 @@ markview.setup = function (user_config)
 	-- Merged configuration tables
 
 	markview.configuration = vim.tbl_deep_extend("keep", user_config or {}, markview.configuration);
-		markview.add_hls(markview.configuration.highlight_groups);
+	markview.add_hls(markview.configuration.highlight_groups);
 end
 
 return markview;
