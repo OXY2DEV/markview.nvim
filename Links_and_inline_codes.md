@@ -1,6 +1,6 @@
-# Hyperlinks
-
 ![links](./wiki_img/links.jpg)
+
+# Hyperlinks
 
 This plugin provides custom hyperlinks that can be customised with the `hyperlinks` option.
 
