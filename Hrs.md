@@ -1,6 +1,8 @@
 # Horizontal rules
 
-This plugin provides custom `horizontal_rules` that you can customise using this option.
+![hrs](./wiki_img/hrs.jpg)
+
+This plugin provides custom `horizontal_rules` that you can customise using the `horizontal_rules` option.
 
 ```lua
 horizontal_rules = {
@@ -13,7 +15,7 @@ horizontal_rules = {
 
 ## enable
 
-When false the custom Horizontal rules are disabled.
+When false, custom Horizontal rules are disabled.
 
 ## position
 
@@ -106,6 +108,9 @@ When it's a list, the character's index is used for the highlight group. This cr
 #### direction
 
 Changes the direction of where `hl` is applied from.
+
+>[!NOTE]
+> This means from where in the `output text` they are applied from.
 
 Possible values are.
 
