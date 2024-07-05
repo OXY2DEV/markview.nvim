@@ -85,7 +85,7 @@ A string value, the style of the heading. Currently supported values are.
 >[!IMPORTANT]
 > The properties given below will behave differently based on the used `style`.
 
-##### simple
+##### Style: simple
 
 The `simple` style only adds a simple background to the line.
 
@@ -101,7 +101,7 @@ heading_1 = {
 
 Highlight group used to Highlight the line itself.
 
-##### label
+##### Style: label
 
 The `label` style makes the headings look like lables(like in `glow`). They are customised similar to `statusline-items`.
 
@@ -202,7 +202,7 @@ A custom sign for the heading.
 
 Highlight group for the sign. When nil the value of `hl` is used.
 
-##### icon
+##### Style: icon
 
 The `icon` style supports simple icon, line_hl and signs.
 
