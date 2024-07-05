@@ -112,11 +112,13 @@ The rest of the properties are are explained in detail in their own wiki pages.
 
 Here is a list containing all of the relevant wiki pages.
 
-- [Headings](./Headings.md)
-- [Horizontal rules](./Hrs.md)
-- [Hyperlinks & Image links](./Links.md)
-- [Block quotes](./Block_quotes.md)
-- [Code blocks](./Code_blocks.md)
-
+- [Headings](https://github.com/OXY2DEV/markview.nvim/wiki/Headings)
+- [Horizontal rules](https://github.com/OXY2DEV/markview.nvim/wiki/Hrs)
+- [Links and inline codes](https://github.com/OXY2DEV/markview.nvim/wiki/Links_and_inline_codes)
+- [Block quotes](https://github.com/OXY2DEV/markview.nvim/wiki/Block_quotes)
+- [Code blocks](https://github.com/OXY2DEV/markview.nvim/wiki/Code_blocks)
+- [Checkboxes](https://github.com/OXY2DEV/markview.nvim/wiki/Checkboxes)
+- [List items](https://github.com/OXY2DEV/markview.nvim/wiki/List_items)
+- [Tables](https://github.com/OXY2DEV/markview.nvim/wiki/Tables)
 
 
