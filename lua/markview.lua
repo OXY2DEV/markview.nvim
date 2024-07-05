@@ -1,88 +1,465 @@
 local markview = {};
-local parser = require("markview/parser");
-local renderer = require("markview/renderer");
+markview.parser = require("markview/parser");
+markview.renderer = require("markview/renderer");
 
----@type number[] list of windows where the options have been set
-markview.options_set = {};
+markview.add_hls = function (usr_hls)
+	local hl_list = usr_hls or renderer.hls;
 
---- Setup function for markview.nvim
----
----@param user_config markview_config?
+	for _, tbl in ipairs(hl_list) do
+		vim.api.nvim_set_hl(0, "Markview_" .. tbl.group_name, tbl.value)
+	end
+end
+
+markview.global_options = {};
+
+---@type markview.config
+markview.configuration = {
+	restore_conceallevel = true,
+	restore_concealcursor = false,
+
+	highlight_groups = {
+		{
+			group_name = "red",
+			value = { bg = "#453244", fg = "#f38ba8" }
+		},
+		{
+			group_name = "red_fg",
+			value = { fg = "#f38ba8" }
+		},
+
+		{
+			group_name = "orange",
+			value = { bg = "#46393E", fg = "#fab387" }
+		},
+		{
+			group_name = "orange_fg",
+			value = { fg = "#fab387" }
+		},
+
+		{
+			group_name = "yellow",
+			value = { bg = "#464245", fg = "#f9e2af" }
+		},
+		{
+			group_name = "yellow_fg",
+			value = { fg = "#f9e2af" }
+		},
+
+		{
+			group_name = "green",
+			value = { bg = "#374243", fg = "#a6e3a1" }
+		},
+		{
+			group_name = "green_fg",
+			value = { fg = "#a6e3a1" }
+		},
+
+		{
+			group_name = "blue",
+			value = { bg = "#2E3D51", fg = "#74c7ec" }
+		},
+		{
+			group_name = "blue_fg",
+			value = { fg = "#74c7ec" }
+		},
+
+		{
+			group_name = "mauve",
+			value = { bg = "#393B54", fg = "#b4befe" }
+		},
+		{
+			type = "normal",
+			group_name = "mauve_fg",
+			value = { fg = "#b4befe" }
+		},
+		{
+			group_name = "grey",
+			value = { bg = "#7E839A", fg = "#313244" }
+		},
+		{
+			group_name = "grey_fg",
+			value = { fg = "#7E839A" }
+		},
+
+		{
+			group_name = "dark",
+			value = { bg = "#181825" }
+		},
+		{
+			group_name = "dark_2",
+			value = { bg = "#303030", fg = "#B4BEFE" }
+		},
+
+		{
+			group_name = "gradient_0",
+			value = { fg = "#6583b6" }
+		},
+		{
+			group_name = "gradient_1",
+			value = { fg = "#637dac" }
+		},
+		{
+			group_name = "gradient_2",
+			value = { fg = "#6177a2" }
+		},
+		{
+			group_name = "gradient_3",
+			value = { fg = "#5f7198" }
+		},
+		{
+			group_name = "gradient_4",
+			value = { fg = "#5d6c8e" }
+		},
+		{
+			group_name = "gradient_5",
+			value = { fg = "#5b6684" }
+		},
+		{
+			group_name = "gradient_6",
+			value = { fg = "#59607a" }
+		},
+	},
+	buf_ignore = { "nofile" },
+
+	modes = { "n" },
+
+	headings = {
+		enable = true,
+		shift_width = 3,
+
+		heading_1 = {
+			style = "icon",
+			sign = "󰌕 ", sign_hl = "markview_red_fg",
+
+			icon = "󰼏  ", hl = "markview_red",
+
+		},
+		heading_2 = {
+			style = "icon",
+			sign = "󰌖 ", sign_hl = "markview_orange_fg",
+
+			icon = "󰎨  ", hl = "markview_orange",
+		},
+		heading_3 = {
+			style = "icon",
+
+			icon = "󰼑  ", hl = "markview_yellow",
+		},
+		heading_4 = {
+			style = "icon",
+
+			icon = "󰎲  ", hl = "markview_green",
+		},
+		heading_5 = {
+			style = "icon",
+
+			icon = "󰼓  ", hl = "markview_blue",
+		},
+		heading_6 = {
+			style = "icon",
+
+			icon = "󰎴  ", hl = "markview_mauve",
+		}
+	},
+
+	code_blocks = {
+		enable = true,
+
+		style = "language",
+		hl = "dark",
+
+		position = "overlay",
+
+		min_width = 60,
+		pad_amount = 3,
+
+		language_names = {
+			{ "py", "python" },
+			{ "cpp", "C++" }
+		},
+		language_direction = "right",
+
+		sign = true, sign_hl = nil
+	},
+
+	block_quotes = {
+		enable = true,
+
+		default = {
+			border = "▋", border_hl = { "gradient_0", "gradient_1", "gradient_2", "gradient_3", "gradient_4", "gradient_5", "gradient_6" }
+		},
+
+		callouts = {
+			--- From `Obsidian`
+			{
+				match_string = "ABSTRACT",
+				callout_preview = "󱉫 Abstract",
+				callout_preview_hl = "markview_blue_fg",
+
+				custom_title = true,
+				custom_icon = "󱉫 ",
+
+				border = "▋", border_hl = "markview_blue_fg"
+			},
+			{
+				match_string = "TODO",
+				callout_preview = " Todo",
+				callout_preview_hl = "markview_blue_fg",
+
+				custom_title = true,
+				custom_icon = " ",
+
+				border = "▋", border_hl = "markview_blue_fg"
+			},
+			{
+				match_string = "SUCCESS",
+				callout_preview = "󰗠 Success",
+				callout_preview_hl = "markview_green_fg",
+
+				custom_title = true,
+				custom_icon = "󰗠 ",
+
+				border = "▋", border_hl = "markview_green_fg"
+			},
+			{
+				match_string = "QUESTION",
+				callout_preview = "󰋗 Question",
+				callout_preview_hl = "markview_orange_fg",
+
+				custom_title = true,
+				custom_icon = "󰋗 ",
+
+				border = "▋", border_hl = "markview_orange_fg"
+			},
+			{
+				match_string = "FAILURE",
+				callout_preview = "󰅙 Failure",
+				callout_preview_hl = "markview_red_fg",
+
+				custom_title = true,
+				custom_icon = "󰅙 ",
+
+				border = "▋", border_hl = "markview_red_fg"
+			},
+			{
+				match_string = "DANGER",
+				callout_preview = " Danger",
+				callout_preview_hl = "markview_red_fg",
+
+				custom_title = true,
+				custom_icon = "  ",
+
+				border = "▋", border_hl = "markview_red_fg"
+			},
+			{
+				match_string = "BUG",
+				callout_preview = " Bug",
+				callout_preview_hl = "markview_red_fg",
+
+				custom_title = true,
+				custom_icon = "  ",
+
+				border = "▋", border_hl = "markview_red_fg"
+			},
+			{
+				match_string = "EXAMPLE",
+				callout_preview = "󱖫 Example",
+				callout_preview_hl = "markview_mauve_fg",
+
+				custom_title = true,
+				custom_icon = " 󱖫 ",
+
+				border = "▋", border_hl = "markview_mauve_fg"
+			},
+			{
+				match_string = "QUOTE",
+				callout_preview = " Quote",
+				callout_preview_hl = "markview_grey_fg",
+
+				custom_title = true,
+				custom_icon = "  ",
+
+				border = "▋", border_hl = "markview_grey_fg"
+			},
+
+
+			{
+				match_string = "NOTE",
+				callout_preview = "󰋽 Note",
+				callout_preview_hl = "markview_blue_fg",
+
+				border = "▋", border_hl = "markview_blue_fg"
+			},
+			{
+				match_string = "TIP",
+				callout_preview = " Tip",
+				callout_preview_hl = "markview_green_fg",
+
+				border = "▋", border_hl = "markview_green_fg"
+			},
+			{
+				match_string = "IMPORTANT",
+				callout_preview = " Important",
+				callout_preview_hl = "markview_yellow_fg",
+
+				border = "▋", border_hl = "markview_yellow_fg"
+			},
+			{
+				match_string = "WARNING",
+				callout_preview = " Warning",
+				callout_preview_hl = "markview_orange_fg",
+
+				border = "▋", border_hl = "markview_orange_fg"
+			},
+			{
+				match_string = "CAUTION",
+				callout_preview = "󰳦 Caution",
+				callout_preview_hl = "rainbow1",
+
+				border = "▋", border_hl = "rainbow1"
+			},
+			{
+				match_string = "CUSTOM",
+				callout_preview = " 󰠳 Custom",
+				callout_preview_hl = "rainbow3",
+
+				custom_title = true,
+				custom_icon = " 󰠳 ",
+
+				border = "▋", border_hl = "rainbow3"
+			}
+		}
+	},
+	horizontal_rules = {
+		enable = true,
+
+		position = "overlay",
+		parts = {
+			{
+				type = "repeating",
+				repeat_amount = function () --[[@as function]]
+					return math.floor((vim.o.columns - 3) / 2);
+				end,
+
+				text = "─",
+				hl = {
+					"gradient_6", "gradient_5", "gradient_4", "gradient_3", "gradient_2", "gradient_1", "gradient_0"
+				}
+			},
+			{
+				type = "text",
+				text = "  ",
+
+				repeat_amount = vim.o.columns
+			},
+			{
+				type = "repeating",
+				repeat_amount = function () --[[@as function]]
+					return math.ceil((vim.o.columns - 3) / 2);
+				end,
+
+				direction = "right",
+				text = "─",
+				hl = {
+					"gradient_6", "gradient_5", "gradient_4", "gradient_3", "gradient_2", "gradient_1", "gradient_0"
+				}
+			}
+		}
+	},
+
+	hyperlinks = {
+		enable = true,
+
+		icon = "󰌷 ", icon_hl = "markdownLinkText",
+		text_hl = "markdownLinkText",
+	},
+	images = {
+		enable = true,
+
+		icon = "󰥶 ", icon_hl = "markdownLinkText",
+		text_hl = "markdownLinkText",
+	},
+
+	inline_codes = {
+		enable = true,
+		corner_left = " ",
+		corner_right = " ",
+
+		hl = "dark_2"
+	},
+
+	list_items = {
+		marker_plus = {
+			add_padding = true,
+
+			text = "•",
+			hl = "rainbow2"
+		},
+		marker_minus = {
+			add_padding = true,
+
+			text = "•",
+			hl = "rainbow4"
+		},
+		marker_star = {
+			add_padding = true,
+
+			text = "•",
+			text_hl = "rainbow2"
+		},
+		marker_dot = {
+			add_padding = true
+		},
+	},
+
+	checkboxes = {
+		enable = true,
+
+		checked = {
+			text = "✔", hl = "@markup.list.checked"
+		},
+		unchecked = {
+			text = "✘", hl = "@markup.list.unchecked"
+		}
+	},
+
+	tables = {
+		enable = true,
+		text = {
+			"╭", "─", "╮", "┬",
+			"├", "│", "┤", "┼",
+			"╰", "─", "╯", "┴",
+
+			"╼", "╾", "╴", "╶"
+		},
+		hl = {
+			"red_fg", "red_fg", "red_fg", "red_fg",
+			"red_fg", "red_fg", "red_fg", "red_fg",
+			"red_fg", "red_fg", "red_fg", "red_fg",
+
+			"red_fg", "red_fg", "red_fg", "red_fg"
+		},
+
+		use_virt_lines = false,
+	},
+};
+
+vim.api.nvim_create_autocmd({ "colorscheme" }, {
+	callback = function ()
+		if vim.islist(markview.configuration.highlight_groups) then
+			markview.add_hls(markview.configuration.highlight_groups);
+		end
+	end
+})
+
 markview.setup = function (user_config)
-	---@type markview_config
-	renderer.config = vim.tbl_deep_extend("keep", user_config or {}, renderer.config);
+	---@type markview.config
+	-- Merged configuration tables
+	markview.configuration = vim.tbl_extend("keep", user_config or {}, markview.configuration);
 
-	local ts_available, treesitter_parsers = pcall(require, "nvim-treesitter.parsers");
-
-	-- Check for version support
-	-- TODO: add support for newer version
-	--
-	-- if vim.version.ge(vim.version().build, vim.version.parse("v0.10.0")) == false then
-	-- 	vim.print("[markview.nvim] : Neovim version 0.10.0 or higher required")
-	-- 	return;
-	if ts_available == false then
-		vim.print("[markview.nvim] : `nvim-treesitter` isn't available")
-		return;
-	elseif treesitter_parsers.has_parser("markdown") == false then
-		vim.print("[markview.nvim] : `markdown` parser isn't available")
-		return;
-	elseif treesitter_parsers.has_parser("markdown_inline") == false then
-		vim.print("[markview.nvim] : `markdown_inline` parser isn't available")
-		return;
+	if vim.islist(markview.configuration.highlight_groups) then
+		markview.add_hls(markview.configuration.highlight_groups);
 	end
-
-	if renderer.config.highlight_groups ~= false then
-		renderer.add_hls(renderer.config.highlight_groups);
-	end
-
-	-- When a markdown file is opened in a window run the parser on it
-	-- and render things
-	vim.api.nvim_create_autocmd({ "BufWinEnter" }, {
-		pattern = "*.md",
-		callback = function (event)
-			local windows = vim.api.nvim_list_wins();
-
-			-- Check for windows that have this buffer and set the necessary options in them
-			for _, window in ipairs(windows) do
-				local buf = vim.api.nvim_win_get_buf(window);
-
-				-- Do not set options if the options are already set
-				if vim.list_contains(markview.options_set, window) == false and buf == event.buf then
-					vim.wo[window].conceallevel = 2;
-					vim.wo[window].concealcursor = "nc";
-
-					table.insert(markview.options_set, window);
-				end
-			end
-
-			vim.cmd.syntax("match markdownCode /`[^`]\\+`/ conceal")
-			parser.init(event.buf);
-			renderer.render(event.buf);
-		end
-	})
-
-	vim.api.nvim_create_autocmd({ "InsertLeave" }, {
-		pattern = "*.md",
-		callback = function (event)
-			vim.cmd.syntax("match markdownCode /`[^`]\\+`/ conceal")
-			vim.wo.conceallevel = 2;
-			vim.wo.concealcursor = "nc";
-
-			parser.init(event.buf);
-			renderer.render(event.buf);
-		end
-	})
-
-	vim.api.nvim_create_autocmd({ "InsertEnter" }, {
-		pattern = "*.md",
-		callback = function (event)
-			vim.cmd("syntax clear markdownCode")
-			vim.wo.conceallevel = 0;
-			vim.wo.concealcursor = "nc";
-
-			renderer.clear(event.buf)
-		end
-	})
 end
 
 return markview;
