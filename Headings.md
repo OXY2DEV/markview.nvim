@@ -1,6 +1,6 @@
 # Headings
 
-This plugin provides custom headings whuch can be configured through this option.
+This plugin provides custom headings which can be configured through this option.
 
 ![h_1](./wiki_img/heading_1.jpg)
 ![h_2](./wiki_img/heading_2.jpg)

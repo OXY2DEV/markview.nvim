@@ -1,6 +1,8 @@
 # Block quotes
 
-This plugin provides custom `block quotes` and `callouts`/`alerts`. You can customize how they look with the configuration table.
+![block_quotes](./wiki_img/block_quotes.jpg)
+
+This plugin provides custom `block quotes` and `callouts`/`alerts` that can be configured using the `block_quotes` option.
 
 ## Configuration
 
