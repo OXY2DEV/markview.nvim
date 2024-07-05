@@ -10,6 +10,10 @@ markview.add_hls = function (usr_hls)
 	end
 end
 
+markview.attached_buffers = {};
+
+markview.suppressed = false;
+
 markview.global_options = {};
 
 ---@type markview.config
@@ -444,6 +448,101 @@ markview.configuration = {
 	},
 };
 
+markview.commands = {
+	toggleAll = function ()
+		if markview.suppressed == true then
+			markview.suppressed = false;
+
+			vim.o.conceallevel = 2;
+			vim.o.concealcursor = "n";
+
+			for _, buf in ipairs(markview.attached_buffers) do
+				local parsed_content = markview.parser.init(buf);
+
+				markview.renderer.clear(buf);
+				markview.renderer.render(buf, parsed_content, markview.configuration)
+			end
+		else
+			if markview.configuration.restore_conceallevel == true then
+				vim.o.conceallevel = markview.global_options.conceallevel;
+			else
+				vim.o.conceallevel = 0;
+			end
+
+			if markview.configuration.restore_concealcursor == true then
+				vim.o.concealcursor = markview.global_options.concealcursor;
+			end
+
+			for _, buf in ipairs(markview.attached_buffers) do
+				markview.renderer.clear(buf);
+			end
+
+			markview.suppressed = true;
+		end
+	end,
+	enableAll = function ()
+		markview.suppressed = false;
+
+		vim.o.conceallevel = 2;
+		vim.o.concealcursor = "n";
+
+		for _, buf in ipairs(markview.attached_buffers) do
+			local parsed_content = markview.parser.init(buf);
+
+			markview.renderer.clear(buf);
+			markview.renderer.render(buf, parsed_content, markview.configuration)
+		end
+	end,
+	disableAll = function ()
+		if markview.configuration.restore_conceallevel == true then
+			vim.o.conceallevel = markview.global_options.conceallevel;
+		else
+			vim.o.conceallevel = 0;
+		end
+
+		if markview.configuration.restore_concealcursor == true then
+			vim.o.concealcursor = markview.global_options.concealcursor;
+		end
+
+		for _, buf in ipairs(markview.attached_buffers) do
+			markview.renderer.clear(buf);
+		end
+
+		markview.suppressed = true;
+	end,
+
+	enable = function ()
+		local buffer = vim.api.nvim_get_current_buf();
+		local parsed_content = markview.parser.init(buffer);
+
+		vim.wo.conceallevel = 2;
+		vim.wo.concealcursor = "n";
+
+		markview.renderer.clear(buffer);
+		markview.renderer.render(buffer, parsed_content, markview.configuration)
+	end,
+
+	disable = function ()
+		if markview.configuration.restore_conceallevel == true then
+			vim.wo.conceallevel = markview.global_options.conceallevel;
+		else
+			vim.wo.conceallevel = 0;
+		end
+
+		if markview.configuration.restore_concealcursor == true then
+			vim.wo.concealcursor = markview.global_options.concealcursor;
+		end
+
+		markview.renderer.clear(vim.api.nvim_get_current_buf());
+	end
+}
+
+
+if vim.islist(markview.configuration.highlight_groups) then
+	markview.add_hls(markview.configuration.highlight_groups);
+end
+
+
 vim.api.nvim_create_autocmd({ "colorscheme" }, {
 	callback = function ()
 		if vim.islist(markview.configuration.highlight_groups) then
@@ -451,6 +550,20 @@ vim.api.nvim_create_autocmd({ "colorscheme" }, {
 		end
 	end
 })
+
+vim.api.nvim_create_user_command("Markview", function (opts)
+	local fargs = opts.fargs;
+
+	if #fargs < 1 then
+		markview.commands.toggleAll();
+	elseif markview.commands[fargs[1]] then
+		markview.commands[fargs[1]]();
+	end
+end, {
+	nargs = "*",
+	desc = "Temporarily disable(suppress) Markview preview"
+})
+
 
 markview.setup = function (user_config)
 	---@type markview.config

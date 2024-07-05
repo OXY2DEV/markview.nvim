@@ -29,12 +29,22 @@ vim.api.nvim_create_autocmd({ "BufWinEnter" }, {
 	callback = function (event)
 		local buffer = event.buf;
 
-		local parsed_content = markview.parser.init(buffer);
+		if not vim.list_contains(markview.attached_buffers, buffer) then
+			table.insert(markview.attached_buffers, buffer);
+		end
 
-		markview.global_options = {
-			conceallevel = vim.o.conceallevel,
-			concealcursor = vim.o.concealcursor
-		}
+		if markview.suppressed == true then
+			return;
+		end
+
+		if vim.tbl_isempty(markview.global_options) then
+			markview.global_options = {
+				conceallevel = vim.o.conceallevel,
+				concealcursor = vim.o.concealcursor
+			}
+		end
+
+		local parsed_content = markview.parser.init(buffer);
 
 		vim.wo.conceallevel = 2;
 		vim.wo.concealcursor = "n";
@@ -51,6 +61,10 @@ vim.api.nvim_create_autocmd({ "ModeChanged" }, {
 	callback = function (event)
 		local buffer = event.buf;
 		local mode = vim.api.nvim_get_mode().mode;
+
+		if markview.suppressed == true then
+			return;
+		end
 
 		if vim.islist(markview.configuration.modes) and vim.list_contains(markview.configuration.modes, mode) then
 			local parsed_content = markview.parser.init(buffer);

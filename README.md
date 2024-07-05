@@ -138,6 +138,22 @@ require("markview").setup({
 
  For customisation related options check the [wiki pages](https://github.com/OXY2DEV/markview.nvim/wiki).
 
+## 🎹 Commands
+
+>[!NOTE]
+> Commands are a test feature.
+
+There is only a single command for now, `:Markview`.
+
+When called without any arguments, it toggles the plugin.
+
+Possible subcommands are,
+
+- `toggleAll`, toggles the plugin
+- `enableAll`, enables the preview in all the attached buffers
+- `disableAll`, disables the preview in all the attached buffers
+
+
 ## 👾 Showcases
 
 >[!IMPORTANT]
