@@ -190,10 +190,31 @@ parser.md = function (buffer, TStree)
 			local marker = capture_node:named_child(0);
 			local m_row_start, m_col_start, m_row_end, m_col_end = marker:range();
 
+			local rows = {};
+
+			for c = 0, capture_node:child_count() - 1 do
+				local child_node = capture_node:named_child(c);
+
+				if child_node:type() == "list" then
+					goto listLineSkip;
+				end
+
+				local r_start, c_start, r_end, c_end = child_node:range();
+
+				if not vim.list_contains(rows, r_start) then
+					for r = 0, (r_end - r_start) - 1 do
+						table.insert(rows, r_start + r);
+					end
+				end
+
+				::listLineSkip::
+			end
+
 			table.insert(parser.parsed_content, {
 				type = "list_item",
 				marker_symbol = vim.treesitter.get_node_text(marker, buffer),
-				list_text = vim.api.nvim_buf_get_lines(buffer, row_start, row_end, false),
+				list_candidates = rows,
+				list_lines = vim.treesitter.get_node_text(capture_node, buffer),
 
 				m_row_start = m_row_start,
 				m_col_start = m_col_start,

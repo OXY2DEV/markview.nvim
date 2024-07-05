@@ -82,16 +82,41 @@ markview.configuration = {
 		},
 
 		{
-			group_name = "code_block",
+			group_name = "dark",
 			value = { bg = "#181825" }
 		},
 		{
-			group_name = "code_block_border",
-			value = { bg = "#181825", fg = "#1e1e2e" }
+			group_name = "dark_2",
+			value = { bg = "#303030", fg = "#B4BEFE" }
+		},
+
+		{
+			group_name = "gradient_0",
+			value = { fg = "#6583b6" }
 		},
 		{
-			group_name = "inline_code_block",
-			value = { bg = "#303030", fg = "#B4BEFE" }
+			group_name = "gradient_1",
+			value = { fg = "#637dac" }
+		},
+		{
+			group_name = "gradient_2",
+			value = { fg = "#6177a2" }
+		},
+		{
+			group_name = "gradient_3",
+			value = { fg = "#5f7198" }
+		},
+		{
+			group_name = "gradient_4",
+			value = { fg = "#5d6c8e" }
+		},
+		{
+			group_name = "gradient_5",
+			value = { fg = "#5b6684" }
+		},
+		{
+			group_name = "gradient_6",
+			value = { fg = "#59607a" }
 		},
 	},
 	buf_ignore = { "nofile" },
@@ -141,7 +166,7 @@ markview.configuration = {
 		enable = true,
 
 		style = "language",
-		hl = "code_block",
+		hl = "dark",
 
 		position = "overlay",
 
@@ -152,6 +177,7 @@ markview.configuration = {
 			{ "py", "python" },
 			{ "cpp", "C++" }
 		},
+		language_direction = "right",
 
 		sign = true, sign_hl = nil
 	},
@@ -160,7 +186,7 @@ markview.configuration = {
 		enable = true,
 
 		default = {
-			border = "▋", border_hl = { "Glow_0", "Glow_1", "Glow_2", "Glow_3", "Glow_4", "Glow_5", "Glow_6", "Glow_7" }
+			border = "▋", border_hl = { "gradient_0", "gradient_1", "gradient_2", "gradient_3", "gradient_4", "gradient_5", "gradient_6" }
 		},
 
 		callouts = {
@@ -293,7 +319,7 @@ markview.configuration = {
 				border = "▋", border_hl = "rainbow1"
 			},
 			{
-				match_string = "[!CUSTOM]",
+				match_string = "CUSTOM",
 				callout_preview = " 󰠳 Custom",
 				callout_preview_hl = "rainbow3",
 
@@ -312,30 +338,30 @@ markview.configuration = {
 			{
 				type = "repeating",
 				repeat_amount = function () --[[@as function]]
-					return math.floor((vim.o.columns - 5) / 2);
+					return math.floor((vim.o.columns - 3) / 2);
 				end,
 
-				text = "H",
+				text = "─",
 				hl = {
-					"Glow_7", "Glow_6", "Glow_5", "Glow_4", "Glow_3", "Glow_2", "Glow_1", "Glow_0"
+					"gradient_6", "gradient_5", "gradient_4", "gradient_3", "gradient_2", "gradient_1", "gradient_0"
 				}
 			},
 			{
 				type = "text",
-				text = "─",
+				text = "  ",
 
 				repeat_amount = vim.o.columns
 			},
 			{
 				type = "repeating",
-				repeat_amount = function ()
-					return math.ceil((vim.o.columns - 5) / 2);
+				repeat_amount = function () --[[@as function]]
+					return math.ceil((vim.o.columns - 3) / 2);
 				end,
 
 				direction = "right",
-				text = "H",
+				text = "─",
 				hl = {
-					"Glow_7", "Glow_6", "Glow_5", "Glow_4", "Glow_3", "Glow_2", "Glow_1", "Glow_0"
+					"gradient_6", "gradient_5", "gradient_4", "gradient_3", "gradient_2", "gradient_1", "gradient_0"
 				}
 			}
 		}
@@ -358,11 +384,8 @@ markview.configuration = {
 		enable = true,
 		corner_left = " ",
 		corner_right = " ",
-		shift_char = "",
-		hl = "inline_code_block"
 
-		-- icon = " ", icon_hl = "t_1",
-		-- hl = "t", text_hl = "t_1",
+		hl = "dark_2"
 	},
 
 	list_items = {
@@ -420,6 +443,14 @@ markview.configuration = {
 		use_virt_lines = false,
 	},
 };
+
+vim.api.nvim_create_autocmd({ "colorscheme" }, {
+	callback = function ()
+		if vim.islist(markview.configuration.highlight_groups) then
+			markview.add_hls(markview.configuration.highlight_groups);
+		end
+	end
+})
 
 markview.setup = function (user_config)
 	---@type markview.config

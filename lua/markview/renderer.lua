@@ -73,8 +73,8 @@ local display_width = function (text, config)
 		end
 	end
 
-	local lnk_conf = config.hyperlink;
-	local img_conf = config.image;
+	local lnk_conf = config.hyperlinks;
+	local img_conf = config.images;
 
 	for img_identifier, link, address in text:gmatch("(!?)%[([^%]]+)%]%(([^%)]+)%)") do
 		if img_identifier ~= "" then
@@ -567,6 +567,7 @@ renderer.render_headers = function (buffer, content, config)
 		return;
 	end
 
+	---@type markview.render_config.headings.h
 	local conf = config["heading_" .. content.level] or {};
 	local shift = config.shift_width or vim.bo[buffer].shiftwidth;
 
@@ -581,7 +582,7 @@ renderer.render_headers = function (buffer, content, config)
 	elseif conf.style == "label" then
 		-- Adds icons, seperators, paddings etc
 		vim.api.nvim_buf_set_extmark(buffer, renderer.namespace, content.row_start, 0, {
-			virt_text_pos = "overlay",
+			virt_text_pos = conf.position "overlay",
 			virt_text = {
 				{ string.rep(conf.shift_char or " ", shift * (content.level - 1)), conf.shift_hl },
 
@@ -608,7 +609,7 @@ renderer.render_headers = function (buffer, content, config)
 	elseif conf.style == "icon" then
 		-- Adds simple icons with paddings
 		vim.api.nvim_buf_set_extmark(buffer, renderer.namespace, content.row_start, 0, {
-			virt_text_pos = "inline",
+			virt_text_pos = conf.position or "inline",
 			virt_text = {
 				{ string.rep(conf.shift_char or " ", shift * (content.level - 1)), set_hl(conf.shift_hl) },
 
@@ -675,21 +676,23 @@ renderer.render_code_blocks = function (buffer, content, config_table)
 		for line, text in ipairs(content.lines) do
 			-- NOTE: Nested code blocks have a different start position
 			local length = content.line_lengths[line] - content.col_start;
+
 			vim.api.nvim_buf_add_highlight(buffer, renderer.namespace, set_hl(config_table.hl), content.row_start + line, content.col_start, -1)
 
-			vim.api.nvim_buf_set_extmark(buffer, renderer.namespace, content.row_start + line, content.col_start, {
+			-- NOTE: If the line is smaller than the start position of the code block then subtract it
+			vim.api.nvim_buf_set_extmark(buffer, renderer.namespace, content.row_start + line, length < 0 and content.col_start + length or content.col_start, {
 				virt_text_pos = "inline",
 				virt_text = {
 					{ string.rep(config_table.pad_char or " ", config_table.pad_amount or 1), set_hl(config_table.hl) }
 				}
 			})
 
-			local start_col = content.col_start + get_str_width(text);
+			local position, reduce_cols = get_str_width(text)
 
-			vim.api.nvim_buf_set_extmark(buffer, renderer.namespace, content.row_start + line, start_col, {
+			vim.api.nvim_buf_set_extmark(buffer, renderer.namespace, content.row_start + line, position, {
 				virt_text_pos = "inline",
 				virt_text = {
-					{ string.rep(config_table.pad_char or " ", block_length - length), set_hl(config_table.hl) },
+					{ string.rep(config_table.pad_char or " ", block_length - length - reduce_cols), set_hl(config_table.hl) },
 					{ string.rep(config_table.pad_char or " ", config_table.pad_amount or 1), set_hl(config_table.hl) }
 				}
 			})
@@ -714,7 +717,7 @@ renderer.render_code_blocks = function (buffer, content, config_table)
 
 		local lang_width = vim.fn.strchars(icon .. " " .. language .. " ");
 
-		if config_table.language_direction == "left" then
+		if config_table.language_direction == nil or config_table.language_direction == "left" then
 			vim.api.nvim_buf_set_extmark(buffer, renderer.namespace, content.row_start, content.col_start, {
 				virt_text_pos = config_table.position or "inline",
 				virt_text = {
@@ -728,7 +731,7 @@ renderer.render_code_blocks = function (buffer, content, config_table)
 
 				hl_mode = "combine",
 			});
-		else
+		elseif config_table.language_direction == "right" then
 			vim.api.nvim_buf_set_extmark(buffer, renderer.namespace, content.row_start, content.col_start, {
 				virt_text_pos = config_table.position or "inline",
 				virt_text = {
@@ -765,7 +768,8 @@ renderer.render_code_blocks = function (buffer, content, config_table)
 
 			vim.api.nvim_buf_add_highlight(buffer, renderer.namespace, set_hl(config_table.hl), content.row_start + line, content.col_start, -1)
 
-			vim.api.nvim_buf_set_extmark(buffer, renderer.namespace, content.row_start + line, content.col_start, {
+			-- NOTE: If the line is smaller than the start position of the code block then subtract it
+			vim.api.nvim_buf_set_extmark(buffer, renderer.namespace, content.row_start + line, length < 0 and content.col_start + length or content.col_start, {
 				virt_text_pos = "inline",
 				virt_text = {
 					{ string.rep(config_table.pad_char or " ", config_table.pad_amount or 1), set_hl(config_table.hl) }
@@ -1032,41 +1036,35 @@ renderer.render_lists = function (buffer, content, config_table)
 
 	if ls_conf.add_padding == true then
 		local shift = config_table.shift_amount or vim.bo[buffer].shiftwidth;
+		local lvl = math.floor(content.col_start / 2) + 1;
 
-		for l = 0, (content.row_end - content.row_start) - 1 do
-			-- NOTE: We will only add the padding once since it's easier
-			if vim.list_contains(renderer.tmp_lines, content.row_start + l) == false then
-				local this_line = content.list_text[l + 1];
-				local txt = this_line:match("^[%s]*");
+		for r, row in ipairs(content.list_candidates or {}) do
+			local current_line = content.list_lines[r];
 
-				local lvl = math.floor(vim.fn.strchars(txt) / 2) + 1
+			-- If the current line is smaller than col_start, use that instead
+			vim.api.nvim_buf_set_extmark(buffer, renderer.namespace, row, 0, {
+				virt_text_pos = "inline",
+				virt_text = {
+					{ string.rep(" ", lvl * shift) }
+				},
 
-				vim.api.nvim_buf_set_extmark(buffer, renderer.namespace, content.row_start + l, 0, {
-					virt_text_pos = "inline",
-					virt_text = {
-						{ string.rep(" ", lvl * shift) }
-					},
-
-					end_col = vim.fn.strchars(txt),
-					conceal = ""
-				});
-
-				table.insert(renderer.tmp_lines, content.row_start + l);
-			end
+				end_col = vim.fn.strchars(current_line) < vim.fn.strchars(content.marker_symbol) and vim.fn.strchars(current_line) or vim.fn.strchars(content.marker_symbol),
+				conceal = ""
+			})
 		end
 	end
 
-	if ls_conf.text ~= nil then
-		vim.api.nvim_buf_set_extmark(buffer, renderer.namespace, content.row_start, content.col_start, {
-			virt_text_pos = "inline",
-			virt_text = {
-				{ ls_conf.text, set_hl(ls_conf.hl) }
-			},
+	local use_text = ls_conf.text or content.marker_symbol;
 
-			end_col = content.col_start + vim.fn.strchars(content.marker_symbol),
-			conceal = " "
-		})
-	end
+	vim.api.nvim_buf_set_extmark(buffer, renderer.namespace, content.row_start, content.col_start, {
+		virt_text_pos = "inline",
+		virt_text = {
+			{ vim.trim(use_text), set_hl(ls_conf.hl) or "Special" }
+		},
+
+		end_col = content.col_start + vim.fn.strchars(content.marker_symbol),
+		conceal = " "
+	})
 end
 
 --- Renderer for custom checkbox

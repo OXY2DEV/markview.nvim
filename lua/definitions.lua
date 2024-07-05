@@ -127,6 +127,9 @@
 --- Definition for the individual heading configuration table
 ---@class markview.render_config.headings.h
 ---
+--- Virt_text_pos
+---@field position string?
+---
 --- Name of the style to use
 ---@field style string
 ---
@@ -136,6 +139,9 @@
 ---
 --- Character added before the heading name to seperate heading levels
 ---@field shift_char string?
+---
+--- Highlight group for shift_char
+---@field shift_hl string?
 ---
 --- Sets the character to use as the sign, preferably 2 characters
 ---@field sign string?
