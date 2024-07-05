@@ -1,17 +1,13 @@
 local markview = require("markview");
-local ts_available, treesitter_parsers = pcall(require, "nvim-treesitter.parsers");
 
 -- Check for requirements
 if vim.fn.has("nvim-0.10") == 0 then
 	vim.print("[ markview.nvim ] : Thie plugin is only available on version 0.10.0 and higher!");
 	return;
-elseif ts_available == false then
-	vim.print("[ markview.nvim ] : Treesitter needs to be available to use this plugin!");
-	return;
-elseif treesitter_parsers.has_parser("markdown") == false then
+elseif not vim.treesitter.query.get("markdown", "highlights") then
 	vim.print("[ markview.nvim ] : Treesitter parser for 'markdown' wasn't found!");
 	return;
-elseif treesitter_parsers.has_parser("markdown_inline") == false then
+elseif not vim.treesitter.query.get("markdown_inline", "highlights") then
 	vim.print("[ markview.nvim ] : Treesitter parser for 'markdown_inline' wasn't found!");
 	return;
 end
