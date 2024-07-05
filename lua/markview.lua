@@ -5,9 +5,9 @@ markview.renderer = require("markview/renderer");
 markview.add_hls = function (usr_hls)
 	local hl_list = usr_hls or renderer.hls;
 
-	for _, tbl in ipairs(hl_list) do
-		vim.api.nvim_set_hl(0, "Markview_" .. tbl.group_name, tbl.value)
-	end
+  for group_name, tbl in pairs(hl_list) do
+    vim.api.nvim_set_hl(0, "Markview_" .. group_name, tbl.value)
+  end
 end
 
 markview.attached_buffers = {};
@@ -22,106 +22,37 @@ markview.configuration = {
 	restore_concealcursor = false,
 
 	highlight_groups = {
-		{
-			group_name = "red",
-			value = { bg = "#453244", fg = "#f38ba8" }
-		},
-		{
-			group_name = "red_fg",
-			value = { fg = "#f38ba8" }
-		},
+		red       = { value = { bg = "#453244", fg = "#f38ba8" } },
+		red_fg    = { value = { fg = "#f38ba8" } },
 
-		{
-			group_name = "orange",
-			value = { bg = "#46393E", fg = "#fab387" }
-		},
-		{
-			group_name = "orange_fg",
-			value = { fg = "#fab387" }
-		},
+		orange    = { value = { bg = "#46393E", fg = "#fab387" } },
+		orange_fg = { value = { fg = "#fab387" } },
 
-		{
-			group_name = "yellow",
-			value = { bg = "#464245", fg = "#f9e2af" }
-		},
-		{
-			group_name = "yellow_fg",
-			value = { fg = "#f9e2af" }
-		},
+		yellow    = { value = { bg = "#464245", fg = "#f9e2af" } },
+		yellow_fg = { value = { fg = "#f9e2af" } },
 
-		{
-			group_name = "green",
-			value = { bg = "#374243", fg = "#a6e3a1" }
-		},
-		{
-			group_name = "green_fg",
-			value = { fg = "#a6e3a1" }
-		},
+		green     = { value = { bg = "#374243", fg = "#a6e3a1" } },
+		green_fg  = { value = { fg = "#a6e3a1" } },
 
-		{
-			group_name = "blue",
-			value = { bg = "#2E3D51", fg = "#74c7ec" }
-		},
-		{
-			group_name = "blue_fg",
-			value = { fg = "#74c7ec" }
-		},
+		blue      = { value = { bg = "#2E3D51", fg = "#74c7ec" } },
+		blue_fg   = { value = { fg = "#74c7ec" } },
 
-		{
-			group_name = "mauve",
-			value = { bg = "#393B54", fg = "#b4befe" }
-		},
-		{
-			type = "normal",
-			group_name = "mauve_fg",
-			value = { fg = "#b4befe" }
-		},
-		{
-			group_name = "grey",
-			value = { bg = "#7E839A", fg = "#313244" }
-		},
-		{
-			group_name = "grey_fg",
-			value = { fg = "#7E839A" }
-		},
+		mauve     = { value = { bg = "#393B54", fg = "#b4befe" } },
+                mauve_fg  = { value = { fg = "#b4befe" }, type = "normal" },
 
-		{
-			group_name = "dark",
-			value = { bg = "#181825" }
-		},
-		{
-			group_name = "dark_2",
-			value = { bg = "#303030", fg = "#B4BEFE" }
-		},
+		grey      = { value = { bg = "#7E839A", fg = "#313244" } },
+		grey_fg   = { value = { fg = "#7E839A" } },
 
-		{
-			group_name = "gradient_0",
-			value = { fg = "#6583b6" }
-		},
-		{
-			group_name = "gradient_1",
-			value = { fg = "#637dac" }
-		},
-		{
-			group_name = "gradient_2",
-			value = { fg = "#6177a2" }
-		},
-		{
-			group_name = "gradient_3",
-			value = { fg = "#5f7198" }
-		},
-		{
-			group_name = "gradient_4",
-			value = { fg = "#5d6c8e" }
-		},
-		{
-			group_name = "gradient_5",
-			value = { fg = "#5b6684" }
-		},
-		{
-			group_name = "gradient_6",
-			value = { fg = "#59607a" }
-		},
+		dark      = { value = { bg = "#181825" } },
+		dark_2    = { value = { bg = "#303030", fg = "#B4BEFE" } },
+
+		gradient_0 = { value = { fg = "#6583b6" } },
+		gradient_1 = { value = { fg = "#637dac" } },
+		gradient_2 = { value = { fg = "#6177a2" } },
+		gradient_3 = { value = { fg = "#5f7198" } },
+		gradient_4 = { value = { fg = "#5d6c8e" } },
+		gradient_5 = { value = { fg = "#5b6684" } },
+		gradient_6 = { value = { fg = "#59607a" } },
 	},
 	buf_ignore = { "nofile" },
 
@@ -545,9 +476,7 @@ end
 
 vim.api.nvim_create_autocmd({ "colorscheme" }, {
 	callback = function ()
-		if vim.islist(markview.configuration.highlight_groups) then
 			markview.add_hls(markview.configuration.highlight_groups);
-		end
 	end
 })
 
@@ -568,11 +497,9 @@ end, {
 markview.setup = function (user_config)
 	---@type markview.config
 	-- Merged configuration tables
-	markview.configuration = vim.tbl_extend("keep", user_config or {}, markview.configuration);
 
-	if vim.islist(markview.configuration.highlight_groups) then
+	markview.configuration = vim.tbl_deep_extend("keep", user_config or {}, markview.configuration);
 		markview.add_hls(markview.configuration.highlight_groups);
-	end
 end
 
 return markview;
