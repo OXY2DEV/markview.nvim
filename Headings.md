@@ -4,10 +4,7 @@ This plugin provides custom headings whuch can be configured through this option
 
 ![h_1](./wiki_img/heading_1.jpg)
 ![h_2](./wiki_img/heading_2.jpg)
-![h_3](./wiki_img/heading_3.jpg)
-![h_4](./wiki_img/heading_4.jpg)
 ![h_5](./wiki_img/heading_5.jpg)
-![h_6](./wiki_img/heading_6.jpg)
 ![h_7](./wiki_img/heading_7.jpg)
 
 >[!IMPORTANT]
@@ -87,6 +84,8 @@ A string value, the style of the heading. Currently supported values are.
 
 ##### Style: simple
 
+![h_1](./wiki_img/heading_1.jpg)
+
 The `simple` style only adds a simple background to the line.
 
 ```lua
@@ -102,6 +101,9 @@ heading_1 = {
 Highlight group used to Highlight the line itself.
 
 ##### Style: label
+
+![h_4](./wiki_img/heading_4.jpg)
+![h_6](./wiki_img/heading_6.jpg)
 
 The `label` style makes the headings look like lables(like in `glow`). They are customised similar to `statusline-items`.
 
@@ -203,6 +205,8 @@ A custom sign for the heading.
 Highlight group for the sign. When nil the value of `hl` is used.
 
 ##### Style: icon
+
+![h_2](./wiki_img/heading_2.jpg)
 
 The `icon` style supports simple icon, line_hl and signs.
 
