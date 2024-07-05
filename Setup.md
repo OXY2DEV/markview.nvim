@@ -112,7 +112,7 @@ The rest of the properties are are explained in detail in their own wiki pages.
 
 Here is a list containing all of the relevant wiki pages.
 
-- [Heading](./Heading.md)
+- [Headings](./Headings.md)
 - [Horizontal rules](./Hrs.md)
 - [Hyperlinks & Image links](./Links.md)
 - [Block quotes](./Block_quotes.md)

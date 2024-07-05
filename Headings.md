@@ -85,92 +85,144 @@ A string value, the style of the heading. Currently supported values are.
 >[!IMPORTANT]
 > The properties given below will behave differently based on the used `style`.
 
-#### hl
+##### simple
 
-The default value all the `highlight` properties(properties whose name ends with `hl`).
+The `simple` style only adds a simple background to the line.
 
-#### corner_left
+```lua
+heading_1 = {
+    style = "simple",
 
-Used by the `label` style.
+    hl = "rainbow1"
+}
+```
 
-The left corner for the heading.
+###### hl
 
-#### corner_left_hl
+Highlight group used to Highlight the line itself.
 
-Used by the `label` style.
+##### label
+
+The `label` style makes the headings look like lables(like in `glow`). They are customised similar to `statusline-items`.
+
+```lua
+heading_2 = {
+    style = "icon",
+    position = "inline",
+
+    hl = nil,
+    line_hl = "Markview_orange",
+
+    shift_char = " ", shift_hl = nil,
+
+    corner_left = nil, corner_left_hl = nil,
+    corner_right = nil, corner_right_hl = nil,
+
+    padding_left = " ", padding_left_hl = nil,
+    padding_right = " ", padding_right_hl = nil,
+
+    icon = "2. " icon_hl = "rainbow2",
+    text = nil, text_hl = "rainbow2",
+
+    sign = "> ", sign_hl = "rainbow2"
+}
+```
+
+###### position
+
+`virt_text_pos` for the label. See `:h nvim_buf_set_extmark()` for the possible values.
+
+###### hl
+
+The default highlight group to be used in the various highlight group properties(the ones with `_hl` in their name).
+
+###### shift_char
+
+The character to indicate heading level. It is repeated by `heading_level * shift_width`.
+
+###### shift_hl
+
+The highlight group for `shift_char`. When nil the value of `hl` is used.
+
+###### corner_left
+
+The left corner of the label.
+
+###### corner_left_hl
 
 Highlight group for the left corner. When nil the value of `hl` is used.
 
-#### corner_right
+###### corner_right
 
-Used by the `label` style.
+The right corner of the label.
 
-The right corner for the heading.
-
-#### corner_right_hl
-
-Used by the `label` style.
+###### corner_right_hl
 
 Highlight group for the right corner. When nil the value of `hl` is used.
 
-#### padding_left
+###### padding_left
 
-Used by the `label` style.
+The left padding of the label. Added after the `left_corner`.
 
-The left padding for the heading. Added after the `left_corner`.
-
-#### padding_left_hl
-
-Used by the `label` style.
+###### padding_left_hl
 
 Highlight group for the left padding. When nil the value of `hl` is used.
 
-#### padding_right
+###### padding_right
 
-Used by the `label` style.
+The right padding of the label. Added before the `right_corner`.
 
-The right padding for the heading. Added before the `right_corner`.
-
-#### padding_right_hl
-
-Used by the `label` style.
+###### padding_right_hl
 
 Highlight group for the right padding. When nil the value of `hl` is used.
 
-#### icon
+###### icon
 
-Used by the `label` & `icon` style.
-
-A custom icon for the heading. It is added after the padding for headings with the `label` style.
+A custom icon for the heading. It is added after the left padding.
 
 There won't be any spaces added between the icon & the heading's text. So, you should add the spaces to the icon itself.
 
-#### icon_hl
-
-Used by the `label` & `icon` style.
+###### icon_hl
 
 Highlight group for the icon. When nil the value of `hl` is used.
 
-#### text
+###### text
 
-Used by the `label` & `icon` style.
+A custom text for the label. This will replace the heading's title.
 
-A custom text for the heading. This will replace the heading's title.
-
-#### text_hl
-
-Used by the `label` & `icon` style.
+###### text_hl
 
 Highlight group for the headings text. When nil the value of `hl` is used.
 
-#### sign
-
-Used by the `label` & `icon` style.
+###### sign
 
 A custom sign for the heading.
 
-#### sign_hl
-
-Used by the `label` & `icon` style.
+###### sign_hl
 
 Highlight group for the sign. When nil the value of `hl` is used.
+
+##### icon
+
+The `icon` style supports simple icon, line_hl and signs.
+
+```lua
+heading_3 = {
+    style = "icon",
+    position = "inline",
+
+    hl = "rainbow3",
+
+    shift_char = " ", shift_hl = nil,
+
+    icon = "3. ", icon_hl = nil,
+    text = nil, text_hl = nil,
+
+    sign = "» ", sign_hl = nil,
+}
+```
+
+> The options are already explained in `label` and `simple`.
+
+
+
