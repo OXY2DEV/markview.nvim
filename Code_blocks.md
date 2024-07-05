@@ -2,7 +2,7 @@
 
 ![code_blocks](./wiki_img/code_blocks.jpg)
 
-You can customise how `code blocks` are shown.
+This plugin provides custom `code blocks` that can be configured via the `code_blocks` option.
 
 ## Configuration
 
@@ -44,70 +44,116 @@ Currently available styles are,
 - minimal, Adds padding to the code block and better background.
 - language, Shows language name, signs and better code block highlighting.
 
-### hl
+#### Style: simple
 
-Only available in the `language` style.
+![code_blocks_simple](./wiki_img/code_blocks_simple.jpg)
 
-A string value, highlight group for the background.
+Adds a simple background to the code blocks.
 
-### language_direction
+```lua
+code_blocks = {
+    style = "simple",
+    hl = "dark"
+}
+```
 
-Only available in the `language` style.
+##### hl
 
-A string value, changes the position where the language name & icons are shown.
+The highlight group for the background.
+
+#### Style: minimal
+
+![code_blocks_minimal](./wiki_img/code_blocks_minimal.jpg)
+
+Adds GitHub-like background to the code blocks.
+
+```lua
+code_blocks = {
+    style = "minimal",
+    position = "inline",
+
+    pad_char = " ",
+    pad_amount = 2,
+
+    hl = "dark",
+    min_width = 70
+}
+```
+
+> Properties not mentioned are already explained.
+
+##### min_width
+
+The minimum width for the code block. If the block is longer than the value then the longest line is used.
+
+>[!NOTE]
+> This is without the paddings.
+
+##### pad_char
+
+Text to use as padding for the code block.
+
+##### pad_amount
+
+The number of `pad_char` to add before & after the lines in the code block. Default is 1.
+
+##### position
+
+Changes the `virt_text_pos` for the top & bottom borders. Default is `inline`.
+
+#### Style: language
+
+![code_blocks_lang](./wiki_img/code_blocks.jpg)
+
+Shows the language strings of the code blocks. Additionally supports icons.
+
+```lua
+code_blocks = {
+    style = "language",
+    position = "overlay",
+
+    min_width = 60,
+    pad_amount = 3,
+
+    language_names = {
+        { "cpp", "c++" },
+        { "py", "python" }
+    },
+
+    sign = true, sign_hl = nil
+}
+```
+
+> Properties not mentioned are already explained.
+
+##### language_direction
+
+Changes the position where the language name & icons are shown.
 
 Available values are,
 
 - left
 - right(default)
 
-### language_names
-
-Only available in the `language` style.
+##### language_names
 
 A list of `tuples` where the first value is the string to match and the second value is the string to display.
 
 You can use this for languages like `C++` & `python` where the language name is different than what is written in the code blocks.
 
-### name_hl
+##### name_hl
 
 Only available in the `language` style.
 
 Highlight group for `language_names`, when nil the color of the icon is used.
 
-### min_width
-
-Only available in the `minimal` & `language` style.
-
-A number value used as the `minimum width` for the code blocks. The paddings are not counted in this.
-
-If the size of the code block is larger than the largest line's length is used.
-
-### pad_amount
-
-Only available in the `minimal` & `language` style.
-
-The number of times `pad_char` will be repeated for the paddings.
-
-### pad_char
-
-Only available in the `minimal` & `language` style.
-
-The string that will be used by the code block's padding. It will be repeated by the value of `pad_amount
-
-### position
-
-Only available in the `minimal` & `language` style.
-
-A string value, can be used to change how the `top` & `bottom` borders are positioned. When nil, `inline` will be used.
-
-### sign
+##### sign
 
 Only available in the `language` style.
 
 A boolean value to enable/disable the signs.
 
-### sign_hl
+##### sign_hl
 
 Only available in the `language` style.
 
