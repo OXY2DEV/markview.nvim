@@ -45,6 +45,9 @@ Highlight group for `border`. It's behavior is similar to `border`.
 
 ### callouts
 
+![alerts](./wiki_img/alerts.jpg)
+![callouts](./wiki_img/callouts.jpg)
+
 List of callouts and their configuration tables.
 
 ```lua
