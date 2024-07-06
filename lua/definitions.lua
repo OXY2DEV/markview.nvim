@@ -439,6 +439,9 @@
 --- Configuration table for the checked state
 ---@field checked markview.render_config.checkbox.state
 ---
+--- Configuration table for the pending state
+---@field pending markview.render_config.checkbox.state
+---
 --- Configuration table for the unchecked state
 ---@field unchecked markview.render_config.checkbox.state
 
