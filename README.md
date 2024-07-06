@@ -1,4 +1,4 @@
-# 📜 Markview.nvim {#mkv}
+# 📜 Markview.nvim
 
 <p text-align="center">Simple markdown previewer for neovim</p>
 
@@ -9,7 +9,7 @@
 >[!WARNING]
 > This plugin is in it's alpha stage and may go through breaking changes.
 
-## 📑 Table of contents {#toc}
+## 📑 Table of contents
 
 - [Features](#features)
 - [Requirements](#requirements)
@@ -19,7 +19,7 @@
 - [Setup](#setup)
 - [Showcases](#showcases)
 
-## 🛸 Features {#features}
+## 🛸 Features
 
 - Fully customisable markdown `headings`.
 - Custom `block quotes` with support for `callouts` & `alerts`.
@@ -31,7 +31,7 @@
 - Custom `checkboxes` for different checkbox states.
 - Fully customisable `tables`.
 
-## 🔭 Requirements {#requirements}
+## 🔭 Requirements
 
 - Neovim version: 0.10 or higher(unless API changes occurred).
 - `nvim-treesitter` for easy installation of treesitter parsers.

@@ -43,11 +43,7 @@ parser.md = function (buffer, TStree)
 			local title = "";
 
 			if heading_txt ~= nil then
-				if heading_txt:match("(.-)%s*%{.*%}$") then
-					title = heading_txt:match("(.-)%s*%{.*%}$")
-				else
-					title = heading_txt;
-				end
+				title = heading_txt;
 			end
 
 			table.insert(parser.parsed_content, {
