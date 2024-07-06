@@ -563,7 +563,7 @@ renderer.views = {};
 ---@param buffer number
 ---@param content any
 ---@param config markview.render_config.headings
-renderer.render_headers = function (buffer, content, config)
+renderer.render_headings = function (buffer, content, config)
 	if config.enable == false then
 		return;
 	end
@@ -629,6 +629,49 @@ renderer.render_headers = function (buffer, content, config)
 			line_hl_group = set_hl(conf.hl),
 			sign_text = conf.sign, sign_hl_group = set_hl(conf.sign_hl),
 		});
+	end
+end
+
+renderer.render_headings_s = function (buffer, content, config)
+	if config.enable == false then
+		return;
+	end
+
+	---@type markview.render_config.headings.h
+	local conf = content.marker:match("=") and config["setext_1"] or config["setext_2"];
+	local shift = config.shift_width or vim.bo[buffer].shiftwidth;
+
+	if conf.style == "simple" then
+		-- Adds a simple background
+
+		vim.api.nvim_buf_set_extmark(buffer, renderer.namespace, content.row_start, content.col_start, {
+			line_hl_group = set_hl(conf.hl),
+
+			hl_mode = "combine",
+			end_row = content.row_end - 1
+		});
+	-- elseif conf.style == "icon" then
+	-- 	-- Adds simple icons with paddings
+	-- 	vim.api.nvim_buf_set_extmark(buffer, renderer.namespace, content.row_start, 0, {
+	-- 		virt_text_pos = conf.position or "inline",
+	-- 		virt_text = {
+	-- 			{ string.rep(conf.shift_char or " ", shift * (content.level - 1)), set_hl(conf.shift_hl) },
+	--
+	-- 			{ conf.icon or "", set_hl(conf.icon_hl) or set_hl(conf.hl) },
+	-- 			{ conf.text or content.title or "", set_hl(conf.text_hl) or set_hl(conf.hl) },
+	-- 		},
+	--
+	-- 		hl_mode = "combine",
+	--
+	-- 		conceal = "",
+	-- 		end_row = content.row_start + 2
+	-- 		-- end_col = (content.col_start + vim.fn.strdisplaywidth(content.marker .. " " .. content.title))
+	-- 	})
+	--
+	-- 	vim.api.nvim_buf_set_extmark(buffer, renderer.namespace, content.row_start, 0, {
+	-- 		line_hl_group = set_hl(conf.hl),
+	-- 		sign_text = conf.sign, sign_hl_group = set_hl(conf.sign_hl),
+	-- 	});
 	end
 end
 
@@ -1164,8 +1207,10 @@ renderer.render = function (buffer, parsed_content, config_table)
 		end
 
 
-		if type == "header" then
-			renderer.render_headers(buffer, content, config_table.headings)
+		if type == "heading_s" then
+			renderer.render_headings_s(buffer, content, config_table.headings);
+		elseif type == "heading" then
+			renderer.render_headings(buffer, content, config_table.headings)
 		elseif type == "code_block" then
 			renderer.render_code_blocks(buffer, content, config_table.code_blocks)
 		elseif type == "block_quote" then

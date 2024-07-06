@@ -9,6 +9,8 @@ parser.parsed_content = {};
 ---@param TStree any
 parser.md = function (buffer, TStree)
 	local scanned_queies = vim.treesitter.query.parse("markdown", [[
+		((setext_heading) @setext_heading)
+
 		(atx_heading [
 			(atx_h1_marker)
 			(atx_h2_marker)
@@ -16,7 +18,7 @@ parser.md = function (buffer, TStree)
 			(atx_h4_marker)
 			(atx_h5_marker)
 			(atx_h6_marker)
-		] @header)
+		] @heading)
 
 		((fenced_code_block) @code)
 
@@ -38,7 +40,27 @@ parser.md = function (buffer, TStree)
 		local capture_text = vim.treesitter.get_node_text(capture_node, buffer);
 		local row_start, col_start, row_end, col_end = capture_node:range();
 
-		if capture_name == "header" then
+		if capture_name == "setext_heading" then
+			local title = capture_node:named_child(0);
+			local t_start, _, t_end, _ = title:range();
+
+			local underline = vim.treesitter.get_node_text(capture_node:named_child(1), buffer);
+
+			table.insert(parser.parsed_content, {
+				type = "heading_s",
+
+				marker = underline,
+				title = vim.api.nvim_buf_get_lines(buffer, t_start, t_end, false),
+
+				level = capture_text:match("=") and 1 or 2,
+
+				row_start = row_start,
+				row_end = row_end,
+
+				col_start = col_start,
+				col_end = col_end
+			})
+		elseif capture_name == "heading" then
 			local heading_txt = vim.treesitter.get_node_text(capture_node:next_sibling(), buffer);
 			local title = "";
 
@@ -47,7 +69,7 @@ parser.md = function (buffer, TStree)
 			end
 
 			table.insert(parser.parsed_content, {
-				type = "header",
+				type = "heading",
 
 				level = vim.fn.strchars(capture_text),
 

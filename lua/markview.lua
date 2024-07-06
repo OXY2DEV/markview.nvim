@@ -2,11 +2,9 @@ local markview = {};
 markview.parser = require("markview/parser");
 markview.renderer = require("markview/renderer");
 
-markview.add_hls = function (usr_hls)
-	local hl_list = usr_hls or renderer.hls;
-
-	for _, tbl in ipairs(hl_list) do
-		vim.api.nvim_set_hl(0, "Markview_" .. tbl.group_name, tbl.value)
+markview.add_hls = function (obj)
+	for _, hl in ipairs(obj) do
+		vim.api.nvim_set_hl(0, "Markview_" .. hl.group_name, hl.value);
 	end
 end
 
@@ -163,6 +161,15 @@ markview.configuration = {
 			style = "icon",
 
 			icon = "󰎴  ", hl = "markview_mauve",
+		},
+
+		setext_1 = {
+			style = "simple",
+			hl = "markview_red",
+		},
+		setext_2 = {
+			style = "simple",
+			hl = "markview_orange",
 		}
 	},
 
