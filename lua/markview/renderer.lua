@@ -1079,7 +1079,7 @@ renderer.render_checkboxes = function (buffer, content, config_table)
 		return;
 	end
 
-	if content.checked == true then
+	if content.state == "complete" then
 		vim.api.nvim_buf_set_extmark(buffer, renderer.namespace, content.row_start, content.col_start, {
 			virt_text_pos = "inline",
 			virt_text = {
@@ -1091,11 +1091,23 @@ renderer.render_checkboxes = function (buffer, content, config_table)
 
 			hl_mode = "combine"
 		});
-	else
+	elseif content.state == "incomplete" then
 		vim.api.nvim_buf_set_extmark(buffer, renderer.namespace, content.row_start, content.col_start, {
 			virt_text_pos = "inline",
 			virt_text = {
 				{ config_table.unchecked.text, set_hl(config_table.unchecked.hl) }
+			},
+
+			end_col = content.col_end,
+			conceal = "",
+
+			hl_mode = "combine"
+		});
+	elseif content.state == "pending" then
+		vim.api.nvim_buf_set_extmark(buffer, renderer.namespace, content.row_start, content.col_start, {
+			virt_text_pos = "inline",
+			virt_text = {
+				{ config_table.pending.text, set_hl(config_table.pending.hl) }
 			},
 
 			end_col = content.col_end,

@@ -422,6 +422,9 @@ markview.configuration = {
 		checked = {
 			text = "✔", hl = "@markup.list.checked"
 		},
+		pending = {
+			text = "◯", hl = "@markup.raw"
+		},
 		unchecked = {
 			text = "✘", hl = "@markup.list.unchecked"
 		}

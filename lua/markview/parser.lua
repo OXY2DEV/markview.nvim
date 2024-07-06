@@ -231,7 +231,7 @@ parser.md = function (buffer, TStree)
 		elseif capture_name == "checkbox_off" then
 			table.insert(parser.parsed_content, {
 				type = "checkbox",
-				checked = false,
+				state = "incomplete",
 
 				row_start = row_start,
 				row_end = row_end,
@@ -242,7 +242,7 @@ parser.md = function (buffer, TStree)
 		elseif capture_name == "checkbox_on" then
 			table.insert(parser.parsed_content, {
 				type = "checkbox",
-				checked = true,
+				state = "complete",
 
 				row_start = row_start,
 				row_end = row_end,
@@ -279,12 +279,27 @@ parser.md_inline = function (buffer, TStree)
 			local line = vim.api.nvim_buf_get_lines(buffer, row_start, row_start + 1, false);
 			local title = string.match(line ~= nil and line[1] or "", "%b[]%s*(.*)$")
 
-			for _, extmark in ipairs(parser.parsed_content) do
-				if extmark.type == "block_quote" and extmark.row_start == row_start then
-					extmark.callout = string.match(capture_text, "%[!([^%]]+)%]");
-					extmark.title = title;
+			-- vim.print(title == "")
 
-					extmark.line_width = vim.fn.strchars(line[1])
+			if capture_text == "[-]" then
+				table.insert(parser.parsed_content, {
+					type = "checkbox",
+					state = "pending",
+
+					row_start = row_start,
+					row_end = row_end,
+
+					col_start = col_start,
+					col_end = col_end
+				})
+			else
+				for _, extmark in ipairs(parser.parsed_content) do
+					if extmark.type == "block_quote" and extmark.row_start == row_start then
+						extmark.callout = string.match(capture_text, "%[!([^%]]+)%]");
+						extmark.title = title;
+
+						extmark.line_width = vim.fn.strchars(line[1])
+					end
 				end
 			end
 		elseif capture_name == "link" then
