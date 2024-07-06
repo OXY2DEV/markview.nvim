@@ -214,7 +214,7 @@ parser.md = function (buffer, TStree)
 				type = "list_item",
 				marker_symbol = vim.treesitter.get_node_text(marker, buffer),
 				list_candidates = rows,
-				list_lines = vim.treesitter.get_node_text(capture_node, buffer),
+				list_lines = vim.api.nvim_buf_get_lines(buffer, row_start, row_end, false),
 
 				m_row_start = m_row_start,
 				m_col_start = m_col_start,

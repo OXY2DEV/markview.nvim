@@ -1036,21 +1036,24 @@ renderer.render_lists = function (buffer, content, config_table)
 
 	if ls_conf.add_padding == true then
 		local shift = config_table.shift_amount or vim.bo[buffer].shiftwidth;
-		local lvl = math.floor(content.col_start / 2) + 1;
+		local lvl = math.floor(content.col_start / vim.fn.strchars(content.marker_symbol)) + 1;
 
-		for r, row in ipairs(content.list_candidates or {}) do
-			local current_line = content.list_lines[r];
+		for l, line in ipairs(content.list_lines) do
+			local line_num = content.row_start + (l - 1);
+			local wh_spaces = vim.trim(line, content.col_start):match("^%s*");
 
-			-- If the current line is smaller than col_start, use that instead
-			vim.api.nvim_buf_set_extmark(buffer, renderer.namespace, row, 0, {
-				virt_text_pos = "inline",
-				virt_text = {
-					{ string.rep(" ", lvl * shift) }
-				},
+			if vim.list_contains(content.list_candidates, line_num) then
+				vim.print(wh_spaces)
+				vim.api.nvim_buf_set_extmark(buffer, renderer.namespace, line_num, 0, {
+					virt_text_pos = "inline",
+					virt_text = {
+						{ string.rep(" ", lvl * shift) }
+					},
 
-				end_col = vim.fn.strchars(current_line) < vim.fn.strchars(content.marker_symbol) and vim.fn.strchars(current_line) or vim.fn.strchars(content.marker_symbol),
-				conceal = ""
-			})
+					end_col = vim.fn.strchars(wh_spaces),
+					conceal = ""
+				})
+			end
 		end
 	end
 
