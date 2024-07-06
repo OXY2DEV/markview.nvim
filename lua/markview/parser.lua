@@ -39,8 +39,16 @@ parser.md = function (buffer, TStree)
 		local row_start, col_start, row_end, col_end = capture_node:range();
 
 		if capture_name == "header" then
-			local heading_txt = capture_node:next_sibling();
-			local title = heading_txt ~= nil and vim.treesitter.get_node_text(heading_txt, buffer) or "";
+			local heading_txt = vim.treesitter.get_node_text(capture_node:next_sibling(), buffer);
+			local title = "";
+
+			if heading_txt ~= nil then
+				if heading_txt:match("(.-)%s*%{.*%}$") then
+					title = heading_txt:match("(.-)%s*%{.*%}$")
+				else
+					title = heading_txt;
+				end
+			end
 
 			table.insert(parser.parsed_content, {
 				type = "header",
