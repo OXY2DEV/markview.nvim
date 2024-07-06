@@ -1043,7 +1043,6 @@ renderer.render_lists = function (buffer, content, config_table)
 			local wh_spaces = vim.trim(line, content.col_start):match("^%s*");
 
 			if vim.list_contains(content.list_candidates, line_num) then
-				vim.print(wh_spaces)
 				vim.api.nvim_buf_set_extmark(buffer, renderer.namespace, line_num, 0, {
 					virt_text_pos = "inline",
 					virt_text = {
