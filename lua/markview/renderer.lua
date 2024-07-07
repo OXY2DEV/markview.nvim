@@ -581,6 +581,14 @@ renderer.render_headings = function (buffer, content, config)
 			hl_mode = "combine"
 		});
 	elseif conf.style == "label" then
+		-- FIX: Make headings editable
+		local add_spaces = vim.fn.strchars(table.concat({
+			string.rep(conf.shift_char or " ", shift * (content.level - 1)),
+			conf.corner_left or "",
+			conf.padding_left or "",
+			conf.icon or "",
+		}));
+
 		-- Adds icons, seperators, paddings etc
 		vim.api.nvim_buf_set_extmark(buffer, renderer.namespace, content.row_start, 0, {
 			virt_text_pos = conf.position or "overlay",
@@ -598,19 +606,26 @@ renderer.render_headings = function (buffer, content, config)
 			sign_text = conf.sign, sign_hl_group = set_hl(conf.sign_hl) or set_hl(conf.hl),
 
 			hl_mode = "combine",
-
-			conceal = "",
-			end_row = content.row_start + 1
-			-- BUG: Concealing doesn't work as intended on lines with
-			-- characters that have unusual width
-			--
-			-- conceal = "",
-			-- end_col = content.line_length
 		})
+
+		-- Add extra spaces to match the virtual text
+		vim.api.nvim_buf_set_extmark(buffer, renderer.namespace, content.row_start, 0, {
+			virt_text_pos = "inline",
+			virt_text = { { string.rep(" ", add_spaces) } },
+
+			end_col = content.title_pos[2] or content.col_end,
+			conceal = ""
+		});
 	elseif conf.style == "icon" then
+		-- FIX: Make headings editable
+		local add_spaces = vim.fn.strchars(table.concat({
+			string.rep(conf.shift_char or " ", shift * (content.level - 1)),
+			conf.icon or ""
+		}));
+
 		-- Adds simple icons with paddings
 		vim.api.nvim_buf_set_extmark(buffer, renderer.namespace, content.row_start, 0, {
-			virt_text_pos = conf.position or "inline",
+			virt_text_pos = "overlay",
 			virt_text = {
 				{ string.rep(conf.shift_char or " ", shift * (content.level - 1)), set_hl(conf.shift_hl) },
 
@@ -619,11 +634,16 @@ renderer.render_headings = function (buffer, content, config)
 			},
 
 			hl_mode = "combine",
-
-			conceal = "",
-			end_row = content.row_start + 1
-			-- end_col = (content.col_start + vim.fn.strdisplaywidth(content.marker .. " " .. content.title))
 		})
+
+		-- Add extra spaces to match the virtual text
+		vim.api.nvim_buf_set_extmark(buffer, renderer.namespace, content.row_start, 0, {
+			virt_text_pos = "inline",
+			virt_text = { { string.rep(" ", add_spaces) } },
+
+			end_col = content.title_pos[2] or content.col_end,
+			conceal = ""
+		});
 
 		vim.api.nvim_buf_set_extmark(buffer, renderer.namespace, content.row_start, 0, {
 			line_hl_group = set_hl(conf.hl),
@@ -849,7 +869,7 @@ renderer.render_block_quotes = function (buffer, content, config_table)
 		for _, callout in ipairs(config_table.callouts) do
 			if type(callout.match_string) == "string" and callout.match_string:upper() == content.callout:upper() then
 				qt_config = callout;
-			elseif vim.tbl_islist(callout.aliases) then
+			elseif vim.islist(callout.aliases) then
 				for _, alias in ipairs(callout.aliases) do
 					if type(alias) == "string" and alias:upper() == content.callout.upper() then
 						qt_config = callout;
@@ -1086,7 +1106,6 @@ renderer.render_lists = function (buffer, content, config_table)
 			local wh_spaces = vim.trim(line, content.col_start):match("^%s*");
 
 			if vim.list_contains(content.list_candidates, line_num) then
-				vim.print(wh_spaces)
 				vim.api.nvim_buf_set_extmark(buffer, renderer.namespace, line_num, 0, {
 					virt_text_pos = "inline",
 					virt_text = {
