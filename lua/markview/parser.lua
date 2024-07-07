@@ -41,6 +41,11 @@ parser.md = function (buffer, TStree)
 		if capture_name == "header" then
 			local heading_txt = capture_node:next_sibling();
 			local title = heading_txt ~= nil and vim.treesitter.get_node_text(heading_txt, buffer) or "";
+			local h_txt_r_start, h_txt_c_start, h_txt_r_end, h_txt_c_end;
+
+			if heading_txt ~= nil then
+				h_txt_r_start, h_txt_c_start, h_txt_r_end, h_txt_c_end = heading_txt:range();
+			end
 
 			table.insert(parser.parsed_content, {
 				type = "header",
@@ -49,6 +54,7 @@ parser.md = function (buffer, TStree)
 
 				marker = capture_text,
 				title = title,
+				title_pos = { h_txt_r_start, h_txt_c_start, h_txt_r_end, h_txt_c_end },
 
 				row_start = row_start,
 				row_end = row_end,
