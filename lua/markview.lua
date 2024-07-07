@@ -458,6 +458,109 @@ markview.configuration = {
 	},
 };
 
+local highlight_groups_light = {
+	{
+		group_name = "red",
+		value = { bg = "#ffe3ef", fg = "#a00044" }
+	},
+	{
+		group_name = "red_fg",
+		value = { fg = "#a00044" }
+	},
+
+	{
+		group_name = "orange",
+		value = { bg = "#ffe9d1", fg = "#842700" }
+	},
+	{
+		group_name = "orange_fg",
+		value = { fg = "#842700" }
+	},
+
+	{
+		group_name = "yellow",
+		value = { bg = "#ffefca", fg = "#af8d00" }
+	},
+	{
+		group_name = "yellow_fg",
+		value = { fg = "#af8d00" }
+	},
+
+	{
+		group_name = "green",
+		value = { bg = "#dbf9d8", fg = "#2ea63c" }
+	},
+	{
+		group_name = "green_fg",
+		value = { fg = "#2ea63c" }
+	},
+
+	{
+		group_name = "blue",
+		value = { bg = "#c6f8ff", fg = "#0059a6" }
+	},
+	{
+		group_name = "blue_fg",
+		value = { fg = "#0059a6" }
+	},
+
+	{
+		group_name = "mauve",
+		value = { bg = "#eaeeff", fg = "#0043b1" }
+	},
+	{
+		type = "normal",
+		group_name = "mauve_fg",
+		value = { fg = "#0043b1" }
+	},
+	{
+		group_name = "grey",
+		value = { bg = "#7E839A", fg = "#313244" }
+	},
+	{
+		group_name = "grey_fg",
+		value = { fg = "#7E839A" }
+	},
+
+	{
+		group_name = "dark",
+		value = { bg = "#f7f8ff" }
+	},
+	{
+		group_name = "dark_2",
+		value = { bg = "#d4d6e9", fg = "#323442" }
+	},
+
+	{
+		group_name = "gradient_0",
+		value = { fg = "#6583b6" }
+	},
+	{
+		group_name = "gradient_1",
+		value = { fg = "#637dac" }
+	},
+	{
+		group_name = "gradient_2",
+		value = { fg = "#6177a2" }
+	},
+	{
+		group_name = "gradient_3",
+		value = { fg = "#5f7198" }
+	},
+	{
+		group_name = "gradient_4",
+		value = { fg = "#5d6c8e" }
+	},
+	{
+		group_name = "gradient_5",
+		value = { fg = "#5b6684" }
+	},
+	{
+		group_name = "gradient_6",
+		value = { fg = "#59607a" }
+	},
+}
+
 markview.commands = {
 	toggleAll = function ()
 		if markview.suppressed == true then
@@ -576,6 +679,10 @@ end, {
 
 
 markview.setup = function (user_config)
+	if vim.o.bg == "light" then
+		markview.configuration.highlight_groups = highlight_groups_light
+	end
+
 	---@type markview.config
 	-- Merged configuration tables
 	markview.configuration = vim.tbl_extend("keep", user_config or {}, markview.configuration);
