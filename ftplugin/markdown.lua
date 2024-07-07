@@ -55,7 +55,7 @@ vim.api.nvim_create_autocmd({ "BufWinEnter" }, {
 	end
 });
 
-vim.api.nvim_create_autocmd({ "ModeChanged" }, {
+vim.api.nvim_create_autocmd({ "ModeChanged", "TextChanged" }, {
 	buffer = vim.api.nvim_get_current_buf(),
 	group = markview_augroup,
 
