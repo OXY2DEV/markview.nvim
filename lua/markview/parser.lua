@@ -61,11 +61,12 @@ parser.md = function (buffer, TStree)
 				col_end = col_end
 			})
 		elseif capture_name == "heading" then
-			local heading_txt = vim.treesitter.get_node_text(capture_node:next_sibling(), buffer);
-			local title = "";
+			local heading_txt = capture_node:next_sibling();
+			local title = heading_txt ~= nil and vim.treesitter.get_node_text(heading_txt, buffer) or "";
+			local h_txt_r_start, h_txt_c_start, h_txt_r_end, h_txt_c_end;
 
 			if heading_txt ~= nil then
-				title = heading_txt;
+				h_txt_r_start, h_txt_c_start, h_txt_r_end, h_txt_c_end = heading_txt:range();
 			end
 
 			table.insert(parser.parsed_content, {
@@ -75,6 +76,7 @@ parser.md = function (buffer, TStree)
 
 				marker = capture_text,
 				title = title,
+				title_pos = { h_txt_r_start, h_txt_c_start, h_txt_r_end, h_txt_c_end },
 
 				row_start = row_start,
 				row_end = row_end,
@@ -304,8 +306,6 @@ parser.md_inline = function (buffer, TStree)
 		if capture_name == "callout" then
 			local line = vim.api.nvim_buf_get_lines(buffer, row_start, row_start + 1, false);
 			local title = string.match(line ~= nil and line[1] or "", "%b[]%s*(.*)$")
-
-			-- vim.print(title == "")
 
 			if capture_text == "[-]" then
 				table.insert(parser.parsed_content, {
