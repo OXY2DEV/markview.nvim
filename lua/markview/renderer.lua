@@ -806,7 +806,7 @@ renderer.render_block_quotes = function (buffer, content, config_table)
 		for _, callout in ipairs(config_table.callouts) do
 			if type(callout.match_string) == "string" and callout.match_string:upper() == content.callout:upper() then
 				qt_config = callout;
-			elseif vim.tbl_islist(callout.aliases) then
+			elseif vim.islist(callout.aliases) then
 				for _, alias in ipairs(callout.aliases) do
 					if type(alias) == "string" and alias:upper() == content.callout.upper() then
 						qt_config = callout;
