@@ -240,7 +240,7 @@ local table_header = function (buffer, content, config_table)
 			end
 
 			table.insert(virt_txt, { string.rep(tbl_conf.text[2], actual_width), set_hl(tbl_conf.hl[2]) })
-			curr_col = curr_col + vim.fn.strchars(col);
+			curr_col = curr_col + vim.fn.strlen(col);
 			curr_tbl_col = curr_tbl_col + 1;
 		end
 	end
@@ -457,7 +457,7 @@ local table_footer = function (buffer, content, config_table)
 			end
 
 			table.insert(virt_txt, { string.rep(tbl_conf.text[2], actual_width), set_hl(tbl_conf.hl[2]) })
-			curr_col = curr_col + vim.fn.strchars(col);
+			curr_col = curr_col + vim.fn.strlen(col);
 			curr_tbl_col = curr_tbl_col + 1;
 		end
 	end
@@ -549,7 +549,7 @@ local table_content = function (buffer, content, config_table, r_num)
 				end
 			end
 
-			curr_col = curr_col + vim.fn.strchars(col);
+			curr_col = curr_col + vim.fn.strlen(col);
 			curr_tbl_col = curr_tbl_col + 1;
 		end
 	end
