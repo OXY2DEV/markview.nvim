@@ -1061,18 +1061,23 @@ renderer.render_inline_codes = function (buffer, content, config_table)
 		return;
 	end
 
-	vim.api.nvim_buf_set_extmark(buffer, renderer.namespace, content.row_start, content.col_start, {
+	-- NOTE: The ` are hidden by default
+	vim.api.nvim_buf_set_extmark(buffer, renderer.namespace, content.row_start, content.col_start + 1, {
 		virt_text_pos = "inline",
 		virt_text = {
 			{ config_table.corner_left or "", set_hl(config_table.corner_left_hl) or set_hl(config_table.hl) },
 			{ config_table.padding_left or "", set_hl(config_table.padding_left_hl) or set_hl(config_table.hl) },
-			{ config_table.text or content.text or "", set_hl(config_table.text_hl) or set_hl(config_table.hl) },
+		},
+	});
+
+	vim.api.nvim_buf_add_highlight(buffer, renderer.namespace, set_hl(config_table.hl), content.row_start, content.col_start, content.col_end);
+
+	vim.api.nvim_buf_set_extmark(buffer, renderer.namespace, content.row_start, content.col_end, {
+		virt_text_pos = "inline",
+		virt_text = {
 			{ config_table.padding_right or "", set_hl(config_table.padding_right_hl) or set_hl(config_table.hl) },
 			{ config_table.corner_right or "", set_hl(config_table.corner_right_hl) or set_hl(config_table.hl) },
 		},
-
-		end_col = content.col_end,
-		conceal = ""
 	});
 end
 

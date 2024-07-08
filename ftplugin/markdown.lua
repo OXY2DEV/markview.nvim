@@ -21,6 +21,10 @@ if vim.islist(markview.configuration.buf_ignore) and vim.list_contains(markview.
 	return
 end
 
+if vim.islist(markview.configuration.highlight_groups) then
+	markview.add_hls(markview.configuration.highlight_groups)
+end
+
 local markview_augroup = vim.api.nvim_create_augroup("markview_buf_" .. vim.api.nvim_get_current_buf(), { clear = true });
 
 vim.api.nvim_create_autocmd({ "BufWinEnter" }, {
