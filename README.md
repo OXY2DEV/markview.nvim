@@ -130,7 +130,6 @@ require("markview").setup({
     images = {},
     inline_codes = {},
     list_items = {},
-    list_items = {},
     checkboxes = {},
     tables = {}
 });
