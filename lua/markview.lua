@@ -489,17 +489,21 @@ markview.configuration = {
 		}
 	},
 
-	hyperlinks = {
+	links = {
 		enable = true,
 
-		icon = "󰌷 ", icon_hl = "markdownLinkText",
-		hl = "markdownLinkText",
-	},
-	images = {
-		enable = true,
-
-		icon = "󰥶 ", icon_hl = "markdownLinkText",
-		hl = "markdownLinkText",
+		inline_links = {
+			icon = "󰌷 ", icon_hl = "markdownLinkText",
+			hl = "markdownLinkText",
+		},
+		images = {
+			icon = "󰥶 ", icon_hl = "markdownLinkText",
+			hl = "markdownLinkText",
+		},
+		emails = {
+			icon = " ", icon_hl = "@markup.link.url",
+			hl = "@markup.link.url",
+		}
 	},
 
 	inline_codes = {

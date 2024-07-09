@@ -35,12 +35,9 @@
 ---@field horizontal_rules markview.render_config.hrs?
 ---
 --- Table for hyperlink configuration
----@field hyperlinks markview.render_config.links?
+---@field links markview.render_config.links?
 ---
---- Table for hyperlink configuration
----@field images markview.render_config.links?
----
---- Table for hyperlink configuration
+--- Table for inline codes configuration
 ---@field inline_codes markview.render_config.inline_codes?
 ---
 --- Table for list item configuration
@@ -84,10 +81,7 @@
 ---@field horizontal_rules markview.render_config.hrs
 ---
 --- Table for hyperlink configuration
----@field hyperlinks markview.render_config.links
----
---- Table for hyperlink configuration
----@field images markview.render_config.links
+---@field links markview.render_config.links
 ---
 --- Table for hyperlink configuration
 ---@field inline_codes markview.render_config.inline_codes
@@ -315,6 +309,15 @@
 --- Enable/Disable custom hyperlink
 ---@field enable boolean?
 ---
+---@field inline_links markview.render_config.links.link
+---
+---@field images markview.render_config.links.link
+---
+---@field emails markview.render_config.links.link
+
+--- Configuration table for various link types
+---@class markview.render_config.links.link
+---
 --- Default highlight group for the various parts
 ---@field hl string?
 ---
@@ -358,7 +361,7 @@
 --- Configuration table for custom inline codes
 ---@class markview.render_config.inline_codes
 ---
---- Enable/Disable custom hyperlink
+--- Enable/Disable custom inline codes
 ---@field enable boolean?
 ---
 --- Default highlight group for the various parts
@@ -398,7 +401,7 @@
 --- Configuration table for the custom list items
 ---@class markview.render_config.list_items
 ---
---- Enable/Disable custom hyperlink
+--- Enable/Disable custom list items
 ---@field enable boolean?
 ---
 --- Number of characters to shift per level

@@ -73,8 +73,8 @@ local display_width = function (text, config)
 		end
 	end
 
-	local lnk_conf = config.hyperlinks;
-	local img_conf = config.images;
+	local lnk_conf = config.links ~= nil and config.links.inline_links or nil;
+	local img_conf = config.links ~= nil and config.links.images or nil;
 
 	for img_identifier, link, address in text:gmatch("(!?)%[([^%]]+)%]%(([^%)]+)%)") do
 		if img_identifier ~= "" then
@@ -1005,54 +1005,44 @@ end
 ---@param content any
 ---@param config_table markview.render_config.links
 renderer.render_links = function (buffer, content, config_table)
+	local lnk_conf;
+
 	if config_table.enable == false then
 		return;
 	end
 
-	vim.api.nvim_buf_set_extmark(buffer, renderer.namespace, content.row_start, content.col_start + 1, {
-		virt_text_pos = "inline",
-		virt_text = {
-			{ config_table.corner_left or "", set_hl(config_table.corner_left_hl) or set_hl(config_table.hl) },
-			{ config_table.padding_left or "", set_hl(config_table.padding_left_hl) or set_hl(config_table.hl) },
-			{ config_table.icon or "", set_hl(config_table.icon_hl) or set_hl(config_table.hl) },
-		},
-	});
-
-	vim.api.nvim_buf_add_highlight(buffer, renderer.namespace, set_hl(config_table.hl), content.row_start, content.col_start, content.col_end);
-
-	vim.api.nvim_buf_set_extmark(buffer, renderer.namespace, content.row_start, content.col_end, {
-		virt_text_pos = "inline",
-		virt_text = {
-			{ config_table.padding_right or "", set_hl(config_table.padding_right_hl) or set_hl(config_table.hl) },
-			{ config_table.corner_right or "", set_hl(config_table.corner_right_hl) or set_hl(config_table.hl) },
-		},
-	});
-end
-
---- Renderer for custom image links
----@param buffer number
----@param content any
----@param config_table markview.render_config.links
-renderer.render_img_links = function (buffer, content, config_table)
-	if config_table.enable == false then
-		return;
+	if content.link_type == "inline_link" then
+		lnk_conf = config_table.inline_links;
+	elseif content.link_type == "image" then
+		lnk_conf = config_table.images;
+	elseif content.link_type == "email_autolink" then
+		lnk_conf = config_table.emails;
 	end
 
-	vim.api.nvim_buf_set_extmark(buffer, renderer.namespace, content.row_start, content.col_start, {
+	vim.api.nvim_buf_set_extmark(buffer, renderer.namespace, content.row_start, content.link_type == "email_autolink" and content.col_start or content.col_start + 1, {
 		virt_text_pos = "inline",
 		virt_text = {
-			{ config_table.corner_left or "", set_hl(config_table.corner_left_hl) or set_hl(config_table.hl) },
-			{ config_table.padding_left or "", set_hl(config_table.padding_left_hl) or set_hl(config_table.hl) },
-			{ config_table.icon or "", set_hl(config_table.icon_hl) or set_hl(config_table.hl) },
-			{ config_table.text or content.text or "", set_hl(config_table.text_hl) or set_hl(config_table.hl) },
-			{ config_table.padding_right or "", set_hl(config_table.padding_right_hl) or set_hl(config_table.hl) },
-			{ config_table.corner_right or "", set_hl(config_table.corner_right_hl) or set_hl(config_table.hl) },
+			{ lnk_conf.corner_left or "", set_hl(lnk_conf.corner_left_hl) or set_hl(lnk_conf.hl) },
+			{ lnk_conf.padding_left or "", set_hl(lnk_conf.padding_left_hl) or set_hl(lnk_conf.hl) },
+			{ lnk_conf.icon or "", set_hl(lnk_conf.icon_hl) or set_hl(lnk_conf.hl) },
 		},
 
-		conceal = "",
+		end_col = content.link_type == "email_autolink" and content.col_start + 1 or content.col_start,
+		conceal = ""
+	});
 
-		end_col = content.col_end
-	})
+	vim.api.nvim_buf_add_highlight(buffer, renderer.namespace, set_hl(lnk_conf.hl) or "", content.row_start, content.col_start, content.col_end);
+
+	vim.api.nvim_buf_set_extmark(buffer, renderer.namespace, content.row_start, content.link_type == "email_autolink" and content.col_end - 1 or content.col_end, {
+		virt_text_pos = "inline",
+		virt_text = {
+			{ lnk_conf.padding_right or "", set_hl(lnk_conf.padding_right_hl) or set_hl(lnk_conf.hl) },
+			{ lnk_conf.corner_right or "", set_hl(lnk_conf.corner_right_hl) or set_hl(lnk_conf.hl) },
+		},
+
+		end_col = content.link_type == "email_autolink" and content.col_end or content.col_start,
+		conceal = ""
+	});
 end
 
 --- Renderer for custom inline codes
@@ -1242,8 +1232,8 @@ renderer.render = function (buffer, parsed_content, config_table)
 			renderer.render_block_quotes(buffer, content, config_table.block_quotes);
 		elseif type == "horizontal_rule" then
 			renderer.render_horizontal_rules(buffer, content, config_table.horizontal_rules);
-		elseif type == "hyperlink" then
-			renderer.render_links(buffer, content, config_table.hyperlinks);
+		elseif type == "link" then
+			renderer.render_links(buffer, content, config_table.links);
 		elseif type == "image" then
 			renderer.render_links(buffer, content, config_table.images);
 		elseif type == "inline_code" then

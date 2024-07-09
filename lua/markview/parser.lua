@@ -290,9 +290,11 @@ parser.md_inline = function (buffer, TStree)
 	local scanned_queies = vim.treesitter.query.parse("markdown_inline", [[
 		((shortcut_link) @callout)
 
-		((inline_link) @link)
-
-		((image) @image)
+		([
+			(image)
+			(inline_link)
+			(email_autolink)
+			] @link)
 
 		((code_span) @code)
 	]]);
@@ -329,11 +331,13 @@ parser.md_inline = function (buffer, TStree)
 				end
 			end
 		elseif capture_name == "link" then
+			local link_type = capture_node:type();
 			local link_text = string.match(capture_text, "%[(.-)%]");
 			local link_address = string.match(capture_text, "%((.-)%)")
 
 			table.insert(parser.parsed_content, {
-				type = "hyperlink",
+				type = "link",
+				link_type = link_type,
 
 				text = link_text,
 				address = link_address,
@@ -342,7 +346,7 @@ parser.md_inline = function (buffer, TStree)
 				row_end = row_end,
 
 				col_start = col_start,
-				col_end = col_end
+				col_end = col_end,
 			})
 		elseif capture_name == "image" then
 			local link_text = string.match(capture_text, "%[(.-)%]");
