@@ -33,6 +33,7 @@ vim.api.nvim_create_autocmd({ "BufWinEnter" }, {
 
 	callback = function (event)
 		local buffer = event.buf;
+		local window = vim.api.nvim_get_current_win();
 
 		if not vim.list_contains(markview.attached_buffers, buffer) then
 			table.insert(markview.attached_buffers, buffer);
@@ -56,6 +57,8 @@ vim.api.nvim_create_autocmd({ "BufWinEnter" }, {
 
 		markview.renderer.clear(buffer);
 		markview.renderer.render(buffer, parsed_content, markview.configuration)
+
+		markview.keymaps.init(buffer, window, parsed_content, markview.configuration);
 	end
 });
 
@@ -66,6 +69,8 @@ vim.api.nvim_create_autocmd({ "ModeChanged", "TextChanged" }, {
 
 	callback = function (event)
 		local buffer = event.buf;
+		local window = vim.api.nvim_get_current_win();
+
 		local mode = vim.api.nvim_get_mode().mode;
 
 		if markview.suppressed == true then
@@ -79,7 +84,9 @@ vim.api.nvim_create_autocmd({ "ModeChanged", "TextChanged" }, {
 			vim.wo.concealcursor = "n";
 
 			markview.renderer.clear(buffer);
-			markview.renderer.render(buffer, parsed_content, markview.configuration)
+			markview.renderer.render(buffer, parsed_content, markview.configuration);
+
+			markview.keymaps.init(buffer, window, parsed_content, markview.configuration);
 		else
 			if markview.configuration.restore_conceallevel == true then
 				vim.wo.conceallevel = markview.global_options.conceallevel;

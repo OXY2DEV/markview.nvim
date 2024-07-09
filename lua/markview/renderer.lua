@@ -1004,26 +1004,29 @@ end
 ---@param buffer number
 ---@param content any
 ---@param config_table markview.render_config.links
-renderer.render_hyperlinks = function (buffer, content, config_table)
+renderer.render_links = function (buffer, content, config_table)
 	if config_table.enable == false then
 		return;
 	end
 
-	vim.api.nvim_buf_set_extmark(buffer, renderer.namespace, content.row_start, content.col_start, {
+	vim.api.nvim_buf_set_extmark(buffer, renderer.namespace, content.row_start, content.col_start + 1, {
 		virt_text_pos = "inline",
 		virt_text = {
 			{ config_table.corner_left or "", set_hl(config_table.corner_left_hl) or set_hl(config_table.hl) },
 			{ config_table.padding_left or "", set_hl(config_table.padding_left_hl) or set_hl(config_table.hl) },
 			{ config_table.icon or "", set_hl(config_table.icon_hl) or set_hl(config_table.hl) },
-			{ config_table.text or content.text or "", set_hl(config_table.text_hl) or set_hl(config_table.hl) },
+		},
+	});
+
+	vim.api.nvim_buf_add_highlight(buffer, renderer.namespace, set_hl(config_table.hl), content.row_start, content.col_start, content.col_end);
+
+	vim.api.nvim_buf_set_extmark(buffer, renderer.namespace, content.row_start, content.col_end, {
+		virt_text_pos = "inline",
+		virt_text = {
 			{ config_table.padding_right or "", set_hl(config_table.padding_right_hl) or set_hl(config_table.hl) },
 			{ config_table.corner_right or "", set_hl(config_table.corner_right_hl) or set_hl(config_table.hl) },
 		},
-
-		conceal = "",
-
-		end_col = content.col_end
-	})
+	});
 end
 
 --- Renderer for custom image links
@@ -1219,8 +1222,6 @@ renderer.render = function (buffer, parsed_content, config_table)
 		renderer.views[buffer] = parsed_content;
 	end
 
-	renderer.tmp_lines = {};
-
 	for _, content in ipairs(renderer.views[buffer]) do
 		local type = content.type;
 
@@ -1242,9 +1243,9 @@ renderer.render = function (buffer, parsed_content, config_table)
 		elseif type == "horizontal_rule" then
 			renderer.render_horizontal_rules(buffer, content, config_table.horizontal_rules);
 		elseif type == "hyperlink" then
-			renderer.render_hyperlinks(buffer, content, config_table.hyperlinks);
+			renderer.render_links(buffer, content, config_table.hyperlinks);
 		elseif type == "image" then
-			renderer.render_img_links(buffer, content, config_table.images);
+			renderer.render_links(buffer, content, config_table.images);
 		elseif type == "inline_code" then
 			renderer.render_inline_codes(buffer, content, config_table.inline_codes)
 		elseif type == "list_item" then

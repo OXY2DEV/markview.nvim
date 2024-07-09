@@ -1,6 +1,8 @@
 local markview = {};
 markview.parser = require("markview/parser");
 markview.renderer = require("markview/renderer");
+markview.keymaps = require("markview/keymaps");
+
 markview.colors = require("markview/colors");
 
 markview.add_hls = function (obj)
@@ -41,7 +43,7 @@ markview.configuration = {
 		{
 			group_name = "col_1",
 			value = function ()
-				local bg = markview.colors.get_hl_value(0, "Normal", "bg");
+				local bg = markview.colors.get_hl_value(0, "Normal", "bg") or markview.colors.get_hl_value(0, "Cursor", "fg");
 				local fg = markview.colors.get_hl_value(0, "markdownH1", "fg") or "#f38ba8";
 
 				return {
@@ -64,7 +66,7 @@ markview.configuration = {
 		{
 			group_name = "col_2",
 			value = function ()
-				local bg = markview.colors.get_hl_value(0, "Normal", "bg");
+				local bg = markview.colors.get_hl_value(0, "Normal", "bg") or markview.colors.get_hl_value(0, "Cursor", "fg");
 				local fg = markview.colors.get_hl_value(0, "markdownH2", "fg") or "#fab387";
 
 				return {
@@ -87,7 +89,7 @@ markview.configuration = {
 		{
 			group_name = "col_3",
 			value = function ()
-				local bg = markview.colors.get_hl_value(0, "Normal", "bg");
+				local bg = markview.colors.get_hl_value(0, "Normal", "bg") or markview.colors.get_hl_value(0, "Cursor", "fg");
 				local fg = markview.colors.get_hl_value(0, "markdownH3", "fg") or "#f9e2af";
 
 				return {
@@ -110,7 +112,7 @@ markview.configuration = {
 		{
 			group_name = "col_4",
 			value = function ()
-				local bg = markview.colors.get_hl_value(0, "Normal", "bg");
+				local bg = markview.colors.get_hl_value(0, "Normal", "bg") or markview.colors.get_hl_value(0, "Cursor", "fg");
 				local fg = markview.colors.get_hl_value(0, "markdownH4", "fg") or "#a6e3a1";
 
 				return {
@@ -133,7 +135,7 @@ markview.configuration = {
 		{
 			group_name = "col_5",
 			value = function ()
-				local bg = markview.colors.get_hl_value(0, "Normal", "bg");
+				local bg = markview.colors.get_hl_value(0, "Normal", "bg") or markview.colors.get_hl_value(0, "Cursor", "fg");
 				local fg = markview.colors.get_hl_value(0, "markdownH5", "fg") or "#74c7ec";
 
 				return {
@@ -156,7 +158,7 @@ markview.configuration = {
 		{
 			group_name = "col_6",
 			value = function ()
-				local bg = markview.colors.get_hl_value(0, "Normal", "bg");
+				local bg = markview.colors.get_hl_value(0, "Normal", "bg") or markview.colors.get_hl_value(0, "Cursor", "fg");
 				local fg = markview.colors.get_hl_value(0, "markdownH6", "fg") or "#b4befe";
 
 				return {
@@ -179,7 +181,7 @@ markview.configuration = {
 		{
 			group_name = "col_7",
 			value = function ()
-				local bg = markview.colors.get_hl_value(0, "Normal", "bg");
+				local bg = markview.colors.get_hl_value(0, "Normal", "bg") or markview.colors.get_hl_value(0, "Cursor", "fg");
 				local fg = markview.colors.get_hl_value(0, "Comment", "fg");
 
 				return {
@@ -202,7 +204,7 @@ markview.configuration = {
 		{
 			group_name = "layer",
 			value = function ()
-				local bg = markview.colors.get_hl_value(0, "Normal", "bg");
+				local bg = markview.colors.get_hl_value(0, "Normal", "bg") or markview.colors.get_hl_value(0, "Cursor", "fg");
 				local fg = markview.colors.get_hl_value(0, "Comment", "fg");
 
 				local txt = markview.colors.get_hl_value(0, "FloatTitle", "fg")
@@ -216,7 +218,7 @@ markview.configuration = {
 		{
 			group_name = "layer_2",
 			value = function ()
-				local bg = markview.colors.get_hl_value(0, "Normal", "bg");
+				local bg = markview.colors.get_hl_value(0, "Normal", "bg") or markview.colors.get_hl_value(0, "Cursor", "fg");
 				local fg = markview.colors.get_hl_value(0, "Comment", "fg");
 
 				return {
@@ -226,7 +228,7 @@ markview.configuration = {
 		},
 		{
 			output = function ()
-				return markview.colors.create_gradient("gradient_", markview.colors.get_hl_value(0, "Normal", "bg"), markview.colors.get_hl_value(0, "Title", "fg"), 10, "fg");
+				return markview.colors.create_gradient("gradient_", markview.colors.get_hl_value(0, "Normal", "bg") or markview.colors.get_hl_value(0, "Cursor", "fg"), markview.colors.get_hl_value(0, "Title", "fg"), 10, "fg");
 			end
 		}
 	},
@@ -491,13 +493,13 @@ markview.configuration = {
 		enable = true,
 
 		icon = "󰌷 ", icon_hl = "markdownLinkText",
-		text_hl = "markdownLinkText",
+		hl = "markdownLinkText",
 	},
 	images = {
 		enable = true,
 
 		icon = "󰥶 ", icon_hl = "markdownLinkText",
-		text_hl = "markdownLinkText",
+		hl = "markdownLinkText",
 	},
 
 	inline_codes = {

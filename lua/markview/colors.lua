@@ -1,5 +1,9 @@
 local colors = {};
 
+colors.clamp = function (val, min, max)
+	return math.min(math.max(val, min), max)
+end
+
 colors.num_to_hex = function (num)
 	if num == 0 then
 		return "#000000";
@@ -128,12 +132,12 @@ colors.mix = function (color_1, color_2, per_1, per_2)
 	end
 
 	if not c_1 or not c_2 then
-		return "#000000";
+		return;
 	end
 
-	local _r = (c_1.r * per_1) + (c_2.r * per_2);
-	local _g = (c_1.g * per_1) + (c_2.g * per_2);
-	local _b = (c_1.b * per_1) + (c_2.b * per_2);
+	local _r = colors.clamp((c_1.r * per_1) + (c_2.r * per_2), 1, 255);
+	local _g = colors.clamp((c_1.g * per_1) + (c_2.g * per_2), 1, 255);
+	local _b = colors.clamp((c_1.b * per_1) + (c_2.b * per_2), 1, 255);
 
 	return colors.rgb_to_hex({ r = _r, g = _g, b = _b });
 end
