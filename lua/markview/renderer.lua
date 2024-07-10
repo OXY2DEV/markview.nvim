@@ -670,6 +670,44 @@ renderer.render_headings_s = function (buffer, content, config)
 			hl_mode = "combine",
 			end_row = content.row_end - 1
 		});
+	elseif conf.style == "github" then
+		local mid = math.floor((content.row_end - content.row_start - 2) / 2);
+
+		for i = 0, (content.row_end - content.row_start) - 1 do
+			if i == mid then
+				vim.api.nvim_buf_set_extmark(buffer, renderer.namespace, content.row_start + i, content.col_start, {
+					virt_text_pos = "inline",
+					virt_text = {
+						{ conf.icon or "", set_hl(conf.hl) }
+					},
+
+					line_hl_group = set_hl(conf.hl),
+					hl_mode = "combine",
+				});
+			elseif i < (content.row_end - content.row_start) - 1 then
+				vim.api.nvim_buf_set_extmark(buffer, renderer.namespace, content.row_start + i, content.col_start, {
+					virt_text_pos = "inline",
+					virt_text = {
+						{ string.rep(" ", vim.fn.strchars(conf.icon or "")), set_hl(conf.hl) }
+					},
+
+					line_hl_group = set_hl(conf.hl),
+					hl_mode = "combine",
+				});
+			else
+				local line = content.marker:match("=") and (conf.underline or "=") or (conf.underline or "-");
+
+				vim.api.nvim_buf_set_extmark(buffer, renderer.namespace, content.row_start + i, content.col_start, {
+					virt_text_pos = "overlay",
+					virt_text = {
+						{ string.rep(line, vim.o.columns), set_hl(conf.hl) }
+					},
+
+					line_hl_group = set_hl(conf.hl),
+					hl_mode = "combine",
+				});
+			end
+		end
 	-- elseif conf.style == "icon" then
 	-- 	-- Adds simple icons with paddings
 	-- 	vim.api.nvim_buf_set_extmark(buffer, renderer.namespace, content.row_start, 0, {

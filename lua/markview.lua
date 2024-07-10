@@ -292,12 +292,16 @@ markview.configuration = {
 		},
 
 		setext_1 = {
-			style = "simple",
-			hl = "Markview_col_1",
+			style = "github",
+
+			icon = "   ", hl = "Markview_col_1",
+			underline = "━"
 		},
 		setext_2 = {
-			style = "simple",
-			hl = "Markview_col_2",
+			style = "github",
+
+			icon = "   ", hl = "Markview_col_2",
+			underline = "─"
 		}
 	},
 

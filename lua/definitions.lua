@@ -178,6 +178,13 @@
 ---
 --- Highlight group for the left padding
 ---@field padding_right_hl string?
+---
+--- Character for underline on setext headings
+---@field underline string?
+---
+--- Highlight group for underline, when nil hl is used
+---@field underline_hl string?
+
 
 
 --- Definition for the configuration table for the custom code blocks
