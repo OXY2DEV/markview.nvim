@@ -28,9 +28,26 @@ markview.add_hls = function (obj)
 	end
 end
 
-markview.attached_buffers = {};
+markview.find_attached_wins = function (buf)
+	local attached_wins = {};
 
-markview.suppressed = false;
+	for _, win in ipairs(vim.api.nvim_list_wins()) do
+		if vim.api.nvim_win_get_buf(win) == buf then
+			table.insert(attached_wins, win);
+		end
+	end
+
+	return attached_wins;
+end
+
+
+markview.attached_buffers = {};
+markview.attached_windows = {};
+
+markview.state = {
+	enable = true,
+	buf_states = {}
+};
 
 markview.global_options = {};
 
@@ -575,38 +592,16 @@ markview.configuration = {
 
 markview.commands = {
 	toggleAll = function ()
-		if markview.suppressed == true then
-			markview.suppressed = false;
-
-			vim.o.conceallevel = 2;
-			vim.o.concealcursor = "n";
-
-			for _, buf in ipairs(markview.attached_buffers) do
-				local parsed_content = markview.parser.init(buf);
-
-				markview.renderer.clear(buf);
-				markview.renderer.render(buf, parsed_content, markview.configuration)
-			end
+		if markview.state.enable == true then
+			markview.commands.disableAll();
+			markview.state.enable = false;
 		else
-			if markview.configuration.restore_conceallevel == true then
-				vim.o.conceallevel = markview.global_options.conceallevel;
-			else
-				vim.o.conceallevel = 0;
-			end
-
-			if markview.configuration.restore_concealcursor == true then
-				vim.o.concealcursor = markview.global_options.concealcursor;
-			end
-
-			for _, buf in ipairs(markview.attached_buffers) do
-				markview.renderer.clear(buf);
-			end
-
-			markview.suppressed = true;
+			markview.commands.enableAll();
+			markview.state.enable = true;
 		end
 	end,
 	enableAll = function ()
-		markview.suppressed = false;
+		markview.state.enable = true;
 
 		vim.o.conceallevel = 2;
 		vim.o.concealcursor = "n";
@@ -633,32 +628,71 @@ markview.commands = {
 			markview.renderer.clear(buf);
 		end
 
-		markview.suppressed = true;
+		markview.state.enable = false;
 	end,
 
-	enable = function ()
-		local buffer = vim.api.nvim_get_current_buf();
+	toggle = function (buf)
+		local buffer = tonumber(buf) or vim.api.nvim_get_current_buf();
+
+		if not vim.list_contains(markview.attached_buffers, buffer) or not vim.api.nvim_buf_is_valid(buffer) then
+			return;
+		end
+
+		local state = markview.state.buf_states[buffer];
+
+		if state == true then
+			markview.commands.disable(buffer)
+			state = false;
+		else
+			markview.commands.enable(buffer);
+			state = true;
+		end
+	end,
+	enable = function (buf)
+		local buffer = tonumber(buf) or vim.api.nvim_get_current_buf();
+
+		if not vim.list_contains(markview.attached_buffers, buffer) or not vim.api.nvim_buf_is_valid(buffer) then
+			return;
+		end
+
+		local windows = markview.find_attached_wins(buffer);
+
 		local parsed_content = markview.parser.init(buffer);
 
-		vim.wo.conceallevel = 2;
-		vim.wo.concealcursor = "n";
+		markview.state.buf_states[buffer] = true;
+
+		for _, window in ipairs(windows) do
+			vim.wo[window].conceallevel = 2;
+			vim.wo[window].concealcursor = "n";
+		end
 
 		markview.renderer.clear(buffer);
 		markview.renderer.render(buffer, parsed_content, markview.configuration)
 	end,
 
-	disable = function ()
-		if markview.configuration.restore_conceallevel == true then
-			vim.wo.conceallevel = markview.global_options.conceallevel;
-		else
-			vim.wo.conceallevel = 0;
+	disable = function (buf)
+		local buffer = tonumber(buf) or vim.api.nvim_get_current_buf();
+
+		if not vim.list_contains(markview.attached_buffers, buffer) or not vim.api.nvim_buf_is_valid(buffer) then
+			return;
 		end
 
-		if markview.configuration.restore_concealcursor == true then
-			vim.wo.concealcursor = markview.global_options.concealcursor;
+		local windows = markview.find_attached_wins(buffer);
+
+		for _, window in ipairs(windows) do
+			if markview.configuration.restore_conceallevel == true then
+				vim.wo[window].conceallevel = markview.global_options.conceallevel;
+			else
+				vim.wo[window].conceallevel = 0;
+			end
+
+			if markview.configuration.restore_concealcursor == true then
+				vim.wo[window].concealcursor = markview.global_options.concealcursor;
+			end
 		end
 
-		markview.renderer.clear(vim.api.nvim_get_current_buf());
+		markview.renderer.clear(buffer);
+		markview.state.buf_states[buffer] = false;
 	end
 }
 
@@ -676,12 +710,59 @@ vim.api.nvim_create_user_command("Markview", function (opts)
 
 	if #fargs < 1 then
 		markview.commands.toggleAll();
-	elseif markview.commands[fargs[1]] then
+	elseif #fargs == 1 and markview.commands[fargs[1]] then
 		markview.commands[fargs[1]]();
+	elseif #fargs == 2 and markview.commands[fargs[1]] then
+		markview.commands[fargs[1]](fargs[2]);
 	end
 end, {
 	nargs = "*",
-	desc = "Temporarily disable(suppress) Markview preview"
+	desc = "Controls for Markview.nvim",
+	complete = function (arg_lead, cmdline, _)
+		if arg_lead == "" then
+			if not cmdline:find("^Markview%s+%S+") then
+				return vim.tbl_keys(markview.commands);
+			elseif cmdline:find("^Markview%s+(%S+)%s*$") then
+				for cmd, _ in cmdline:gmatch("Markview%s+(%S+)%s*(%S*)") do
+					-- ISSUE: Find a better way to find commands that accept arguments
+					if vim.list_contains({ "enable", "disable", "toggle" }, cmd) then
+						local bufs = {};
+
+						for _, buf in ipairs(markview.attached_buffers) do
+							table.insert(bufs, tostring(buf));
+						end
+
+						return bufs;
+					end
+				end
+			end
+		end
+
+		for cmd, arg in cmdline:gmatch("Markview%s+(%S+)%s*(%S*)") do
+			if arg_lead == cmd then
+				local cmds = vim.tbl_keys(markview.commands);
+				local completions = {};
+
+				for _, key in pairs(cmds) do
+					if arg_lead == string.sub(key, 1, #arg_lead) then
+						table.insert(completions, key)
+					end
+				end
+
+				return completions
+			elseif arg_lead == arg then
+				local buf_complete = {};
+
+				for _, buf in ipairs(markview.attached_buffers) do
+					if tostring(buf):match(arg) then
+						table.insert(buf_complete, tostring(buf))
+					end
+				end
+
+				return buf_complete;
+			end
+		end
+	end
 })
 
 
