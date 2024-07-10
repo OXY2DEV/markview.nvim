@@ -1,6 +1,6 @@
 # 📜 markview.nvim
 
-<p style="text-align: center;">Yet another <b>mark</b>down pre<b>view</b>er for neovim</p>
+An experimental `markdown` previewer for Neovim.
 
 ![preview_1](./wiki_img/show_mocha.jpg)
 ![preview_2](./wiki_img/show_transparent.jpg)
@@ -34,7 +34,7 @@
 
 First off, RTFM(basically read the README). You should check the `requirements` section and see if you have everything.
 
-You neovim version should be at least `0.10`. You also need `nvim-treesitter`(for easy installation of parsers) and have the parsers installed in your `$RUNTIMEPATH`.
+You Neovim version should be at least `0.10`. You also need `nvim-treesitter`(for easy installation of parsers) and have the parsers installed in your `$RUNTIMEPATH`.
 
 For the parsers, you need `markdown` and `markdown_inline` parsers for the plugin to work.
 
@@ -44,9 +44,9 @@ For the parsers, you need `markdown` and `markdown_inline` parsers for the plugi
 >[!WARNING]
 > DO NOT GO OVERBOARD WITH LAZY LOADING.
 >
-> It's meant to prevent unused things from loading when neovim starts(which this plugin does NOT). So, lazy loading wouldn't make much of a difference. However, it can sometimes cause the plugin to not load.
+> It's meant to prevent unused things from loading when Neovim starts(which this plugin does NOT). So, lazy loading wouldn't make much of a difference. However, it can sometimes cause the plugin to not load.
 
-#### Why don't the background colors work when neovim is transparent?
+#### Why don't the background colors work when Neovim is transparent?
 
 By default, the plugin looks into the background color of `Normal` or the foreground color of `Cursor` as a fallback. This value is used to blend the foreground color of specific hughlight groups. The resulting color is used as the background color.
 
