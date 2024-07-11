@@ -2,37 +2,59 @@
 
 ![checkboxes](./wiki_img/checkboxes.jpg)
 
-This plugin uses custom `checkboxes` which can be configured with the `checkboxes` option.
+## Configuration options
+
+The `checkboxes` option has these sub-options.
 
 ```lua
 checkboxes = {
     enable = true,
 
     checked = {},
-    unchecked = {}
+    unchecked = {},
+    pending = {}
 }
 ```
 
-## enable
+### Global options
 
-Enable/Disable custom checkboxes.
+The `checkboxes` option comes with the following `sub-options` that affect all the different states of the checkbox.
 
-## checked, unchecked
+> enable
+> `boolean or nil`
 
-Configuration option for both states.
+When set to `false`, headings are not rendered.
 
-```lua
-checked = {
-    text = "✔", hl = "@markup.list.checked"
-}
-```
+### State options
 
-### text
+A checkbox can have various states and the states can be individually configured.
 
-Text to show the checkbox.
+Currently supported states are.
 
-### hl
+- checked,
+  When the checkbox is marked/checked this option is used to render it.
 
-Highlight group for the checkbox.
+- unchecked,
+  When the checkbox is unmarked/unchecked this option is used to render it.
 
+- pending,
+  When the checkbox is marked/checked as pending(using `[-]`) this option is used to render it.
+
+### State configuration options
+
+Each states can have the following sub-options.
+
+> text
+> `string`
+
+The text to show for the checkbox.
+
+> hl
+> `string or nil`
+
+Highlight group for `text`.
+
+## Gallery
+
+Wow, so empty 😐
 

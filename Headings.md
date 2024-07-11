@@ -6,7 +6,7 @@
 
 ## Configuration options
 
-The headings option comes with these sub-options.
+The `headings` option comes with these sub-options.
 
 ```lua
 headings = {
