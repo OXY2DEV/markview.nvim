@@ -251,7 +251,7 @@ markview.configuration = {
 	},
 	buf_ignore = { "nofile" },
 
-	modes = { "n" },
+	modes = { "n", "no" },
 
 	headings = {
 		enable = true,

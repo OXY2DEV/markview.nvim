@@ -121,9 +121,6 @@
 --- Definition for the individual heading configuration table
 ---@class markview.render_config.headings.h
 ---
---- Virt_text_pos
----@field position string?
----
 --- Name of the style to use
 ---@field style string
 ---
@@ -180,10 +177,10 @@
 ---@field padding_right_hl string?
 ---
 --- Character for underline on setext headings
----@field underline string?
+---@field line string?
 ---
 --- Highlight group for underline, when nil hl is used
----@field underline_hl string?
+---@field line_hl string?
 
 
 
