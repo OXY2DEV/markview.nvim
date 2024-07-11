@@ -9,6 +9,8 @@ parser.parsed_content = {};
 ---@param TStree any
 parser.md = function (buffer, TStree)
 	local scanned_queies = vim.treesitter.query.parse("markdown", [[
+		((setext_heading) @setext_heading)
+
 		(atx_heading [
 			(atx_h1_marker)
 			(atx_h2_marker)
@@ -16,7 +18,7 @@ parser.md = function (buffer, TStree)
 			(atx_h4_marker)
 			(atx_h5_marker)
 			(atx_h6_marker)
-		] @header)
+		] @heading)
 
 		((fenced_code_block) @code)
 
@@ -38,7 +40,27 @@ parser.md = function (buffer, TStree)
 		local capture_text = vim.treesitter.get_node_text(capture_node, buffer);
 		local row_start, col_start, row_end, col_end = capture_node:range();
 
-		if capture_name == "header" then
+		if capture_name == "setext_heading" then
+			local title = capture_node:named_child(0);
+			local t_start, _, t_end, _ = title:range();
+
+			local underline = vim.treesitter.get_node_text(capture_node:named_child(1), buffer);
+
+			table.insert(parser.parsed_content, {
+				type = "heading_s",
+
+				marker = underline,
+				title = vim.api.nvim_buf_get_lines(buffer, t_start, t_end, false),
+
+				level = capture_text:match("=") and 1 or 2,
+
+				row_start = row_start,
+				row_end = row_end,
+
+				col_start = col_start,
+				col_end = col_end
+			})
+		elseif capture_name == "heading" then
 			local heading_txt = capture_node:next_sibling();
 			local title = heading_txt ~= nil and vim.treesitter.get_node_text(heading_txt, buffer) or "";
 			local h_txt_r_start, h_txt_c_start, h_txt_r_end, h_txt_c_end;
@@ -48,7 +70,7 @@ parser.md = function (buffer, TStree)
 			end
 
 			table.insert(parser.parsed_content, {
-				type = "header",
+				type = "heading",
 
 				level = vim.fn.strchars(capture_text),
 
@@ -268,9 +290,11 @@ parser.md_inline = function (buffer, TStree)
 	local scanned_queies = vim.treesitter.query.parse("markdown_inline", [[
 		((shortcut_link) @callout)
 
-		((inline_link) @link)
-
-		((image) @image)
+		([
+			(image)
+			(inline_link)
+			(email_autolink)
+			] @link)
 
 		((code_span) @code)
 	]]);
@@ -284,8 +308,6 @@ parser.md_inline = function (buffer, TStree)
 		if capture_name == "callout" then
 			local line = vim.api.nvim_buf_get_lines(buffer, row_start, row_start + 1, false);
 			local title = string.match(line ~= nil and line[1] or "", "%b[]%s*(.*)$")
-
-			-- vim.print(title == "")
 
 			if capture_text == "[-]" then
 				table.insert(parser.parsed_content, {
@@ -309,11 +331,13 @@ parser.md_inline = function (buffer, TStree)
 				end
 			end
 		elseif capture_name == "link" then
+			local link_type = capture_node:type();
 			local link_text = string.match(capture_text, "%[(.-)%]");
 			local link_address = string.match(capture_text, "%((.-)%)")
 
 			table.insert(parser.parsed_content, {
-				type = "hyperlink",
+				type = "link",
+				link_type = link_type,
 
 				text = link_text,
 				address = link_address,
@@ -322,7 +346,7 @@ parser.md_inline = function (buffer, TStree)
 				row_end = row_end,
 
 				col_start = col_start,
-				col_end = col_end
+				col_end = col_end,
 			})
 		elseif capture_name == "image" then
 			local link_text = string.match(capture_text, "%[(.-)%]");

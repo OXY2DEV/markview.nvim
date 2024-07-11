@@ -73,8 +73,8 @@ local display_width = function (text, config)
 		end
 	end
 
-	local lnk_conf = config.hyperlinks;
-	local img_conf = config.images;
+	local lnk_conf = config.links ~= nil and config.links.inline_links or nil;
+	local img_conf = config.links ~= nil and config.links.images or nil;
 
 	for img_identifier, link, address in text:gmatch("(!?)%[([^%]]+)%]%(([^%)]+)%)") do
 		if img_identifier ~= "" then
@@ -563,7 +563,7 @@ renderer.views = {};
 ---@param buffer number
 ---@param content any
 ---@param config markview.render_config.headings
-renderer.render_headers = function (buffer, content, config)
+renderer.render_headings = function (buffer, content, config)
 	if config.enable == false then
 		return;
 	end
@@ -574,7 +574,6 @@ renderer.render_headers = function (buffer, content, config)
 
 	if conf.style == "simple" then
 		-- Adds a simple background
-
 		vim.api.nvim_buf_set_extmark(buffer, renderer.namespace, content.row_start, content.col_start, {
 			line_hl_group = set_hl(conf.hl),
 
@@ -591,7 +590,7 @@ renderer.render_headers = function (buffer, content, config)
 
 		-- Adds icons, seperators, paddings etc
 		vim.api.nvim_buf_set_extmark(buffer, renderer.namespace, content.row_start, 0, {
-			virt_text_pos = conf.position or "overlay",
+			virt_text_pos = "overlay",
 			virt_text = {
 				{ string.rep(conf.shift_char or " ", shift * (content.level - 1)), conf.shift_hl },
 
@@ -649,6 +648,65 @@ renderer.render_headers = function (buffer, content, config)
 			line_hl_group = set_hl(conf.hl),
 			sign_text = conf.sign, sign_hl_group = set_hl(conf.sign_hl),
 		});
+	end
+end
+
+renderer.render_headings_s = function (buffer, content, config)
+	if config.enable == false then
+		return;
+	end
+
+	---@type markview.render_config.headings.h
+	local conf = content.marker:match("=") and config["setext_1"] or config["setext_2"];
+	local shift = config.shift_width or vim.bo[buffer].shiftwidth;
+
+	if conf.style == "simple" then
+		-- Adds a simple background
+
+		vim.api.nvim_buf_set_extmark(buffer, renderer.namespace, content.row_start, content.col_start, {
+			line_hl_group = set_hl(conf.hl),
+
+			hl_mode = "combine",
+			end_row = content.row_end - 1
+		});
+	elseif conf.style == "github" then
+		local mid = math.floor((content.row_end - content.row_start - 2) / 2);
+
+		for i = 0, (content.row_end - content.row_start) - 1 do
+			if i == mid then
+				vim.api.nvim_buf_set_extmark(buffer, renderer.namespace, content.row_start + i, content.col_start, {
+					virt_text_pos = "inline",
+					virt_text = {
+						{ conf.icon or "", set_hl(conf.icon_hl or conf.hl) }
+					},
+
+					line_hl_group = set_hl(conf.hl),
+					hl_mode = "combine",
+				});
+			elseif i < (content.row_end - content.row_start) - 1 then
+				vim.api.nvim_buf_set_extmark(buffer, renderer.namespace, content.row_start + i, content.col_start, {
+					virt_text_pos = "inline",
+					virt_text = {
+						{ string.rep(" ", vim.fn.strchars(conf.icon or "")), set_hl(conf.hl) }
+					},
+
+					line_hl_group = set_hl(conf.hl),
+					hl_mode = "combine",
+				});
+			else
+				local line = content.marker:match("=") and (conf.line or "=") or (conf.line or "-");
+
+				vim.api.nvim_buf_set_extmark(buffer, renderer.namespace, content.row_start + i, content.col_start, {
+					virt_text_pos = "overlay",
+					virt_text = {
+						{ string.rep(line, vim.o.columns), set_hl(conf.line_hl or conf.hl) }
+					},
+
+					line_hl_group = set_hl(conf.hl),
+					hl_mode = "combine",
+				});
+			end
+		end
 	end
 end
 
@@ -961,52 +1019,45 @@ end
 ---@param buffer number
 ---@param content any
 ---@param config_table markview.render_config.links
-renderer.render_hyperlinks = function (buffer, content, config_table)
+renderer.render_links = function (buffer, content, config_table)
+	local lnk_conf;
+
 	if config_table.enable == false then
 		return;
 	end
 
-	vim.api.nvim_buf_set_extmark(buffer, renderer.namespace, content.row_start, content.col_start, {
-		virt_text_pos = "inline",
-		virt_text = {
-			{ config_table.corner_left or "", set_hl(config_table.corner_left_hl) or set_hl(config_table.hl) },
-			{ config_table.padding_left or "", set_hl(config_table.padding_left_hl) or set_hl(config_table.hl) },
-			{ config_table.icon or "", set_hl(config_table.icon_hl) or set_hl(config_table.hl) },
-			{ config_table.text or content.text or "", set_hl(config_table.text_hl) or set_hl(config_table.hl) },
-			{ config_table.padding_right or "", set_hl(config_table.padding_right_hl) or set_hl(config_table.hl) },
-			{ config_table.corner_right or "", set_hl(config_table.corner_right_hl) or set_hl(config_table.hl) },
-		},
-
-		conceal = "",
-
-		end_col = content.col_end
-	})
-end
-
---- Renderer for custom image links
----@param buffer number
----@param content any
----@param config_table markview.render_config.links
-renderer.render_img_links = function (buffer, content, config_table)
-	if config_table.enable == false then
-		return;
+	if content.link_type == "inline_link" then
+		lnk_conf = config_table.inline_links;
+	elseif content.link_type == "image" then
+		lnk_conf = config_table.images;
+	elseif content.link_type == "email_autolink" then
+		lnk_conf = config_table.emails;
 	end
 
-	vim.api.nvim_buf_set_extmark(buffer, renderer.namespace, content.row_start, content.col_start, {
+	vim.api.nvim_buf_set_extmark(buffer, renderer.namespace, content.row_start, content.link_type == "email_autolink" and content.col_start or content.col_start + 1, {
 		virt_text_pos = "inline",
 		virt_text = {
-			{ config_table.corner_left or "", set_hl(config_table.corner_left_hl) or set_hl(config_table.hl) },
-			{ config_table.padding_left or "", set_hl(config_table.padding_left_hl) or set_hl(config_table.hl) },
-			{ config_table.icon or "", set_hl(config_table.icon_hl) or set_hl(config_table.hl) },
-			{ config_table.text or content.text or "", set_hl(config_table.text_hl) or set_hl(config_table.hl) },
-			{ config_table.padding_right or "", set_hl(config_table.padding_right_hl) or set_hl(config_table.hl) },
-			{ config_table.corner_right or "", set_hl(config_table.corner_right_hl) or set_hl(config_table.hl) },
+			{ lnk_conf.corner_left or "", set_hl(lnk_conf.corner_left_hl) or set_hl(lnk_conf.hl) },
+			{ lnk_conf.padding_left or "", set_hl(lnk_conf.padding_left_hl) or set_hl(lnk_conf.hl) },
+			{ lnk_conf.icon or "", set_hl(lnk_conf.icon_hl) or set_hl(lnk_conf.hl) },
 		},
 
-		conceal = "",
+		end_col = content.link_type == "email_autolink" and content.col_start + 1 or content.col_start,
+		conceal = ""
+	});
 
-		end_col = content.col_end
-	})
+	vim.api.nvim_buf_add_highlight(buffer, renderer.namespace, set_hl(lnk_conf.hl) or "", content.row_start, content.col_start, content.col_end);
+
+	vim.api.nvim_buf_set_extmark(buffer, renderer.namespace, content.row_end, content.link_type == "email_autolink" and content.col_end - 1 or content.col_end, {
+		virt_text_pos = "inline",
+		virt_text = {
+			{ lnk_conf.padding_right or "", set_hl(lnk_conf.padding_right_hl) or set_hl(lnk_conf.hl) },
+			{ lnk_conf.corner_right or "", set_hl(lnk_conf.corner_right_hl) or set_hl(lnk_conf.hl) },
+		},
+
+		end_col = content.link_type == "email_autolink" and content.col_end or content.col_start,
+		conceal = ""
+	});
 end
 
 --- Renderer for custom inline codes
@@ -1018,18 +1069,23 @@ renderer.render_inline_codes = function (buffer, content, config_table)
 		return;
 	end
 
-	vim.api.nvim_buf_set_extmark(buffer, renderer.namespace, content.row_start, content.col_start, {
+	-- NOTE: The ` are hidden by default
+	vim.api.nvim_buf_set_extmark(buffer, renderer.namespace, content.row_start, content.col_start + 1, {
 		virt_text_pos = "inline",
 		virt_text = {
 			{ config_table.corner_left or "", set_hl(config_table.corner_left_hl) or set_hl(config_table.hl) },
 			{ config_table.padding_left or "", set_hl(config_table.padding_left_hl) or set_hl(config_table.hl) },
-			{ config_table.text or content.text or "", set_hl(config_table.text_hl) or set_hl(config_table.hl) },
+		},
+	});
+
+	vim.api.nvim_buf_add_highlight(buffer, renderer.namespace, set_hl(config_table.hl), content.row_start, content.col_start, content.col_end);
+
+	vim.api.nvim_buf_set_extmark(buffer, renderer.namespace, content.row_start, content.col_end, {
+		virt_text_pos = "inline",
+		virt_text = {
 			{ config_table.padding_right or "", set_hl(config_table.padding_right_hl) or set_hl(config_table.hl) },
 			{ config_table.corner_right or "", set_hl(config_table.corner_right_hl) or set_hl(config_table.hl) },
 		},
-
-		end_col = content.col_end,
-		conceal = ""
 	});
 end
 
@@ -1054,6 +1110,8 @@ renderer.render_lists = function (buffer, content, config_table)
 		ls_conf = config_table.marker_dot or {};
 	end
 
+	local use_text = ls_conf.text or content.marker_symbol;
+
 	if ls_conf.add_padding == true then
 		local shift = config_table.shift_amount or vim.bo[buffer].shiftwidth;
 		local lvl = math.floor(content.col_start / vim.fn.strchars(content.marker_symbol)) + 1;
@@ -1062,7 +1120,18 @@ renderer.render_lists = function (buffer, content, config_table)
 			local line_num = content.row_start + (l - 1);
 			local wh_spaces = vim.trim(line, content.col_start):match("^%s*");
 
-			if vim.list_contains(content.list_candidates, line_num) then
+			if vim.list_contains(content.list_candidates, line_num) and l == 1 then
+				vim.api.nvim_buf_set_extmark(buffer, renderer.namespace, line_num, 0, {
+					virt_text_pos = "inline",
+					virt_text = {
+						{ string.rep(" ", lvl * shift) },
+						{ vim.trim(use_text), set_hl(ls_conf.hl) or "Special" }
+					},
+
+					end_col = content.col_start + vim.fn.strchars(content.marker_symbol),
+					conceal = " "
+				})
+			elseif vim.list_contains(content.list_candidates, line_num) then
 				vim.api.nvim_buf_set_extmark(buffer, renderer.namespace, line_num, 0, {
 					virt_text_pos = "inline",
 					virt_text = {
@@ -1074,19 +1143,14 @@ renderer.render_lists = function (buffer, content, config_table)
 				})
 			end
 		end
+	else
+		vim.api.nvim_buf_set_extmark(buffer, renderer.namespace, content.row_start, content.col_start, {
+			virt_text_pos = "overlay",
+			virt_text = {
+				{ vim.trim(use_text), set_hl(ls_conf.hl) or "Special" }
+			}
+		})
 	end
-
-	local use_text = ls_conf.text or content.marker_symbol;
-
-	vim.api.nvim_buf_set_extmark(buffer, renderer.namespace, content.row_start, content.col_start, {
-		virt_text_pos = "inline",
-		virt_text = {
-			{ vim.trim(use_text), set_hl(ls_conf.hl) or "Special" }
-		},
-
-		end_col = content.col_start + vim.fn.strchars(content.marker_symbol),
-		conceal = " "
-	})
 end
 
 --- Renderer for custom checkbox
@@ -1171,8 +1235,6 @@ renderer.render = function (buffer, parsed_content, config_table)
 		renderer.views[buffer] = parsed_content;
 	end
 
-	renderer.tmp_lines = {};
-
 	for _, content in ipairs(renderer.views[buffer]) do
 		local type = content.type;
 
@@ -1183,18 +1245,20 @@ renderer.render = function (buffer, parsed_content, config_table)
 		end
 
 
-		if type == "header" then
-			renderer.render_headers(buffer, content, config_table.headings)
+		if type == "heading_s" then
+			renderer.render_headings_s(buffer, content, config_table.headings);
+		elseif type == "heading" then
+			renderer.render_headings(buffer, content, config_table.headings)
 		elseif type == "code_block" then
 			renderer.render_code_blocks(buffer, content, config_table.code_blocks)
 		elseif type == "block_quote" then
 			renderer.render_block_quotes(buffer, content, config_table.block_quotes);
 		elseif type == "horizontal_rule" then
 			renderer.render_horizontal_rules(buffer, content, config_table.horizontal_rules);
-		elseif type == "hyperlink" then
-			renderer.render_hyperlinks(buffer, content, config_table.hyperlinks);
+		elseif type == "link" then
+			renderer.render_links(buffer, content, config_table.links);
 		elseif type == "image" then
-			renderer.render_img_links(buffer, content, config_table.images);
+			renderer.render_links(buffer, content, config_table.images);
 		elseif type == "inline_code" then
 			renderer.render_inline_codes(buffer, content, config_table.inline_codes)
 		elseif type == "list_item" then

@@ -11,13 +11,15 @@
 
 ## 📑 Table of contents
 
-- [Features](#features)
-- [Requirements](#requirements)
-  - [Lazy.nvim](#lazy.nvim)
-  - [Mini.deps](#mini.deps)
-  - [Others](#others)
-- [Setup](#setup)
-- [Showcases](#showcases)
+- [Features](#-features)
+- [Requirements](#-requirements)
+- [Installation](#-installation)
+  - [Lazy.nvim](#-lazynvim)
+  - [Mini.deps](#-minideps)
+  - [Others](#-others)
+- [Setup](#-setup)
+- [Commands](#-commands)
+- [Showcases](#-showcases)
 
 ## 🛸 Features
 
