@@ -188,28 +188,28 @@ Name of the highlight group to use for `padding_left`.
 > icon
 > `string or nil`
 >
-> For `icon` & `label` style only.
+> For `icon` & `label` styles only.
 
 The string to use as the icon for the heading.
 
 > icon_hl*
 > `string or nil`
 >
-> For `icon` & `label` style only.
+> For `icon` & `label` styles only.
 
 Name of the highlight group to use for `icon`.
 
 > text
 > `string or nil`
 >
-> For `icon` & `label` style only.
+> For `icon` & `label` styles only.
 
 The string to use as the title for the heading. When nil the actual title is used.
 
 > text_hl*
 > `string or nil`
 >
-> For `icon` & `label` style only.
+> For `icon` & `label` styles only.
 
 Name of the highlight group to use for `text`.
 
@@ -249,14 +249,14 @@ Name of the highlight group to use for `corner_right`.
 > sign
 > `string or nil`
 >
-> For `icon` & `label` style only.
+> For `icon` & `label` styles only.
 
 The string to use as the sign of the heading.
 
 > sign_hl*
 > `string or nil`
 >
-> For `icon` & `label` style only.
+> For `icon` & `label` styles only.
 
 Name of the highlight group to use for `sign`.
 
