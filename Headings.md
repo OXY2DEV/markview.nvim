@@ -415,9 +415,63 @@ headings = {
 }
 ```
 
-### Decorated heading
+### Decorated headings
+
+You can also make decorated headings using the `label` style.
+
+You can use `powerline symbols` to make corners of the headings.
+
+```lua
+headings = {
+    shift_width = 0,
+
+    heading_1 = {
+        style = "label",
+
+        corner_left = " ",
+        corner_left_hl = "H1_corners",
+
+        padding_right = " ",
+        padding_right_hl = "H1_corners",
+
+        corner_right = "",
+        corner_right_hl = "H1",
+
+        hl = "H1"
+    },
+}
+```
+
+### Headings with icons
+
+By using the `icon` style you can add icons to the headings.
+
+```lua
+headings = {
+    heading_1 = {
+        style = "icon",
+
+        icon = "▶ ",
+        hl = "H1"
+    },
+}
+```
+
+You can also use this option for adding `heading numbers`.
+
+```lua
+headings = {
+    heading_1 = {
+        style = "icon",
+
+        icon = "󰼏  ",
+        hl = "H1"
+    },
+}
+```
 
 ## Gallery
 
+Wow, so empty 😐
 
 
