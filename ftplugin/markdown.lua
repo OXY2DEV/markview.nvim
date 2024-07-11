@@ -52,6 +52,7 @@ vim.api.nvim_create_autocmd({ "BufWinEnter" }, {
 
 		markview.renderer.clear(buffer);
 		markview.renderer.render(buffer, parsed_content, markview.configuration)
+        markview.configuration.on_enable()
 	end
 });
 
@@ -76,6 +77,7 @@ vim.api.nvim_create_autocmd({ "ModeChanged", "TextChanged" }, {
 
 			markview.renderer.clear(buffer);
 			markview.renderer.render(buffer, parsed_content, markview.configuration)
+            markview.configuration.on_enable()
 		else
 			if markview.configuration.restore_conceallevel == true then
 				vim.wo.conceallevel = markview.global_options.conceallevel;
@@ -88,6 +90,7 @@ vim.api.nvim_create_autocmd({ "ModeChanged", "TextChanged" }, {
 			end
 
 			markview.renderer.clear(buffer);
+            markview.configuration.on_disable()
 		end
 	end
 });
