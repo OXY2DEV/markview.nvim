@@ -23,7 +23,7 @@ The `checkboxes` option comes with the following `sub-options` that affect all t
 > enable
 > `boolean or nil`
 
-When set to `false`, headings are not rendered.
+When set to `false`, checkboxes are not rendered.
 
 ### State options
 
