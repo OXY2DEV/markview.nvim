@@ -1,8 +1,8 @@
 # Headings
 
-[headings_1](./wiki_img/heading_1.jpg)
-[headings_2](./wiki_img/heading_2.jpg)
-[headings_3](./wiki_img/heading_3.jpg)
+![headings_1](./wiki_img/heading_1.jpg)
+![headings_2](./wiki_img/heading_2.jpg)
+![headings_3](./wiki_img/heading_3.jpg)
 
 ## Configuration options
 
