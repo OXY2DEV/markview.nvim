@@ -116,13 +116,13 @@ They can have different **styles** which affects what sub-option(s) you can use.
 
 The name of the style to use. Currently it supports 3 styles.
 
-- simple
+- simple,
   For adding simple background colors.
 
-- label
+- label,
   For making headings look like labels(like in glow).
 
-- icon
+- icon,
   Adds icons & signs(optionally) to the headings.
 
 > hl

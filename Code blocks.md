@@ -39,13 +39,13 @@ When set to `false`, code blocks are not rendered.
 
 Name of the style to use. Currently available styles are.
 
-- simple
+- simple,
   Adds a simple background to the lines of the code block.
 
-- minimal
+- minimal,
   Creates a box around the code block(like shown in the browser).
 
-- language
+- language,
   Like `minimal`, but also shows language file icon, language name & signs.
 
 >[!NOTE]
