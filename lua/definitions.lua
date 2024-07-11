@@ -71,6 +71,11 @@
 --- When true, revert the value of concealcursor to global value
 ---@field restore_concealcursor boolean?
 ---
+--- Called after enabling concealment
+---@field on_enable function
+---
+--- Called after disabling concealment
+---@field on_disable function
 --- Table for heading configuration
 ---@field headings markview.render_config.headings
 ---

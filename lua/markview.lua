@@ -21,6 +21,9 @@ markview.configuration = {
 	restore_conceallevel = true,
 	restore_concealcursor = false,
 
+    on_enable = function() end,
+    on_disable = function() end,
+
 	highlight_groups = {
 		{
 			group_name = "red",
@@ -465,6 +468,7 @@ markview.commands = {
 				markview.renderer.clear(buf);
 				markview.renderer.render(buf, parsed_content, markview.configuration)
 			end
+            markview.configuration.on_enable()
 		else
 			if markview.configuration.restore_conceallevel == true then
 				vim.o.conceallevel = markview.global_options.conceallevel;
@@ -481,6 +485,7 @@ markview.commands = {
 			end
 
 			markview.suppressed = true;
+            markview.configuration.on_disable()
 		end
 	end,
 	enableAll = function ()
@@ -495,6 +500,7 @@ markview.commands = {
 			markview.renderer.clear(buf);
 			markview.renderer.render(buf, parsed_content, markview.configuration)
 		end
+        markview.configuration.on_enable()
 	end,
 	disableAll = function ()
 		if markview.configuration.restore_conceallevel == true then
@@ -512,6 +518,7 @@ markview.commands = {
 		end
 
 		markview.suppressed = true;
+        markview.configuration.on_disable()
 	end,
 
 	enable = function ()
@@ -523,6 +530,7 @@ markview.commands = {
 
 		markview.renderer.clear(buffer);
 		markview.renderer.render(buffer, parsed_content, markview.configuration)
+        markview.configuration.on_enable()
 	end,
 
 	disable = function ()
@@ -537,7 +545,8 @@ markview.commands = {
 		end
 
 		markview.renderer.clear(vim.api.nvim_get_current_buf());
-	end
+        markview.configuration.on_enable()
+	end,
 }
 
 
