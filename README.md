@@ -124,6 +124,11 @@ require("markview").setup({
     -- Returns the concealcursor to the global value when changing modes
     restore_concealcursor = false,
 
+    -- Is called after concealment starts
+    on_enable = function() end,
+    -- Is called after concealment is cleared
+    on_disable = function() end,
+
     headings = {},
     code_blocks = {},
     block_quotes = {},
@@ -131,7 +136,6 @@ require("markview").setup({
     hyperlinks = {},
     images = {},
     inline_codes = {},
-    list_items = {},
     list_items = {},
     checkboxes = {},
     tables = {}

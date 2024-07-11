@@ -68,6 +68,7 @@ vim.api.nvim_create_autocmd({ "BufWinEnter" }, {
 		for _, window in ipairs(windows) do
 			markview.keymaps.init(buffer, window, parsed_content, markview.configuration);
 		end
+        markview.configuration.on_enable()
 	end
 });
 
@@ -102,6 +103,7 @@ vim.api.nvim_create_autocmd({ "ModeChanged", "TextChanged" }, {
 
 				markview.keymaps.init(buffer, window, parsed_content, markview.configuration);
 			end
+            markview.configuration.on_enable()
 		else
 			for _, window in ipairs(windows) do
 				if markview.configuration.restore_conceallevel == true then
@@ -116,6 +118,7 @@ vim.api.nvim_create_autocmd({ "ModeChanged", "TextChanged" }, {
 			end
 
 			markview.renderer.clear(buffer);
+            markview.configuration.on_disable()
 		end
 	end
 });

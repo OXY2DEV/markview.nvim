@@ -56,6 +56,9 @@ markview.configuration = {
 	restore_conceallevel = true,
 	restore_concealcursor = false,
 
+    on_enable = function() end,
+    on_disable = function() end,
+
 	highlight_groups = {
 		{
 			group_name = "col_1",
@@ -616,6 +619,7 @@ markview.commands = {
 			markview.renderer.clear(buf);
 			markview.renderer.render(buf, parsed_content, markview.configuration)
 		end
+        markview.configuration.on_enable()
 	end,
 	disableAll = function ()
 		if markview.configuration.restore_conceallevel == true then
@@ -672,6 +676,7 @@ markview.commands = {
 
 		markview.renderer.clear(buffer);
 		markview.renderer.render(buffer, parsed_content, markview.configuration)
+        markview.configuration.on_enable()
 	end,
 
 	disable = function (buf)
@@ -697,6 +702,7 @@ markview.commands = {
 
 		markview.renderer.clear(buffer);
 		markview.state.buf_states[buffer] = false;
+        markview.configuration.on_disable()
 	end
 }
 
