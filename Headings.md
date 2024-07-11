@@ -70,7 +70,7 @@ headings = {
 }
 ```
 
-## Global behaviors
+## Global options
 
 The `headings` option has the following options for controlling all the headings.
 
