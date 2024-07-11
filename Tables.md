@@ -2,7 +2,9 @@
 
 ![tables](./wiki_img/tables.jpg)
 
-This plugin uses custom `tables` which can be configured using the `tables` option.
+## Configuration options
+
+The `tables` option comes with these sub-options.
 
 ```lua
 tables = {
@@ -29,22 +31,27 @@ tables = {
 }
 ```
 
-## enable
+> enable
+> `boolean or nil`
 
-Enables/Disables custom tables.
+When set to `false`, tables are not rendered.
 
-## use_virt_lines
+> use_virt_lines
+> `boolean or nil`
 
-When true, the top and bottom borders are created using `virt_lines` instead of `virt_text`.
+When set to `true`, the top and bottom borders are created using `virt_lines` instead of `virt_text`.
 
-## text
+> text
+> `string[]`
 
-Parts to create the table.
+List of 12 items to make the table.
 
-## hl
+> hl
+> `string[] or nil`
 
-Highlight groups for various parts.
+Highlight groups for `text`.
 
+## Gallery
 
-
+Wow, so empty 😐
 
