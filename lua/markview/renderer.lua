@@ -46,7 +46,9 @@ local set_hl = function (hl)
 		return;
 	end
 
-	if vim.fn.hlexists("Markview_" .. hl) == 1 then
+	if vim.fn.hlexists("Markview" .. hl) == 1 then
+		return "Markview" .. hl;
+	elseif vim.fn.hlexists("Markview_" .. hl) == 1 then
 		return "Markview_" .. hl;
 	else
 		return hl;

@@ -24,7 +24,7 @@ markview.add_hls = function (obj)
 		end
 
 		_opt.default = true;
-		vim.api.nvim_set_hl(0, "Markview_" .. hl.group_name, _opt);
+		vim.api.nvim_set_hl(0, "Markview" .. hl.group_name, _opt);
 	end
 end
 
@@ -70,7 +70,7 @@ markview.configuration = {
 
 	highlight_groups = {
 		{
-			group_name = "col_1",
+			group_name = "Col1",
 			value = function ()
 				local bg = markview.colors.get_hl_value(0, "Normal", "bg") or markview.colors.get_hl_value(0, "Cursor", "fg");
 				local fg = markview.colors.get_hl_value(0, "markdownH1", "fg") or "#f38ba8";
@@ -82,7 +82,7 @@ markview.configuration = {
 			end
 		},
 		{
-			group_name = "col_1_fg",
+			group_name = "Col1Fg",
 			value = function ()
 				local fg = markview.colors.get_hl_value(0, "markdownH1", "fg") or "#f38ba8";
 
@@ -93,7 +93,7 @@ markview.configuration = {
 		},
 
 		{
-			group_name = "col_2",
+			group_name = "Col2",
 			value = function ()
 				local bg = markview.colors.get_hl_value(0, "Normal", "bg") or markview.colors.get_hl_value(0, "Cursor", "fg");
 				local fg = markview.colors.get_hl_value(0, "markdownH2", "fg") or "#fab387";
@@ -105,7 +105,7 @@ markview.configuration = {
 			end
 		},
 		{
-			group_name = "col_2_fg",
+			group_name = "Col2Fg",
 			value = function ()
 				local fg = markview.colors.get_hl_value(0, "markdownH2", "fg") or "#fab387";
 
@@ -116,7 +116,7 @@ markview.configuration = {
 		},
 
 		{
-			group_name = "col_3",
+			group_name = "Col3",
 			value = function ()
 				local bg = markview.colors.get_hl_value(0, "Normal", "bg") or markview.colors.get_hl_value(0, "Cursor", "fg");
 				local fg = markview.colors.get_hl_value(0, "markdownH3", "fg") or "#f9e2af";
@@ -128,7 +128,7 @@ markview.configuration = {
 			end
 		},
 		{
-			group_name = "col_3_fg",
+			group_name = "Col3Fg",
 			value = function ()
 				local fg = markview.colors.get_hl_value(0, "markdownH3", "fg") or "#f9e2af";
 
@@ -139,7 +139,7 @@ markview.configuration = {
 		},
 
 		{
-			group_name = "col_4",
+			group_name = "Col4",
 			value = function ()
 				local bg = markview.colors.get_hl_value(0, "Normal", "bg") or markview.colors.get_hl_value(0, "Cursor", "fg");
 				local fg = markview.colors.get_hl_value(0, "markdownH4", "fg") or "#a6e3a1";
@@ -151,7 +151,7 @@ markview.configuration = {
 			end
 		},
 		{
-			group_name = "col_4_fg",
+			group_name = "Col4Fg",
 			value = function ()
 				local fg = markview.colors.get_hl_value(0, "markdownH4", "fg") or "#a6e3a1";
 
@@ -162,7 +162,7 @@ markview.configuration = {
 		},
 
 		{
-			group_name = "col_5",
+			group_name = "Col5",
 			value = function ()
 				local bg = markview.colors.get_hl_value(0, "Normal", "bg") or markview.colors.get_hl_value(0, "Cursor", "fg");
 				local fg = markview.colors.get_hl_value(0, "markdownH5", "fg") or "#74c7ec";
@@ -174,7 +174,7 @@ markview.configuration = {
 			end
 		},
 		{
-			group_name = "col_5_fg",
+			group_name = "Col5Fg",
 			value = function ()
 				local fg = markview.colors.get_hl_value(0, "markdownH5", "fg") or "#74c7ec";
 
@@ -185,7 +185,7 @@ markview.configuration = {
 		},
 
 		{
-			group_name = "col_6",
+			group_name = "Col6",
 			value = function ()
 				local bg = markview.colors.get_hl_value(0, "Normal", "bg") or markview.colors.get_hl_value(0, "Cursor", "fg");
 				local fg = markview.colors.get_hl_value(0, "markdownH6", "fg") or "#b4befe";
@@ -197,7 +197,7 @@ markview.configuration = {
 			end
 		},
 		{
-			group_name = "col_6_fg",
+			group_name = "Col6Fg",
 			value = function ()
 				local fg = markview.colors.get_hl_value(0, "markdownH6", "fg") or "#b4befe";
 
@@ -208,7 +208,7 @@ markview.configuration = {
 		},
 
 		{
-			group_name = "col_7",
+			group_name = "Col7",
 			value = function ()
 				local bg = markview.colors.get_hl_value(0, "Normal", "bg") or markview.colors.get_hl_value(0, "Cursor", "fg");
 				local fg = markview.colors.get_hl_value(0, "Comment", "fg");
@@ -220,7 +220,7 @@ markview.configuration = {
 			end
 		},
 		{
-			group_name = "col_7_fg",
+			group_name = "Col7Fg",
 			value = function ()
 				local fg = markview.colors.get_hl_value(0, "Comment", "fg");
 
@@ -231,7 +231,7 @@ markview.configuration = {
 		},
 
 		{
-			group_name = "layer",
+			group_name = "Layer",
 			value = function ()
 				local bg = markview.colors.get_hl_value(0, "Normal", "bg") or markview.colors.get_hl_value(0, "Cursor", "fg");
 				local fg = markview.colors.get_hl_value(0, "Comment", "fg");
@@ -245,7 +245,7 @@ markview.configuration = {
 			end
 		},
 		{
-			group_name = "layer_2",
+			group_name = "Layer2",
 			value = function ()
 				local bg = markview.colors.get_hl_value(0, "Normal", "bg") or markview.colors.get_hl_value(0, "Cursor", "fg");
 				local fg = markview.colors.get_hl_value(0, "Comment", "fg");
@@ -271,48 +271,48 @@ markview.configuration = {
 
 		heading_1 = {
 			style = "icon",
-			sign = "󰌕 ", sign_hl = "Markview_col_1_fg",
+			sign = "󰌕 ", sign_hl = "MarkviewCol1Fg",
 
-			icon = "󰼏  ", hl = "Markview_col_1",
+			icon = "󰼏  ", hl = "MarkviewCol1",
 
 		},
 		heading_2 = {
 			style = "icon",
-			sign = "󰌖 ", sign_hl = "Markview_col_2_fg",
+			sign = "󰌖 ", sign_hl = "MarkviewCol2Fg",
 
-			icon = "󰎨  ", hl = "Markview_col_2",
+			icon = "󰎨  ", hl = "MarkviewCol2",
 		},
 		heading_3 = {
 			style = "icon",
 
-			icon = "󰼑  ", hl = "Markview_col_3",
+			icon = "󰼑  ", hl = "MarkviewCol3",
 		},
 		heading_4 = {
 			style = "icon",
 
-			icon = "󰎲  ", hl = "Markview_col_4",
+			icon = "󰎲  ", hl = "MarkviewCol4",
 		},
 		heading_5 = {
 			style = "icon",
 
-			icon = "󰼓  ", hl = "Markview_col_5",
+			icon = "󰼓  ", hl = "MarkviewCol5",
 		},
 		heading_6 = {
 			style = "icon",
 
-			icon = "󰎴  ", hl = "Markview_col_6",
+			icon = "󰎴  ", hl = "MarkviewCol6",
 		},
 
 		setext_1 = {
 			style = "github",
 
-			icon = "   ", hl = "Markview_col_1",
+			icon = "   ", hl = "MarkviewCol1",
 			underline = "━"
 		},
 		setext_2 = {
 			style = "github",
 
-			icon = "   ", hl = "Markview_col_2",
+			icon = "   ", hl = "MarkviewCol2",
 			underline = "─"
 		}
 	},
@@ -321,7 +321,7 @@ markview.configuration = {
 		enable = true,
 
 		style = "language",
-		hl = "layer_2",
+		hl = "Layer2",
 
 		min_width = 60,
 		pad_amount = 3,
@@ -339,7 +339,7 @@ markview.configuration = {
 		enable = true,
 
 		default = {
-			border = "▋", border_hl = "Markview_col_7_fg"
+			border = "▋", border_hl = "MarkviewCol7Fg"
 		},
 
 		callouts = {
@@ -347,139 +347,139 @@ markview.configuration = {
 			{
 				match_string = "ABSTRACT",
 				callout_preview = "󱉫 Abstract",
-				callout_preview_hl = "Markview_col_5_fg",
+				callout_preview_hl = "MarkviewCol5Fg",
 
 				custom_title = true,
 				custom_icon = "󱉫 ",
 
-				border = "▋", border_hl = "Markview_col_5_fg"
+				border = "▋", border_hl = "MarkviewCol5Fg"
 			},
 			{
 				match_string = "TODO",
 				callout_preview = " Todo",
-				callout_preview_hl = "Markview_col_5_fg",
+				callout_preview_hl = "MarkviewCol5Fg",
 
 				custom_title = true,
 				custom_icon = " ",
 
-				border = "▋", border_hl = "Markview_col_5_fg"
+				border = "▋", border_hl = "MarkviewCol5Fg"
 			},
 			{
 				match_string = "SUCCESS",
 				callout_preview = "󰗠 Success",
-				callout_preview_hl = "Markview_col_4_fg",
+				callout_preview_hl = "MarkviewCol4Fg",
 
 				custom_title = true,
 				custom_icon = "󰗠 ",
 
-				border = "▋", border_hl = "Markview_col_4_fg"
+				border = "▋", border_hl = "MarkviewCol4Fg"
 			},
 			{
 				match_string = "QUESTION",
 				callout_preview = "󰋗 Question",
-				callout_preview_hl = "Markview_col_2_fg",
+				callout_preview_hl = "MarkviewCol2Fg",
 
 				custom_title = true,
 				custom_icon = "󰋗 ",
 
-				border = "▋", border_hl = "Markview_col_2_fg"
+				border = "▋", border_hl = "MarkviewCol2Fg"
 			},
 			{
 				match_string = "FAILURE",
 				callout_preview = "󰅙 Failure",
-				callout_preview_hl = "Markview_col_1_fg",
+				callout_preview_hl = "MarkviewCol1Fg",
 
 				custom_title = true,
 				custom_icon = "󰅙 ",
 
-				border = "▋", border_hl = "Markview_col_1_fg"
+				border = "▋", border_hl = "MarkviewCol1Fg"
 			},
 			{
 				match_string = "DANGER",
 				callout_preview = " Danger",
-				callout_preview_hl = "Markview_col_1_fg",
+				callout_preview_hl = "MarkviewCol1Fg",
 
 				custom_title = true,
 				custom_icon = "  ",
 
-				border = "▋", border_hl = "Markview_col_1_fg"
+				border = "▋", border_hl = "MarkviewCol1Fg"
 			},
 			{
 				match_string = "BUG",
 				callout_preview = " Bug",
-				callout_preview_hl = "Markview_col_1_fg",
+				callout_preview_hl = "MarkviewCol1Fg",
 
 				custom_title = true,
 				custom_icon = "  ",
 
-				border = "▋", border_hl = "Markview_col_1_fg"
+				border = "▋", border_hl = "MarkviewCol1Fg"
 			},
 			{
 				match_string = "EXAMPLE",
 				callout_preview = "󱖫 Example",
-				callout_preview_hl = "Markview_col_6_fg",
+				callout_preview_hl = "MarkviewCol6Fg",
 
 				custom_title = true,
 				custom_icon = " 󱖫 ",
 
-				border = "▋", border_hl = "Markview_col_6_fg"
+				border = "▋", border_hl = "MarkviewCol6Fg"
 			},
 			{
 				match_string = "QUOTE",
 				callout_preview = " Quote",
-				callout_preview_hl = "Markview_col_7_fg",
+				callout_preview_hl = "MarkviewCol7Fg",
 
 				custom_title = true,
 				custom_icon = "  ",
 
-				border = "▋", border_hl = "Markview_col_7_fg"
+				border = "▋", border_hl = "MarkviewCol7Fg"
 			},
 
 
 			{
 				match_string = "NOTE",
 				callout_preview = "󰋽 Note",
-				callout_preview_hl = "Markview_col_5_fg",
+				callout_preview_hl = "MarkviewCol5Fg",
 
-				border = "▋", border_hl = "Markview_col_5_fg"
+				border = "▋", border_hl = "MarkviewCol5Fg"
 			},
 			{
 				match_string = "TIP",
 				callout_preview = " Tip",
-				callout_preview_hl = "Markview_col_4_fg",
+				callout_preview_hl = "MarkviewCol4Fg",
 
-				border = "▋", border_hl = "Markview_col_4_fg"
+				border = "▋", border_hl = "MarkviewCol4Fg"
 			},
 			{
 				match_string = "IMPORTANT",
 				callout_preview = " Important",
-				callout_preview_hl = "Markview_col_3_fg",
+				callout_preview_hl = "MarkviewCol3Fg",
 
-				border = "▋", border_hl = "Markview_col_3_fg"
+				border = "▋", border_hl = "MarkviewCol3Fg"
 			},
 			{
 				match_string = "WARNING",
 				callout_preview = " Warning",
-				callout_preview_hl = "Markview_col_2_fg",
+				callout_preview_hl = "MarkviewCol2Fg",
 
-				border = "▋", border_hl = "Markview_col_2_fg"
+				border = "▋", border_hl = "MarkviewCol2Fg"
 			},
 			{
 				match_string = "CAUTION",
 				callout_preview = "󰳦 Caution",
-				callout_preview_hl = "Markview_col_1_fg",
+				callout_preview_hl = "MarkviewCol1Fg",
 
-				border = "▋", border_hl = "Markview_col_1_fg"
+				border = "▋", border_hl = "MarkviewCol1Fg"
 			},
 			{
 				match_string = "CUSTOM",
 				callout_preview = "󰠳 Custom",
-				callout_preview_hl = "Markview_col_3_fg",
+				callout_preview_hl = "MarkviewCol3Fg",
 
 				custom_title = true,
 				custom_icon = " 󰠳 ",
 
-				border = "▋", border_hl = "Markview_col_3_fg"
+				border = "▋", border_hl = "MarkviewCol3Fg"
 			}
 		}
 	},
@@ -496,7 +496,7 @@ markview.configuration = {
 
 				text = "─",
 				hl = {
-					"Markview_gradient_1", "Markview_gradient_2", "Markview_gradient_3", "Markview_gradient_4", "Markview_gradient_5", "Markview_gradient_6", "Markview_gradient_7", "Markview_gradient_8", "Markview_gradient_9", "Markview_gradient_10"
+					"MarkviewGradient1", "MarkviewGradient2", "MarkviewGradient3", "MarkviewGradient4", "MarkviewGradient5", "MarkviewGradient6", "MarkviewGradient7", "MarkviewGradient8", "MarkviewGradient9", "MarkviewGradient10"
 				}
 			},
 			{
@@ -514,7 +514,7 @@ markview.configuration = {
 				direction = "right",
 				text = "─",
 				hl = {
-					"Markview_gradient_1", "Markview_gradient_2", "Markview_gradient_3", "Markview_gradient_4", "Markview_gradient_5", "Markview_gradient_6", "Markview_gradient_7", "Markview_gradient_8", "Markview_gradient_9", "Markview_gradient_10"
+					"MarkviewGradient1", "MarkviewGradient2", "MarkviewGradient3", "MarkviewGradient4", "MarkviewGradient5", "MarkviewGradient6", "MarkviewGradient7", "MarkviewGradient8", "MarkviewGradient9", "MarkviewGradient10"
 				}
 			}
 		}
@@ -542,7 +542,7 @@ markview.configuration = {
 		corner_left = " ",
 		corner_right = " ",
 
-		hl = "layer"
+		hl = "Layer"
 	},
 
 	list_items = {
@@ -550,19 +550,19 @@ markview.configuration = {
 			add_padding = true,
 
 			text = "",
-			hl = "markview_col_2_fg"
+			hl = "markviewCol2Fg"
 		},
 		marker_plus = {
 			add_padding = true,
 
 			text = "",
-			hl = "markview_col_4_fg"
+			hl = "markviewCol4Fg"
 		},
 		marker_star = {
 			add_padding = true,
 
 			text = "",
-			text_hl = "markview_col_6_fg"
+			text_hl = "markviewCol6Fg"
 		},
 		marker_dot = {
 			add_padding = true
@@ -573,13 +573,13 @@ markview.configuration = {
 		enable = true,
 
 		checked = {
-			text = "✔", hl = "markview_col_4_fg"
+			text = "✔", hl = "markviewCol4Fg"
 		},
 		pending = {
-			text = "◯", hl = "Markview_col_2_fg"
+			text = "◯", hl = "MarkviewCol2Fg"
 		},
 		unchecked = {
-			text = "✘", hl = "Markview_col_1_fg"
+			text = "✘", hl = "MarkviewCol1Fg"
 		}
 	},
 
@@ -593,11 +593,11 @@ markview.configuration = {
 			"╼", "╾", "╴", "╶"
 		},
 		hl = {
-			"col_1_fg", "col_1_fg", "col_1_fg", "col_1_fg",
-			"col_1_fg", "col_1_fg", "col_1_fg", "col_1_fg",
-			"col_1_fg", "col_1_fg", "col_1_fg", "col_1_fg",
+			"MarkviewCol1Fg", "MarkviewCol1Fg", "MarkviewCol1Fg", "MarkviewCol1Fg",
+			"MarkviewCol1Fg", "MarkviewCol1Fg", "MarkviewCol1Fg", "MarkviewCol1Fg",
+			"MarkviewCol1Fg", "MarkviewCol1Fg", "MarkviewCol1Fg", "MarkviewCol1Fg",
 
-			"col_1_fg", "col_1_fg", "col_1_fg", "col_1_fg"
+			"MarkviewCol1Fg", "MarkviewCol1Fg", "MarkviewCol1Fg", "MarkviewCol1Fg"
 		},
 
 		use_virt_lines = false,

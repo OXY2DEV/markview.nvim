@@ -9,6 +9,12 @@
 >[!WARNING]
 > This plugin is in it's alpha stage and may go through breaking changes.
 
+>[!CAUTION]
+> If you are using `presets¢` then you should stop using them. Presets are going to get reworked in the coming updates so to prevent things from accidentally breaking please refrain for using them.
+
+>[!IMPORTANT]
+> Highlights now use `PascalCase` so it is recommended to change your highlight group names to PascalCase. But don't worry, the previous names using `Markview_` are still supported!
+
 ## 📑 Table of contents
 
 - [Features](#-features)
