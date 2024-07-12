@@ -280,9 +280,6 @@
 --- Enable/Disable custom block quotes
 ---@field enable boolean?
 ---
---- "virt_text_pos" value for the horizontal rule
----@field position string?
----
 --- Parts used to make the horizontal rule
 ---@field parts markview.render_config.hr.parts[]
 
@@ -330,12 +327,6 @@
 ---
 --- Highlight group for the icon
 ---@field icon_hl string?
----
---- Custom text for the heading. The heading text is used when nil
----@field text string?
----
---- Highlight group for the heading text, inherits from icon_hl
----@field text_hl string?
 ---
 --- Used bu the "label" style to add text before the left padding
 ---@field corner_left string?
@@ -409,7 +400,7 @@
 ---@field enable boolean?
 ---
 --- Number of characters to shift per level
----@field shift_amount number?
+---@field shift_width number?
 ---
 --- Configuration for the + list item
 ---@field marker_plus markview.render_config.list_items.item?

@@ -117,22 +117,21 @@ Configuration table for the `setup()` function is given below.
 ```lua
 require("markview").setup({
     buf_ignore = { "nofile" },
-    modes = { "n" },
+    modes = { "n", "no" },
 
     -- Returns the conceallevel to the global value when changing modes
     restore_conceallevel = true,
     -- Returns the concealcursor to the global value when changing modes
     restore_concealcursor = false,
 
-    headings = {},
-    code_blocks = {},
     block_quotes = {},
-    horizontal_rules = {},
-    hyperlinks = {},
-    images = {},
-    inline_codes = {},
-    list_items = {},
     checkboxes = {},
+    code_blocks = {},
+    headings = {},
+    horizontal_rules = {},
+    inline_codes = {},
+    links = {},
+    list_items = {},
     tables = {}
 });
 ```
@@ -151,9 +150,11 @@ When called without any arguments, it toggles the plugin.
 Possible subcommands are,
 
 - `toggleAll`, toggles the plugin
-- `enableAll`, enables the preview in all the attached buffers
-- `disableAll`, disables the preview in all the attached buffers
-
+- `enableAll`, enables the plugin
+- `disableAll`, disables the plugin
+- `toggle`, toggles the plugin for the specified buffer(default is the current buffer)
+- `enable`, enables the plugin for the specified buffer(default is the current buffer)
+- `disable`, disables the plugin for the specified buffer(default is the current buffer)
 
 ## 👾 Showcases
 
