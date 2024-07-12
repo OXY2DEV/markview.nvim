@@ -5,14 +5,10 @@
 - [Table of contents](#table-of-contents)
 - [Requirements](#requirements)
 - [Structure](#structure)
-  - [highlight_groups](#highlight_groups)
-  - [buf_ignore](#buf_ignore)
-  - [modes](#modes)
-  - [restore_conceallevel](#restore_conceallevel)
-  - [restore_concealcursor](#restore_concealcursor)
-  - [Others](#others)
+  - [Plugin options]()
+  - [Render options]()
 
-## Requirements
+## Minimum requirements
 
 - Neovim 0.10
 - nvim-treesitter
@@ -27,42 +23,47 @@
 >[!WARNING]
 > The `setup()` function is subject to **breaking changes**. Options may be changed, removed or completely reworked for various reasons.
 
-The setup function takes the following table as it's parameter.
+The setup function has the following options..
 
 ```lua
 {
     highlight_groups = {},
 
     buf_ignore = { "nofile" },
-    modes = { "n" },
+    modes = { "n", "no" },
 
     restore_conceallevel = true,
     restore_concealcursor = false,
 
-    headings = {},
-    code_blocks = {},
     block_quotes = {},
-    horizontal_rules = {},
-    hyperlinks = {},
-    images = {},
-    inline_codes = {},
-    list_items = {},
     checkboxes = {},
+    code_blocks = {},
+    headings = {},
+    horizontal_rules = {},
+    inline_codes = {},
+    links = {},
+    list_items = {},
     tables = {}
 }
 ```
 
-### highlight_groups
+### Plugin options
+
+> highlight_groups
+> `{ group_name: string, value: table | function }[] or { output: function }`
 
 A list of tables containing various highlight groups to set. Highlight groups are automatically set again when the `colorscheme` is changed.
 
-Highlight groups are defined using tables with the `group_name` & `value` properties.
+Each item in the list has the following structure.
 
 ```lua
 {
     group_name = "red",
-    value = { bg = "#453244", fg = "#f38ba8" }
-}
+    value = { bg = "#453244", fg = "#f38ba8" },
+
+    output = function ()
+    end
+},
 ```
 
 >[!IMPORTANT]
@@ -70,13 +71,35 @@ Highlight groups are defined using tables with the `group_name` & `value` proper
 >
 > This is to prevent accidentally overwriting any of the default highlight groups.
 
-When using these groups in the plugin you can omit the `Markview_` prefix if you want.
+---
 
-### buf_ignore
+> group_name
+> `string`
+
+Name of the highlight group.
+
+>[!NOTE]
+> When using highlight groups inside the plugin  you can omit the `Markview_` prefix.
+
+> value
+> `function or table`
+
+The value to use for the highlight group. When the value is a `function`, the return value of the function is used.
+
+> output
+> `function`
+
+A function to return a list of `highlight_groups` items. Useful for making gradients or using conditions when creating highlight groups.
+
+---
+
+> buf_ignore
+> `string[] or nil`
 
 A list of `buftypes` to ignore. By default only `nofile` buffers are ignored.
 
-### modes
+> modes
+> `string[]`
 
 A list of modes where the plugin will be used.
 
@@ -89,35 +112,37 @@ Here's a brief list of the normally used modes,
 5. i for insert mode
 6. r for replace mode
 
-By default, the plugin is only enabled when entering **normal mode**.
+By default, the plugin is only enabled when entering **normal mode** & **normal-operation mode**.
 
-### restore_conceallevel
+> restore_conceallevel
+> `boolean or nil`
 
-When true, the conceallevel is set back to the value of `vim.o.conceallevel` when hiding the preview.
-When false, it is set to 0 instead.
+When set to `true`, the conceallevel is set back to the value of `vim.o.conceallevel` when hiding the preview.
+Otherwise, it is set to 0 instead.
 
-The default is true.
+The default is `true`.
 
-### restore_concealcursor
+> restore_concealcursor
+> `boolean or nil`
 
 Same as `restore_conceallevel`, but for concealcursor.
 
-The default is false.
+The default is `false`.
 
 ---
 
-### Others
+### Render options
 
-The rest of the properties are are explained in detail in their own wiki pages.
+The remaining properties are used for controlling what gets rendered & how they get rendered.
 
-Here is a list containing all of the relevant wiki pages.
+They are all explained in their own **wiki page**.
 
+- [Block quotes](https://github.com/OXY2DEV/markview.nvim/wiki/Block_quotes)
+- [Checkboxes](https://github.com/OXY2DEV/markview.nvim/wiki/Checkboxes)
+- [Code blocks](https://github.com/OXY2DEV/markview.nvim/wiki/Code_blocks)
 - [Headings](https://github.com/OXY2DEV/markview.nvim/wiki/Headings)
 - [Horizontal rules](https://github.com/OXY2DEV/markview.nvim/wiki/Hrs)
-- [Links and inline codes](https://github.com/OXY2DEV/markview.nvim/wiki/Links_and_inline_codes)
-- [Block quotes](https://github.com/OXY2DEV/markview.nvim/wiki/Block_quotes)
-- [Code blocks](https://github.com/OXY2DEV/markview.nvim/wiki/Code_blocks)
-- [Checkboxes](https://github.com/OXY2DEV/markview.nvim/wiki/Checkboxes)
+- [Links](https://github.com/OXY2DEV/markview.nvim/wiki/Links_and_inline_codes)
 - [List items](https://github.com/OXY2DEV/markview.nvim/wiki/List_items)
 - [Tables](https://github.com/OXY2DEV/markview.nvim/wiki/Tables)
 

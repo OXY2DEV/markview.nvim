@@ -48,10 +48,24 @@ Used for customising email links.
 
 Each link type has the following sub-options for customisation.
 
+```lua
+inline_links = {
+    hl = nil,
+
+    corner_left = "", corner_left_hl = nil,
+    padding_left = "", padding_left_hl = nil,
+
+    icon = "", icon_hl = nil,
+
+    padding_right = "", padding_right_hl = nil,
+    corner_right = "", corner_right_hl = nil
+}
+```
+
 How the following sub-options are applied is given below.
 
 ```txt
-█▒   Link  ▒█
+█▒  Link  ▒█
 ││└┬┘└──┬─┘│└─ corner_right
 ││ │    │  └── padding_right
 ││ │    └───── text [Not an option]
