@@ -323,8 +323,6 @@ markview.configuration = {
 		style = "language",
 		hl = "layer_2",
 
-		position = "overlay",
-
 		min_width = 60,
 		pad_amount = 3,
 
