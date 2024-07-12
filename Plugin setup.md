@@ -32,8 +32,10 @@ The setup function has the following options..
     buf_ignore = { "nofile" },
     modes = { "n", "no" },
 
-    restore_conceallevel = true,
-    restore_concealcursor = false,
+    options = {
+        on_enable = {},
+        on_disable = {}
+    },
 
     block_quotes = {},
     checkboxes = {},
@@ -114,20 +116,33 @@ Here's a brief list of the normally used modes,
 
 By default, the plugin is only enabled when entering **normal mode** & **normal-operation mode**.
 
-> restore_conceallevel
-> `boolean or nil`
+> options
+> `table or nil`
 
-When set to `true`, the conceallevel is set back to the value of `vim.o.conceallevel` when hiding the preview.
-Otherwise, it is set to 0 instead.
+A table with 2 sub-options `on_enable` & `on_disable`. Each of them has the following options.
 
-The default is `true`.
+```lua
+options = {
+    on_enable = {
+        conceallevel = 2,
+        concealcursor = "n"
+    },
+    on_disable = {
+        conceallevel = 0,
+        concealcursor = ""
+    },
+}
+```
 
-> restore_concealcursor
-> `boolean or nil`
+> conceallevel
+> `number or nil`
 
-Same as `restore_conceallevel`, but for concealcursor.
+The level of `conceallevel`. Check the help pages for all the possible values.
 
-The default is `false`.
+> concealcursor
+> `string or nil`
+
+The value of `concealcursor`. Check the help pages for all the possible values.
 
 ---
 
