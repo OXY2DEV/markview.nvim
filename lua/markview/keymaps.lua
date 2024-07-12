@@ -42,7 +42,7 @@ keymaps.init = function (buffer, window, parsed_content, config_table)
 	end
 
 	for _, content in ipairs(parsed_content) do
-		if content.type == "hyperlink" or content.type == "image" then
+		if content.type == "link" then
 			table.insert(keymaps.views[buffer], content);
 		end
 	end

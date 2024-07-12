@@ -26,6 +26,7 @@ if vim.islist(markview.configuration.highlight_groups) then
 end
 
 local markview_augroup = vim.api.nvim_create_augroup("markview_buf_" .. vim.api.nvim_get_current_buf(), { clear = true });
+local options = markview.configuration.options;
 
 vim.api.nvim_create_autocmd({ "BufWinEnter" }, {
 	buffer = vim.api.nvim_get_current_buf(),
@@ -59,13 +60,13 @@ vim.api.nvim_create_autocmd({ "BufWinEnter" }, {
 
 		local parsed_content = markview.parser.init(buffer);
 
-		vim.wo.conceallevel = 2;
-		vim.wo.concealcursor = "n";
-
 		markview.renderer.clear(buffer);
 		markview.renderer.render(buffer, parsed_content, markview.configuration)
 
 		for _, window in ipairs(windows) do
+			vim.wo[window].conceallevel = type(options.on_enable) == "table" and options.on_enable.conceallevel or 2;
+			vim.wo[window].concealcursor = type(options.on_enable) == "table" and options.on_enable.concealcursor or "n";
+
 			markview.keymaps.init(buffer, window, parsed_content, markview.configuration);
 		end
 	end
@@ -97,22 +98,15 @@ vim.api.nvim_create_autocmd({ "ModeChanged", "TextChanged" }, {
 			markview.renderer.render(buffer, parsed_content, markview.configuration);
 
 			for _, window in ipairs(windows) do
-				vim.wo[window].conceallevel = 2;
-				vim.wo[window].concealcursor = "n";
+				vim.wo[window].conceallevel = type(options.on_enable) == "table" and options.on_enable.conceallevel or 2;
+				vim.wo[window].concealcursor = type(options.on_enable) == "table" and options.on_enable.concealcursor or "n";
 
 				markview.keymaps.init(buffer, window, parsed_content, markview.configuration);
 			end
 		else
 			for _, window in ipairs(windows) do
-				if markview.configuration.restore_conceallevel == true then
-					vim.wo[window].conceallevel = markview.global_options.conceallevel;
-				else
-					vim.wo[window].conceallevel = 0;
-				end
-
-				if markview.configuration.restore_concealcursor == true then
-					vim.wo[window].concealcursor = markview.global_options.concealcursor;
-				end
+				vim.wo[window].conceallevel = type(options.on_disable) == "table" and options.on_disable.conceallevel or markview.global_options.conceallevel;
+				vim.wo[window].concealcursor = type(options.on_disable) == "table" and options.on_disable.concealcursor or markview.global_options.concealcursor;
 			end
 
 			markview.renderer.clear(buffer);

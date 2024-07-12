@@ -49,6 +49,7 @@ For `plugins.lua` or `lazy.lua` users.
 ```lua
 {
     "OXY2DEV/markview.nvim",
+    ft = { "md" },
 
     dependencies = {
         -- You may not need this if you don't lazy load
@@ -65,6 +66,7 @@ For `plugins/markview.lua` users
 ```lua
 return {
     "OXY2DEV/markview.nvim",
+    ft = { "md" },
 
     dependencies = {
         -- You may not need this if you don't lazy load
@@ -119,10 +121,10 @@ require("markview").setup({
     buf_ignore = { "nofile" },
     modes = { "n", "no" },
 
-    -- Returns the conceallevel to the global value when changing modes
-    restore_conceallevel = true,
-    -- Returns the concealcursor to the global value when changing modes
-    restore_concealcursor = false,
+    options = {
+        on_enable = {},
+        on_disable = {}
+    },
 
     block_quotes = {},
     checkboxes = {},
