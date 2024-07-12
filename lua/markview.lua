@@ -257,7 +257,7 @@ markview.configuration = {
 		},
 		{
 			output = function ()
-				return markview.colors.create_gradient("gradient_", markview.colors.get_hl_value(0, "Normal", "bg") or markview.colors.get_hl_value(0, "Cursor", "fg"), markview.colors.get_hl_value(0, "Title", "fg"), 10, "fg");
+				return markview.colors.create_gradient("Gradient", markview.colors.get_hl_value(0, "Normal", "bg") or markview.colors.get_hl_value(0, "Cursor", "fg"), markview.colors.get_hl_value(0, "Title", "fg"), 10, "fg");
 			end
 		}
 	},
