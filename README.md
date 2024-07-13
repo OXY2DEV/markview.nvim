@@ -169,5 +169,9 @@ Possible subcommands are,
 >[!IMPORTANT]
 > Screenshots on a phone are very blurry(Yes, the plugin was made on my phone).
 >
-> If you have screenshots of the plugin, you can submit them in the special issue(not yet open). And yes, credit will be provided.
+> If you have screenshots of the plugin, you can submit them in the special issue. And yes, credit will be provided.
+
+![showcase_1](./images/preview_1.png)
+
+<sub>Taken by <a href="https://github.com/scottmckendry">@scottmckendry</a></sub>
 
