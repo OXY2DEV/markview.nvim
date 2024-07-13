@@ -139,7 +139,7 @@ The character used for shifting the headings by their level. It is repeated by t
 
 ---
 
-<details><!-- -+ Title: "Statusline-like parts for headings"-->
+<details><!---+ summary: Statusline-like parts for headings; -->
 
 <summary>Statusline-like parts for building headings</summary>
 

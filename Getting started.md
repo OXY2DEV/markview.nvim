@@ -31,7 +31,7 @@ If you are using `lazy.nvim` you will have a table similar to this.
     -- markdown file is opened. You need to use this to
     -- tell lazy to load the plugin when the filetype is
     -- markdown
-    ft = { "markdown" },
+    ft = "markdown",
 
     dependencies = {
         -- You may not need this if you don't lazy load
@@ -53,7 +53,7 @@ return {
     -- markdown file is opened. You need to use this to
     -- tell lazy to load the plugin when the filetype is
     -- markdown
-    ft = { "markdown" },
+    ft = "markdown",
 
     dependencies = {
         -- You may not need this if you don't lazy load
