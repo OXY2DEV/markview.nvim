@@ -491,7 +491,9 @@ markview.configuration = {
 			{
 				type = "repeating",
 				repeat_amount = function () --[[@as function]]
-					return math.floor((vim.o.columns - 3) / 2);
+					local textoff = vim.fn.getwininfo(vim.api.nvim_get_current_win())[1].textoff;
+
+					return math.floor((vim.o.columns - textoff - 3) / 2);
 				end,
 
 				text = "─",
@@ -508,7 +510,9 @@ markview.configuration = {
 			{
 				type = "repeating",
 				repeat_amount = function () --[[@as function]]
-					return math.ceil((vim.o.columns - 3) / 2);
+					local textoff = vim.fn.getwininfo(vim.api.nvim_get_current_win())[1].textoff;
+
+					return math.ceil((vim.o.columns - textoff - 3) / 2);
 				end,
 
 				direction = "right",

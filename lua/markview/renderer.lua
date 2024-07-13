@@ -978,8 +978,8 @@ renderer.render_horizontal_rules = function (buffer, content, config_table)
 		if part.type == "repeating" then
 			local repeat_time = 0;
 
-			if type(part.repeat_amount) == "function" and pcall(part.repeat_amount --[[@as function]]) then
-				repeat_time = part.repeat_amount();
+			if type(part.repeat_amount) == "function" and pcall(part.repeat_amount --[[@as function]], buffer) then
+				repeat_time = part.repeat_amount(buffer);
 			elseif type(part.repeat_amount) == "number" then
 				repeat_time = part.repeat_amount --[[@as number]];
 			end
@@ -1009,7 +1009,7 @@ renderer.render_horizontal_rules = function (buffer, content, config_table)
 	end
 
 	vim.api.nvim_buf_set_extmark(buffer, renderer.namespace, content.row_start, content.col_start, {
-		virt_text_pos = "inline",
+		virt_text_pos = "overlay",
 		virt_text = virt_text,
 
 		end_col = vim.fn.strchars(content.text),
