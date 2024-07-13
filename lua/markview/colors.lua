@@ -8,7 +8,7 @@ colors.num_to_hex = function (num)
 	if num == 0 then
 		return "#000000";
 	elseif num ~= nil then
-		return string.format("#%x", num);
+		return string.format("#%06X", num);
 	end
 end
 
@@ -41,21 +41,7 @@ colors.hex_to_rgb = function (str)
 end
 
 colors.rgb_to_hex = function (tbl)
-	local r = string.format("%x", tbl.r)
-	local g = string.format("%x", tbl.g)
-	local b = string.format("%x", tbl.b)
-
-	local _o = "#";
-
-	for _, color in ipairs({ r, g, b }) do
-		if #color == 1 then
-			_o = _o .. "0" .. color
-		elseif #color == 2 then
-			_o = _o .. color;
-		end
-	end
-
-	return _o;
+	return string.format("#%02X%02X%02X", tbl.r, tbl.g, tbl.b);
 end
 
 colors.get_hl_value = function (ns_id, hl_group, value)
