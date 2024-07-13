@@ -55,7 +55,7 @@ For `plugins.lua` or `lazy.lua` users.
 ```lua
 {
     "OXY2DEV/markview.nvim",
-    ft = { "markdown" },
+    ft = "markdown",
 
     dependencies = {
         -- You may not need this if you don't lazy load
@@ -72,7 +72,7 @@ For `plugins/markview.lua` users
 ```lua
 return {
     "OXY2DEV/markview.nvim",
-    ft = { "md" },
+    ft = "markdown",
 
     dependencies = {
         -- You may not need this if you don't lazy load
