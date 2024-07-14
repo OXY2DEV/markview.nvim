@@ -604,7 +604,7 @@ markview.configuration = {
 			"MarkviewCol1Fg", "MarkviewCol1Fg", "MarkviewCol1Fg", "MarkviewCol1Fg"
 		},
 
-		use_virt_lines = false,
+		use_virt_lines = true,
 	},
 };
 

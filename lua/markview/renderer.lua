@@ -1174,7 +1174,7 @@ renderer.render_checkboxes = function (buffer, content, config_table)
 		chk_config = config_table.pending;
 	end
 
-	if type(chk_config.text) ~= "text" then
+	if type(chk_config.text) ~= "string" then
 		return;
 	end
 
