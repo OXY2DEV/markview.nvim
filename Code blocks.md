@@ -137,5 +137,5 @@ Name of the highlight group for `sign`. By default the icon's highlight group is
 
 ## Gallery
 
-Wow, so empty 😐
+![code_blocks_submitted](./wiki_img/code_blocks(su).png)
 

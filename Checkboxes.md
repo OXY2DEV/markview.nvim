@@ -1,6 +1,8 @@
 # Checkboxes
 
 ![checkboxes](./wiki_img/checkboxes.jpg)
+![checkboxes_submitted](./wiki_img/checkboxes(su).png)
+<sub> Image submitted by <a href="https://github.com/nebunebu">@nebunebu</a></sub>
 
 ## Configuration options
 

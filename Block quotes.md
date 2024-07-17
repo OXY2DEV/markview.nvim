@@ -1,6 +1,8 @@
 # Block quotes
 
 ![block_quotes](./wiki_img/block_quotes.jpg)
+![block_quotes_submitted](./wiki_img/block_quote(su).png)
+<sub> Image submitted by <a href="https://github.com/nebunebu">@nebunebu</a></sub>
 
 ## Configuration options
 
@@ -215,5 +217,8 @@ block_quotes = {
 
 ## Gallery
 
-Wow, so empty 😐
+![block_quotes_mocha](./wiki_img/block_quotes_mocha.jpg)
+![block_quotes_latte](./wiki_img/block_quotes_latte.jpg)
+![block_quotes_cyberdream](./wiki_img/block_quotes_cyberdream.jpg)
+![block_quotes_cyberdream_light](./wiki_img/block_quotes_cyberdream_light.jpg)
 

@@ -472,6 +472,7 @@ headings = {
 
 ## Gallery
 
-Wow, so empty 😐
+![headings_submitted](./wiki_img/decorated_headings(su).png)
+<sub> Image submitted by <a href="https://github.com/nebunebu">@nebunebu</a></sub>
 
 

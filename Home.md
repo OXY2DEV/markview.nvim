@@ -10,14 +10,16 @@ An experimental `markdown` previewer for Neovim.
 
 ## Table of contents
 
-- [Block quotes](./Block_quotes.md)
+- [Getting started](<./Getting started.md>)
+- [Plugin setup](<./Plugin setup.md>)
+- [Block quotes](<./Block quotes.md>)
 - [Check boxes](./Checkboxes.md)
-- [Code blocks](./Code_blocks.md)
+- [Code blocks](<./Code blocks.md>)
 - [Headings](./Headings.md)
-- [Horizontal rules](./Hrs.md)
-- [Inline codes](./Links_and_inline_codes.md)
-- [Links](./Links_and_inline_codes.md)
-- [List Items](./List_items.md)
+- [Horizontal rules](<./Horizontal rules.md>)
+- [Inline codes](<./Inline codes.md>)
+- [Links](./Links.md)
+- [List Items](<./List items.md>)
 - [Tables](./Tables.md)
 
 <sub>The wiki is going through a revision so many things may be outdated</sub>
