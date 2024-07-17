@@ -10,17 +10,17 @@ An experimental `markdown` previewer for Neovim.
 
 ## Table of contents
 
-- [Getting started](<./Getting started.md>)
-- [Plugin setup](<./Plugin setup.md>)
-- [Block quotes](<./Block quotes.md>)
-- [Check boxes](./Checkboxes.md)
-- [Code blocks](<./Code blocks.md>)
-- [Headings](./Headings.md)
-- [Horizontal rules](<./Horizontal rules.md>)
-- [Inline codes](<./Inline codes.md>)
-- [Links](./Links.md)
-- [List Items](<./List items.md>)
-- [Tables](./Tables.md)
+- [Getting started](https://github.com/OXY2DEV/markview.nvim/wiki/Getting-started)
+- [Plugin setup](https://github.com/OXY2DEV/markview.nvim/wiki/Plugin-setup)
+- [Block quotes](https://github.com/OXY2DEV/markview.nvim/wiki/Block-quotes)
+- [Check boxes](https://github.com/OXY2DEV/markview.nvim/wiki/Checkboxes)
+- [Code blocks](https://github.com/OXY2DEV/markview.nvim/wiki/Code-blocks)
+- [Headings](https://github.com/OXY2DEV/markview.nvim/wiki/Headings)
+- [Horizontal rules](https://github.com/OXY2DEV/markview.nvim/wiki/Horizontal-rules)
+- [Inline codes](https://github.com/OXY2DEV/markview.nvim/wiki/Inline-codes)
+- [Links](https://github.com/OXY2DEV/markview.nvim/wiki/Links)
+- [List Items](https://github.com/OXY2DEV/markview.nvim/wiki/List-items)
+- [Tables](https://github.com/OXY2DEV/markview.nvim/wiki/Tables)
 
 <sub>The wiki is going through a revision so many things may be outdated</sub>
 
