@@ -102,6 +102,12 @@ MiniDeps.add({
 })
 ```
 
+### 🌒 rocks.nvim
+
+```vimscript
+:Rocks install markview.nvim
+```
+
 ### 🤔 Others
 
 The installation process for any other plugin manager(s) is the same.
