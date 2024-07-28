@@ -4,6 +4,10 @@ colors.clamp = function (val, min, max)
 	return math.min(math.max(val, min), max)
 end
 
+colors.lerp = function (x, y, t)
+	return x + ((y - x) * t);
+end
+
 colors.num_to_hex = function (num)
 	if num == 0 then
 		return "#000000";
@@ -59,7 +63,7 @@ colors.get_hl_value = function (ns_id, hl_group, value)
 end
 
 colors.create_gradient = function (name_prefix, from, to, steps, mode)
-	local start, finish;
+	local start, stop;
 
 	if type(from) == "table" then
 		start = from;
@@ -68,36 +72,34 @@ colors.create_gradient = function (name_prefix, from, to, steps, mode)
 	end
 
 	if type(to) == "table" then
-		finish = to;
+		stop = to;
 	elseif type(to) == "string" then
-		finish = colors.hex_to_rgb(to);
+		stop = colors.hex_to_rgb(to);
 	end
-
-	local _r = (finish.r - start.r) / (steps - 1);
-	local _g = (finish.g - start.g) / (steps - 1);
-	local _b = (finish.b - start.b) / (steps - 1);
 
 	local _t = {};
 
 	for s = 0, (steps - 1) do
-		local r = start.r + (s * _r);
-		local g = start.r + (s * _g);
-		local b = start.r + (s * _b);
+		local r = colors.lerp(start.r, stop.r, s / (steps - 1));
+		local g = colors.lerp(start.g, stop.g, s / (steps - 1));
+		local b = colors.lerp(start.b, stop.b, s / (steps - 1));
+
+		local _o = {};
+
+		if mode == "fg" then
+			_o.fg = colors.rgb_to_hex({ r = r, g = g, b = b });
+		elseif mode == "bg" then
+			_o.bg = colors.rgb_to_hex({ r = r, g = g, b = b });
+		elseif mode == "both" then
+			_o.bg = colors.rgb_to_hex({ r = r, g = g, b = b });
+			_o.fg = colors.rgb_to_hex({ r = r, g = g, b = b });
+		end
 
 		table.insert(_t, {
 			group_name = (name_prefix or "") .. tostring(s + 1),
-			value = {
-				fg = colors.rgb_to_hex({ r = r, g = g, b = b })
-			}
+			value = _o
 		})
 	end
-
-	table.insert(_t, {
-		group_name = (name_prefix or "") .. tostring(steps),
-		value = {
-			fg = colors.rgb_to_hex(finish)
-		}
-	})
 
 	return _t;
 end

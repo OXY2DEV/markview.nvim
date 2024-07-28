@@ -2,15 +2,15 @@
 
 <p text-align="center">Simple markdown previewer for neovim</p>
 
+>[!IMPORTANT]
+> Presets have been reworked, though you can still use the old presets. It is recommended that you switch to the newer ones as the old ones will be removed in the future.
+
 ![headings](./images/headings.jpg)
 ![lists](./images/lists.jpg)
 ![tables](./images/tables.jpg)
 
 >[!WARNING]
 > This plugin is in it's alpha stage and may go through breaking changes.
-
->[!CAUTION]
-> If you are using `presets` then you should stop using them. Presets are going to get reworked in the coming updates so to prevent things from accidentally breaking please refrain for using them.
 
 >[!IMPORTANT]
 > Highlights now use `PascalCase` so it is recommended to change your highlight group names to PascalCase. But don't worry, the previous names using `Markview_` are still supported!

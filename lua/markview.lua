@@ -53,9 +53,6 @@ markview.global_options = {};
 
 ---@type markview.config
 markview.configuration = {
-	restore_conceallevel = true,
-	restore_concealcursor = false,
-
 	options = {
 		on_enable = {
 			conceallevel = 2,
@@ -70,162 +67,212 @@ markview.configuration = {
 
 	highlight_groups = {
 		{
-			group_name = "Col1",
-			value = function ()
+			output = function ()
 				local bg = markview.colors.get_hl_value(0, "Normal", "bg") or markview.colors.get_hl_value(0, "Cursor", "fg");
 				local fg = markview.colors.get_hl_value(0, "markdownH1", "fg") or "#f38ba8";
 
 				return {
-					bg = markview.colors.mix(bg, fg, 0.7, 0.25),
-					fg = fg
+					{
+						group_name = "Col1",
+						value = {
+							bg = markview.colors.mix(bg, fg, 0.7, 0.25),
+							fg = fg
+						}
+					},
+					{
+						group_name = "Col1Fg",
+						value = {
+							fg = fg
+						}
+					},
+					{
+						group_name = "Col1Inv",
+						value = {
+							bg = fg,
+							fg = bg
+						}
+					},
 				}
 			end
 		},
-		{
-			group_name = "Col1Fg",
-			value = function ()
-				local fg = markview.colors.get_hl_value(0, "markdownH1", "fg") or "#f38ba8";
-
-				return {
-					fg = fg
-				}
-			end
-		},
 
 		{
-			group_name = "Col2",
-			value = function ()
+			output = function ()
 				local bg = markview.colors.get_hl_value(0, "Normal", "bg") or markview.colors.get_hl_value(0, "Cursor", "fg");
 				local fg = markview.colors.get_hl_value(0, "markdownH2", "fg") or "#fab387";
 
 				return {
-					bg = markview.colors.mix(bg, fg, 0.7, 0.25),
-					fg = fg
+					{
+						group_name = "Col2",
+						value = {
+							bg = markview.colors.mix(bg, fg, 0.7, 0.25),
+							fg = fg
+						}
+					},
+					{
+						group_name = "Col2Fg",
+						value = {
+							fg = fg
+						}
+					},
+					{
+						group_name = "Col2Inv",
+						value = {
+							bg = fg,
+							fg = bg
+						}
+					},
 				}
 			end
 		},
-		{
-			group_name = "Col2Fg",
-			value = function ()
-				local fg = markview.colors.get_hl_value(0, "markdownH2", "fg") or "#fab387";
-
-				return {
-					fg = fg
-				}
-			end
-		},
 
 		{
-			group_name = "Col3",
-			value = function ()
+			output = function ()
 				local bg = markview.colors.get_hl_value(0, "Normal", "bg") or markview.colors.get_hl_value(0, "Cursor", "fg");
 				local fg = markview.colors.get_hl_value(0, "markdownH3", "fg") or "#f9e2af";
 
 				return {
-					bg = markview.colors.mix(bg, fg, 0.7, 0.25),
-					fg = fg
+					{
+						group_name = "Col3",
+						value = {
+							bg = markview.colors.mix(bg, fg, 0.7, 0.25),
+							fg = fg
+						}
+					},
+					{
+						group_name = "Col3Fg",
+						value = {
+							fg = fg
+						}
+					},
+					{
+						group_name = "Col3Inv",
+						value = {
+							bg = fg,
+							fg = bg
+						}
+					},
 				}
 			end
 		},
-		{
-			group_name = "Col3Fg",
-			value = function ()
-				local fg = markview.colors.get_hl_value(0, "markdownH3", "fg") or "#f9e2af";
-
-				return {
-					fg = fg
-				}
-			end
-		},
 
 		{
-			group_name = "Col4",
-			value = function ()
+			output = function ()
 				local bg = markview.colors.get_hl_value(0, "Normal", "bg") or markview.colors.get_hl_value(0, "Cursor", "fg");
 				local fg = markview.colors.get_hl_value(0, "markdownH4", "fg") or "#a6e3a1";
 
+
 				return {
-					bg = markview.colors.mix(bg, fg, 0.7, 0.25),
-					fg = fg
+					{
+						group_name = "Col4",
+						value = {
+							bg = markview.colors.mix(bg, fg, 0.7, 0.25),
+							fg = fg
+						}
+					},
+					{
+						group_name = "Col4Fg",
+						value = {
+							fg = fg
+						}
+					},
+					{
+						group_name = "Col4Inv",
+						value = {
+							bg = fg,
+							fg = bg
+						}
+					},
 				}
 			end
 		},
-		{
-			group_name = "Col4Fg",
-			value = function ()
-				local fg = markview.colors.get_hl_value(0, "markdownH4", "fg") or "#a6e3a1";
-
-				return {
-					fg = fg
-				}
-			end
-		},
 
 		{
-			group_name = "Col5",
-			value = function ()
+			output = function ()
 				local bg = markview.colors.get_hl_value(0, "Normal", "bg") or markview.colors.get_hl_value(0, "Cursor", "fg");
 				local fg = markview.colors.get_hl_value(0, "markdownH5", "fg") or "#74c7ec";
 
 				return {
-					bg = markview.colors.mix(bg, fg, 0.7, 0.25),
-					fg = fg
+					{
+						group_name = "Col5",
+						value = {
+							bg = markview.colors.mix(bg, fg, 0.7, 0.25),
+							fg = fg
+						}
+					},
+					{
+						group_name = "Col5Fg",
+						value = {
+							fg = fg
+						}
+					},
+					{
+						group_name = "Col5Inv",
+						value = {
+							bg = fg,
+							fg = bg
+						}
+					},
 				}
 			end
 		},
-		{
-			group_name = "Col5Fg",
-			value = function ()
-				local fg = markview.colors.get_hl_value(0, "markdownH5", "fg") or "#74c7ec";
-
-				return {
-					fg = fg
-				}
-			end
-		},
 
 		{
-			group_name = "Col6",
-			value = function ()
+			output = function ()
 				local bg = markview.colors.get_hl_value(0, "Normal", "bg") or markview.colors.get_hl_value(0, "Cursor", "fg");
 				local fg = markview.colors.get_hl_value(0, "markdownH6", "fg") or "#b4befe";
 
 				return {
-					bg = markview.colors.mix(bg, fg, 0.7, 0.25),
-					fg = fg
+					{
+						group_name = "Col6",
+						value = {
+							bg = markview.colors.mix(bg, fg, 0.7, 0.25),
+							fg = fg
+						}
+					},
+					{
+						group_name = "Col6Fg",
+						value = {
+							fg = fg
+						}
+					},
+					{
+						group_name = "Col6Inv",
+						value = {
+							bg = fg,
+							fg = bg
+						}
+					},
 				}
 			end
 		},
-		{
-			group_name = "Col6Fg",
-			value = function ()
-				local fg = markview.colors.get_hl_value(0, "markdownH6", "fg") or "#b4befe";
-
-				return {
-					fg = fg
-				}
-			end
-		},
 
 		{
-			group_name = "Col7",
-			value = function ()
+			output = function ()
 				local bg = markview.colors.get_hl_value(0, "Normal", "bg") or markview.colors.get_hl_value(0, "Cursor", "fg");
 				local fg = markview.colors.get_hl_value(0, "Comment", "fg");
 
 				return {
-					bg = markview.colors.mix(bg, fg, 0.7, 0.25),
-					fg = fg
-				}
-			end
-		},
-		{
-			group_name = "Col7Fg",
-			value = function ()
-				local fg = markview.colors.get_hl_value(0, "Comment", "fg");
-
-				return {
-					fg = fg
+					{
+						group_name = "Col7",
+						value = {
+							bg = markview.colors.mix(bg, fg, 0.7, 0.25),
+							fg = fg
+						}
+					},
+					{
+						group_name = "Col7Fg",
+						value = {
+							fg = fg
+						}
+					},
+					{
+						group_name = "Col7Inv",
+						value = {
+							bg = fg,
+							fg = bg
+						}
+					},
 				}
 			end
 		},
@@ -486,7 +533,6 @@ markview.configuration = {
 	horizontal_rules = {
 		enable = true,
 
-		position = "overlay",
 		parts = {
 			{
 				type = "repeating",
@@ -504,8 +550,6 @@ markview.configuration = {
 			{
 				type = "text",
 				text = "  ",
-
-				repeat_amount = vim.o.columns
 			},
 			{
 				type = "repeating",

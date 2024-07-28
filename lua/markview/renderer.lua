@@ -15,7 +15,7 @@ local get_str_width = function (str)
 end
 
 
---- Returns a value with the specified inddx from entry
+--- Returns a value with the specified index from entry
 --- If index is nil then return the last value
 --- If entry isn't a table then return it
 ---
@@ -106,10 +106,10 @@ local display_width = function (text, config)
 		end
 	end
 
-	for str_a, str_b in text:gmatch("([*_]*)%w+([*_]*)") do
+	for str_a, str_b in text:gmatch("([*]+)[^*]+([*]+)") do
 		local min_signs = vim.fn.strchars(str_a) > vim.fn.strchars(str_b) and vim.fn.strchars(str_a) or vim.fn.strchars(str_b);
 
-		local start_pos, _ = text:find("([*_]*)%w+([*_]*)");
+		local start_pos, _ = text:find("([*]+)[^*]+([*]+)");
 
 		local c_before = text:sub(start_pos - 1, start_pos - 1);
 		-- local c_after = text:sub(end_pos + 1, end_pos + 1);
@@ -305,7 +305,7 @@ local table_seperator = function (buffer, content, user_config, r_num)
 						virt_text_pos = "inline",
 						virt_text = {
 							{ tbl_conf.text[13], set_hl(tbl_conf.hl[13]) },
-							{ string.rep(tbl_conf.text[2], vim.fn.strchars(col) - 1), set_hl(tbl_conf.hl[8]) }
+							{ string.rep(tbl_conf.text[2], vim.fn.strchars(col) - 1), set_hl(tbl_conf.hl[2]) }
 						},
 
 						end_col = content.col_start + curr_col + vim.fn.strchars(col) + 1,
@@ -315,7 +315,7 @@ local table_seperator = function (buffer, content, user_config, r_num)
 					vim.api.nvim_buf_set_extmark(buffer, renderer.namespace, content.row_start + (r_num - 1), content.col_start + curr_col, {
 						virt_text_pos = "inline",
 						virt_text = {
-							{ string.rep(tbl_conf.text[2], vim.fn.strchars(col) - 1), set_hl(tbl_conf.hl[8]) },
+							{ string.rep(tbl_conf.text[2], vim.fn.strchars(col) - 1), set_hl(tbl_conf.hl[2]) },
 							{ tbl_conf.text[14], set_hl(tbl_conf.hl[14]) }
 						},
 
@@ -327,7 +327,7 @@ local table_seperator = function (buffer, content, user_config, r_num)
 						virt_text_pos = "inline",
 						virt_text = {
 							{ tbl_conf.text[15], set_hl(tbl_conf.hl[15]) },
-							{ string.rep(tbl_conf.text[2], vim.fn.strchars(col) - 2), set_hl(tbl_conf.hl[8]) },
+							{ string.rep(tbl_conf.text[2], vim.fn.strchars(col) - 2), set_hl(tbl_conf.hl[2]) },
 							{ tbl_conf.text[16], set_hl(tbl_conf.hl[16]) }
 						},
 
@@ -458,7 +458,7 @@ local table_footer = function (buffer, content, config_table)
 				end
 			end
 
-			table.insert(virt_txt, { string.rep(tbl_conf.text[2], actual_width), set_hl(tbl_conf.hl[2]) })
+			table.insert(virt_txt, { string.rep(tbl_conf.text[10], actual_width), set_hl(tbl_conf.hl[10]) })
 			curr_col = curr_col + vim.fn.strchars(col);
 			curr_tbl_col = curr_tbl_col + 1;
 		end
@@ -735,7 +735,7 @@ renderer.render_code_blocks = function (buffer, content, config_table)
 			block_length = config_table.min_width
 		end
 
-		vim.api.nvim_buf_set_extmark(buffer, renderer.namespace, content.row_start, content.col_start, {
+		vim.api.nvim_buf_set_extmark(buffer, renderer.namespace, content.row_start, content.col_start + 3 + vim.fn.strlen(content.language), {
 			virt_text_pos = config_table.position or "inline",
 			virt_text = {
 				{ string.rep(config_table.pad_char or " ", block_length + ((config_table.pad_amount or 1) * 2)), set_hl(config_table.hl) },
@@ -744,7 +744,7 @@ renderer.render_code_blocks = function (buffer, content, config_table)
 			hl_mode = "combine",
 		});
 
-		vim.api.nvim_buf_set_extmark(buffer, renderer.namespace, content.row_end - 1, content.col_start, {
+		vim.api.nvim_buf_set_extmark(buffer, renderer.namespace, content.row_end - 1, content.col_start + 3, {
 			virt_text_pos = config_table.position or "inline",
 			virt_text = {
 				{ string.rep(config_table.pad_char or " ", block_length + ((config_table.pad_amount or 1) * 2)), set_hl(config_table.hl) },
@@ -799,7 +799,7 @@ renderer.render_code_blocks = function (buffer, content, config_table)
 		local lang_width = vim.fn.strchars(icon .. " " .. language .. " ");
 
 		if config_table.language_direction == nil or config_table.language_direction == "left" then
-			vim.api.nvim_buf_set_extmark(buffer, renderer.namespace, content.row_start, content.col_start, {
+			vim.api.nvim_buf_set_extmark(buffer, renderer.namespace, content.row_start, content.col_start + 3 + vim.fn.strlen(content.language), {
 				virt_text_pos = config_table.position or "inline",
 				virt_text = {
 					{ icon .. " ", set_hl(hl) },
@@ -813,7 +813,7 @@ renderer.render_code_blocks = function (buffer, content, config_table)
 				hl_mode = "combine",
 			});
 		elseif config_table.language_direction == "right" then
-			vim.api.nvim_buf_set_extmark(buffer, renderer.namespace, content.row_start, content.col_start, {
+			vim.api.nvim_buf_set_extmark(buffer, renderer.namespace, content.row_start, content.col_start + 3 + vim.fn.strlen(content.language), {
 				virt_text_pos = config_table.position or "inline",
 				virt_text = {
 					{ string.rep(config_table.pad_char or " ", block_length - lang_width + ((config_table.pad_amount or 1) * 2)), set_hl(config_table.hl) },
@@ -828,7 +828,7 @@ renderer.render_code_blocks = function (buffer, content, config_table)
 			});
 		end
 
-		vim.api.nvim_buf_set_extmark(buffer, renderer.namespace, content.row_end - 1, content.col_start, {
+		vim.api.nvim_buf_set_extmark(buffer, renderer.namespace, content.row_end - 1, content.col_start + 3, {
 			virt_text_pos = config_table.position or "inline",
 			virt_text = {
 				{ string.rep(config_table.pad_char or " ", block_length + ((config_table.pad_amount or 1) * 2)), set_hl(config_table.hl) },
@@ -839,10 +839,6 @@ renderer.render_code_blocks = function (buffer, content, config_table)
 
 		-- NOTE: The last line with ``` doesn't need this so we don't add it to that line
 		for line, text in ipairs(content.lines) do
-			if 1 > 2 then
-				goto skipCode
-			end
-
 			-- NOTE: Nested code blocks have a different start position
 			local length = content.line_lengths[line] - content.col_start;
 
@@ -865,8 +861,6 @@ renderer.render_code_blocks = function (buffer, content, config_table)
 					{ string.rep(config_table.pad_char or " ", config_table.pad_amount or 1), set_hl(config_table.hl) }
 				}
 			})
-
-			::skipCode::
 		end
 	end
 end
@@ -1221,11 +1215,15 @@ end
 
 
 renderer.render = function (buffer, parsed_content, config_table)
-	if parsed_content ~= nil then
-		renderer.views[buffer] = parsed_content;
+	if _G.__markview_views == nil then
+		_G.__markview_views = {};
 	end
 
-	for _, content in ipairs(renderer.views[buffer]) do
+	if parsed_content ~= nil then
+		_G.__markview_views[buffer] = parsed_content;
+	end
+
+	for _, content in ipairs(_G.__markview_views[buffer]) do
 		local type = content.type;
 
 		local fold_closed = vim.fn.foldclosed(content.row_start + 1);

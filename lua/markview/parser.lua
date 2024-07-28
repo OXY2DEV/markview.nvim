@@ -103,7 +103,7 @@ parser.md = function (buffer, TStree)
 
 			table.insert(parser.parsed_content, {
 				type = "code_block",
-				language = vim.treesitter.get_node_text(capture_node:named_child(1), buffer),
+				language = not capture_node:named_child(1) and "" or vim.treesitter.get_node_text(capture_node:named_child(1), buffer),
 
 				line_lengths = line_lens,
 				largest_line = highest_len,
@@ -390,6 +390,7 @@ parser.init = function (buffer)
 
 	-- Clear the previous contents
 	parser.parsed_content = {};
+	local main_tree_parsed = false;
 
 	root_parser:for_each_tree(function (TStree, language_tree)
 		local tree_language = language_tree:lang();

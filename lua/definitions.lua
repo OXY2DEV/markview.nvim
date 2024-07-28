@@ -16,11 +16,8 @@
 --- List of modes where the plugin will be active
 ---@field modes string[]?
 ---
---- When true, revert the value of conceallevel to global value
----@field restore_conceallevel boolean?
----
---- When true, revert the value of concealcursor to global value
----@field restore_concealcursor boolean?
+--- Options for various plugins states
+---@field options markview.config.options?
 ---
 --- Table for heading configuration
 ---@field headings markview.render_config.headings?
@@ -62,11 +59,8 @@
 --- List of modes where the plugin will be active
 ---@field modes string[]
 ---
---- When true, revert the value of conceallevel to global value
----@field restore_conceallevel boolean?
----
---- When true, revert the value of concealcursor to global value
----@field restore_concealcursor boolean?
+--- Options for various plugins states
+---@field options markview.config.options
 ---
 --- Table for heading configuration
 ---@field headings markview.render_config.headings
@@ -95,6 +89,21 @@
 --- Table for table configuration
 ---@field tables markview.render_config.tables
 
+
+--- Definition for the options
+---@class markview.config.options
+---
+---@field on_enable markview.config.options.available
+---
+---@field on_disable markview.config.options.available
+
+--- Available options
+---@class markview.config.options.available
+---
+--- Conceal level
+---@field conceallevel number
+---
+---@field concealcursor string?
 
 ---------------------------------------------------------------
 --- For rendering things
