@@ -15,7 +15,7 @@ Run "nvim -V1 -v" for more info
 
 It should be `0.10.0` or higher.
 
-Seconf, You need a `nerd font` installed. If you don't have one just download one from [their website](https://www.nerdfonts.com/font-downloads) or [their Github repo](https://github.com/ryanoasis/nerd-fonts).
+Secondly, You need a `nerd font` installed. If you don't have one just download one from [their website](https://www.nerdfonts.com/font-downloads) or [their Github repo](https://github.com/ryanoasis/nerd-fonts).
 
 ## Step 1: Installation
 
