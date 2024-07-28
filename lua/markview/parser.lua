@@ -1,6 +1,40 @@
 local parser = {};
 -- local renderer = require("markview/renderer");
 
+parser.fiter_lines = function (buffer, from, to, marker)
+	local captured_lines = vim.api.nvim_buf_get_lines(buffer, from, to, false);
+	local filtered_lines = {};
+	local indexes = {};
+	local spaces = {};
+
+	local tolarence = 3;
+	local found = 0;
+
+	for l, line in ipairs(captured_lines) do
+		if l ~= 1 and line:match(marker) then
+			break;
+		end
+
+		if found  < tolarence then
+			local spaces_before = vim.fn.strchars(line:match("(%s*)"));
+
+			if not line:match(marker) then
+				spaces_before = math.max(0, spaces_before - vim.fn.strchars(marker .. " "));
+			end
+
+			table.insert(filtered_lines, line);
+			table.insert(indexes, l);
+			table.insert(spaces, spaces_before)
+		end
+
+		if line == "" then
+			found = found + 1;
+		end
+	end
+
+	return filtered_lines, indexes, spaces;
+end
+
 parser.parsed_content = {};
 
 --- Function to parse the markdown document
@@ -216,39 +250,21 @@ parser.md = function (buffer, TStree)
 			})
 		elseif capture_name == "list_item" then
 			local marker = capture_node:named_child(0);
-			local m_row_start, m_col_start, m_row_end, m_col_end = marker:range();
+			local marker_text = vim.treesitter.get_node_text(marker, buffer);
+			local symbol = marker_text:gsub("%s", "");
 
-			local rows = {};
-
-			for c = 0, capture_node:child_count() - 1 do
-				local child_node = capture_node:named_child(c);
-
-				if child_node:type() == "list" then
-					goto listLineSkip;
-				end
-
-				local r_start, c_start, r_end, c_end = child_node:range();
-
-				if not vim.list_contains(rows, r_start) then
-					for r = 0, (r_end - r_start) - 1 do
-						table.insert(rows, r_start + r);
-					end
-				end
-
-				::listLineSkip::
-			end
+			local list_lines, lines, spaces = parser.fiter_lines(buffer, row_start, row_end, symbol);
+			local spaces_before_marker = list_lines[1]:match("^(%s*)" .. symbol .. "%s*");
 
 			table.insert(parser.parsed_content, {
 				type = "list_item",
 				marker_symbol = vim.treesitter.get_node_text(marker, buffer),
-				list_candidates = rows,
-				list_lines = vim.api.nvim_buf_get_lines(buffer, row_start, row_end, false),
 
-				m_row_start = m_row_start,
-				m_col_start = m_col_start,
+				list_candidates = lines,
+				list_lines = list_lines,
 
-				m_row_end = m_row_end,
-				m_col_end = m_col_end,
+				spaces = spaces,
+				conceal_spaces = vim.fn.strchars(spaces_before_marker),
 
 				row_start = row_start,
 				row_end = row_end,

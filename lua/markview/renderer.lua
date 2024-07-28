@@ -1110,31 +1110,32 @@ renderer.render_lists = function (buffer, content, config_table)
 
 	if ls_conf.add_padding == true then
 		local shift = config_table.shift_width or vim.bo[buffer].shiftwidth;
-		local lvl = math.floor(content.col_start / vim.fn.strchars(content.marker_symbol)) + 1;
 
 		for l, line in ipairs(content.list_lines) do
 			local line_num = content.row_start + (l - 1);
-			local wh_spaces = vim.trim(line, content.col_start):match("^%s*");
+			local before = content.spaces[l] or 0;
 
-			if vim.list_contains(content.list_candidates, line_num) and l == 1 then
+			if vim.list_contains(content.list_candidates, l) and l == 1 then
 				vim.api.nvim_buf_set_extmark(buffer, renderer.namespace, line_num, 0, {
 					virt_text_pos = "inline",
 					virt_text = {
-						{ string.rep(" ", lvl * shift) },
+						{ string.rep(" ", (math.floor(before / 2) + 1) * shift) },
 						{ vim.trim(use_text), set_hl(ls_conf.hl) or "Special" }
 					},
 
 					end_col = content.col_start + vim.fn.strchars(content.marker_symbol),
 					conceal = " "
 				})
-			elseif vim.list_contains(content.list_candidates, line_num) then
+			elseif vim.list_contains(content.list_candidates, l) then
+				local line_len = vim.fn.strchars(line);
+
 				vim.api.nvim_buf_set_extmark(buffer, renderer.namespace, line_num, 0, {
 					virt_text_pos = "inline",
 					virt_text = {
-						{ string.rep(" ", lvl * shift) }
+						{ string.rep(" ", (math.floor(before / 2) + 1) * shift) }
 					},
 
-					end_col = vim.fn.strchars(wh_spaces),
+					end_col = line_len < before and line_len or before,
 					conceal = ""
 				})
 			end
