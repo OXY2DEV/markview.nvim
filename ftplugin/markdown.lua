@@ -1,4 +1,6 @@
 local markview = require("markview");
+local utils = require("markview.utils");
+
 local ts_available, treesitter_parsers = pcall(require, "nvim-treesitter.parsers");
 local function parser_installed(parser)
 	return (ts_available and treesitter_parsers.has_parser(parser)) or
@@ -34,7 +36,7 @@ vim.api.nvim_create_autocmd({ "BufWinEnter" }, {
 
 	callback = function (event)
 		local buffer = event.buf;
-		local windows = markview.find_attached_wins(event.buf);
+		local windows = utils.find_attached_wins(event.buf);
 
 		if not vim.list_contains(markview.attached_buffers, buffer) then
 			table.insert(markview.attached_buffers, buffer);
@@ -79,7 +81,7 @@ vim.api.nvim_create_autocmd({ "ModeChanged", "TextChanged" }, {
 
 	callback = function (event)
 		local buffer = event.buf;
-		local windows = markview.find_attached_wins(event.buf);
+		local windows = utils.find_attached_wins(event.buf);
 
 		local mode = vim.api.nvim_get_mode().mode;
 
@@ -93,9 +95,20 @@ vim.api.nvim_create_autocmd({ "ModeChanged", "TextChanged" }, {
 
 		if vim.islist(markview.configuration.modes) and vim.list_contains(markview.configuration.modes, mode) then
 			local parsed_content = markview.parser.init(buffer);
+			local cursor = vim.api.nvim_win_get_cursor(0) or {1, 0};
+
+			local draw_start, draw_stop = utils.get_cursor_range(buffer, windows[1], markview.configuration);
 
 			markview.renderer.clear(buffer);
-			markview.renderer.render(buffer, parsed_content, markview.configuration);
+			markview.renderer.render(buffer, parsed_content, markview.configuration, draw_start, draw_stop);
+
+			if vim.list_contains(markview.configuration.modes, "i") and mode == "i" then
+				local partial_contents = markview.parser.parse_range(buffer, draw_start, draw_stop);
+
+				markview.renderer.clear_partial_range(buffer, partial_contents);
+				-- markview.renderer.render_deleted(event.buf, cursor, markview.configuration);
+				-- markview.renderer.clear_under_cursor(buffer, cursor);
+			end
 
 			for _, window in ipairs(windows) do
 				vim.wo[window].conceallevel = type(options.on_enable) == "table" and options.on_enable.conceallevel or 2;
@@ -114,4 +127,28 @@ vim.api.nvim_create_autocmd({ "ModeChanged", "TextChanged" }, {
 	end
 });
 
+if not vim.list_contains(markview.configuration.modes, "i") then
+	return;
+end
+
+local move_timer = vim.uv.new_timer();
+
+vim.api.nvim_create_autocmd({ "CursorMovedI" }, {
+	buffer = vim.api.nvim_get_current_buf(),
+	group = markview_augroup,
+
+	callback = function (event)
+		move_timer:stop();
+		move_timer:start(100, 0, vim.schedule_wrap(function ()
+			local prev_contents = markview.parser.parse_range(event.buf);
+
+			local draw_start, draw_stop = utils.get_cursor_range(event.buf, 0, markview.configuration);
+			local partial_contents = markview.parser.parse_range(event.buf, draw_start, draw_stop);
+
+			markview.renderer.clear_partial_range(event.buf, prev_contents);
+			markview.renderer.render_partial(event.buf, prev_contents, markview.configuration, draw_start, draw_stop);
+			markview.renderer.clear_partial_range(event.buf, partial_contents);
+		end));
+	end
+})
 

@@ -1,6 +1,13 @@
 local renderer = {};
 local devicons = require("nvim-web-devicons");
 
+local utils = require("markview.utils");
+
+
+_G.__markview_views = {};
+
+renderer.view_ranges = {};
+renderer.removed_elements = {};
 
 local get_str_width = function (str)
 	local width = 0;
@@ -933,7 +940,7 @@ renderer.render_block_quotes = function (buffer, content, config_table)
 		});
 	end
 
-	for line = 1, (content.row_end - content.row_start) - 1 do
+	for line = 1, content.row_end - content.row_start - 1 do
 		local end_col = content.col_start;
 
 		-- NOTE: If the line is smaller than the border then use the lines width
@@ -1211,22 +1218,80 @@ end
 
 
 
+--- CursorMove listener
+renderer.autocmd = nil;
 
-
-
-
-renderer.render = function (buffer, parsed_content, config_table)
-	if _G.__markview_views == nil then
-		_G.__markview_views = {};
+renderer.create_autocmd = function (config_table)
+	if renderer.autocmd then
+		return;
 	end
 
-	if parsed_content ~= nil then
-		_G.__markview_views[buffer] = parsed_content;
+	local events = { "CursorMovedI" };
+
+	-- if config_table.modes and vim.list_contains(config_table.modes, "i") then
+	-- 	table.insert(events, "CursorMovedI");
+	-- end
+
+	renderer.autocmd = vim.api.nvim_create_autocmd(events, {
+		pattern = config_table.filetypes or "*.md", -- Currently only for markdown
+		callback = function (event)
+			local buffer = event.buf;
+			local mode = vim.api.nvim_get_mode().mode;
+
+			if not vim.list_contains(config_table.modes or {}, mode) then
+				return;
+			end
+
+			renderer.render_deleted_items(buffer, config_table);
+			renderer.removed_elements[buffer] = {};
+
+			if not vim.list_contains(config_table.special_modes or { "i" }, mode) then
+				return;
+			end
+
+			-- This is for testing purposes
+			local cursor = vim.api.nvim_win_get_cursor(0);
+			local comps = {};
+
+			for _, component in ipairs(_G.__markview_views[buffer] or {}) do
+				if (cursor[1] - 1) >= component.row_start and cursor[1] - 1 <= component.row_end then
+					table.insert(comps, component);
+					table.insert(renderer.removed_elements[buffer], component);
+				end
+			end
+
+			renderer.destroy(buffer)
+		end
+	})
+end
+
+renderer.destroy = function (buffer)
+	-- if not renderer.removed_elements or not renderer.removed_elements[buffer] or vim.tbl_isempty(renderer.removed_elements[buffer]) then
+	-- 	return;
+	-- end
+	--
+	-- local max_range = {};
+	--
+	-- for _, content in ipairs(renderer.removed_elements[buffer]) do
+	-- 	if not max_range[1] or content.row_start < max_range[1] then
+	-- 		max_range[1] = content.row_start;
+	-- 	end
+	--
+	-- 	if not max_range[2] or content.row_end > max_range[2] then
+	-- 		max_range[2] = content.row_end;
+	-- 	end
+	-- end
+	--
+	-- vim.api.nvim_buf_clear_namespace(buffer, renderer.namespace, max_range[1], max_range[2] + 1);
+end
+
+renderer.render_deleted_items = function (buffer, config_table)
+	if not renderer.removed_elements[buffer] then
+		return;
 	end
 
-	for _, content in ipairs(_G.__markview_views[buffer]) do
+	for _, content in ipairs(renderer.removed_elements[buffer]) do
 		local type = content.type;
-
 		local fold_closed = vim.fn.foldclosed(content.row_start + 1);
 
 		if fold_closed ~= -1 then
@@ -1262,8 +1327,156 @@ renderer.render = function (buffer, parsed_content, config_table)
 	end
 end
 
+renderer.render = function (buffer, parsed_content, config_table, conceal_start, conceal_stop)
+	if not _G.__markview_views then
+		_G.__markview_views = {};
+	end
+
+	if parsed_content ~= nil then
+		_G.__markview_views[buffer] = parsed_content;
+	end
+
+	for _, content in ipairs(_G.__markview_views[buffer]) do
+		local type = content.type;
+		local fold_closed = vim.fn.foldclosed(content.row_start + 1);
+
+		if fold_closed ~= -1 then
+			goto extmark_skipped;
+		end
+
+		-- if conceal_start and conceal_stop and content.row_start >= conceal_start and content.row_end <= conceal_stop then
+		-- 	goto extmark_skipped;
+		-- end
+
+		if type == "heading_s" then
+			renderer.render_headings_s(buffer, content, config_table.headings);
+		elseif type == "heading" then
+			renderer.render_headings(buffer, content, config_table.headings)
+		elseif type == "code_block" then
+			renderer.render_code_blocks(buffer, content, config_table.code_blocks)
+		elseif type == "block_quote" then
+			renderer.render_block_quotes(buffer, content, config_table.block_quotes);
+		elseif type == "horizontal_rule" then
+			renderer.render_horizontal_rules(buffer, content, config_table.horizontal_rules);
+		elseif type == "link" then
+			renderer.render_links(buffer, content, config_table.links);
+		elseif type == "image" then
+			renderer.render_links(buffer, content, config_table.images);
+		elseif type == "inline_code" then
+			renderer.render_inline_codes(buffer, content, config_table.inline_codes)
+		elseif type == "list_item" then
+			renderer.render_lists(buffer, content, config_table.list_items)
+		elseif type == "checkbox" then
+			renderer.render_checkboxes(buffer, content, config_table.checkboxes)
+		elseif type == "table" then
+			renderer.render_tables(buffer, content, config_table)
+		end
+
+		::extmark_skipped::
+	end
+end
+
 renderer.clear = function (buffer)
 	vim.api.nvim_buf_clear_namespace(buffer, renderer.namespace, 0, -1)
+end
+
+renderer.clear_under_cursor = function (buffer, cursor)
+	if not _G.__markview_views[buffer] then
+		return;
+	elseif not renderer.removed_elements then
+		renderer.removed_elements = {};
+	end
+
+	if not renderer.removed_elements[buffer] then
+		renderer.removed_elements[buffer] = {};
+	end
+
+	renderer.clear_elements(buffer, cursor);
+end
+
+renderer.render_partial = function (buffer, partial_contents, config_table, conceal_start, conceal_stop)
+	-- if not renderer.removed_elements[buffer] then
+	-- 	return
+	-- end
+
+	for _, content in ipairs(partial_contents) do
+		local type = content.type;
+		local fold_closed = vim.fn.foldclosed(content.row_start + 1);
+
+		if fold_closed ~= -1 then
+			goto extmark_skipped;
+		end
+
+		if content.row_start >= conceal_start and content.row_end <= conceal_stop then
+			goto extmark_skipped;
+		end
+
+
+		if type == "heading_s" then
+			renderer.render_headings_s(buffer, content, config_table.headings);
+		elseif type == "heading" then
+			renderer.render_headings(buffer, content, config_table.headings)
+		elseif type == "code_block" then
+			renderer.render_code_blocks(buffer, content, config_table.code_blocks)
+		elseif type == "block_quote" then
+			renderer.render_block_quotes(buffer, content, config_table.block_quotes);
+		elseif type == "horizontal_rule" then
+			renderer.render_horizontal_rules(buffer, content, config_table.horizontal_rules);
+		elseif type == "link" then
+			renderer.render_links(buffer, content, config_table.links);
+		elseif type == "image" then
+			renderer.render_links(buffer, content, config_table.images);
+		elseif type == "inline_code" then
+			renderer.render_inline_codes(buffer, content, config_table.inline_codes)
+		elseif type == "list_item" then
+			renderer.render_lists(buffer, content, config_table.list_items)
+		elseif type == "checkbox" then
+			renderer.render_checkboxes(buffer, content, config_table.checkboxes)
+		elseif type == "table" then
+			renderer.render_tables(buffer, content, config_table)
+		end
+
+		::extmark_skipped::
+	end
+end
+
+renderer.update = function (buffer, parsed_content)
+	if not _G.__markview_views then
+		_G.__markview_views = {};
+	end
+
+	if parsed_content ~= nil then
+		_G.__markview_views[buffer] = parsed_content;
+	end
+end
+
+renderer.clear_partial_range = function (buffer, parsed_content)
+	local max_range = { nil, nil };
+
+	for _, content in ipairs(parsed_content) do
+		if not max_range[1] or (content.row_start) < max_range[1] then
+			max_range[1] = content.row_start;
+		end
+
+		if not max_range[2] or (content.row_end) > max_range[2] then
+			max_range[2] = content.row_end;
+		end
+	end
+
+	if not max_range[1] or not max_range[2] then
+		return;
+	end
+
+	if max_range[1] == max_range[2] then
+		max_range[2] = max_range[2] + 1;
+	end
+
+	if not _G.__markview_render_ranges then
+		_G.__markview_render_ranges = {};
+	end
+
+	_G.__markview_render_ranges[buffer] = max_range;
+	vim.api.nvim_buf_clear_namespace(buffer, renderer.namespace, max_range[1], max_range[2]);
 end
 
 return renderer;

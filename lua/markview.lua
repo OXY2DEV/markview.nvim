@@ -1,4 +1,6 @@
 local markview = {};
+local utils = require("markview.utils");
+
 markview.parser = require("markview/parser");
 markview.renderer = require("markview/renderer");
 markview.keymaps = require("markview/keymaps");
@@ -26,18 +28,6 @@ markview.add_hls = function (obj)
 		_opt.default = true;
 		vim.api.nvim_set_hl(0, "Markview" .. hl.group_name, _opt);
 	end
-end
-
-markview.find_attached_wins = function (buf)
-	local attached_wins = {};
-
-	for _, win in ipairs(vim.api.nvim_list_wins()) do
-		if vim.api.nvim_win_get_buf(win) == buf then
-			table.insert(attached_wins, win);
-		end
-	end
-
-	return attached_wins;
 end
 
 
@@ -670,7 +660,7 @@ markview.commands = {
 
 		for _, buf in ipairs(markview.attached_buffers) do
 			local parsed_content = markview.parser.init(buf);
-			local windows = markview.find_attached_wins(buffer);
+			local windows = utils.find_attached_wins(buffer);
 			local options = markview.configuration.options or {};
 
 			for _, window in ipairs(windows) do
@@ -684,7 +674,7 @@ markview.commands = {
 	end,
 	disableAll = function ()
 		for _, buf in ipairs(markview.attached_buffers) do
-			local windows = markview.find_attached_wins(buffer);
+			local windows = utils.find_attached_wins(buffer);
 			local options = markview.configuration.options or {};
 
 			for _, window in ipairs(windows) do
@@ -723,7 +713,7 @@ markview.commands = {
 			return;
 		end
 
-		local windows = markview.find_attached_wins(buffer);
+		local windows = utils.find_attached_wins(buffer);
 
 		local parsed_content = markview.parser.init(buffer);
 
@@ -746,7 +736,7 @@ markview.commands = {
 			return;
 		end
 
-		local windows = markview.find_attached_wins(buffer);
+		local windows = utils.find_attached_wins(buffer);
 
 		for _, window in ipairs(windows) do
 			vim.wo[window].conceallevel = type(options.on_disable) == "table" and options.on_disable.conceallevel or markview.global_options.conceallevel;
