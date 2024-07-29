@@ -480,14 +480,13 @@ parser.init = function (buffer)
 end
 
 parser.parse_range = function (buffer, from, to)
+	if not from or not to then
+		return {};
+	end
+
 	local root_parser = vim.treesitter.get_parser(buffer);
 	root_parser:parse(true);
 
-	if (not from or not to) and _G.__markview_render_ranges and _G.__markview_render_ranges[buffer] then
-		from = _G.__markview_render_ranges[buffer][1];
-		to = _G.__markview_render_ranges[buffer][2];
-	end
-	--
 	-- Clear the previous contents
 	parser.parsed_content = {};
 	local main_tree_parsed = false;

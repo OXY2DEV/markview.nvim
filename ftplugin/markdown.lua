@@ -28,7 +28,6 @@ if vim.islist(markview.configuration.highlight_groups) then
 end
 
 local markview_augroup = vim.api.nvim_create_augroup("markview_buf_" .. vim.api.nvim_get_current_buf(), { clear = true });
-local options = markview.configuration.options;
 
 vim.api.nvim_create_autocmd({ "BufWinEnter" }, {
 	buffer = vim.api.nvim_get_current_buf(),
@@ -44,10 +43,29 @@ vim.api.nvim_create_autocmd({ "BufWinEnter" }, {
 		end
 
 		if markview.state.enable == false then
+			-- Call the on_disable callback before exiting
+			if not markview.configuration.callbacks or not markview.configuration.callbacks.on_disable then
+				return;
+			end
+
+			for _, window in ipairs(windows) do
+				pcall(markview.configuration.callbacks.on_disable, buffer, window);
+			end
+
 			return;
 		end
 
 		if markview.state.buf_states[buffer] == false then
+			-- Call the on_disable callback before exiting
+			-- Even if only the buffer is disabled
+			if not markview.configuration.callbacks or not markview.configuration.callbacks.on_disable then
+				return;
+			end
+
+			for _, window in ipairs(windows) do
+				pcall(markview.configuration.callbacks.on_disable, buffer, window);
+			end
+
 			return;
 		end
 
@@ -66,8 +84,11 @@ vim.api.nvim_create_autocmd({ "BufWinEnter" }, {
 		markview.renderer.render(buffer, parsed_content, markview.configuration)
 
 		for _, window in ipairs(windows) do
-			vim.wo[window].conceallevel = type(options.on_enable) == "table" and options.on_enable.conceallevel or 2;
-			vim.wo[window].concealcursor = type(options.on_enable) == "table" and options.on_enable.concealcursor or "n";
+			if markview.configuration.callbacks and markview.configuration.callbacks.on_enable then
+				pcall(markview.configuration.callbacks.on_enable, buffer, window);
+			end
+			-- vim.wo[window].conceallevel = type(options.on_enable) == "table" and options.on_enable.conceallevel or 2;
+			-- vim.wo[window].concealcursor = type(options.on_enable) == "table" and options.on_enable.concealcursor or "n";
 
 			markview.keymaps.init(buffer, window, parsed_content, markview.configuration);
 		end
@@ -93,35 +114,40 @@ vim.api.nvim_create_autocmd({ "ModeChanged", "TextChanged" }, {
 			return;
 		end
 
-		if vim.islist(markview.configuration.modes) and vim.list_contains(markview.configuration.modes, mode) then
-			local parsed_content = markview.parser.init(buffer);
-			local cursor = vim.api.nvim_win_get_cursor(0) or {1, 0};
-
-			local draw_start, draw_stop = utils.get_cursor_range(buffer, windows[1], markview.configuration);
-
-			markview.renderer.clear(buffer);
-			markview.renderer.render(buffer, parsed_content, markview.configuration, draw_start, draw_stop);
-
-			if vim.list_contains(markview.configuration.modes, "i") and mode == "i" then
-				local partial_contents = markview.parser.parse_range(buffer, draw_start, draw_stop);
-
-				markview.renderer.clear_partial_range(buffer, partial_contents);
-				-- markview.renderer.render_deleted(event.buf, cursor, markview.configuration);
-				-- markview.renderer.clear_under_cursor(buffer, cursor);
+		-- Only on mode change
+		if event.event == "ModeChanged" then
+			-- Call the on_mode_change callback before exiting
+			if not markview.configuration.callbacks or not markview.configuration.callbacks.on_mode_change then
+				return;
 			end
 
 			for _, window in ipairs(windows) do
-				vim.wo[window].conceallevel = type(options.on_enable) == "table" and options.on_enable.conceallevel or 2;
-				vim.wo[window].concealcursor = type(options.on_enable) == "table" and options.on_enable.concealcursor or "n";
+				pcall(markview.configuration.callbacks.on_mode_change, buffer, window, mode);
+			end
+		end
 
+
+		if vim.islist(markview.configuration.modes) and vim.list_contains(markview.configuration.modes, mode) then
+			local parsed_content = markview.parser.init(buffer);
+			local parse_start, parse_stop = utils.get_cursor_range(buffer, windows[1], markview.configuration);
+
+			markview.renderer.clear(buffer);
+
+			if vim.list_contains(markview.configuration.modes, "i") and mode == "i" then
+				markview.renderer.render(buffer, parsed_content, markview.configuration, parse_start, parse_stop);
+			else
+				markview.renderer.render(buffer, parsed_content, markview.configuration);
+			end
+
+			local partial_contents = markview.parser.parse_range(event.buf, parse_start, parse_stop);
+			local current_range = markview.renderer.get_content_range(partial_contents);
+
+			markview.renderer.update_range(buffer, current_range);
+
+			for _, window in ipairs(windows) do
 				markview.keymaps.init(buffer, window, parsed_content, markview.configuration);
 			end
 		else
-			for _, window in ipairs(windows) do
-				vim.wo[window].conceallevel = type(options.on_disable) == "table" and options.on_disable.conceallevel or markview.global_options.conceallevel;
-				vim.wo[window].concealcursor = type(options.on_disable) == "table" and options.on_disable.concealcursor or markview.global_options.concealcursor;
-			end
-
 			markview.renderer.clear(buffer);
 		end
 	end
@@ -138,16 +164,40 @@ vim.api.nvim_create_autocmd({ "CursorMovedI" }, {
 	group = markview_augroup,
 
 	callback = function (event)
+		if markview.state.enable == false then
+			move_timer:stop();
+			return;
+		end
+
+		if markview.state.buf_states[event.buf] == false then
+			move_timer:stop();
+			return;
+		end
+
 		move_timer:stop();
 		move_timer:start(100, 0, vim.schedule_wrap(function ()
-			local prev_contents = markview.parser.parse_range(event.buf);
+			local old_start, old_stop = _G.__markview_render_ranges[event.buf][1], _G.__markview_render_ranges[event.buf][2];
+			local parse_start, parse_stop = utils.get_cursor_range(event.buf, 0, markview.configuration);
 
-			local draw_start, draw_stop = utils.get_cursor_range(event.buf, 0, markview.configuration);
-			local partial_contents = markview.parser.parse_range(event.buf, draw_start, draw_stop);
+			vim.print(parse_start .. " : " .. parse_stop)
+			local prev_contents = markview.parser.parse_range(event.buf, old_start, old_stop);
+			local partial_contents = markview.parser.parse_range(event.buf, parse_start, parse_stop);
 
-			markview.renderer.clear_partial_range(event.buf, prev_contents);
-			markview.renderer.render_partial(event.buf, prev_contents, markview.configuration, draw_start, draw_stop);
-			markview.renderer.clear_partial_range(event.buf, partial_contents);
+			local current_range = markview.renderer.get_content_range(partial_contents);
+
+			-- Don't draw new things
+			if _G.__markview_render_ranges[event.buf] and vim.deep_equal(_G.__markview_render_ranges[event.buf], current_range) then
+				markview.renderer.clear_content_range(event.buf, partial_contents)
+				return;
+			end
+
+			markview.renderer.clear_content_range(event.buf, partial_contents)
+
+			markview.renderer.clear_content_range(event.buf, prev_contents);
+
+			markview.renderer.render_in_range(event.buf, prev_contents, markview.configuration, draw_start, draw_stop);
+
+			markview.renderer.update_range(event.buf, current_range);
 		end));
 	end
 })

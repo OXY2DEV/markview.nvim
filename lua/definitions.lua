@@ -16,8 +16,8 @@
 --- List of modes where the plugin will be active
 ---@field modes string[]?
 ---
---- Options for various plugins states
----@field options markview.config.options?
+--- Callbacks for plugin states
+---@field callbacks markview.config.callbacks?
 ---
 --- Table for heading configuration
 ---@field headings markview.render_config.headings?
@@ -60,7 +60,7 @@
 ---@field modes string[]
 ---
 --- Options for various plugins states
----@field options markview.config.options
+---@field callbacks markview.config.callbacks
 ---
 --- Table for heading configuration
 ---@field headings markview.render_config.headings
@@ -90,20 +90,14 @@
 ---@field tables markview.render_config.tables
 
 
---- Definition for the options
----@class markview.config.options
+--- Definition for the plugin callbacks
+---@class markview.config.callbacks
 ---
----@field on_enable markview.config.options.available
+---@field on_enable function?
 ---
----@field on_disable markview.config.options.available
-
---- Available options
----@class markview.config.options.available
+---@field on_disable function?
 ---
---- Conceal level
----@field conceallevel number
----
----@field concealcursor string?
+---@field on_mode_change function?
 
 ---------------------------------------------------------------
 --- For rendering things

@@ -43,16 +43,18 @@ markview.global_options = {};
 
 ---@type markview.config
 markview.configuration = {
-	options = {
-		on_enable = {
-			conceallevel = 2,
-			concealcursor = "n"
-		},
+	callbacks = {
+		on_enable = function (buffer, window)
+			vim.wo[window].conceallevel = 2;
+			vim.wo[window].concealcursor = "nc";
+		end,
+		on_disable = function (buffer, window)
+			vim.wo[window].conceallevel = 0;
+			vim.wo[window].concealcursor = "";
+		end,
 
-		on_disable = {
-			conceallevel = 0,
-			concealcursor = ""
-		}
+		on_mode_change = function (buffer, window, mode)
+		end
 	},
 
 	highlight_groups = {
@@ -661,11 +663,11 @@ markview.commands = {
 		for _, buf in ipairs(markview.attached_buffers) do
 			local parsed_content = markview.parser.init(buf);
 			local windows = utils.find_attached_wins(buffer);
-			local options = markview.configuration.options or {};
 
-			for _, window in ipairs(windows) do
-				vim.wo[window].conceallevel = type(options.on_enable) == "table" and options.on_enable.conceallevel or 2;
-				vim.wo[window].concealcursor = type(options.on_enable) == "table" and options.on_enable.concealcursor or "n";
+			if markview.configuration.callbacks and markview.configuration.callbacks.on_enable then
+				for _, window in ipairs(windows) do
+					pcall(markview.configuration.callbacks.on_enable, buf, window);
+				end
 			end
 
 			markview.renderer.clear(buf);
@@ -675,11 +677,11 @@ markview.commands = {
 	disableAll = function ()
 		for _, buf in ipairs(markview.attached_buffers) do
 			local windows = utils.find_attached_wins(buffer);
-			local options = markview.configuration.options or {};
 
-			for _, window in ipairs(windows) do
-				vim.wo[window].conceallevel = type(options.on_disable) == "table" and options.on_disable.conceallevel or markview.global_options.conceallevel;
-				vim.wo[window].concealcursor = type(options.on_disable) == "table" and options.on_disable.concealcursor or markview.global_options.concealcursor;
+			if markview.configuration.callbacks and markview.configuration.callbacks.on_disable then
+				for _, window in ipairs(windows) do
+					pcall(markview.configuration.callbacks.on_disable, buf, window);
+				end
 			end
 
 			markview.renderer.clear(buf);
@@ -707,7 +709,6 @@ markview.commands = {
 	end,
 	enable = function (buf)
 		local buffer = tonumber(buf) or vim.api.nvim_get_current_buf();
-		local options = markview.configuration.options or {};
 
 		if not vim.list_contains(markview.attached_buffers, buffer) or not vim.api.nvim_buf_is_valid(buffer) then
 			return;
@@ -720,8 +721,7 @@ markview.commands = {
 		markview.state.buf_states[buffer] = true;
 
 		for _, window in ipairs(windows) do
-			vim.wo[window].conceallevel = type(options.on_enable) == "table" and options.on_enable.conceallevel or 2;
-			vim.wo[window].concealcursor = type(options.on_enable) == "table" and options.on_enable.concealcursor or "n";
+			pcall(markview.configuration.callbacks.on_enable, buf, window);
 		end
 
 		markview.renderer.clear(buffer);
@@ -730,7 +730,6 @@ markview.commands = {
 
 	disable = function (buf)
 		local buffer = tonumber(buf) or vim.api.nvim_get_current_buf();
-		local options = markview.configuration.options or {};
 
 		if not vim.list_contains(markview.attached_buffers, buffer) or not vim.api.nvim_buf_is_valid(buffer) then
 			return;
@@ -739,8 +738,7 @@ markview.commands = {
 		local windows = utils.find_attached_wins(buffer);
 
 		for _, window in ipairs(windows) do
-			vim.wo[window].conceallevel = type(options.on_disable) == "table" and options.on_disable.conceallevel or markview.global_options.conceallevel;
-			vim.wo[window].concealcursor = type(options.on_disable) == "table" and options.on_disable.concealcursor or markview.global_options.concealcursor;
+			pcall(markview.configuration.callbacks.on_disable, buf, window);
 		end
 
 		markview.renderer.clear(buffer);
