@@ -78,7 +78,7 @@ vim.api.nvim_create_autocmd({ "BufWinEnter" }, {
 			}
 		end
 
-		local parsed_content = markview.parser.init(buffer);
+		local parsed_content = markview.parser.init(buffer, markview.configuration);
 
 		markview.renderer.clear(buffer);
 		markview.renderer.render(buffer, parsed_content, markview.configuration)
@@ -87,8 +87,6 @@ vim.api.nvim_create_autocmd({ "BufWinEnter" }, {
 			if markview.configuration.callbacks and markview.configuration.callbacks.on_enable then
 				pcall(markview.configuration.callbacks.on_enable, buffer, window);
 			end
-			-- vim.wo[window].conceallevel = type(options.on_enable) == "table" and options.on_enable.conceallevel or 2;
-			-- vim.wo[window].concealcursor = type(options.on_enable) == "table" and options.on_enable.concealcursor or "n";
 
 			markview.keymaps.init(buffer, window, parsed_content, markview.configuration);
 		end
@@ -118,7 +116,7 @@ vim.api.nvim_create_autocmd({ "ModeChanged", "TextChanged" }, {
 		if event.event == "ModeChanged" then
 			-- Call the on_mode_change callback before exiting
 			if not markview.configuration.callbacks or not markview.configuration.callbacks.on_mode_change then
-				return;
+				goto noCallbacks;
 			end
 
 			for _, window in ipairs(windows) do
@@ -126,20 +124,21 @@ vim.api.nvim_create_autocmd({ "ModeChanged", "TextChanged" }, {
 			end
 		end
 
+		::noCallbacks::
 
-		if vim.islist(markview.configuration.modes) and vim.list_contains(markview.configuration.modes, mode) then
-			local parsed_content = markview.parser.init(buffer);
+		if markview.configuration.modes and vim.list_contains(markview.configuration.modes, mode) then
+			local parsed_content = markview.parser.init(buffer, markview.configuration);
 			local parse_start, parse_stop = utils.get_cursor_range(buffer, windows[1], markview.configuration);
 
 			markview.renderer.clear(buffer);
 
-			if vim.list_contains(markview.configuration.modes, "i") and mode == "i" then
+			if markview.configuration.hybrid_modes and vim.list_contains(markview.configuration.hybrid_modes, mode) then
 				markview.renderer.render(buffer, parsed_content, markview.configuration, parse_start, parse_stop);
 			else
 				markview.renderer.render(buffer, parsed_content, markview.configuration);
 			end
 
-			local partial_contents = markview.parser.parse_range(event.buf, parse_start, parse_stop);
+			local partial_contents = markview.parser.parse_range(event.buf, markview.configuration, parse_start, parse_stop);
 			local current_range = markview.renderer.get_content_range(partial_contents);
 
 			markview.renderer.update_range(buffer, current_range);
@@ -153,13 +152,22 @@ vim.api.nvim_create_autocmd({ "ModeChanged", "TextChanged" }, {
 	end
 });
 
-if not vim.list_contains(markview.configuration.modes, "i") then
+if not markview.configuration.hybrid_modes then
 	return;
 end
 
+local events = {}
 local move_timer = vim.uv.new_timer();
 
-vim.api.nvim_create_autocmd({ "CursorMovedI" }, {
+if vim.list_contains(markview.configuration.hybrid_modes, "n") or vim.list_contains(markview.configuration.hybrid_modes, "v") then
+	table.insert(events, "CursorMoved");
+end
+
+if vim.list_contains(markview.configuration.hybrid_modes, "i") then
+	table.insert(events, "CursorMovedI");
+end
+
+vim.api.nvim_create_autocmd(events, {
 	buffer = vim.api.nvim_get_current_buf(),
 	group = markview_augroup,
 
@@ -176,12 +184,19 @@ vim.api.nvim_create_autocmd({ "CursorMovedI" }, {
 
 		move_timer:stop();
 		move_timer:start(100, 0, vim.schedule_wrap(function ()
+			if not _G.__markview_render_ranges then
+				_G.__markview_render_ranges = {};
+			end
+
+			if not _G.__markview_render_ranges[event.buf] then
+				_G.__markview_render_ranges[event.buf] = {};
+			end
+
 			local old_start, old_stop = _G.__markview_render_ranges[event.buf][1], _G.__markview_render_ranges[event.buf][2];
 			local parse_start, parse_stop = utils.get_cursor_range(event.buf, 0, markview.configuration);
 
-			vim.print(parse_start .. " : " .. parse_stop)
-			local prev_contents = markview.parser.parse_range(event.buf, old_start, old_stop);
-			local partial_contents = markview.parser.parse_range(event.buf, parse_start, parse_stop);
+			local prev_contents = markview.parser.parse_range(event.buf, markview.configuration, old_start, old_stop);
+			local partial_contents = markview.parser.parse_range(event.buf, markview.configuration, parse_start, parse_stop);
 
 			local current_range = markview.renderer.get_content_range(partial_contents);
 
@@ -192,11 +207,9 @@ vim.api.nvim_create_autocmd({ "CursorMovedI" }, {
 			end
 
 			markview.renderer.clear_content_range(event.buf, partial_contents)
-
 			markview.renderer.clear_content_range(event.buf, prev_contents);
 
 			markview.renderer.render_in_range(event.buf, prev_contents, markview.configuration, draw_start, draw_stop);
-
 			markview.renderer.update_range(event.buf, current_range);
 		end));
 	end

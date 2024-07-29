@@ -281,6 +281,17 @@ parser.md = function (buffer, TStree, from, to)
 				table.insert(rows, tmp)
 			end
 
+			local s_start, s_end;
+
+			-- This is a woraround to make both table renders to work
+			if parser.cached_conf and parser.cached_conf.tables and parser.cached_conf.tables.use_virt_lines == false then
+				s_start = row_start;
+				s_end = row_end;
+
+				row_start = row_start - 1;
+				row_end = row_end + 1;
+			end
+
 			table.insert(parser.parsed_content, {
 				node = capture_node,
 				type = "table",
@@ -290,11 +301,14 @@ parser.md = function (buffer, TStree, from, to)
 
 				content_alignments = alignments,
 
+				__r_start = s_start,
+				__r_end = s_end,
+
 				row_start = row_start,
 				row_end = row_end,
 
 				col_start = col_start,
-				col_end = col_end
+				col_end = col_end,
 			})
 		elseif capture_name == "list_item" then
 			local marker = capture_node:named_child(0);
@@ -458,9 +472,13 @@ end
 --- Parsed data is stored as a "view" in renderer.lua
 ---
 ---@param buffer number
-parser.init = function (buffer)
+parser.init = function (buffer, config_table)
 	local root_parser = vim.treesitter.get_parser(buffer);
 	root_parser:parse(true);
+
+	if config_table then
+		parser.cached_conf = config_table;
+	end
 
 	-- Clear the previous contents
 	parser.parsed_content = {};
@@ -479,7 +497,7 @@ parser.init = function (buffer)
 	return parser.parsed_content;
 end
 
-parser.parse_range = function (buffer, from, to)
+parser.parse_range = function (buffer, config_table, from, to)
 	if not from or not to then
 		return {};
 	end

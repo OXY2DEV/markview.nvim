@@ -54,6 +54,11 @@ markview.configuration = {
 		end,
 
 		on_mode_change = function (buffer, window, mode)
+			if vim.list_contains(markview.configuration.modes, mode) then
+				vim.wo[window].conceallevel = 2;
+			else
+				vim.wo[window].conceallevel = 0;
+			end
 		end
 	},
 
@@ -640,7 +645,7 @@ markview.configuration = {
 			"MarkviewCol1Fg", "MarkviewCol1Fg", "MarkviewCol1Fg", "MarkviewCol1Fg"
 		},
 
-		use_virt_lines = false
+		use_virt_lines = true
 	},
 };
 

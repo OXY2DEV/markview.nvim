@@ -16,6 +16,9 @@
 --- List of modes where the plugin will be active
 ---@field modes string[]?
 ---
+--- List of modes where both raw & preview is shown
+---@field hybrid_modes string[]?
+---
 --- Callbacks for plugin states
 ---@field callbacks markview.config.callbacks?
 ---
@@ -58,6 +61,9 @@
 --- 
 --- List of modes where the plugin will be active
 ---@field modes string[]
+---
+--- List of modes where both raw & preview is shown
+---@field hybrid_modes string[]?
 ---
 --- Options for various plugins states
 ---@field callbacks markview.config.callbacks
