@@ -318,7 +318,7 @@ parser.md = function (buffer, TStree, from, to)
 			local list_lines, lines, spaces = parser.fiter_lines(buffer, row_start, row_end, symbol);
 			local spaces_before_marker = list_lines[1]:match("^(%s*)" .. symbol .. "%s*");
 
-			local c_end, r_end = parser.get_list_end_range(buffer, row_start, row_end, symbol)
+			local c_end, _ = parser.get_list_end_range(buffer, row_start, row_end, symbol)
 
 			table.insert(parser.parsed_content, {
 				node = capture_node,

@@ -128,20 +128,23 @@ vim.api.nvim_create_autocmd({ "ModeChanged", "TextChanged" }, {
 
 		if markview.configuration.modes and vim.list_contains(markview.configuration.modes, mode) then
 			local parsed_content = markview.parser.init(buffer, markview.configuration);
-			local parse_start, parse_stop = utils.get_cursor_range(buffer, windows[1], markview.configuration);
+			local parse_start, parse_stop = utils.get_cursor_range(buffer, windows[1]);
 
 			markview.renderer.clear(buffer);
-
-			if markview.configuration.hybrid_modes and vim.list_contains(markview.configuration.hybrid_modes, mode) then
-				markview.renderer.render(buffer, parsed_content, markview.configuration, parse_start, parse_stop);
-			else
-				markview.renderer.render(buffer, parsed_content, markview.configuration);
-			end
 
 			local partial_contents = markview.parser.parse_range(event.buf, markview.configuration, parse_start, parse_stop);
 			local current_range = markview.renderer.get_content_range(partial_contents);
 
+			-- vim.print(current_range)
+			-- Update the range first or it gets messed up later
 			markview.renderer.update_range(buffer, current_range);
+
+			if markview.configuration.hybrid_modes and vim.list_contains(markview.configuration.hybrid_modes, mode) then
+				markview.renderer.render(buffer, parsed_content, markview.configuration, parse_start, parse_stop);
+				markview.renderer.clear_content_range(event.buf, partial_contents)
+			else
+				markview.renderer.render(buffer, parsed_content, markview.configuration);
+			end
 
 			for _, window in ipairs(windows) do
 				markview.keymaps.init(buffer, window, parsed_content, markview.configuration);
@@ -165,6 +168,7 @@ end
 
 if vim.list_contains(markview.configuration.hybrid_modes, "i") then
 	table.insert(events, "CursorMovedI");
+	table.insert(events, "TextChangedI"); -- For smoother experience when writing, potentially can cause bugs
 end
 
 vim.api.nvim_create_autocmd(events, {
@@ -192,8 +196,10 @@ vim.api.nvim_create_autocmd(events, {
 				_G.__markview_render_ranges[event.buf] = {};
 			end
 
+			local windows = utils.find_attached_wins(event.buf);
+
 			local old_start, old_stop = _G.__markview_render_ranges[event.buf][1], _G.__markview_render_ranges[event.buf][2];
-			local parse_start, parse_stop = utils.get_cursor_range(event.buf, 0, markview.configuration);
+			local parse_start, parse_stop = utils.get_cursor_range(event.buf, windows[1]);
 
 			local prev_contents = markview.parser.parse_range(event.buf, markview.configuration, old_start, old_stop);
 			local partial_contents = markview.parser.parse_range(event.buf, markview.configuration, parse_start, parse_stop);

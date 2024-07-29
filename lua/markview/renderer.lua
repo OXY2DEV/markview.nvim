@@ -1334,8 +1334,9 @@ renderer.render = function (buffer, parsed_content, config_table, conceal_start,
 			goto extmark_skipped;
 		end
 
+		-- Unlike `conceal_start`, `conceal_stop` is 1-indexed
 		-- Do not render things inside the un-conceal range
-		if conceal_start and conceal_stop and content.row_start >= conceal_start and content.row_end <= conceal_stop then
+		if conceal_start and conceal_stop and content.row_start >= conceal_start and content.row_end <= (conceal_stop - 1) then
 			goto extmark_skipped;
 		end
 
