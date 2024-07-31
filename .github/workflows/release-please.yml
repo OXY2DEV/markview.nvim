@@ -23,5 +23,5 @@ jobs:
           # this is a built-in strategy in release-please, see "Action Inputs"
           # for more options
 
-          branch: dev
+          target-branch: dev
           release-type: simple
