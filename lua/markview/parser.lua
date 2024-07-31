@@ -1,29 +1,54 @@
 local parser = {};
 -- local renderer = require("markview/renderer");
 
-parser.fiter_lines = function (buffer, from, to, marker)
+parser.fiter_lines = function (buffer, from, to)
 	local captured_lines = vim.api.nvim_buf_get_lines(buffer, from, to, false);
 	local filtered_lines = {};
 	local indexes = {};
 	local spaces = {};
 
+	local withinCodeBlock;
+	local parent_marker;
+
 	local tolarence = 3;
 	local found = 0;
 
 	for l, line in ipairs(captured_lines) do
-		if l ~= 1 and line:match(marker) then
-			break;
+		if l ~= 1 then
+			if withinCodeBlock ~= true and line:match("^%s*([+%-*])") then
+				break;
+			elseif withinCodeBlock ~= true and line:match("^%s*(%d+%.)") then
+				break;
+			end
 		end
 
 		if found >= tolarence then
 			break;
 		end
 
-		local spaces_before = vim.fn.strchars(line:match("(%s*)"));
+		local spaces_before = vim.fn.strchars(line:match("^(%s*)"));
 
-		if not line:match(marker) then
-			spaces_before = math.max(0, spaces_before - vim.fn.strchars(marker .. " "));
+		if line:match("(```)") and withinCodeBlock ~= true then
+			withinCodeBlock = true;
+			goto withinElement;
+		elseif line:match("(```)") and withinCodeBlock == true then
+			withinCodeBlock = false;
+			goto withinElement;
+		elseif withinCodeBlock == true then
+			goto withinElement;
 		end
+
+		if line:match("^%s*([+%-*])") then
+			parent_marker = line:match("^%s*([+%-*])");
+		elseif line:match("^%s*(%d+%.)") then
+			parent_marker = line:match("^%s*(%d+%.)");
+		end
+
+		if not line:match("^%s*([+%-*])") and not line:match("^%s*(%d+%.)") and parent_marker then
+			spaces_before = math.max(0, spaces_before - vim.fn.strchars((parent_marker or "") .. " "));
+		end
+
+		::withinElement::
 
 		table.insert(filtered_lines, line);
 		table.insert(indexes, l);
@@ -317,7 +342,7 @@ parser.md = function (buffer, TStree, from, to)
 			local marker_text = vim.treesitter.get_node_text(marker, buffer);
 			local symbol = marker_text:gsub("%s", "");
 
-			local list_lines, lines, spaces = parser.fiter_lines(buffer, row_start, row_end, symbol);
+			local list_lines, lines, spaces = parser.fiter_lines(buffer, row_start, row_end);
 			local spaces_before_marker = list_lines[1]:match("^(%s*)" .. symbol .. "%s*");
 
 			local c_end, _ = parser.get_list_end_range(buffer, row_start, row_end, symbol)
