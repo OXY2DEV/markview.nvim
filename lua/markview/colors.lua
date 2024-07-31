@@ -8,7 +8,55 @@ colors.lerp = function (x, y, t)
 	return x + ((y - x) * t);
 end
 
+colors.name_to_hex = function (name)
+	local lookup = {
+		["red"] = "#FF0000",        ["lightred"] = "#FFBBBB",      ["darkred"] = "#8B0000",
+		["green"] = "#00FF00",      ["lightgreen"] = "#90EE90",    ["darkgreen"] = "#006400",    ["seagreen"] = "#2E8B57",
+		["blue"] = "#0000FF",       ["lightblue"] = "#ADD8E6",     ["darkblue"] = "#00008B",     ["slateblue"] = "#6A5ACD",
+		["cyan"] = "#00FFFF",       ["lightcyan"] = "#E0FFFF",     ["darkcyan"] = "#008B8B",
+		["magenta"] = "#FF00FF",    ["lightmagenta"] = "#FFBBFF",  ["darkmagenta"] = "#8B008B",
+		["yellow"] = "#FFFF00",     ["lightyellow"] = "#FFFFE0",   ["darkyellow"] = "#BBBB00",   ["brown"] = "#A52A2A",
+		["grey"] = "#808080",       ["lightgrey"] = "#D3D3D3",     ["darkgrey"] = "#A9A9A9",
+		["gray"] = "#808080",       ["lightgray"] = "#D3D3D3",     ["darkgray"] = "#A9A9A9",
+		["black"] = "#000000",      ["white"] = "#FFFFFF",
+		["orange"] = "#FFA500",     ["purple"] = "#800080",        ["violet"] = "#EE82EE"
+	};
+
+	local lookup_nvim = {
+		["nvimdarkblue"] = "#004C73",    ["nvimlightblue"] = "#A6DBFF",
+		["nvimdarkcyan"] = "#007373",    ["nvimlightcyan"] = "#8CF8F7",
+		["nvimdarkgray1"] = "#07080D",   ["nvimlightgray1"] = "#EEF1F8",
+		["nvimdarkgray2"] = "#14161B",   ["nvimlightgray2"] = "#E0E2EA",
+		["nvimdarkgray3"] = "#2C2E33",   ["nvimlightgray3"] = "#C4C6CD",
+		["nvimdarkgray4"] = "#4F5258",   ["nvimlightgray4"] = "#9B9EA4",
+		["nvimdarkgrey1"] = "#07080D",   ["nvimlightgrey1"] = "#EEF1F8",
+		["nvimdarkgrey2"] = "#14161B",   ["nvimlightgrey2"] = "#E0E2EA",
+		["nvimdarkgrey3"] = "#2C2E33",   ["nvimlightgrey3"] = "#C4C6CD",
+		["nvimdarkgrey4"] = "#4F5258",   ["nvimlightgrey4"] = "#9B9EA4",
+		["nvimdarkgreen"] = "#005523",   ["nvimlightgreen"] = "#B3F6C0",
+		["nvimdarkmagenta"] = "#470045", ["nvimlightmagenta"] = "#FFCAFF",
+		["nvimdarkred"] = "#590008",     ["nvimlightred"] = "#FFC0B9",
+		["nvimdarkyellow"] = "#6B5300",  ["nvimlightyellow"] = "#FCE094",
+	};
+
+	return lookup[string.lower(name)] or lookup_nvim[string.lower(name)];
+end
+
+colors.name_to_rgb = function (name)
+	local hex = colors.name_to_hex(name);
+
+	if not hex then
+		return;
+	end
+
+	return colors.hex_to_rgb(hex);
+end
+
 colors.num_to_hex = function (num)
+	if not num then
+		return;
+	end
+
 	if num == 0 then
 		return "#000000";
 	elseif num ~= nil then
@@ -17,6 +65,10 @@ colors.num_to_hex = function (num)
 end
 
 colors.num_to_rgb = function (num)
+	if not num then
+		return;
+	end
+
 	local hex = string.format("%x", num);
 
 	return {
@@ -49,14 +101,30 @@ colors.rgb_to_hex = function (tbl)
 end
 
 colors.get_hl_value = function (ns_id, hl_group, value)
-	local hl = vim.api.nvim_get_hl(ns_id, { name = hl_group, link = false });
+	if vim.fn.hlexists(hl_group) == 0 then
+		return;
+	end
+
+	local hl = vim.api.nvim_get_hl(ns_id, { name = hl_group, link = false, create = false });
 
 	if value == "fg" then
-		return colors.num_to_hex(hl.fg)
+		if type(hl.fg) == "string" and hl.fg:match("^[#]?(%x+)$") then
+			return colors.name_to_hex(hl.fg)
+		else
+			return colors.num_to_hex(hl.fg)
+		end
 	elseif value == "bg" then
-		return colors.num_to_hex(hl.bg)
+		if type(hl.bg) == "string" and hl.bg:match("^[#]?(%x+)$") then
+			return colors.name_to_hex(hl.bg)
+		else
+			return colors.num_to_hex(hl.bg)
+		end
 	elseif value == "sp" then
-		return colors.num_to_hex(hl.sp)
+		if type(hl.sp) == "string" and hl.sp:match("^[#]?(%x+)$") then
+			return colors.name_to_hex(hl.sp)
+		else
+			return colors.num_to_hex(hl.sp)
+		end
 	else
 		return hl[value];
 	end
@@ -109,14 +177,18 @@ colors.mix = function (color_1, color_2, per_1, per_2)
 
 	if type(color_1) == "table" then
 		c_1 = color_1;
-	elseif type(color_1) == "string" then
+	elseif type(color_1) == "string" and color_1:match("^[#]?(%x+)$") then
 		c_1 = colors.hex_to_rgb(color_1);
+	elseif type(color_1) == "string" then
+		c_1 = colors.name_to_rgb(color_1);
 	end
 
 	if type(color_2) == "table" then
 		c_2 = color_2;
-	elseif type(color_2) == "string" then
+	elseif type(color_2) == "string" and color_2:match("^[#]?(%x+)$") then
 		c_2 = colors.hex_to_rgb(color_2);
+	elseif type(color_2) == "string" then
+		c_1 = colors.name_to_rgb(color_2);
 	end
 
 	if not c_1 or not c_2 then
@@ -128,6 +200,87 @@ colors.mix = function (color_1, color_2, per_1, per_2)
 	local _b = colors.clamp((c_1.b * per_1) + (c_2.b * per_2), 1, 255);
 
 	return colors.rgb_to_hex({ r = _r, g = _g, b = _b });
+end
+
+colors.get_brightness = function (color)
+	if type(color) == "string" and color:match("^[#]?(%x+)$") then
+		color = colors.hex_to_rgb(color);
+	elseif type(color_1) == "string" then
+		color = colors.name_to_rgb(color);
+	elseif type(color) == "number" then
+		color = colors.num_to_rgb(color);
+	end
+
+	for key, value in pairs(color) do
+		if value > 1 then
+			color[key] = value / 255;
+		end
+	end
+
+	return (color.r * 0.2126) + (color.g * 0.7152) + (color.b * 0.0722);
+end
+
+colors.brightest = function (col_list, debug)
+	if not col_list then
+		return;
+	elseif not vim.islist(col_list) then
+		local tmp = {};
+
+		for _, item in pairs(col_list) do
+			table.insert(tmp,item);
+		end
+
+		col_list = tmp;
+	end
+
+	local _c = {};
+
+	for _, col in ipairs(col_list) do
+		if type(col) == "string" and col:match("^[#]?(%x+)$") then
+			table.insert(_c, colors.hex_to_rgb(col));
+		elseif type(col) == "string" then
+			table.insert(_c, colors.name_to_rgb(col));
+		elseif type(col) == "number" then
+			table.insert(_c, colors.num_to_rgb(col));
+		elseif type(col) == "table" then
+			table.insert(_c, col);
+		end
+	end
+
+
+	local _b = 0;
+	local brightest;
+
+	for _, c in ipairs(_c) do
+		local brightness = colors.get_brightness(c) or 0;
+
+		if brightness >= _b then
+			_b = brightness;
+			brightest = c;
+		end
+	end
+
+	-- if debug then
+	-- 	vim.print(colors.rgb_to_hex(brightest) == nil);
+	-- end
+
+	return colors.rgb_to_hex(brightest);
+end
+
+colors.get = function (col_list)
+	if not col_list then
+		return;
+	elseif not vim.islist(col_list) then
+		local tmp = {};
+
+		for _, item in pairs(col_list) do
+			table.insert(tmp,item);
+		end
+
+		col_list = tmp;
+	end
+
+	return col_list[1];
 end
 
 return colors;

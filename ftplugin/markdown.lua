@@ -135,16 +135,15 @@ vim.api.nvim_create_autocmd({ "ModeChanged", "TextChanged" }, {
 			local partial_contents = markview.parser.parse_range(event.buf, markview.configuration, parse_start, parse_stop);
 			local current_range = markview.renderer.get_content_range(partial_contents);
 
-			-- vim.print(current_range)
-			-- Update the range first or it gets messed up later
-			markview.renderer.update_range(buffer, current_range);
-
 			if markview.configuration.hybrid_modes and vim.list_contains(markview.configuration.hybrid_modes, mode) then
 				markview.renderer.render(buffer, parsed_content, markview.configuration, parse_start, parse_stop);
 				markview.renderer.clear_content_range(event.buf, partial_contents)
 			else
 				markview.renderer.render(buffer, parsed_content, markview.configuration);
 			end
+
+			-- Or else things won't render on first redraw from the other autocmd
+			markview.renderer.update_range(buffer, current_range);
 
 			for _, window in ipairs(windows) do
 				markview.keymaps.init(buffer, window, parsed_content, markview.configuration);
@@ -206,6 +205,7 @@ vim.api.nvim_create_autocmd(events, {
 
 			local current_range = markview.renderer.get_content_range(partial_contents);
 
+			vim.print(_G.__markview_render_ranges[event.buf])
 			-- Don't draw new things
 			if _G.__markview_render_ranges[event.buf] and vim.deep_equal(_G.__markview_render_ranges[event.buf], current_range) then
 				markview.renderer.clear_content_range(event.buf, partial_contents)

@@ -158,6 +158,8 @@ parser.md = function (buffer, TStree, from, to)
 			local lines = {};
 			local highest_len = 0;
 
+			local block_start = vim.api.nvim_buf_get_lines(buffer, row_start, row_start + 1, false)[1];
+
 			for i = 1,(row_end - row_start) - 2 do
 				local this_code = vim.api.nvim_buf_get_lines(buffer, row_start + i, row_start + i + 1, false)[1];
 				local len = vim.fn.strchars(this_code) or 0;
@@ -173,7 +175,7 @@ parser.md = function (buffer, TStree, from, to)
 			table.insert(parser.parsed_content, {
 				node = capture_node,
 				type = "code_block",
-				language = not capture_node:named_child(1) and "" or vim.treesitter.get_node_text(capture_node:named_child(1), buffer),
+				language = block_start:match("%s*```(%S*)$") or "",
 
 				line_lengths = line_lens,
 				largest_line = highest_len,

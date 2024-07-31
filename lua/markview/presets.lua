@@ -1,4 +1,360 @@
 local presets = {};
+local colors = require("markview.colors");
+
+presets.highlight_groups = {
+	colorful_heading_bg = {
+		---+ ##code##
+		{
+			-- Heading level 1
+			output = function ()
+				if colors.get_hl_value(0, "DiagnosticOk", "fg") and colors.get_hl_value(0, "Normal", "bg") then
+					local fg = colors.get_hl_value(0, "Normal", "bg");
+					local bg = colors.get_hl_value(0, "DiagnosticOk", "fg");
+
+					local nr = colors.get_hl_value(0, "LineNr", "bg");
+
+					return {
+						{
+							group_name = "Heading1",
+							value = {
+								bg = bg,
+								fg = fg,
+
+								default = true
+							}
+						},
+						{
+							group_name = "Heading1Sign",
+							value = {
+								bg = nr,
+								fg = bg,
+
+								default = true
+							}
+						},
+					}
+				else
+					local fg = colors.get_hl_value(0, "Normal", "bg");
+					local bg = vim.o.background == "dark" and "#a6e3a1" or "#40a02b";
+
+					local nr = colors.get_hl_value(0, "LineNr", "bg");
+
+					return {
+						{
+							group_name = "Heading1",
+							value = {
+								bg = bg,
+								fg = fg,
+
+								default = true
+							}
+						},
+						{
+							group_name = "Heading1Sign",
+							value = {
+								bg = nr,
+								fg = bg,
+
+								default = true
+							}
+						},
+					}
+				end
+			end
+		},
+		{
+			-- Heading level 2
+			output = function ()
+				if colors.get_hl_value(0, "DiagnosticHint", "fg") and colors.get_hl_value(0, "Normal", "bg") then
+					local fg = colors.get_hl_value(0, "Normal", "bg");
+					local bg = colors.get_hl_value(0, "DiagnosticHint", "fg");
+
+					local nr = colors.get_hl_value(0, "LineNr", "bg");
+
+					return {
+						{
+							group_name = "Heading2",
+							value = {
+								bg = bg,
+								fg = fg,
+
+								default = true
+							}
+						},
+						{
+							group_name = "Heading2Sign",
+							value = {
+								bg = nr,
+								fg = bg,
+
+								default = true
+							}
+						},
+					}
+				else
+					local fg = colors.get_hl_value(0, "Normal", "bg");
+					local bg = vim.o.background == "dark" and "#94e2d5" or "#179299";
+
+					local nr = colors.get_hl_value(0, "LineNr", "bg");
+
+					return {
+						{
+							group_name = "Heading2",
+							value = {
+								bg = bg,
+								fg = fg,
+
+								default = true
+							}
+						},
+						{
+							group_name = "Heading2Sign",
+							value = {
+								bg = nr,
+								fg = bg,
+
+								default = true
+							}
+						},
+					}
+				end
+			end
+		},
+		{
+			-- Heading level 3
+			output = function ()
+				if colors.get_hl_value(0, "DiagnosticInfo", "fg") and colors.get_hl_value(0, "Normal", "bg") then
+					local fg = colors.get_hl_value(0, "Normal", "bg");
+					local bg = colors.get_hl_value(0, "DiagnosticInfo", "fg");
+
+					local nr = colors.get_hl_value(0, "LineNr", "bg");
+
+					return {
+						{
+							group_name = "Heading3",
+							value = {
+								bg = bg,
+								fg = fg,
+
+								default = true
+							}
+						},
+						{
+							group_name = "Heading3Sign",
+							value = {
+								bg = nr,
+								fg = bg,
+
+								default = true
+							}
+						},
+					}
+				else
+					local fg = colors.get_hl_value(0, "Normal", "bg");
+					local bg = vim.o.background == "dark" and "#89dceb" or "#179299";
+
+					local nr = colors.get_hl_value(0, "LineNr", "bg");
+
+					return {
+						{
+							group_name = "Heading3",
+							value = {
+								bg = bg,
+								fg = fg,
+
+								default = true
+							}
+						},
+						{
+							group_name = "Heading3Sign",
+							value = {
+								bg = nr,
+								fg = bg,
+
+								default = true
+							}
+						},
+					}
+				end
+			end
+		},
+		{
+			-- Heading level 4
+			output = function ()
+				if colors.get_hl_value(0, "Special", "fg") and colors.get_hl_value(0, "Normal", "bg") then
+					local fg = colors.get_hl_value(0, "Normal", "bg");
+					local bg = colors.get_hl_value(0, "Special", "fg");
+
+					local nr = colors.get_hl_value(0, "LineNr", "bg");
+
+					return {
+						{
+							group_name = "Heading4",
+							value = {
+								bg = bg,
+								fg = fg,
+
+								default = true
+							}
+						},
+						{
+							group_name = "Heading4Sign",
+							value = {
+								bg = nr,
+								fg = bg,
+
+								default = true
+							}
+						},
+					}
+				else
+					local fg = colors.get_hl_value(0, "Normal", "bg");
+					local bg = vim.o.background == "dark" and "#f5c2e7" or "#ea76cb";
+
+					local nr = colors.get_hl_value(0, "LineNr", "bg");
+
+					return {
+						{
+							group_name = "Heading4",
+							value = {
+								bg = bg,
+								fg = fg,
+
+								default = true
+							}
+						},
+						{
+							group_name = "Heading4Sign",
+							value = {
+								bg = nr,
+								fg = bg,
+
+								default = true
+							}
+						},
+					}
+				end
+			end
+		},
+		{
+			-- Heading level 5
+			output = function ()
+				if colors.get_hl_value(0, "DiagnosticWarn", "fg") and colors.get_hl_value(0, "Normal", "bg") then
+					local fg = colors.get_hl_value(0, "Normal", "bg");
+					local bg = colors.get_hl_value(0, "DiagnosticWarn", "fg");
+
+					local nr = colors.get_hl_value(0, "LineNr", "bg");
+
+					return {
+						{
+							group_name = "Heading5",
+							value = {
+								bg = bg,
+								fg = fg,
+
+								default = true
+							}
+						},
+						{
+							group_name = "Heading5Sign",
+							value = {
+								bg = nr,
+								fg = bg,
+
+								default = true
+							}
+						},
+					}
+				else
+					local fg = colors.get_hl_value(0, "Normal", "bg");
+					local bg = vim.o.background == "dark" and "#F9E3AF" or "#DF8E1D";
+
+					local nr = colors.get_hl_value(0, "LineNr", "bg");
+
+					return {
+						{
+							group_name = "Heading5",
+							value = {
+								bg = bg,
+								fg = fg,
+
+								default = true
+							}
+						},
+						{
+							group_name = "Heading5Sign",
+							value = {
+								bg = nr,
+								fg = bg,
+
+								default = true
+							}
+						},
+					}
+				end
+			end
+		},
+		{
+			-- Heading level 6
+			output = function ()
+				if colors.get_hl_value(0, "DiagnosticError", "fg") and colors.get_hl_value(0, "Normal", "bg") then
+					local fg = colors.get_hl_value(0, "Normal", "bg");
+					local bg = colors.get_hl_value(0, "DiagnosticError", "fg");
+
+					local nr = colors.get_hl_value(0, "LineNr", "bg");
+
+					return {
+						{
+							group_name = "Heading6",
+							value = {
+								bg = bg,
+								fg = fg,
+
+								default = true
+							}
+						},
+						{
+							group_name = "Heading6Sign",
+							value = {
+								bg = nr,
+								fg = bg,
+
+								default = true
+							}
+						},
+					}
+				else
+					local fg = colors.get_hl_value(0, "Normal", "bg");
+					local bg = vim.o.background == "dark" and "#F38BA8" or "#D20F39";
+
+					local nr = colors.get_hl_value(0, "LineNr", "bg");
+
+					return {
+						{
+							group_name = "Heading6",
+							value = {
+								bg = bg,
+								fg = fg,
+
+								default = true
+							}
+						},
+						{
+							group_name = "Heading6Sign",
+							value = {
+								bg = nr,
+								fg = bg,
+
+								default = true
+							}
+						},
+					}
+				end
+			end
+		},
+		---_
+	}
+};
 
 presets.headings = {
 	glow = {
@@ -10,7 +366,7 @@ presets.headings = {
 		heading_1 = {
 			style = "label",
 
-			hl = "MarkviewCol1Inv",
+			hl = "MarkviewHeading1",
 
 			padding_left = " ",
 			padding_right = " "
@@ -21,13 +377,26 @@ presets.headings = {
 		enable = true,
 		shift_width = 0,
 
+		setext_1 = {
+			style = "github",
+
+			icon = "   ", hl = "MarkviewHeading1",
+			underline = "━"
+		},
+		setext_2 = {
+			style = "github",
+
+			icon = "   ", hl = "MarkviewHeading2",
+			underline = "─"
+		},
+
 		heading_1 = {
 			style = "label",
 
 			padding_left = " ",
 			padding_right = " ",
 
-			hl = "MarkviewCol1Inv"
+			hl = "MarkviewHeading1"
 		},
 		heading_2 = {
 			style = "label",
@@ -35,7 +404,7 @@ presets.headings = {
 			padding_left = " ",
 			padding_right = " ",
 
-			hl = "MarkviewCol2Inv"
+			hl = "MarkviewHeading2"
 		},
 		heading_3 = {
 			style = "label",
@@ -43,7 +412,7 @@ presets.headings = {
 			padding_left = " ",
 			padding_right = " ",
 
-			hl = "MarkviewCol3Inv"
+			hl = "MarkviewHeading3"
 		},
 		heading_4 = {
 			style = "label",
@@ -51,7 +420,7 @@ presets.headings = {
 			padding_left = " ",
 			padding_right = " ",
 
-			hl = "MarkviewCol4Inv"
+			hl = "MarkviewHeading4"
 		},
 		heading_5 = {
 			style = "label",
@@ -59,7 +428,7 @@ presets.headings = {
 			padding_left = " ",
 			padding_right = " ",
 
-			hl = "MarkviewCol5Inv"
+			hl = "MarkviewHeading5"
 		},
 		heading_6 = {
 			style = "label",
@@ -67,7 +436,7 @@ presets.headings = {
 			padding_left = " ",
 			padding_right = " ",
 
-			hl = "MarkviewCol6Inv"
+			hl = "MarkviewHeading6"
 		},
 	},
 	decorated_labels = {
@@ -82,9 +451,9 @@ presets.headings = {
 			padding_right = " ",
 
 			corner_right = "",
-			corner_right_hl = "MarkviewCol1Fg",
+			corner_right_hl = "MarkviewHeading1Sign",
 
-			hl = "MarkviewCol1Inv"
+			hl = "MarkviewHeading1"
 		},
 		heading_2 = {
 			style = "label",
@@ -93,9 +462,9 @@ presets.headings = {
 			padding_right = " ",
 
 			corner_right = "",
-			corner_right_hl = "MarkviewCol2Fg",
+			corner_right_hl = "MarkviewHeading2",
 
-			hl = "MarkviewCol2Inv"
+			hl = "MarkviewHeading2Sign"
 		},
 		heading_3 = {
 			style = "label",
@@ -104,9 +473,9 @@ presets.headings = {
 			padding_right = " ",
 
 			corner_right = "",
-			corner_right_hl = "MarkviewCol3Fg",
+			corner_right_hl = "MarkviewHeading3",
 
-			hl = "MarkviewCol3Inv"
+			hl = "MarkviewHeading3Sign"
 		},
 		heading_4 = {
 			style = "label",
@@ -115,9 +484,9 @@ presets.headings = {
 			padding_right = " ",
 
 			corner_right = "",
-			corner_right_hl = "MarkviewCol4Fg",
+			corner_right_hl = "MarkviewHeading4",
 
-			hl = "MarkviewCol4Inv"
+			hl = "MarkviewHeading4Sign"
 		},
 		heading_5 = {
 			style = "label",
@@ -126,9 +495,9 @@ presets.headings = {
 			padding_right = " ",
 
 			corner_right = "",
-			corner_right_hl = "MarkviewCol5Fg",
+			corner_right_hl = "MarkviewHeading5",
 
-			hl = "MarkviewCol5Inv"
+			hl = "MarkviewHeading5Sign"
 		},
 		heading_6 = {
 			style = "label",
@@ -137,9 +506,9 @@ presets.headings = {
 			padding_right = " ",
 
 			corner_right = "",
-			corner_right_hl = "MarkviewCol6Fg",
+			corner_right_hl = "MarkviewHeading6",
 
-			hl = "MarkviewCol6Inv"
+			hl = "MarkviewHeading6Sign"
 		},
 	},
 
@@ -151,32 +520,32 @@ presets.headings = {
 		heading_1 = {
 			style = "simple",
 
-			hl = "MarkviewCol1"
+			hl = "MarkviewHeading1"
 		},
 		heading_2 = {
 			style = "simple",
 
-			hl = "MarkviewCol2"
+			hl = "MarkviewHeading2"
 		},
 		heading_3 = {
 			style = "simple",
 
-			hl = "MarkviewCol3"
+			hl = "MarkviewHeading3"
 		},
 		heading_4 = {
 			style = "simple",
 
-			hl = "MarkviewCol4"
+			hl = "MarkviewHeading4"
 		},
 		heading_5 = {
 			style = "simple",
 
-			hl = "MarkviewCol5"
+			hl = "MarkviewHeading5"
 		},
 		heading_6 = {
 			style = "simple",
 
-			hl = "MarkviewCol6"
+			hl = "MarkviewHeading6"
 		},
 	},
 	simple_no_marker = {
@@ -191,37 +560,37 @@ presets.headings = {
 			style = "icon",
 
 			icon = " ",
-			hl = "MarkviewCol1"
+			hl = "MarkviewHeading1"
 		},
 		heading_2 = {
 			style = "icon",
 
 			icon = " ",
-			hl = "MarkviewCol2"
+			hl = "MarkviewHeading2"
 		},
 		heading_3 = {
 			style = "icon",
 
 			icon = " ",
-			hl = "MarkviewCol3"
+			hl = "MarkviewHeading3"
 		},
 		heading_4 = {
 			style = "icon",
 
 			icon = " ",
-			hl = "MarkviewCol4"
+			hl = "MarkviewHeading4"
 		},
 		heading_5 = {
 			style = "icon",
 
 			icon = " ",
-			hl = "MarkviewCol5"
+			hl = "MarkviewHeading5"
 		},
 		heading_6 = {
 			style = "icon",
 
 			icon = " ",
-			hl = "MarkviewCol6"
+			hl = "MarkviewHeading6"
 		},
 	},
 };
@@ -260,11 +629,11 @@ presets.tables = {
 		},
 		-- This is a required property
 		hl = {
-			nil, "MarkviewCol1Fg", nil, nil,
+			nil, "MarkviewTableBorder", nil, nil,
 			nil, nil, nil, nil,
 			nil, nil, nil, nil,
 
-			"MarkviewCol1Fg", "MarkviewCol1Fg", "MarkviewCol1Fg", "MarkviewCol1Fg",
+			"MarkviewTableBorder", "MarkviewTableBorder", "MarkviewTableBorder", "MarkviewTableBorder",
 		},
 
 		use_virt_lines = false
@@ -282,11 +651,11 @@ presets.tables = {
 			"╼", "╾", "╴", "╶"
 		},
 		hl = {
-			"MarkviewCol1Fg", "MarkviewCol1Fg", "MarkviewCol1Fg", "MarkviewCol1Fg",
-			"MarkviewCol1Fg", "MarkviewCol1Fg", "MarkviewCol1Fg", "MarkviewCol1Fg",
-			"MarkviewCol1Fg", "MarkviewCol1Fg", "MarkviewCol1Fg", "MarkviewCol1Fg",
+			"MarkviewTableBorder", "MarkviewTableBorder", "MarkviewTableBorder", "MarkviewTableBorder",
+			"MarkviewTableBorder", "MarkviewTableBorder", "MarkviewTableBorder", "MarkviewTableBorder",
+			"MarkviewTableBorder", "MarkviewTableBorder", "MarkviewTableBorder", "MarkviewTableBorder",
 
-			"MarkviewCol1Fg", "MarkviewCol1Fg", "MarkviewCol1Fg", "MarkviewCol1Fg"
+			"MarkviewTableBorder", "MarkviewTableBorder", "MarkviewTableBorder", "MarkviewTableBorder"
 		},
 
 		use_virt_lines = false
@@ -304,11 +673,11 @@ presets.tables = {
 			"╼", "╾", "╴", "╶"
 		},
 		hl = {
-			"MarkviewCol1Fg", "MarkviewCol1Fg", "MarkviewCol1Fg", "MarkviewCol1Fg",
-			"MarkviewCol1Fg", "MarkviewCol1Fg", "MarkviewCol1Fg", "MarkviewCol1Fg",
-			"MarkviewCol1Fg", "MarkviewCol1Fg", "MarkviewCol1Fg", "MarkviewCol1Fg",
+			"MarkviewTableBorder", "MarkviewTableBorder", "MarkviewTableBorder", "MarkviewTableBorder",
+			"MarkviewTableBorder", "MarkviewTableBorder", "MarkviewTableBorder", "MarkviewTableBorder",
+			"MarkviewTableBorder", "MarkviewTableBorder", "MarkviewTableBorder", "MarkviewTableBorder",
 
-			"MarkviewCol1Fg", "MarkviewCol1Fg", "MarkviewCol1Fg", "MarkviewCol1Fg"
+			"MarkviewTableBorder", "MarkviewTableBorder", "MarkviewTableBorder", "MarkviewTableBorder"
 		},
 
 		use_virt_lines = false
@@ -327,11 +696,11 @@ presets.tables = {
 			"━", "━", "━", "━"
 		},
 		hl = {
-			"MarkviewCol1Fg", "MarkviewCol1Fg", "MarkviewCol1Fg", "MarkviewCol1Fg",
-			"MarkviewCol1Fg", "MarkviewCol1Fg", "MarkviewCol1Fg", "MarkviewCol1Fg",
-			"MarkviewCol1Fg", "MarkviewCol1Fg", "MarkviewCol1Fg", "MarkviewCol1Fg",
+			"MarkviewTableBorder", "MarkviewTableBorder", "MarkviewTableBorder", "MarkviewTableBorder",
+			"MarkviewTableBorder", "MarkviewTableBorder", "MarkviewTableBorder", "MarkviewTableBorder",
+			"MarkviewTableBorder", "MarkviewTableBorder", "MarkviewTableBorder", "MarkviewTableBorder",
 
-			"MarkviewCol3Fg", "MarkviewCol4Fg", "MarkviewCol6Fg", "MarkviewCol6Fg"
+			"MarkviewTableAlignLeft", "MarkviewTableAlignRight", "MarkviewTableAlignCenter", "MarkviewTableAlignCenter"
 		},
 
 		use_virt_lines = false

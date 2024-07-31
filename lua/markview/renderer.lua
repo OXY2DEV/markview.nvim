@@ -587,6 +587,10 @@ renderer.render_headings = function (buffer, content, config)
 	local conf = config["heading_" .. content.level] or {};
 	local shift = config.shift_width or vim.bo[buffer].shiftwidth;
 
+	if not conf then
+		return;
+	end
+
 	if conf.style == "simple" then
 		-- Adds a simple background
 		vim.api.nvim_buf_set_extmark(buffer, renderer.namespace, content.row_start, content.col_start, {
@@ -667,13 +671,17 @@ renderer.render_headings = function (buffer, content, config)
 end
 
 renderer.render_headings_s = function (buffer, content, config)
-	if config.enable == false then
+	if not config or config.enable == false then
 		return;
 	end
 
 	---@type markview.render_config.headings.h
 	local conf = content.marker:match("=") and config["setext_1"] or config["setext_2"];
 	local shift = config.shift_width or vim.bo[buffer].shiftwidth;
+
+	if not conf then
+		return;
+	end
 
 	if conf.style == "simple" then
 		-- Adds a simple background
@@ -809,14 +817,14 @@ renderer.render_code_blocks = function (buffer, content, config_table)
 			block_length = config_table.min_width
 		end
 
-		local lang_width = vim.fn.strchars(icon .. " " .. language .. " ");
+		local lang_width = vim.fn.strchars(" " .. icon .. " " .. (language == "" and "Unknown" or language) .. " ");
 
 		if config_table.language_direction == nil or config_table.language_direction == "left" then
 			vim.api.nvim_buf_set_extmark(buffer, renderer.namespace, content.row_start, content.col_start + 3 + vim.fn.strlen(content.language), {
 				virt_text_pos = config_table.position or "inline",
 				virt_text = {
-					{ icon .. " ", set_hl(hl) },
-					{ language .. " ", set_hl(config_table.name_hl) or set_hl(hl) },
+					{ " " .. icon .. " ", set_hl(hl) },
+					{ (language == "" and "Unknown" or language) .. " ", set_hl(config_table.name_hl) or set_hl(hl) },
 					{ string.rep(config_table.pad_char or " ", block_length - lang_width + ((config_table.pad_amount or 1) * 2)), set_hl(config_table.hl) },
 				},
 
@@ -830,8 +838,8 @@ renderer.render_code_blocks = function (buffer, content, config_table)
 				virt_text_pos = config_table.position or "inline",
 				virt_text = {
 					{ string.rep(config_table.pad_char or " ", block_length - lang_width + ((config_table.pad_amount or 1) * 2)), set_hl(config_table.hl) },
-					{ icon .. " ", set_hl(hl) },
-					{ language .. " ", set_hl(config_table.name_hl) or set_hl(hl) },
+					{ " " .. icon .. " ", set_hl(hl) },
+					{ (language == "" and "Unknown" or language) .. " ", set_hl(config_table.name_hl) or set_hl(hl) },
 				},
 
 				sign_text = config_table.sign == true and icon or nil,
@@ -1341,27 +1349,27 @@ renderer.render = function (buffer, parsed_content, config_table, conceal_start,
 		end
 
 		if type == "heading_s" then
-			renderer.render_headings_s(buffer, content, config_table.headings);
+			pcall(renderer.render_headings_s, buffer, content, config_table.headings);
 		elseif type == "heading" then
-			renderer.render_headings(buffer, content, config_table.headings)
+			pcall(renderer.render_headings, buffer, content, config_table.headings)
 		elseif type == "code_block" then
-			renderer.render_code_blocks(buffer, content, config_table.code_blocks)
+			pcall(renderer.render_code_blocks, buffer, content, config_table.code_blocks)
 		elseif type == "block_quote" then
-			renderer.render_block_quotes(buffer, content, config_table.block_quotes);
+			pcall(renderer.render_block_quotes, buffer, content, config_table.block_quotes);
 		elseif type == "horizontal_rule" then
-			renderer.render_horizontal_rules(buffer, content, config_table.horizontal_rules);
+			pcall(renderer.render_horizontal_rules, buffer, content, config_table.horizontal_rules);
 		elseif type == "link" then
-			renderer.render_links(buffer, content, config_table.links);
+			pcall(renderer.render_links, buffer, content, config_table.links);
 		elseif type == "image" then
-			renderer.render_links(buffer, content, config_table.images);
+			pcall(renderer.render_links, buffer, content, config_table.images);
 		elseif type == "inline_code" then
-			renderer.render_inline_codes(buffer, content, config_table.inline_codes)
+			pcall(renderer.render_inline_codes, buffer, content, config_table.inline_codes)
 		elseif type == "list_item" then
-			renderer.render_lists(buffer, content, config_table.list_items)
+			pcall(renderer.render_lists, buffer, content, config_table.list_items)
 		elseif type == "checkbox" then
-			renderer.render_checkboxes(buffer, content, config_table.checkboxes)
+			pcall(renderer.render_checkboxes, buffer, content, config_table.checkboxes)
 		elseif type == "table" then
-			renderer.render_tables(buffer, content, config_table)
+			pcall(renderer.render_tables, buffer, content, config_table)
 		end
 
 		::extmark_skipped::
