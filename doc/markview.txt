@@ -1,0 +1,231 @@
+*markview.nvim*  An experimental markdown previewer for Neovim
+
+							 Created by `OXY2DEV`
+
+==============================================================================
+Features                                            *markview.nvim-features*
+
+- Fully stylized preview of `markdown` documents! Currently supoirted elements
+  are,
+    * atx_headings(uses `#`) & setext_headings(uses `---` or `===`)
+	* inline codes
+	* code blocks
+	* block quotes
+	* list items(both ordered & unordered)
+	* tables
+	* hyperlinks, image links & email urls
+	* horizontal rules
+	* checkboxes
+- Fully customisable elements. From icons, highlight groups to concealments,
+  padding almost everything can be customised.
+- `Dynamically` generated highlight groups. Useful for colorschemes that don't
+  support various highlight groups.
+  Note: The plugin will respect highlight groups set by the colorschemes
+  when available.
+- `Hybrid-mode` for editing and previewing at the same time.
+- Commands to quickly toggle the plugin(globally or per buffer).
+
+And so much more!
+
+==============================================================================
+Requirements                                    *markview.nvim-requirements*
+
+- Neovim version `0.10.0` or higher.
+- `Tree-sitter` parser for `markdown` & `markdown_inline`.
+- `nvim-web-devicons`
+- Optionally, a `tree-sitter` compatible colorscheme.
+
+==============================================================================
+Installation                                    *markview.nvim-installation*
+
+`markview.nvim` can be installed via your favourite package manager.
+
+------------------------------------------------------------------------------
+💤 Lazy.nvim                                          *markview.nvim-i-lazy*
+
+For `lazy.lua` users.
+>lua
+	{
+		"OXY2DEV/markview.nvim",
+	    ft = "markdown",
+
+		dependencies = {
+	        -- You may not need this if you don't lazy load
+			-- Or if the parsers are in your $RUNTIMEPATH
+		    "nvim-treesitter/nvim-treesitter",
+
+	        "nvim-tree/nvim-web-devicons"
+		},
+	}
+<
+For `plugins/markview.lua` users.
+>lua
+	return {
+		"OXY2DEV/markview.nvim",
+	    ft = "markdown",
+
+	    dependencies = {
+		    -- You may not need this if you don't lazy load
+			-- Or if the parsers are in your $RUNTIMEPATH
+	        "nvim-treesitter/nvim-treesitter",
+
+		    "nvim-tree/nvim-web-devicons"
+	    },
+	}
+<
+
+Note:
+It is NOT recommended to lazy load this plugin as it already does that.
+
+Warning:
+You will not be able to access help files without opening a markdown file
+if you choose to lazy load.
+
+------------------------------------------------------------------------------
+🦠 Mini.deps                                      *markview.nvim-i-minideps*
+>lua
+	local MiniDeps = require("mini.deps");
+
+	MiniDeps.add({
+		source = "OXY2DEV/markview.nvim",
+
+	    depends = {
+		    -- You may not need this if you don't lazy load
+			-- Or if the parsers are in your $RUNTIMEPATH
+	        "nvim-treesitter/nvim-treesitter",
+
+		    "nvim-tree/nvim-web-devicons"
+	    }
+	});
+<
+------------------------------------------------------------------------------
+🌒 Rocks.nvim                                     *markview.nvim-rocks.nvim*
+
+`markview.nvim` can be installed using the following command.
+>vim
+	:Rocks install markview.nvim
+<
+------------------------------------------------------------------------------
+Others
+
+Installation process for other plugin managers are similar.
+>vim
+	Plug "nvim-treesitter/nvim-treesitter"
+	Plug "nvim-tree/nvim-web-devicons"
+
+	Plug "OXY2DEV/markview.nvim"
+<
+==============================================================================
+Highlight groups                                         *markview.nvim-hls*
+
+Note:
+ The `$` are NOT part of the name.
+
+- $MarkviewHeading1$     $MarkviewHeading1Sign$
+  $MarkviewHeading2$     $MarkviewHeading2Sign$
+  $MarkviewHeading3$     $MarkviewHeading3Sign$
+  $MarkviewHeading4$     $MarkviewHeading4Sign$
+  $MarkviewHeading5$     $MarkviewHeading5Sign$
+  $MarkviewHeading6$     $MarkviewHeading6Sign$
+
+  Highlight groups for different heading levels. `atx_headings` &
+  `setext_headings` both uses them
+
+- $MarkviewBlockQuoteDefault$
+  $MarkviewBlockQuoteOk$
+  $MarkviewBlockQuoteWarn$
+  $MarkviewBlockQuoteError$
+  $MarkviewBlockQuoteNote$
+  $MarkviewBlockQuoteSpecial$
+
+  Highlight groups responsible for various block quotes, `callouts` &
+  `alerts`.
+
+- $MarkviewCode$
+
+  Highlight group for showing `code blocks` and `inline codes`.
+
+- $MarkviewCheckboxChecked$
+  $MarkviewCheckboxUnchecked$
+  $MarkviewCheckboxPending$
+
+  Highlight group for the different `checkbox` states.
+
+- $MarkviewListItemPlus$
+  $MarkviewListItemMinus$
+  $MarkviewListItemStar$
+
+  Highlight groups for `unordered lists`. The plugin doesn't add decorations
+  to ordered lists.
+
+- $MarkviewTableBorder$
+
+  Highlight group for the borders of `tables`.
+
+  $MarkviewTableAlignLeft$
+  $MarkviewTableAlignRight$
+  $MarkviewTableAlignCenter$
+
+  Highlight groups for the various `alignment indicators` on rows.
+
+- $MarkviewGradient1$
+  $MarkviewGradient2$
+  $MarkviewGradient2$
+  $MarkviewGradient3$
+  $MarkviewGradient4$
+  $MarkviewGradient5$
+  $MarkviewGradient6$
+  $MarkviewGradient7$
+  $MarkviewGradient8$
+  $MarkviewGradient9$
+  $MarkviewGradient10$
+
+  Highlight groups used by the `horizontal rules`.
+
+==============================================================================
+Commands                                            *markview.nvim-commands*
+
+Markview comes with the following command,
+>vim
+	:Markview
+<
+When used without any arguments it `toggles` the plugin state.
+
+It comes with the following sub-commands,
+
+- toggleAll
+
+  Toggles the plugin state. This will set ALL attached buffers to the same
+  state.
+
+- enableAll
+
+  Enables the plugin in all attached buffers. If the plugin is already enabled
+  then it will redraw everything.
+
+- disableAll
+
+  Disables the plugin in all attached buffers. If the plugin is already
+  diaable it will clear any remaining decorations.
+
+Note:
+When the {buffer} isn't provided these commands will run on the current
+buffer.
+
+- toggle {buffer}
+
+  Toggles the state of a buffer. Used for disabling the plugin on a specific
+  buffer.
+
+- enable {buffer}
+
+  Enables the plugin on a buffer. Redraws decorations if it's already enabled
+  in that buffer.
+
+- disable {buffer}
+
+  Disables the plugin on a specific buffer. Removes decorations if it's
+  already disabled in that buffer.
+
+
+vim:ft=help:bt=help:textwidth=78:ts=4:nospell:
