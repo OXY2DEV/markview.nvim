@@ -579,7 +579,7 @@ renderer.views = {};
 ---@param content any
 ---@param config markview.render_config.headings
 renderer.render_headings = function (buffer, content, config)
-	if config.enable == false then
+	if not config or config.enable == false then
 		return;
 	end
 
@@ -587,6 +587,7 @@ renderer.render_headings = function (buffer, content, config)
 	local conf = config["heading_" .. content.level] or {};
 	local shift = config.shift_width or vim.bo[buffer].shiftwidth;
 
+	-- Do not proceed if config doesn't exist for a heading
 	if not conf then
 		return;
 	end
@@ -677,8 +678,8 @@ renderer.render_headings_s = function (buffer, content, config)
 
 	---@type markview.render_config.headings.h
 	local conf = content.marker:match("=") and config["setext_1"] or config["setext_2"];
-	local shift = config.shift_width or vim.bo[buffer].shiftwidth;
 
+	-- Do not proceed if setext headings don't have configuraton
 	if not conf then
 		return;
 	end
@@ -738,7 +739,7 @@ end
 ---@param content any
 ---@param config_table markview.render_config.code_blocks
 renderer.render_code_blocks = function (buffer, content, config_table)
-	if config_table == nil or config_table.enable == false then
+	if not config_table or config_table.enable == false then
 		return;
 	end
 
@@ -893,7 +894,7 @@ end
 renderer.render_block_quotes = function (buffer, content, config_table)
 	local qt_config;
 
-	if config_table.enable == false then
+	if not config_table or config_table.enable == false then
 		return;
 	end
 
@@ -915,6 +916,11 @@ renderer.render_block_quotes = function (buffer, content, config_table)
 		end
 	else
 		qt_config = config_table.default;
+	end
+
+	-- Config for a block quote is not available
+	if not qt_config then
+		return;
 	end
 
 	if qt_config.custom_title == true and content.title ~= "" then
@@ -985,7 +991,7 @@ end
 renderer.render_horizontal_rules = function (buffer, content, config_table)
 	local virt_text = {};
 
-	if config_table.enable == false then
+	if not config_table or config_table.enable == false then
 		return;
 	end
 
@@ -1039,7 +1045,7 @@ end
 renderer.render_links = function (buffer, content, config_table)
 	local lnk_conf;
 
-	if config_table.enable == false then
+	if not config_table or config_table.enable == false then
 		return;
 	end
 
@@ -1049,6 +1055,11 @@ renderer.render_links = function (buffer, content, config_table)
 		lnk_conf = config_table.images;
 	elseif content.link_type == "email_autolink" then
 		lnk_conf = config_table.emails;
+	end
+
+	-- Do not render links with no config
+	if not lnk_conf then
+		return;
 	end
 
 	vim.api.nvim_buf_set_extmark(buffer, renderer.namespace, content.row_start, content.link_type == "email_autolink" and content.col_start or content.col_start + 1, {
@@ -1082,7 +1093,7 @@ end
 ---@param content any
 ---@param config_table markview.render_config.inline_codes
 renderer.render_inline_codes = function (buffer, content, config_table)
-	if config_table.enable == false then
+	if not config_table or config_table.enable == false then
 		return;
 	end
 
@@ -1111,7 +1122,7 @@ end
 ---@param content any
 ---@param config_table markview.render_config.list_items
 renderer.render_lists = function (buffer, content, config_table)
-	if config_table.enable == false then
+	if not config_table or config_table.enable == false then
 		return;
 	end
 
@@ -1125,6 +1136,11 @@ renderer.render_lists = function (buffer, content, config_table)
 		ls_conf = config_table.marker_star or {};
 	elseif string.match(content.marker_symbol, "[.]") then
 		ls_conf = config_table.marker_dot or {};
+	end
+
+	-- Do not render list types with no configuraton
+	if not ls_conf then
+		return;
 	end
 
 	local use_text = ls_conf.text or content.marker_symbol;
@@ -1176,7 +1192,7 @@ end
 ---@param content any
 ---@param config_table markview.render_config.checkboxes
 renderer.render_checkboxes = function (buffer, content, config_table)
-	if config_table.enable == false then
+	if not config_table or config_table.enable == false then
 		return;
 	end
 
@@ -1190,7 +1206,7 @@ renderer.render_checkboxes = function (buffer, content, config_table)
 		chk_config = config_table.pending;
 	end
 
-	if type(chk_config.text) ~= "string" then
+	if not chk_config or type(chk_config.text) ~= "string" then
 		return;
 	end
 
@@ -1212,7 +1228,7 @@ end
 ---@param content any
 ---@param user_config markview.config
 renderer.render_tables = function (buffer, content, user_config)
-	if user_config.tables == nil or user_config.tables.enable == false then
+	if not user_config.tables or user_config.tables.enable == false then
 		return;
 	end
 
@@ -1229,57 +1245,7 @@ renderer.render_tables = function (buffer, content, user_config)
 	end
 end
 
-
-
-
---- CursorMove listener
-renderer.autocmd = nil;
-
-renderer.create_autocmd = function (config_table)
-	if renderer.autocmd then
-		return;
-	end
-
-	local events = { "CursorMovedI" };
-
-	-- if config_table.modes and vim.list_contains(config_table.modes, "i") then
-	-- 	table.insert(events, "CursorMovedI");
-	-- end
-
-	renderer.autocmd = vim.api.nvim_create_autocmd(events, {
-		pattern = config_table.filetypes or "*.md", -- Currently only for markdown
-		callback = function (event)
-			local buffer = event.buf;
-			local mode = vim.api.nvim_get_mode().mode;
-
-			if not vim.list_contains(config_table.modes or {}, mode) then
-				return;
-			end
-
-			renderer.render_deleted_items(buffer, config_table);
-			renderer.removed_elements[buffer] = {};
-
-			if not vim.list_contains(config_table.special_modes or { "i" }, mode) then
-				return;
-			end
-
-			-- This is for testing purposes
-			local cursor = vim.api.nvim_win_get_cursor(0);
-			local comps = {};
-
-			for _, component in ipairs(_G.__markview_views[buffer] or {}) do
-				if (cursor[1] - 1) >= component.row_start and cursor[1] - 1 <= component.row_end then
-					table.insert(comps, component);
-					table.insert(renderer.removed_elements[buffer], component);
-				end
-			end
-
-			renderer.destroy(buffer)
-		end
-	})
-end
-
-renderer.render_in_range = function (buffer, partial_contents, config_table, from, to)
+renderer.render_in_range = function (buffer, partial_contents, config_table)
 	for _, content in ipairs(partial_contents) do
 		local type = content.type;
 		local fold_closed = vim.fn.foldclosed(content.row_start + 1);
@@ -1287,11 +1253,6 @@ renderer.render_in_range = function (buffer, partial_contents, config_table, fro
 		if fold_closed ~= -1 then
 			goto extmark_skipped;
 		end
-
-		-- if content.row_start < from or content.row_end > to then
-		-- 	goto extmark_skipped;
-		-- end
-
 
 		if type == "heading_s" then
 			pcall(renderer.render_headings_s, buffer, content, config_table.headings);
@@ -1330,6 +1291,7 @@ renderer.render = function (buffer, parsed_content, config_table, conceal_start,
 		_G.__markview_views[buffer] = parsed_content;
 	end
 
+	-- Prevents errors caused by buffer ranges being nil
 	if _G.__markview_render_ranges and _G.__markview_render_ranges[buffer] then
 		_G.__markview_render_ranges[buffer] = {};
 	end
@@ -1380,30 +1342,6 @@ renderer.clear = function (buffer)
 	vim.api.nvim_buf_clear_namespace(buffer, renderer.namespace, 0, -1)
 end
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-renderer.update = function (buffer, parsed_content)
-	if not _G.__markview_views then
-		_G.__markview_views = {};
-	end
-
-	if parsed_content ~= nil then
-		_G.__markview_views[buffer] = parsed_content;
-	end
-end
-
 renderer.update_range = function (buffer, new_range)
 	if not _G.__markview_render_ranges then
 		_G.__markview_render_ranges = {};
@@ -1416,8 +1354,6 @@ renderer.update_range = function (buffer, new_range)
 	if new_range and not vim.deep_equal(_G.__markview_render_ranges[buffer], new_range) then
 		_G.__markview_render_ranges[buffer] = new_range;
 	end
-
-	-- error("nil range")
 end
 
 renderer.clear_content_range = function (buffer, parsed_content)

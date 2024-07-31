@@ -9,13 +9,13 @@ end
 
 -- Check for requirements
 if vim.fn.has("nvim-0.10") == 0 then
-	vim.print("[ markview.nvim ] : Thie plugin is only available on version 0.10.0 and higher!");
+	warn("[ markview.nvim ] : Thie plugin is only available on version 0.10.0 and higher!");
 	return;
 elseif not parser_installed("markdown") then
-	vim.print("[ markview.nvim ] : Treesitter parser for 'markdown' wasn't found!");
+	warn("[ markview.nvim ] : Treesitter parser for 'markdown' wasn't found!");
 	return;
 elseif not parser_installed("markdown_inline") then
-	vim.print("[ markview.nvim ] : Treesitter parser for 'markdown_inline' wasn't found!");
+	warn("[ markview.nvim ] : Treesitter parser for 'markdown_inline' wasn't found!");
 	return;
 end
 
@@ -205,8 +205,6 @@ vim.api.nvim_create_autocmd(events, {
 
 			local current_range = markview.renderer.get_content_range(partial_contents);
 
-			vim.print(_G.__markview_render_ranges[event.buf])
-			-- Don't draw new things
 			if _G.__markview_render_ranges[event.buf] and vim.deep_equal(_G.__markview_render_ranges[event.buf], current_range) then
 				markview.renderer.clear_content_range(event.buf, partial_contents)
 				return;
@@ -215,7 +213,7 @@ vim.api.nvim_create_autocmd(events, {
 			markview.renderer.clear_content_range(event.buf, partial_contents)
 			markview.renderer.clear_content_range(event.buf, prev_contents);
 
-			markview.renderer.render_in_range(event.buf, prev_contents, markview.configuration, draw_start, draw_stop);
+			markview.renderer.render_in_range(event.buf, prev_contents, markview.configuration);
 			markview.renderer.update_range(event.buf, current_range);
 		end));
 	end

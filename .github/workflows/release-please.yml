@@ -1,4 +1,5 @@
 # vim:nospell:
+name: Release Please
 
 on:
   push:
