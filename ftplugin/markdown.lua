@@ -149,7 +149,9 @@ vim.api.nvim_create_autocmd({ "ModeChanged", "TextChanged" }, {
 				markview.keymaps.init(buffer, window, parsed_content, markview.configuration);
 			end
 		else
+			-- Call an extra redraw to flush out screen updates
 			markview.renderer.clear(buffer);
+			vim.cmd("redraw!");
 		end
 	end
 });
