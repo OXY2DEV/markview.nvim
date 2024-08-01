@@ -319,7 +319,7 @@
 --- Enable/Disable custom hyperlink
 ---@field enable boolean?
 ---
----@field inline_links markview.render_config.links.link
+---@field hyperlinks markview.render_config.links.link
 ---
 ---@field images markview.render_config.links.link
 ---

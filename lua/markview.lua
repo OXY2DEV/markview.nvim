@@ -1168,7 +1168,7 @@ markview.configuration = {
 	links = {
 		enable = true,
 
-		inline_links = {
+		hyperlinks = {
 			icon = "󰌷 ",
 			hl = "MarkviewHyperlink",
 		},

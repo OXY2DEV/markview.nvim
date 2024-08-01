@@ -264,8 +264,22 @@ parser.md = function (buffer, TStree, from, to)
 			local table_structure = {};
 			local alignments = {};
 
+			local line_positions = {};
+
 			for row in capture_node:iter_children() do
 				local tmp = {};
+
+				local row_text = vim.treesitter.get_node_text(row, buffer)
+				local r_row_start, r_col_start, r_row_end, r_col_end = row:range();
+
+				--- Separator gets counted from the start of the line
+				--- So, we will instead count the number of spaces at the start
+				table.insert(line_positions, {
+					row_start = r_row_start,
+					col_start = r_col_start == 0 and vim.fn.strchars(row_text:match("^(%s*)")) or r_col_start,
+					row_end = r_row_end,
+					col_end = r_col_end
+				})
 
 				if row:type() == "pipe_table_header" then
 					table.insert(table_structure, "header");
@@ -289,7 +303,7 @@ parser.md = function (buffer, TStree, from, to)
 						end
 					end
 
-					table.insert(table_structure, "seperator");
+					table.insert(table_structure, "separator");
 				elseif row:type() == "pipe_table_row" then
 					table.insert(table_structure, "content");
 				else
@@ -310,7 +324,15 @@ parser.md = function (buffer, TStree, from, to)
 
 			local s_start, s_end;
 
-			-- This is a woraround to make both table renders to work
+			-- This is a workaround for hybrid-mode
+			--
+			-- When ,`use_virt_lines` is true the table will take the
+			-- line above it and the line below it.
+			--
+			-- So we must adjust the ranges to match the render.
+			--
+			-- Don't worry, the renderer will use the __r ones in that
+			-- case
 			if parser.cached_conf and parser.cached_conf.tables and parser.cached_conf.tables.use_virt_lines == false then
 				s_start = row_start;
 				s_end = row_end;
@@ -327,6 +349,7 @@ parser.md = function (buffer, TStree, from, to)
 				rows = rows,
 
 				content_alignments = alignments,
+				content_positions = line_positions,
 
 				__r_start = s_start,
 				__r_end = s_end,
