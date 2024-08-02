@@ -1164,6 +1164,17 @@ markview.configuration = {
 			}
 		}
 	},
+	html = {
+		default = {
+			conceal = false
+		},
+
+		types = {
+			p = { conceal = true, hl = "Title" },
+			u = { conceal = true, hl = "Underlined" },
+			i = { conceal = true, hl = "Italic" }
+		}
+	},
 
 	links = {
 		enable = true,

@@ -518,6 +518,52 @@ parser.md_inline = function (buffer, TStree, from, to)
 	end
 end
 
+parser.html = function (buffer, TStree, from, to)
+	local scanned_queies = vim.treesitter.query.parse("html", [[
+		((element) @elem)
+
+		;((entity_reference) @entity)
+	]]);
+
+	for capture_id, capture_node, _, _ in scanned_queies:iter_captures(TStree:root(), buffer, from, to) do
+		local capture_name = scanned_queies.captures[capture_id];
+		local capture_text = vim.treesitter.get_node_text(capture_node, buffer);
+		local row_start, col_start, row_end, col_end = capture_node:range();
+
+		if capture_name == "elem" then
+			local node_childs = capture_node:named_child_count();
+
+			local start_tag = capture_node:named_child(0);
+			local end_tag = capture_node:named_child(node_childs - 1);
+
+			if start_tag:type() == "start_tag" and end_tag:type() == "end_tag" and row_start == row_end then
+				local _, ts_col_start, _, ts_col_end = start_tag:range();
+				local _, te_col_start, _, te_col_end = end_tag:range();
+
+				table.insert(parser.parsed_content, {
+					node = capture_node,
+					type = "html_inline",
+
+					tag = vim.treesitter.get_node_text(start_tag, buffer):gsub("[</>]", ""):match("%a+"),
+					text = capture_text,
+
+					start_tag_col_start = ts_col_start,
+					start_tag_col_end = ts_col_end,
+
+					end_tag_col_start = te_col_start,
+					end_tag_col_end = te_col_end,
+
+					row_start = row_start,
+					row_end = row_end,
+
+					col_start = col_start,
+					col_end = col_end
+				})
+			end
+		end
+	end
+end
+
 --- Initializes the parsers on the specified buffer
 --- Parsed data is stored as a "view" in renderer.lua
 ---
@@ -541,6 +587,8 @@ parser.init = function (buffer, config_table)
 			parser.md(buffer, TStree)
 		elseif tree_language == "markdown_inline" then
 			parser.md_inline(buffer, TStree);
+		elseif tree_language == "html" then
+			parser.html(buffer, TStree);
 		end
 	end)
 
@@ -566,6 +614,8 @@ parser.parse_range = function (buffer, config_table, from, to)
 			parser.md(buffer, TStree, from, to)
 		elseif tree_language == "markdown_inline" then
 			parser.md_inline(buffer, TStree, from, to);
+		elseif tree_language == "html" then
+			parser.html(buffer, TStree, from, to);
 		end
 	end)
 

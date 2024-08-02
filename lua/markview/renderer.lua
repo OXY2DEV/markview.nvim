@@ -66,11 +66,23 @@ local display_width = function (text, config)
 	local d_width = vim.fn.strchars(text);
 	local inl_conf = config.inline_codes;
 
-	for inline_code in text:gmatch("`([^`]+)`") do
+	local final_string = text;
+
+	for inline_code in final_string:gmatch("`([^`]+)`") do
 		d_width = d_width - (vim.fn.strchars("`" .. inline_code .. "`"));
 
 		if inl_conf ~= nil and inl_conf.enable ~= false then
 			d_width = d_width + vim.fn.strchars(table.concat({
+				inl_conf.corner_left or "",
+				inl_conf.padding_left or "",
+
+				inline_code or "",
+
+				inl_conf.padding_right or "",
+				inl_conf.corner_right or ""
+			}));
+
+			final_string = final_string:gsub("`" .. inline_code .. "`", table.concat({
 				inl_conf.corner_left or "",
 				inl_conf.padding_left or "",
 
@@ -84,8 +96,11 @@ local display_width = function (text, config)
 
 	local lnk_conf = config.links ~= nil and config.links.hyperlinks or nil;
 	local img_conf = config.links ~= nil and config.links.images or nil;
+	local email_conf = config.links ~= nil and config.links.emails or nil;
 
-	for img_identifier, link, address in text:gmatch("(!?)%[([^%]]+)%]%(([^%)]+)%)") do
+	local html_conf = config.html;
+
+	for img_identifier, link, address in final_string:gmatch("(!?)%[([^%]]+)%]%(([^%)]+)%)") do
 		if img_identifier ~= "" then
 			d_width = d_width - vim.fn.strchars("![" .. "](" .. address .. ")");
 
@@ -94,6 +109,15 @@ local display_width = function (text, config)
 					img_conf.corner_left or "",
 					img_conf.padding_left or "",
 					img_conf.icon or "",
+					img_conf.padding_right or "",
+					img_conf.corner_right or ""
+				}));
+
+				final_string = final_string:gsub("!%[" .. link .. "%]%(" .. address .. "%)", table.concat({
+					img_conf.corner_left or "",
+					img_conf.padding_left or "",
+					img_conf.icon or "",
+					link,
 					img_conf.padding_right or "",
 					img_conf.corner_right or ""
 				}));
@@ -109,16 +133,25 @@ local display_width = function (text, config)
 					lnk_conf.padding_right or "",
 					lnk_conf.corner_right or ""
 				}));
+
+				final_string = final_string:gsub("%[" .. link .. "%]%(" .. address .. "%)", table.concat({
+					lnk_conf.corner_left or "",
+					lnk_conf.padding_left or "",
+					lnk_conf.icon or "",
+					link,
+					lnk_conf.padding_right or "",
+					lnk_conf.corner_right or ""
+				}));
 			end
 		end
 	end
 
-	for str_a, str_b in text:gmatch("([*]+)[^*]+([*]+)") do
+	for str_a, internal, str_b in final_string:gmatch("([*]+)([^*]+)([*]+)") do
 		local min_signs = vim.fn.strchars(str_a) > vim.fn.strchars(str_b) and vim.fn.strchars(str_a) or vim.fn.strchars(str_b);
 
-		local start_pos, _ = text:find("([*]+)[^*]+([*]+)");
+		local start_pos, _ = final_string:find("([*]+)[^*]+([*]+)");
 
-		local c_before = text:sub(start_pos - 1, start_pos - 1);
+		local c_before = final_string:sub(start_pos - 1, start_pos - 1);
 		-- local c_after = text:sub(end_pos + 1, end_pos + 1);
 
 		-- Needs more flexibility
@@ -132,14 +165,67 @@ local display_width = function (text, config)
 
 			if a == b then
 				d_width = d_width - 2;
+
+				final_string = final_string:gsub(a .. internal .. b, internal);
 			end
 		end
 
 		::invalid::
 	end
 
+	for start_tag, tag_txt, end_tag in final_string:gmatch("<(.*)>([^<]-)</(.*)>") do
+		local start = start_tag:match("^(%a*)");
 
-	return d_width, vim.fn.strchars(text);
+		if not html_conf or html_conf.enable == false then
+			goto invalid;
+		end
+
+		local ele_conf = html_conf.default or {};
+
+		if html_conf.types and html_conf.types[start] then
+			ele_conf = html_conf.types[start];
+		end
+
+		if start ~= end_tag then
+			goto invalid;
+		end
+
+		if ele_conf.conceal ~= false then
+			d_width = d_width - vim.fn.strchars("<" .. start_tag .. ">");
+			d_width = d_width - vim.fn.strchars("</" .. end_tag .. ">");
+		end
+
+		final_string = final_string:gsub("<" .. start_tag .. ">" .. tag_txt .. "</" .. end_tag .. ">", tag_txt);
+
+		::invalid::
+	end
+
+	for username, domain, tdl in final_string:gmatch("<([%w._%+-]+)@([%w.-]+)%.([%w.-]+)>") do
+		d_width = d_width - vim.fn.strchars("<" .. ">");
+
+		if email_conf ~= nil and email_conf.enable ~= false then
+			d_width = d_width + vim.fn.strchars(table.concat({
+				email_conf.corner_left or "",
+				email_conf.padding_left or "",
+				email_conf.icon or "",
+				email_conf.padding_right or "",
+				email_conf.corner_right or ""
+			}));
+
+			final_string = final_string:gsub("<" .. username .. "@" .. domain .. "." .. tdl .. ">", table.concat({
+				email_conf.corner_left or "",
+				email_conf.padding_left or "",
+				email_conf.icon or "",
+
+				username, "@", domain, ".", tdl,
+
+				email_conf.padding_right or "",
+				email_conf.corner_right or ""
+			}));
+		end
+	end
+
+	return d_width, vim.fn.strchars(text), final_string;
 end
 
 
@@ -227,14 +313,14 @@ local table_header = function (buffer, content, config_table)
 
 			if width < actual_width then
 				if align == "left" then
-					vim.api.nvim_buf_set_extmark(buffer, renderer.namespace, row_start, col_start + curr_col + width + 1, {
+					vim.api.nvim_buf_set_extmark(buffer, renderer.namespace, row_start, col_start + curr_col + vim.fn.strchars(col), {
 						virt_text_pos = "inline",
 						virt_text = {
 							{ string.rep(" ", (actual_width - width)) }
 						}
 					});
 				elseif align == "right" then
-					vim.api.nvim_buf_set_extmark(buffer, renderer.namespace, row_start, col_start + curr_col + width + 1, {
+					vim.api.nvim_buf_set_extmark(buffer, renderer.namespace, row_start, col_start + curr_col, {
 						virt_text_pos = "inline",
 						virt_text = {
 							{ string.rep(" ", (actual_width - width)) }
@@ -243,7 +329,7 @@ local table_header = function (buffer, content, config_table)
 				else
 					local before, after = math.floor((actual_width - width) / 2), math.ceil((actual_width - width) / 2);
 
-					vim.api.nvim_buf_set_extmark(buffer, renderer.namespace, row_start, col_start + curr_col + width + 1, {
+					vim.api.nvim_buf_set_extmark(buffer, renderer.namespace, row_start, col_start + curr_col + vim.fn.strchars(col), {
 						virt_text_pos = "inline",
 						virt_text = {
 							{ string.rep(" ", after) }
@@ -459,14 +545,14 @@ local table_footer = function (buffer, content, config_table)
 
 			if width < actual_width then
 				if align == "left" then
-					vim.api.nvim_buf_set_extmark(buffer, renderer.namespace, row_end - 1, col_start + curr_col + width + 1, {
+					vim.api.nvim_buf_set_extmark(buffer, renderer.namespace, row_end - 1, col_start + curr_col + vim.fn.strchars(col), {
 						virt_text_pos = "inline",
 						virt_text = {
 							{ string.rep(" ", (actual_width - width)) }
 						}
 					});
 				elseif align == "right" then
-					vim.api.nvim_buf_set_extmark(buffer, renderer.namespace, row_end - 1, col_start, {
+					vim.api.nvim_buf_set_extmark(buffer, renderer.namespace, row_end - 1, col_start + curr_col, {
 						virt_text_pos = "inline",
 						virt_text = {
 							{ string.rep(" ", (actual_width - width)) }
@@ -475,7 +561,7 @@ local table_footer = function (buffer, content, config_table)
 				else
 					local before, after = math.floor((actual_width - width) / 2), math.ceil((actual_width - width) / 2);
 
-					vim.api.nvim_buf_set_extmark(buffer, renderer.namespace, row_end - 1, col_start + curr_col + width + 1, {
+					vim.api.nvim_buf_set_extmark(buffer, renderer.namespace, row_end - 1, col_start + curr_col + vim.fn.strchars(col), {
 						virt_text_pos = "inline",
 						virt_text = {
 							{ string.rep(" ", after) }
@@ -506,42 +592,48 @@ end
 local table_content = function (buffer, content, config_table, r_num)
 	local tbl_conf = config_table.tables;
 
+	local col_start = content.col_start;
+
 	local curr_col = 0;
 	local curr_tbl_col = 1;
 
+	if content.content_positions and content.content_positions[r_num] then
+		col_start = content.content_positions[r_num].col_start;
+	end
+
 	for index, col in ipairs(content.rows[r_num]) do
 		if index == 1 then
-			vim.api.nvim_buf_set_extmark(buffer, renderer.namespace, content.row_start + r_num - 1, content.col_start, {
+			vim.api.nvim_buf_set_extmark(buffer, renderer.namespace, content.row_start + r_num - 1, col_start, {
 				virt_text_pos = "inline",
 				virt_text = {
 					{ tbl_conf.text[6], set_hl(tbl_conf.hl[6]) }
 				},
 
-				end_col = content.col_start + 1,
+				end_col = col_start + 1,
 				conceal = ""
 			});
 
 			curr_col = curr_col + 1
 		elseif index == #content.rows[1] then
-			vim.api.nvim_buf_set_extmark(buffer, renderer.namespace, content.row_start + r_num - 1, content.col_start + curr_col, {
+			vim.api.nvim_buf_set_extmark(buffer, renderer.namespace, content.row_start + r_num - 1, col_start + curr_col, {
 				virt_text_pos = "inline",
 				virt_text = {
 					{ tbl_conf.text[6], set_hl(tbl_conf.hl[6]) }
 				},
 
-				end_col = content.col_start + curr_col + 1,
+				end_col = col_start + curr_col + 1,
 				conceal = ""
 			});
 
 			curr_col = curr_col + 1
 		elseif col == "|" then
-			vim.api.nvim_buf_set_extmark(buffer, renderer.namespace, content.row_start + r_num - 1, content.col_start + curr_col, {
+			vim.api.nvim_buf_set_extmark(buffer, renderer.namespace, content.row_start + r_num - 1, col_start + curr_col, {
 				virt_text_pos = "inline",
 				virt_text = {
 					{ tbl_conf.text[6], set_hl(tbl_conf.hl[6]) }
 				},
 
-				end_col = content.col_start + curr_col + 1,
+				end_col = col_start + curr_col + 1,
 				conceal = ""
 			});
 
@@ -552,14 +644,14 @@ local table_content = function (buffer, content, config_table, r_num)
 
 			if width < actual_width then
 				if align == "left" then
-					vim.api.nvim_buf_set_extmark(buffer, renderer.namespace, content.row_start + r_num - 1, content.col_start + curr_col + width + 1, {
+					vim.api.nvim_buf_set_extmark(buffer, renderer.namespace, content.row_start + r_num - 1, col_start + curr_col + vim.fn.strchars(col), {
 						virt_text_pos = "inline",
 						virt_text = {
 							{ string.rep(" ", (actual_width - width)) }
 						}
 					});
 				elseif align == "right" then
-					vim.api.nvim_buf_set_extmark(buffer, renderer.namespace, content.row_start + r_num - 1, content.col_start, {
+					vim.api.nvim_buf_set_extmark(buffer, renderer.namespace, content.row_start + r_num - 1, col_start + curr_col, {
 						virt_text_pos = "inline",
 						virt_text = {
 							{ string.rep(" ", (actual_width - width)) }
@@ -568,14 +660,14 @@ local table_content = function (buffer, content, config_table, r_num)
 				else
 					local before, after = math.floor((actual_width - width) / 2), math.ceil((actual_width - width) / 2);
 
-					vim.api.nvim_buf_set_extmark(buffer, renderer.namespace, content.row_start + r_num - 1, content.col_start + curr_col + width + 1, {
+					vim.api.nvim_buf_set_extmark(buffer, renderer.namespace, content.row_start + r_num - 1, col_start + curr_col + vim.fn.strchars(col), {
 						virt_text_pos = "inline",
 						virt_text = {
 							{ string.rep(" ", after) }
 						}
 					});
 
-					vim.api.nvim_buf_set_extmark(buffer, renderer.namespace, content.row_start + r_num - 1, content.col_start + curr_col, {
+					vim.api.nvim_buf_set_extmark(buffer, renderer.namespace, content.row_start + r_num - 1, col_start + curr_col, {
 						virt_text_pos = "inline",
 						virt_text = {
 							{ string.rep(" ", before) }
@@ -628,7 +720,7 @@ renderer.render_headings = function (buffer, content, config)
 			conf.icon or "",
 		}));
 
-		-- Adds icons, seperators, paddings etc
+		-- Adds icons, separators, paddings etc
 		vim.api.nvim_buf_set_extmark(buffer, renderer.namespace, content.row_start, 0, {
 			virt_text_pos = "overlay",
 			virt_text = {
@@ -1265,6 +1357,33 @@ renderer.render_tables = function (buffer, content, user_config)
 	end
 end
 
+renderer.render_html_inline = function (buffer, content, user_config)
+	if not user_config or user_config.enable == false then
+		return;
+	end
+
+	local html_conf = user_config.default or {};
+
+	if user_config.types[content.tag] then
+		html_conf = user_config.types[content.tag];
+	end
+
+	if html_conf.conceal ~= false then
+		vim.api.nvim_buf_set_extmark(buffer, renderer.namespace, content.row_start, content.start_tag_col_start, {
+			end_col = content.start_tag_col_end,
+			conceal = ""
+		});
+		vim.api.nvim_buf_set_extmark(buffer, renderer.namespace, content.row_start, content.end_tag_col_start, {
+			end_col = content.end_tag_col_end,
+			conceal = ""
+		});
+	end
+
+	if html_conf.hl then
+		vim.api.nvim_buf_add_highlight(buffer, renderer.namespace, html_conf.hl, content.row_start, content.col_start, content.col_end);
+	end
+end
+
 renderer.render_in_range = function (buffer, partial_contents, config_table)
 	for _, content in ipairs(partial_contents) do
 		local type = content.type;
@@ -1296,6 +1415,8 @@ renderer.render_in_range = function (buffer, partial_contents, config_table)
 			pcall(renderer.render_checkboxes, buffer, content, config_table.checkboxes)
 		elseif type == "table" then
 			pcall(renderer.render_tables, buffer, content, config_table)
+		elseif type == "html_inline" then
+			pcall(renderer.render_html_inline, buffer, content, config_table.html);
 		end
 
 		::extmark_skipped::
@@ -1350,6 +1471,8 @@ renderer.render = function (buffer, parsed_content, config_table, conceal_start,
 			pcall(renderer.render_lists, buffer, content, config_table.list_items)
 		elseif type == "checkbox" then
 			pcall(renderer.render_checkboxes, buffer, content, config_table.checkboxes)
+		elseif type == "html_inline" then
+			pcall(renderer.render_html_inline, buffer, content, config_table.html);
 		elseif type == "table" then
 			pcall(renderer.render_tables, buffer, content, config_table);
 		end
