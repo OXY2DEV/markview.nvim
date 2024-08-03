@@ -2,7 +2,7 @@ local renderer = {};
 local devicons = require("nvim-web-devicons");
 
 local entites = require("markview.entites");
-local utils = require("markview.utils");
+local languages = require("markview.languages");
 
 
 _G.__markview_views = {};
@@ -972,27 +972,32 @@ renderer.render_code_blocks = function (buffer, content, config_table)
 		local icon, hl = devicons.get_icon(nil, language, { default = true });
 		local block_length = content.largest_line;
 
+		local languageName;
+
 		if config_table.language_names ~= nil then
 			for _, lang in ipairs(config_table.language_names) do
 				if language == lang[1] then
-					language = lang[2];
-					break;
+					languageName = lang[2];
+					goto nameFound;
 				end
 			end
 		end
+
+		languageName = languages.get_name(language)
+		::nameFound::
 
 		if type(config_table.min_width) == "number" and config_table.min_width > block_length then
 			block_length = config_table.min_width
 		end
 
-		local lang_width = vim.fn.strchars(" " .. icon .. " " .. (language == "" and "Unknown" or language) .. " ");
+		local lang_width = vim.fn.strchars(" " .. icon .. " " .. languageName .. " ");
 
 		if config_table.language_direction == nil or config_table.language_direction == "left" then
 			vim.api.nvim_buf_set_extmark(buffer, renderer.namespace, content.row_start, content.col_start + 3 + vim.fn.strlen(content.language), {
 				virt_text_pos = config_table.position or "inline",
 				virt_text = {
 					{ " " .. icon .. " ", set_hl(hl) },
-					{ (language == "" and "Unknown" or language) .. " ", set_hl(config_table.name_hl) or set_hl(hl) },
+					{ languageName .. " ", set_hl(config_table.name_hl) or set_hl(hl) },
 					{ string.rep(config_table.pad_char or " ", block_length - lang_width + ((config_table.pad_amount or 1) * 2)), set_hl(config_table.hl) },
 				},
 
@@ -1007,7 +1012,7 @@ renderer.render_code_blocks = function (buffer, content, config_table)
 				virt_text = {
 					{ string.rep(config_table.pad_char or " ", block_length - lang_width + ((config_table.pad_amount or 1) * 2)), set_hl(config_table.hl) },
 					{ " " .. icon .. " ", set_hl(hl) },
-					{ (language == "" and "Unknown" or language) .. " ", set_hl(config_table.name_hl) or set_hl(hl) },
+					{ languageName .. " ", set_hl(config_table.name_hl) or set_hl(hl) },
 				},
 
 				sign_text = config_table.sign == true and icon or nil,
