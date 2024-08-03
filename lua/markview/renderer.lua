@@ -98,8 +98,6 @@ local display_width = function (text, config)
 	local img_conf = config.links ~= nil and config.links.images or nil;
 	local email_conf = config.links ~= nil and config.links.emails or nil;
 
-	local html_conf = config.html;
-
 	for img_identifier, link, address in final_string:gmatch("(!?)%[([^%]]+)%]%(([^%)]+)%)") do
 		if img_identifier ~= "" then
 			d_width = d_width - vim.fn.strchars("![" .. "](" .. address .. ")");
@@ -173,33 +171,6 @@ local display_width = function (text, config)
 		::invalid::
 	end
 
-	for start_tag, tag_txt, end_tag in final_string:gmatch("<(.*)>([^<]-)</(.*)>") do
-		local start = start_tag:match("^(%a*)");
-
-		if not html_conf or html_conf.enable == false then
-			goto invalid;
-		end
-
-		local ele_conf = html_conf.default or {};
-
-		if html_conf.types and html_conf.types[start] then
-			ele_conf = html_conf.types[start];
-		end
-
-		if start ~= end_tag then
-			goto invalid;
-		end
-
-		if ele_conf.conceal ~= false then
-			d_width = d_width - vim.fn.strchars("<" .. start_tag .. ">");
-			d_width = d_width - vim.fn.strchars("</" .. end_tag .. ">");
-		end
-
-		final_string = final_string:gsub("<" .. start_tag .. ">" .. tag_txt .. "</" .. end_tag .. ">", tag_txt);
-
-		::invalid::
-	end
-
 	for username, domain, tdl in final_string:gmatch("<([%w._%+-]+)@([%w.-]+)%.([%w.-]+)>") do
 		d_width = d_width - vim.fn.strchars("<" .. ">");
 
@@ -223,6 +194,56 @@ local display_width = function (text, config)
 				email_conf.corner_right or ""
 			}));
 		end
+	end
+
+	local tmp_string = final_string;
+	local iterations = 1;
+
+	local html_conf = config.html;
+
+	while tmp_string:match("<([^>]+)>") do
+		-- This shouldn't run so many times
+		if iterations > 10 then
+			break;
+		else
+			iterations = iterations + 1;
+		end
+
+		local start_tag = tmp_string:match("<([^>]+)>");
+		local s_tag_start, _ = tmp_string:find("<([^>]+)>");
+
+		local filtered_tag = start_tag:match("%a+");
+
+		-- No close tag
+		if not tmp_string:match("</" .. filtered_tag .. ">") then
+			goto invalid;
+		end
+
+		local end_tag = tmp_string:match("</(" .. filtered_tag .. ")>");
+		local e_tag_start, _ = tmp_string:find("</" .. filtered_tag .. ">");
+
+		-- Close tag before opening tag
+		if e_tag_start < s_tag_start then
+			goto invalid;
+		end
+
+		local conf = html_conf.default or {};
+
+		if html_conf.types and html_conf.types[filtered_tag] then
+			conf = html_conf.types[filtered_tag]
+		end
+
+		local internal_text = tmp_string:match("<" .. start_tag .. ">(.-)</" .. end_tag .. ">") or "";
+
+		-- Tag isn't concealed
+		if conf.conceal ~= false then
+			final_string = final_string:gsub("<" .. start_tag .. ">" .. internal_text .. "</" .. end_tag .. ">", internal_text)
+			d_width = d_width - vim.fn.strchars("<" .. start_tag .. ">" .. "</" .. end_tag .. ">", internal_text);
+		end
+
+		tmp_string = tmp_string:gsub("<" .. start_tag .. ">" .. internal_text .. "</" .. end_tag .. ">", internal_text)
+
+		::invalid::
 	end
 
 	return d_width, vim.fn.strchars(text), final_string;
@@ -1380,7 +1401,7 @@ renderer.render_html_inline = function (buffer, content, user_config)
 	end
 
 	if html_conf.hl then
-		vim.api.nvim_buf_add_highlight(buffer, renderer.namespace, html_conf.hl, content.row_start, content.col_start, content.col_end);
+		vim.api.nvim_buf_add_highlight(buffer, renderer.namespace, html_conf.hl, content.row_start, content.start_tag_col_end, content.end_tag_col_start);
 	end
 end
 
