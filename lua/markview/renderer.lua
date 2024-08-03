@@ -1,6 +1,7 @@
 local renderer = {};
 local devicons = require("nvim-web-devicons");
 
+local entites = require("markview.entites");
 local utils = require("markview.utils");
 
 
@@ -203,7 +204,11 @@ local display_width = function (text, config)
 
 	while tmp_string:match("<([^>]+)>") do
 		-- This shouldn't run so many times
-		if iterations > 10 then
+		if not html_conf or html_conf.enable == false then
+			break;
+		elseif not html_conf.tags or html_conf.tags.enable == false then
+			break;
+		elseif iterations > 10 then
 			break;
 		else
 			iterations = iterations + 1;
@@ -227,10 +232,11 @@ local display_width = function (text, config)
 			goto invalid;
 		end
 
-		local conf = html_conf.default or {};
+		local tag_conf = html_conf.tags;
+		local conf = tag_conf.default or {};
 
-		if html_conf.types and html_conf.types[filtered_tag] then
-			conf = html_conf.types[filtered_tag]
+		if tag_conf.config and tag_conf.config[filtered_tag] then
+			conf = tag_conf.config[filtered_tag]
 		end
 
 		local internal_text = tmp_string:match("<" .. start_tag .. ">(.-)</" .. end_tag .. ">") or "";
@@ -242,6 +248,34 @@ local display_width = function (text, config)
 		end
 
 		tmp_string = tmp_string:gsub("<" .. start_tag .. ">" .. internal_text .. "</" .. end_tag .. ">", internal_text)
+
+		::invalid::
+	end
+
+	for entity_name, semicolon in final_string:gmatch("&(%a+)(;?)") do
+		if not html_conf or html_conf.enable == false then
+			break;
+		elseif not html_conf.entites or html_conf.entites.enable == false then
+			break;
+		end
+
+		local entity = entites.get(entity_name);
+
+		if not entity then
+			goto invalid;
+		end
+
+		if semicolon then
+			final_string = final_string:gsub("&" .. entity_name .. ";", entity);
+
+			d_width = d_width - vim.fn.strchars("&" .. entity_name .. ";");
+			d_width = d_width + vim.fn.strdisplaywidth(entity);
+		else
+			final_string = final_string:gsub("&" .. entity_name, entity);
+
+			d_width = d_width - vim.fn.strchars("&" .. entity_name);
+			d_width = d_width + vim.fn.strdisplaywidth(entity);
+		end
 
 		::invalid::
 	end
@@ -1383,10 +1417,14 @@ renderer.render_html_inline = function (buffer, content, user_config)
 		return;
 	end
 
-	local html_conf = user_config.default or {};
+	if not user_config.tags or user_config.tags.enable == false then
+		return;
+	end
 
-	if user_config.types[content.tag] then
-		html_conf = user_config.types[content.tag];
+	local html_conf = user_config.tags.default or {};
+
+	if user_config.tags.config[content.tag] then
+		html_conf = user_config.tags.config[content.tag];
 	end
 
 	if html_conf.conceal ~= false then
@@ -1403,6 +1441,33 @@ renderer.render_html_inline = function (buffer, content, user_config)
 	if html_conf.hl then
 		vim.api.nvim_buf_add_highlight(buffer, renderer.namespace, html_conf.hl, content.row_start, content.start_tag_col_end, content.end_tag_col_start);
 	end
+end
+
+renderer.render_html_entities = function (buffer, content, user_config)
+	if not user_config or user_config.enable == false then
+		return;
+	end
+
+	if not user_config.entites or user_config.entites.enable == false then
+		return;
+	end
+
+	local filtered_entity = content.text:gsub("[&;]", "");
+	local entity = entites.get(filtered_entity);
+
+	if not entity then
+		return;
+	end
+
+	vim.api.nvim_buf_set_extmark(buffer, renderer.namespace, content.row_start, content.col_start, {
+		virt_text_pos = "inline",
+		virt_text = {
+			{ entity, set_hl(user_config.entites.hl) }
+		},
+
+		end_col = content.col_end,
+		conceal = ""
+	});
 end
 
 renderer.render_in_range = function (buffer, partial_contents, config_table)
@@ -1434,10 +1499,12 @@ renderer.render_in_range = function (buffer, partial_contents, config_table)
 			pcall(renderer.render_lists, buffer, content, config_table.list_items)
 		elseif type == "checkbox" then
 			pcall(renderer.render_checkboxes, buffer, content, config_table.checkboxes)
-		elseif type == "table" then
-			pcall(renderer.render_tables, buffer, content, config_table)
 		elseif type == "html_inline" then
 			pcall(renderer.render_html_inline, buffer, content, config_table.html);
+		elseif type == "html_entity" then
+			pcall(renderer.render_html_entities, buffer, content, config_table.html);
+		elseif type == "table" then
+			pcall(renderer.render_tables, buffer, content, config_table)
 		end
 
 		::extmark_skipped::
@@ -1494,6 +1561,8 @@ renderer.render = function (buffer, parsed_content, config_table, conceal_start,
 			pcall(renderer.render_checkboxes, buffer, content, config_table.checkboxes)
 		elseif type == "html_inline" then
 			pcall(renderer.render_html_inline, buffer, content, config_table.html);
+		elseif type == "html_entity" then
+			pcall(renderer.render_html_entities, buffer, content, config_table.html);
 		elseif type == "table" then
 			pcall(renderer.render_tables, buffer, content, config_table);
 		end

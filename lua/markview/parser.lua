@@ -430,6 +430,8 @@ parser.md_inline = function (buffer, TStree, from, to)
 			] @link)
 
 		((code_span) @code)
+
+		((entity_reference) @entity)
 	]]);
 
 	-- The last 2 _ represent the metadata & query
@@ -514,6 +516,19 @@ parser.md_inline = function (buffer, TStree, from, to)
 				col_start = col_start,
 				col_end = col_end
 			})
+		elseif capture_name == "entity" then
+			table.insert(parser.parsed_content, {
+				node = capture_node,
+				type = "html_entity",
+
+				text = capture_text,
+
+				row_start = row_start,
+				row_end = row_end,
+
+				col_start = col_start,
+				col_end = col_end
+			})
 		end
 	end
 end
@@ -521,8 +536,6 @@ end
 parser.html = function (buffer, TStree, from, to)
 	local scanned_queies = vim.treesitter.query.parse("html", [[
 		((element) @elem)
-
-		;((entity_reference) @entity)
 	]]);
 
 	for capture_id, capture_node, _, _ in scanned_queies:iter_captures(TStree:root(), buffer, from, to) do
