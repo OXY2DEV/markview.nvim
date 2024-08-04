@@ -100,6 +100,16 @@ parser.parsed_content = {};
 ---@param buffer number
 ---@param TStree any
 parser.md = function (buffer, TStree, from, to)
+	if not parser.cached_conf or not parser.cached_conf.on_injected or parser.cached_conf.on_injected == false then
+		local root = TStree:root();
+		local root_r_start, _, root_r_end, _ = root:range();
+		local buf_lines = vim.api.nvim_buf_line_count(buffer);
+
+		if root_r_start ~= 0 or root_r_end ~= buf_lines then
+			return;
+		end
+	end
+
 	local scanned_queies = vim.treesitter.query.parse("markdown", [[
 		((setext_heading) @setext_heading)
 
@@ -154,13 +164,11 @@ parser.md = function (buffer, TStree, from, to)
 				col_end = col_end
 			})
 		elseif capture_name == "heading" then
-			local heading_txt = capture_node:next_sibling();
-			local title = heading_txt ~= nil and vim.treesitter.get_node_text(heading_txt, buffer) or "";
-			local h_txt_r_start, h_txt_c_start, h_txt_r_end, h_txt_c_end;
+			local parent = capture_node:parent();
 
-			if heading_txt ~= nil then
-				h_txt_r_start, h_txt_c_start, h_txt_r_end, h_txt_c_end = heading_txt:range();
-			end
+			local heading_txt = capture_node:next_sibling();
+			local title = heading_txt ~= nil and vim.treesitter.get_node_text(heading_txt, buffer) or nil;
+			local h_txt_r_start, h_txt_c_start, h_txt_r_end, h_txt_c_end;
 
 			table.insert(parser.parsed_content, {
 				node = capture_node,
@@ -168,9 +176,9 @@ parser.md = function (buffer, TStree, from, to)
 
 				level = vim.fn.strchars(capture_text),
 
+				line = vim.treesitter.get_node_text(parent, buffer),
 				marker = capture_text,
 				title = title,
-				title_pos = { h_txt_r_start, h_txt_c_start, h_txt_r_end, h_txt_c_end },
 
 				row_start = row_start,
 				row_end = row_end,
@@ -534,6 +542,17 @@ parser.md_inline = function (buffer, TStree, from, to)
 end
 
 parser.html = function (buffer, TStree, from, to)
+	if not parser.cached_conf or not parser.cached_conf.on_injected or parser.cached_conf.on_injected == false then
+		local root = TStree:root();
+		local root_r_start, _, _, _ = root:range();
+
+		local start_line = vim.api.nvim_buf_get_lines(buffer, root_r_start - 1, root_r_start, false)[1] or "";
+
+		if start_line:match("```") then
+			return;
+		end
+	end
+
 	local scanned_queies = vim.treesitter.query.parse("html", [[
 		((element) @elem)
 	]]);
@@ -591,7 +610,6 @@ parser.init = function (buffer, config_table)
 
 	-- Clear the previous contents
 	parser.parsed_content = {};
-	local main_tree_parsed = false;
 
 	root_parser:for_each_tree(function (TStree, language_tree)
 		local tree_language = language_tree:lang();
@@ -618,13 +636,12 @@ parser.parse_range = function (buffer, config_table, from, to)
 
 	-- Clear the previous contents
 	parser.parsed_content = {};
-	local main_tree_parsed = false;
 
 	root_parser:for_each_tree(function (TStree, language_tree)
 		local tree_language = language_tree:lang();
 
 		if tree_language == "markdown" then
-			parser.md(buffer, TStree, from, to)
+			parser.md(buffer, TStree, from, to);
 		elseif tree_language == "markdown_inline" then
 			parser.md_inline(buffer, TStree, from, to);
 		elseif tree_language == "html" then

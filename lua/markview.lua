@@ -1198,9 +1198,15 @@ markview.configuration = {
 			},
 
 			config = {
-				p = { conceal = true, hl = "Normal" },
+				b = { conceal = true, hl = "Bold" },
+				strong = { conceal = true, hl = "Bold" },
+
 				u = { conceal = true, hl = "Underlined" },
-				i = { conceal = true, hl = "Italic" }
+
+				i = { conceal = true, hl = "Italic" },
+				emphasize = { conceal = true, hl = "Italic" },
+
+				marked = { conceal = true, hl = "Special" },
 			}
 		},
 

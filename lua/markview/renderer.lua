@@ -235,8 +235,8 @@ local display_width = function (text, config)
 		local tag_conf = html_conf.tags;
 		local conf = tag_conf.default or {};
 
-		if tag_conf.config and tag_conf.config[filtered_tag] then
-			conf = tag_conf.config[filtered_tag]
+		if tag_conf.config and tag_conf.config[string.lower(filtered_tag)] then
+			conf = tag_conf.config[string.lower(filtered_tag)]
 		end
 
 		local internal_text = tmp_string:match("<" .. start_tag .. ">(.-)</" .. end_tag .. ">") or "";
@@ -252,7 +252,7 @@ local display_width = function (text, config)
 		::invalid::
 	end
 
-	for entity_name, semicolon in final_string:gmatch("&(%a+)(;?)") do
+	for entity_name, semicolon in final_string:gmatch("&([%a%d]+)(;?)") do
 		if not html_conf or html_conf.enable == false then
 			break;
 		elseif not html_conf.entites or html_conf.entites.enable == false then
@@ -553,7 +553,7 @@ local table_footer = function (buffer, content, config_table)
 
 			table.insert(virt_txt, { tbl_conf.text[9], set_hl(tbl_conf.hl[9]) })
 			curr_col = curr_col + 1
-		elseif index == #content.rows[1] then
+		elseif index == #content.rows[#content.rows] then
 			vim.api.nvim_buf_set_extmark(buffer, renderer.namespace, row_end - 1, col_start + curr_col, {
 				virt_text_pos = "inline",
 				virt_text = {
@@ -767,73 +767,60 @@ renderer.render_headings = function (buffer, content, config)
 			hl_mode = "combine"
 		});
 	elseif conf.style == "label" then
-		-- FIX: Make headings editable
-		local add_spaces = vim.fn.strchars(table.concat({
-			string.rep(conf.shift_char or " ", shift * (content.level - 1)),
-			conf.corner_left or "",
-			conf.padding_left or "",
-			conf.icon or "",
-		}));
+		local conceal_start = string.match(content.line, "^[#]+(%s*)");
+		local line_length = vim.fn.strchars(content.line);
 
-		-- Adds icons, separators, paddings etc
-		vim.api.nvim_buf_set_extmark(buffer, renderer.namespace, content.row_start, 0, {
-			virt_text_pos = "overlay",
+		-- Heading rules
+		-- 1. Must start at the first column
+		-- 2. Must have 1 space between the marker and the title
+		vim.api.nvim_buf_set_extmark(buffer, renderer.namespace, content.row_start, content.col_start, {
+			virt_text_pos = "inline",
 			virt_text = {
 				{ string.rep(conf.shift_char or " ", shift * (content.level - 1)), conf.shift_hl },
 
 				{ conf.corner_left or "", set_hl(conf.corner_left_hl) or set_hl(conf.hl) },
 				{ conf.padding_left or "", set_hl(conf.padding_left_hl) or set_hl(conf.hl) },
-				{ conf.icon or "", set_hl(conf.icon_hl) or set_hl(conf.hl) },
-				{ content.title or "", set_hl(conf.text_hl) or set_hl(conf.hl) },
-				{ conf.padding_right or "", set_hl(conf.padding_right_hl) or set_hl(conf.hl) },
-				{ conf.corner_right or "", set_hl(conf.corner_right_hl) or set_hl(conf.hl) },
+				{ conf.icon or "", set_hl(conf.icon_hl) or set_hl(conf.hl) }
 			},
 
-			sign_text = conf.sign, sign_hl_group = set_hl(conf.sign_hl) or set_hl(conf.hl),
-
+			sign_text = conf.sign, sign_hl_group = set_hl(conf.sign_hl),
 			hl_mode = "combine",
-		})
 
-		-- Add extra spaces to match the virtual text
-		vim.api.nvim_buf_set_extmark(buffer, renderer.namespace, content.row_start, 0, {
-			virt_text_pos = "inline",
-			virt_text = { { string.rep(" ", add_spaces) } },
-
-			end_col = content.title_pos[2] or content.col_end,
+			end_col = content.level + vim.fn.strchars(conceal_start),
 			conceal = ""
 		});
-	elseif conf.style == "icon" then
-		-- FIX: Make headings editable
-		local add_spaces = vim.fn.strchars(table.concat({
-			string.rep(conf.shift_char or " ", shift * (content.level - 1)),
-			conf.icon or ""
-		}));
 
-		-- Adds simple icons with paddings
-		vim.api.nvim_buf_set_extmark(buffer, renderer.namespace, content.row_start, 0, {
-			virt_text_pos = "overlay",
+		vim.api.nvim_buf_set_extmark(buffer, renderer.namespace, content.row_start, line_length, {
+			virt_text_pos = "inline",
+			virt_text = {
+				{ conf.padding_right or "", set_hl(conf.padding_right_hl) or set_hl(conf.hl) },
+				{ conf.corner_right or "", set_hl(conf.corner_right_hl) or set_hl(conf.hl) }
+			},
+
+			hl_mode = "combine"
+		});
+
+		vim.api.nvim_buf_add_highlight(buffer, renderer.namespace, set_hl(conf.hl), content.row_start, 0, line_length);
+	elseif conf.style == "icon" then
+		local conceal_start = string.match(content.line, "^[#]+(%s*)");
+
+		-- Heading rules
+		-- 1. Must start at the first column
+		-- 2. Must have 1 space between the marker and the title
+		vim.api.nvim_buf_set_extmark(buffer, renderer.namespace, content.row_start, content.col_start, {
+			virt_text_pos = "inline",
 			virt_text = {
 				{ string.rep(conf.shift_char or " ", shift * (content.level - 1)), set_hl(conf.shift_hl) },
 
 				{ conf.icon or "", set_hl(conf.icon_hl) or set_hl(conf.hl) },
-				{ content.title or "", set_hl(conf.text_hl) or set_hl(conf.hl) },
 			},
 
-			hl_mode = "combine",
-		})
-
-		-- Add extra spaces to match the virtual text
-		vim.api.nvim_buf_set_extmark(buffer, renderer.namespace, content.row_start, 0, {
-			virt_text_pos = "inline",
-			virt_text = { { string.rep(" ", add_spaces) } },
-
-			end_col = content.title_pos[2] or content.col_end,
-			conceal = ""
-		});
-
-		vim.api.nvim_buf_set_extmark(buffer, renderer.namespace, content.row_start, 0, {
-			line_hl_group = set_hl(conf.hl),
 			sign_text = conf.sign, sign_hl_group = set_hl(conf.sign_hl),
+			line_hl_group = set_hl(conf.hl),
+			hl_mode = "combine",
+
+			end_col = content.level + vim.fn.strchars(conceal_start),
+			conceal = ""
 		});
 	end
 end
@@ -1437,8 +1424,8 @@ renderer.render_html_inline = function (buffer, content, user_config)
 
 	local html_conf = user_config.tags.default or {};
 
-	if user_config.tags.config[content.tag] then
-		html_conf = user_config.tags.config[content.tag];
+	if user_config.tags.config[string.lower(content.tag)] then
+		html_conf = user_config.tags.config[string.lower(content.tag)];
 	end
 
 	if html_conf.conceal ~= false then
