@@ -1576,8 +1576,8 @@ renderer.render = function (buffer, parsed_content, config_table, conceal_start,
 	end
 end
 
-renderer.clear = function (buffer)
-	vim.api.nvim_buf_clear_namespace(buffer, renderer.namespace, 0, -1)
+renderer.clear = function (buffer, from, to)
+	vim.api.nvim_buf_clear_namespace(buffer, renderer.namespace, from or 0, to or -1)
 end
 
 renderer.update_range = function (buffer, new_range)

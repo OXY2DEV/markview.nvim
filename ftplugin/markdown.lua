@@ -216,6 +216,7 @@ vim.api.nvim_create_autocmd(events, {
 
 			markview.renderer.clear_content_range(event.buf, partial_contents)
 			markview.renderer.clear_content_range(event.buf, prev_contents);
+			markview.renderer.clear(event.buf, parse_start, parse_stop);
 
 			markview.renderer.render_in_range(event.buf, prev_contents, markview.configuration);
 			markview.renderer.update_range(event.buf, current_range);
