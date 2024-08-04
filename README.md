@@ -1,6 +1,7 @@
 # 📜 Markview.nvim
 
 An experimental `markdown` previewer for Neovim.
+
 <a href="https://github.com/OXY2DEV/markview.nvim/wiki" style="align: center;">Wiki page</a>
 
 ## ✨ Features
