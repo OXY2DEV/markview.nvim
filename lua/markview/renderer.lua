@@ -1022,10 +1022,19 @@ renderer.render_code_blocks = function (buffer, content, config_table)
 			});
 		end
 
-		vim.api.nvim_buf_set_extmark(buffer, renderer.namespace, content.row_end - 1, content.col_start + 3, {
+		-- The text on the final line
+		-- We need to get the tail section to see if it contains ``` 
+		local block_end_line = vim.api.nvim_buf_get_lines(buffer, content.row_end - 1, content.row_end, false)[1];
+		local tail_section = vim.fn.strcharpart(block_end_line or "", content.col_start);
+
+		if tail_section:match("```$") then
+			tail_section = tail_section:gsub("```$", "");
+		end
+
+		vim.api.nvim_buf_set_extmark(buffer, renderer.namespace, content.row_end - 1, vim.fn.strchars(block_end_line or ""), {
 			virt_text_pos = config_table.position or "inline",
 			virt_text = {
-				{ string.rep(config_table.pad_char or " ", block_length + ((config_table.pad_amount or 1) * 2)), set_hl(config_table.hl) },
+				{ string.rep(config_table.pad_char or " ", (block_length - vim.fn.strchars(tail_section)) + ((config_table.pad_amount or 1) * 2)), set_hl(config_table.hl) },
 			},
 
 			hl_mode = "combine",
@@ -1046,7 +1055,7 @@ renderer.render_code_blocks = function (buffer, content, config_table)
 				}
 			})
 
-			local position, reduce_cols = get_str_width(text)
+			local position, reduce_cols = get_str_width(text);
 
 			vim.api.nvim_buf_set_extmark(buffer, renderer.namespace, content.row_start + line, position, {
 				virt_text_pos = "inline",
