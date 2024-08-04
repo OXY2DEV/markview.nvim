@@ -2,9 +2,9 @@
 
 An experimental `markdown` previewer for Neovim.
 
-<div align="center">
+<p align="center">
     <a href="https://github.com/OXY2DEV/markview.nvim/wiki" style="font-size: 1.5rem;">Wiki page</a>
-</div>
+</p>
 
 ## ✨ Features
 
