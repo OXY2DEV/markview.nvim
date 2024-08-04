@@ -1,86 +1,86 @@
 # 📜 Markview.nvim
 
-<p text-align="center">Simple markdown previewer for neovim</p>
+An experimental `markdown` previewer for Neovim.
+<a href="https://github.com/OXY2DEV/markview.nvim/wiki" style="align: center;">Wiki page</a>
 
->[!IMPORTANT]
-> Presets have been reworked, though you can still use the old presets. It is recommended that you switch to the newer ones as the old ones will be removed in the future.
+## ✨ Features
 
-![headings](./images/headings.jpg)
-![lists](./images/lists.jpg)
-![tables](./images/tables.jpg)
+Markview.nvim comes with a ton of features such as,
 
->[!WARNING]
-> This plugin is in it's alpha stage and may go through breaking changes.
+- Close to `full render` of markdown documents. Currently supported items are,
+  * Block quotes(includes `callouts`/`alerts`
+  * Chekboxes(checked, unchecked & pending state)
+  * Headings(atx_headings & setext_headings)
+  * Horizontal rules
+  * Html support(only for simple tags, e.g. `<u>Underline</u>`)
+  * Html entites(both `&<name>;` and `&<name>` support)
+  * Inline codes
+  * Links(hyprlinks, images & email support)
+  * List item(ordered & unordered)
+  * Tables
+- Fully customisable setup! You can customise everything to your needs!
+- A `hybrid mode` that allows rendering in real-time! It will even unconceal nodes under the cursor.
+- Dynamic `highlight groups` that allows support for almost any colorscheme!
+- Can be loaded on other filetypes too!
 
->[!IMPORTANT]
-> Highlights now use `PascalCase` so it is recommended to change your highlight group names to PascalCase. But don't worry, the previous names using `Markview_` are still supported!
+And a lot more to come!
 
-## 📑 Table of contents
+## 📦 Requirements
 
-- [Features](#-features)
-- [Requirements](#-requirements)
-- [Installation](#-installation)
-  - [Lazy.nvim](#-lazynvim)
-  - [Mini.deps](#-minideps)
-  - [Others](#-others)
-- [Setup](#-setup)
-- [Commands](#-commands)
-- [Showcases](#-showcases)
+- Neovim version: `0.10.0` or above.
+- Tree-sitter parsers,
+  * markdown
+  * markdown_inline
+  * html
+- Nerd font.
 
-## 🛸 Features
+Optional:
+- A tree-sitter supported colorscheme.
 
-- Fully customisable markdown `headings`.
-- Custom `block quotes` with support for `callouts` & `alerts`.
-- Custom `code blocks` with different style supports.
-- Statusline-like `horizontal rules` customisation.
-- Custom `links` and `image links`.
-- Custom `inline codes`.
-- Padded list items(with nested list support).
-- Custom `checkboxes` for different checkbox states.
-- Fully customisable `tables`.
+## 🚀 Installation
 
-## 🔭 Requirements
-
-- Neovim version: 0.10 or higher(unless API changes occurred).
-- `nvim-treesitter` for easy installation of treesitter parsers.
-- `markdown` and `markdown_inline` treesitter parsers.
-- `nvim-web-devicons` for the icons.
-
-## 📦 Installation
+Markview can be installed via your favourite `package manager`.
 
 ### 💤 Lazy.nvim
 
-For `plugins.lua` or `lazy.lua` users.
+>[!CAUTION]
+> It is not recommended to lazy-load this plugin as it does that by default.
+
+For `lazy.lua` users.
 
 ```lua
 {
     "OXY2DEV/markview.nvim",
-    ft = "markdown",
+    lazy = false,      -- Recommended
+    -- ft = "markdown" -- If you decide to lazy-load anyway
 
     dependencies = {
-        -- You may not need this if you don't lazy load
+        -- You will not need this if you installed the
+        -- parsers manually
         -- Or if the parsers are in your $RUNTIMEPATH
         "nvim-treesitter/nvim-treesitter",
 
         "nvim-tree/nvim-web-devicons"
-    },
+    }
 }
 ```
 
-For `plugins/markview.lua` users
+For `plugins/markview.lua` users.
 
 ```lua
 return {
     "OXY2DEV/markview.nvim",
-    ft = "markdown",
+    lazy = false,      -- Recommended
+    -- ft = "markdown" -- If you decide to lazy-load anyway
 
     dependencies = {
-        -- You may not need this if you don't lazy load
+        -- You will not need this if you installed the
+        -- parsers manually
         -- Or if the parsers are in your $RUNTIMEPATH
         "nvim-treesitter/nvim-treesitter",
 
         "nvim-tree/nvim-web-devicons"
-    },
+    }
 }
 ```
 
@@ -102,76 +102,209 @@ MiniDeps.add({
 })
 ```
 
-### 🤔 Others
+### 🌒 Rocks.nvim
 
-The installation process for any other plugin manager(s) is the same.
-
-If your plugin manager doesn't support `dependencies` then you can always load the plugins in the right order.
+You can install the plugin by running the following command.
 
 ```vim
-Plug "nvim-treesitter/nvim-treesitter"
-Plug "nvim-tree/nvim-web-devicons"
-
-Plug "OXY2DEV/markview.nvim"
+:Rocks install markview.nvim
 ```
 
-## 🧭 Setup
+### 👾 Github releases
 
->[!NOTE]
-> This plugin does not use `setup()` to initialize. So, it is completely optional to call it.
+You can also download one of the [releases](https://github.com/OXY2DEV/markview.nvim/releases/tag/v1.0.0).
 
-Configuration table for the `setup()` function is given below.
+### 🛸 Testing
+
+If you don't mind a slightly `unstable` version of the plugin then you can use the [dev branch](https://github.com/OXY2DEV/markview.nvim/tree/dev).
+
+## 🌇 Commands
+
+Markview comes with a single command.
+
+```vim
+:Markview
+```
+
+It has the following `sub-commands`,
+
+- toggleAll, Toggles the plugin. Will set all **attached buffers** state to the plugin state.
+- enableAll, Enables the plugin in all **attached buffers**. Will refresh the decorations if the plugin is already enabled.
+- disableAll, Disables the plugin in all **attached buffers**. Will try to remove any remaining decorations if the plugin is already disabled.
+- toggle {buffer}, Toggles the state of buffer.
+- enable {buffer}, Enables/Refreshes the plugin on a specific buffer.
+- disable {buffer}, Disables the plugin & clears decorations on a specific buffer.
+
+
+## 🧭 Configuration
+
+You can use the `setup()` function to change how the plugin looks.
+
+```lua
+local markview = require("markview");
+local presets = require("markview.presets");
+
+markview.setup({
+    headings = presets.headings.glow_labels
+});
+
+vim.cmd("Markview enableAll");
+```
+
+This can also be used at runtime. So, you can hot-swap the config anytime you want!
+
+Go ahead try running it.
+
+---
+
+You can configure the plugin in 2 ways,
+
+### 📂 Presets
+
+Presets are an easy way to change the looks of some part of the plugin.
+
+Currently there are presets for the following items,
+
+- Headings
+- Tables
+
+You can find more on presets on the [wiki page]().
+
+### 🎨 Manual
+
+The plugin was created with the sole purpose of being **customisable**.
+
+So, you can change everything to fit your needs.
+
+A simple example is given below,
 
 ```lua
 require("markview").setup({
-    buf_ignore = { "nofile" },
-    modes = { "n", "no" },
+    headings = {
+        enable = true,
 
-    options = {
-        on_enable = {},
-        on_disable = {}
-    },
+        heading_1 = {
+            style = "label",
 
-    block_quotes = {},
-    checkboxes = {},
-    code_blocks = {},
-    headings = {},
-    horizontal_rules = {},
-    inline_codes = {},
-    links = {},
-    list_items = {},
-    tables = {}
+            padding_left = " ",
+            padding_right = " ",
+
+            hl = "MarkviewHeading1"
+        }
+    }
 });
 ```
 
- For customisation related options check the [wiki pages](https://github.com/OXY2DEV/markview.nvim/wiki).
+You can check the [wiki](https://github.com/OXY2DEV/markview.nvim/wiki) to learn more about configuration.
 
-## 🎹 Commands
+You can also check the [starter guide]() for some simple examples.
 
->[!NOTE]
-> Commands are a test feature.
+## 🌃 highlight groups
 
-There is only a single command for now, `:Markview`.
+To make configuration easier `markview.nvim` comes with the following highlight groups.
 
-When called without any arguments, it toggles the plugin.
+### 📦 Block quote
 
-Possible subcommands are,
+Block quotes have the following highlight group by default,
 
-- `toggleAll`, toggles the plugin
-- `enableAll`, enables the plugin
-- `disableAll`, disables the plugin
-- `toggle`, toggles the plugin for the specified buffer(default is the current buffer)
-- `enable`, enables the plugin for the specified buffer(default is the current buffer)
-- `disable`, disables the plugin for the specified buffer(default is the current buffer)
+- MarkviewBlockQuoteDefault, also used by `Quote`.
 
-## 👾 Showcases
+Various callouts/alerts use the following highlight groups,
 
->[!IMPORTANT]
-> Screenshots on a phone are very blurry(Yes, the plugin was made on my phone).
->
-> If you have screenshots of the plugin, you can submit them in the special issue. And yes, credit will be provided.
+- MarkviewBlockQuoteOk, used by `Tip`, `Success`.
+- MarkviewBlockQuoteWarn, used by `Question`, `Custom`, `Warning`.
+- MarkviewBlockQuoteError, used by `Caution`, `Bug`, `Danger`, `Failure`.
+- MarkviewBlockQuoteNote, used by `Note`, `Todo`, `Abstract`.
+- MarkviewBlockQuoteSpecial, used `Important`, `Example`.
+
+### 🎯 Checkboxes
+
+Checkboxes use these highlight groups,
+
+- MarkviewCheckboxChecked, from `DiagnosticOk`.
+- MarkviewCheckboxUnhecked, from `DiagnosticError`.
+- MarkviewCheckboxPending, from `DiagnosticWarn`.
+
+### 💻 Code blocks & inline codes
+
+Code blocks use the following highlight group,
+
+- MarkviewCode
+
+Inline codes use the following highlight group,
+
+- MarkviewInlineCode
+
+### 🔖 Headings
+
+Headings are highlighted with the following groups,
+
+- MarkviewHeading1, from `DiagnosticVirtualTextOk`
+- MarkviewHeading2, from `DiagnosticVirtualTextHint`
+- MarkviewHeading3, from `DiagnosticVirtualTextInfo`
+- MarkviewHeading4, from `Special`
+- MarkviewHeading5, from `DiagnosticVirtualTextWarn`
+- MarkviewHeading6, from `DiagnosticVirtualTextError`
+
+Signs are highlighted with the following groups,
+
+- MarkviewHeading1Sign, from `DiagnosticOk`
+- MarkviewHeading2Sign, from `DiagnosticHint`
+- MarkviewHeading3Sign, from `DiagnosticInfo`
+- MarkviewHeading4Sign, from `Special`
+- MarkviewHeading5Sign, from `DiagnosticWarn`
+- MarkviewHeading6Sign, from `DiagnosticError`
+
+### 📏 Horizontal rules
+
+Horizontal rules use the following highlight groups for the gradient.
+
+- MarkviewGradient1, from `Normal`.
+- MarkviewGradient2
+- MarkviewGradient3
+- MarkviewGradient4
+- MarkviewGradient5
+- MarkviewGradient6
+- MarkviewGradient7
+- MarkviewGradient8
+- MarkviewGradient9
+- MarkviewGradient10, from `Cursor`.
+
+### 🔗 Links
+
+Links use the following highlight groups,
+
+- MarkviewHyperlink, from `markdownLinkText`.
+- MarkviewImageLink, from `markdownLinkText`.
+- MarkviewEmail, from `@markup.link.url.markdown_inline`.
+
+### 📝 List items
+
+List items use the following highlight groups,
+
+- MarkviewListItemMinus, from `DiagnosticWarn`.
+- MarkviewListItemPlus, from `DiagnosticOk`.
+- MarkviewListItemStar, from `@comment.note`.
+
+### 📐 Tables
+
+Tables use the following highlight group for the border,
+
+- MarkviewTableBorder, from `Title`.
+
+For the column alignment markers these highlight groups are used,
+
+- MarkviewTableAlignLeft, from `Title`.
+- MarkviewTableAlignRight, from `Title`.
+- MarkviewTableAlignCenter, from `Title`.
+
+## ⭐ Plugin showcase
 
 ![showcase_1](./images/preview_1.png)
 
 <sub>Taken by <a href="https://github.com/scottmckendry">@scottmckendry</a></sub>
 
+
+<!--
+    vim:nospell:
+-->
