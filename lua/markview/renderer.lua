@@ -1321,6 +1321,14 @@ renderer.render_lists = function (buffer, content, config_table)
 			local before = content.spaces[l] or 0;
 
 			if vim.list_contains(content.list_candidates, l) and l == 1 then
+				local conceal_end = content.col_start + vim.fn.strchars(content.marker_symbol) - 1;
+
+				if content.marker_symbol:match("^%d+") then
+					conceal_end = vim.fn.strchars(content.list_lines[1]:match("^%s*"));
+					vim.print(conceal_end)
+					use_text = "";
+				end
+
 				vim.api.nvim_buf_set_extmark(buffer, renderer.namespace, line_num, 0, {
 					virt_text_pos = "inline",
 					virt_text = {
@@ -1328,8 +1336,8 @@ renderer.render_lists = function (buffer, content, config_table)
 						{ vim.trim(use_text), set_hl(ls_conf.hl) or "Special" }
 					},
 
-					end_col = content.col_start + vim.fn.strchars(content.marker_symbol),
-					conceal = " "
+					end_col = conceal_end,
+					conceal = ""
 				})
 			elseif vim.list_contains(content.list_candidates, l) then
 				local line_len = vim.fn.strchars(line);
