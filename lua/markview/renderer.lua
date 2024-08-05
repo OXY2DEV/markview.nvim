@@ -145,6 +145,11 @@ local display_width = function (text, config)
 		end
 	end
 
+	for pattern in final_string:gmatch("%[([^%]]*)%]") do
+		d_width = d_width - 2;
+		final_string = final_string:gsub( "[" .. pattern .. "]", pattern);
+	end
+
 	for str_a, internal, str_b in final_string:gmatch("([*]+)([^*]+)([*]+)") do
 		local min_signs = vim.fn.strchars(str_a) > vim.fn.strchars(str_b) and vim.fn.strchars(str_a) or vim.fn.strchars(str_b);
 
@@ -1325,7 +1330,6 @@ renderer.render_lists = function (buffer, content, config_table)
 
 				if content.marker_symbol:match("^%d+") then
 					conceal_end = vim.fn.strchars(content.list_lines[1]:match("^%s*"));
-					vim.print(conceal_end)
 					use_text = "";
 				end
 
