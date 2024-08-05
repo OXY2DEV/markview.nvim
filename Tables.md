@@ -1,59 +1,58 @@
-# Tables
-
-![tables](./wiki_img/tables.jpg)
-![tables_submitted](./wiki_img/tables(su).png)
-<sub> Image submitted by <a href="https://github.com/nebunebu">@nebunebu</a></sub>
-
-## Configuration options
-
-The `tables` option comes with these sub-options.
+# 📒 Tables
 
 ```lua
 tables = {
     enable = true,
     use_virt_lines = false,
 
-    text = {
-        "╭", "─", "╮", "┬",
-        "├", "│", "┤", "┼",
-        "╰", "─", "╯", "┴",
-
-        -- These are used to indicate text alignment
-        -- The last 2 are used for "center" alignment
-        "╼", "╾", "╴", "╶"
-    },
-
-    hl = {
-        "rainbow1", "rainbow1", "rainbow1", "rainbow1",
-        "rainbow1", "rainbow1", "rainbow1", "rainbow1",
-        "rainbow1", "rainbow1", "rainbow1", "rainbow1",
-
-        "rainbow1", "rainbow1", "rainbow1", "rainbow1"
-    }
+    text = {},
+    hl = {}
 }
 ```
 
-> enable
-> `boolean or nil`
+## 🔩 Configuration options
 
-When set to `false`, tables are not rendered.
+- enable, `boolean` or nil
 
-> use_virt_lines
-> `boolean or nil`
+  Used for toggling rendering of tables.
 
-When set to `true`, the top and bottom borders are created using `virt_lines` instead of `virt_text`.
+- use_virt_lines, `boolean` or nil
 
-> text
-> `string[]`
+  When `true` the top and bottom border of the table are made using virtual lines.
 
-List of 12 items to make the table.
+  Useful if you don't like adding spaces between tables. Disabled by default.
 
-> hl
-> `string[] or nil`
+- text, `table`
 
-Highlight groups for `text`.
+  A list of **parts** to create the table.
 
-## Gallery
+- hl, `table` or nil
 
-Wow, so empty 😐
+  A list of highlight groups to color `text`.
+
+## 📐 Table parts
+
+Both `text` & `hl` have the following structure.
+
+```lua
+{
+--    Main parts    Seperators
+    "╭", "─", "╮",      "┬",
+    "├", "│", "┤",      "┼",
+    "╰", "─", "╯",      "┴",
+
+--    Alignment indicators
+--   Left   right     center
+    "╼",     "╾",    "╴", "╶"
+}
+```
+
+Here's an example table,
+
+| Col 1    |   Col 2   |    Col 3 |
+|:---------|:---------:|---------:|
+| 1        |     2     |        3 |
+| 4        |     4     |        6 |
+
+
 

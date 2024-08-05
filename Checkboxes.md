@@ -1,62 +1,42 @@
-# Checkboxes
-
-![checkboxes](./wiki_img/checkboxes.jpg)
-![checkboxes_submitted](./wiki_img/checkboxes(su).png)
-<sub> Image submitted by <a href="https://github.com/nebunebu">@nebunebu</a></sub>
-
-## Configuration options
-
-The `checkboxes` option has these sub-options.
+# ✅ Checkboxes
 
 ```lua
-checkboxes = {
+Checkboxes = {
     enable = true,
 
-    checked = {},
+    checked = {
+        text = "✔", hl = "TabLineSel"
+    },
     unchecked = {},
     pending = {}
 }
 ```
 
-### Global options
+## 🔩 Configuration options
 
-The `checkboxes` option comes with the following `sub-options` that affect all the different states of the checkbox.
+- enable, `boolean` or nil
 
-> enable
-> `boolean or nil`
+  Used for toggling the rendering of Checkboxes.
 
-When set to `false`, checkboxes are not rendered.
+- checked, `table`
 
-### State options
+  Configuration table for checked Checkboxes.
 
-A checkbox can have various states and the states can be individually configured.
+- unchecked, `table`
 
-Currently supported states are.
+  Configuration table for unchecked Checkboxes.
 
-- checked,
-  When the checkbox is marked/checked this option is used to render it.
+- pending, `table`
 
-- unchecked,
-  When the checkbox is unmarked/unchecked this option is used to render it.
+  Configuration table for pending(uses `[-]`) Checkboxes.
 
-- pending,
-  When the checkbox is marked/checked as pending(using `[-]`) this option is used to render it.
+## 📦 Checkbox configuration
 
-### State configuration options
+- text, `string`
 
-Each states can have the following sub-options.
+  Text to show as the checkbox.
 
-> text
-> `string`
+- hl, `string` or nil
 
-The text to show for the checkbox.
-
-> hl
-> `string or nil`
-
-Highlight group for `text`.
-
-## Gallery
-
-Wow, so empty 😐
+  Highlight group for `text`.
 

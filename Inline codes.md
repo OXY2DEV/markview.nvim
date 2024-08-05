@@ -1,89 +1,63 @@
-# Inline codes
-
-## Configuration options
-
-The `inline_codes` option comes with these sub-options.
+# 📑 Inline codes
 
 ```lua
 inline_codes = {
     enable = true,
+    hl = "DiagnosticOk",
 
-    hl = nil,
+    corner_left = nil,
+    corner_left_hl = nil,
 
-    corner_left = "", corner_left_hl = nil,
-    padding_left = "", padding_left_hl = nil,
+    padding_left = " ",
+    padding_left_hl = nil,
 
-    icon = "", icon_hl = nil,
+    padding_right = " ",
+    padding_right_hl = nil,
 
-    padding_right = "", padding_right_hl = nil,
-    corner_right = "", corner_right_hl = nil
+    corner_right = nil,
+    corner_right_hl = nil
 }
 ```
 
-How the following sub-options are applied is given below.
+## 🔩 Configuration options
 
-```txt
-█▒ Link ▒█
-││└──┬─┘│└─ corner_right
-││   │  └── padding_right
-││   └───── text [Not an option]
-│└───────── padding_left
-└────────── corner_left
+- enable, `boolean` or nil
 
-```
+  Used for toggling the rendering of inline codes.
 
-> corner_left
-> `string or nil`
+- hl, `string` or nil
 
-The string to use as the left corner of **inline codes**.
+  Default highlight group for the inline codes.
 
-> corner_left_hl*
-> `string or nil`
+- corner_left, `string` or nil
 
-Name of the highlight group to use for `corner_left`.
+  Text used as the left corner of the inline codes.
 
-> padding_left
-> `string or nil`
+- corner_left_hl, `string` or nil
 
-The string to use as the left padding of **inline codes**.
+  Highlight group for `corner_left`.
 
-> padding_left_hl*
-> `string or nil`
+- padding_left, `string` or nil
 
-Name of the highlight group to use for `padding_left`.
+  Text used as the left padding of the inline codes.
 
+- padding_left_hl, `string` or nil
 
-> icon
-> `string or nil`
+  Highlight group for `padding_left`.
 
-The string to use as the icon for the link.
+- padding_right, `string` or nil
 
-> icon_hl*
-> `string or nil`
+  Text used as the right padding of the inline codes.
 
-Name of the highlight group to use for `icon`.
+- padding_right_hl, `string` or nil
 
+  Highlight group for `padding_right`.
 
-> padding_right
-> `string or nil`
+- corner_right, `string` or nil
 
-The string to use as the right padding of **inline codes**.
+  Text used as the right corner of the inline codes.
 
-> padding_right_hl*
-> `string or nil`
+- corner_right_hl, `string` or nil
 
-Name of the highlight group to use for `padding_right`.
+  Highlight group for `corner_right`.
 
-> corner_right
-> `string or nil`
-
-The string to use as the right corner of **links**.
-
-> corner_right_hl*
-> `string or nil`
-
-Name of the highlight group to use for `corner_right`.
-
-## Gallery
-
-Wow, so empty 😐

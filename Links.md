@@ -1,153 +1,68 @@
-# links
-
-![links](./wiki_img/links.jpg)
-
-## Configuration options
-
-The `links` option comes with these sub-options.
+# 🔗 Links
 
 ```lua
 links = {
     enable = true,
 
-    inline_links = {},
+    hyperlinks = {},
     images = {},
     emails = {}
 }
 ```
 
-### Global options
+## 🔩 Configuration options
 
-The `links` option has the following options for controlling various link types.
+- enable, `boolean` or nil
 
-> enable
-> `boolean or nil`
+  Used for toggling the rendering of links.
 
-When set to `false`, links are not rendered.
+- hyperlinks, `table`
 
-### Link specific options
+  Configuration table for normal links.
 
-For customising links there are 3 sub-options.
+- images, `table`
 
-> inline_links
-> `table or nil`
+  Configuration table for image links.
 
-Used for customising normal links.
+- emails, `table`
 
-> images
-> `table or nil`
+  Configuration table for email links.
 
-Used for customising image links.
+## 🧭 Link configuration
 
-> emails
-> `table or nil`
+- hl, `string` or nil
 
-Used for customising email links.
+  Default highlight group for the links.
 
-### Link customisation options
+- corner_left, `string` or nil
 
-Each link type has the following sub-options for customisation.
+  Text used as the left corner of the links.
 
-```lua
-inline_links = {
-    hl = nil,
+- corner_left_hl, `string` or nil
 
-    corner_left = "", corner_left_hl = nil,
-    padding_left = "", padding_left_hl = nil,
+  Highlight group for `corner_left`.
 
-    icon = "", icon_hl = nil,
+- padding_left, `string` or nil
 
-    padding_right = "", padding_right_hl = nil,
-    corner_right = "", corner_right_hl = nil
-}
-```
+  Text used as the left padding of the links.
 
-How the following sub-options are applied is given below.
+- padding_left_hl, `string` or nil
 
-```txt
-█▒  Link  ▒█
-││└┬┘└──┬─┘│└─ corner_right
-││ │    │  └── padding_right
-││ │    └───── text [Not an option]
-││ └────────── icon
-│└──────────── padding_left
-└───────────── corner_left
+  Highlight group for `padding_left`.
 
-```
+- padding_right, `string` or nil
 
-> corner_left
-> `string or nil`
->
-> For `label` style only.
+  Text used as the right padding of the links.
 
-The string to use as the left corner of **links**.
+- padding_right_hl, `string` or nil
 
-> corner_left_hl*
-> `string or nil`
->
-> For `label` style only.
+  Highlight group for `padding_right`.
 
-Name of the highlight group to use for `corner_left`.
+- corner_right, `string` or nil
 
-> padding_left
-> `string or nil`
->
-> For `label` style only.
+  Text used as the right corner of the links.
 
-The string to use as the left padding of **links**.
+- corner_right_hl, `string` or nil
 
-> padding_left_hl*
-> `string or nil`
->
-> For `label` style only.
-
-Name of the highlight group to use for `padding_left`.
-
-
-> icon
-> `string or nil`
->
-> For `icon` & `label` styles only.
-
-The string to use as the icon for the link.
-
-> icon_hl*
-> `string or nil`
->
-> For `icon` & `label` styles only.
-
-Name of the highlight group to use for `icon`.
-
-
-> padding_right
-> `string or nil`
->
-> For `label` style only.
-
-The string to use as the right padding of **links**.
-
-> padding_right_hl*
-> `string or nil`
->
-> For `label` style only.
-
-Name of the highlight group to use for `padding_right`.
-
-> corner_right
-> `string or nil`
->
-> For `label` style only.
-
-The string to use as the right corner of **links**.
-
-> corner_right_hl*
-> `string or nil`
->
-> For `label` style only.
-
-Name of the highlight group to use for `corner_right`.
-
-## Gallery
-
-Wow, so empty 😐
+  Highlight group for `corner_right`.
 

@@ -1,141 +1,121 @@
-# Code blocks
-
-![code_blocks](./wiki_img/code_blocks.jpg)
-
-## Configuration options
-
-The `code_blocks` option comes with these sub-options.
+# 💻 Code blocks
 
 ```lua
 code_blocks = {
     enable = true,
-    style = "language",
-    position = "overlay",
+    style = "simple",
 
-    hl = "markdownCodeBlock",
+    hl = "CursorLine"
+}
+```
 
+## 🔩 Configuration options
+
+- enable, `boolean` or nil
+
+  Controls rendering of code blocks.
+
+- style, `string`
+
+  Name of the rendering style.
+
+- hl, `string` or nil
+
+  Highlight group for the code blocks.
+
+## 🚀 Styles
+
+Code blocks can be rendered in 3 styles,
+
++ simple
++ minimal
++ language
+
+### 🎨 Simple
+
+```lua
+code_blocks = {
+    style = "simple",
+    hl = "CursorLine"
+}
+```
+
+Adds a simple background color to the code block.
+
+### 🎨 Minimal
+
+```lua
+code_blocks = {
+    style = "minimal",
+    position = nil,
     min_width = 70,
+    
+    pad_amount = 3,
     pad_char = " ",
-    pad_amount = 2,
 
-    language_names = nil,
-    name_hl = nil,
-    language_direction = "right",
+    hl = "CursorLine"
+}
+```
+
+Adds a border surrounding the code block. It adds the following options,
+
+- position, `string` or nil
+
+  `virt_text_pos` for the top and bottom borders.
+
+- min_width, `number` or nil
+
+  Minimum width of the code block. Default is 60.
+
+  Paddings are not counted.
+
+- pad_amount, `number` or nil
+
+  Number of times to repeat `pad_char` before & after the text. Default is 3.
+
+- pad_char, `string` or nil
+
+  Text to use as the padding.
+
+### 🎨 Language
+
+```lua
+code_blocks = {
+    style = "minimal",
+    position = nil,
+    min_width = 70,
+    
+    pad_amount = 3,
+    pad_char = " ",
+
+    language_direction = "left",
+    language_names = {},
+
+    hl = "CursorLine",
 
     sign = true,
     sign_hl = nil
 }
 ```
 
-## Options
+Like `minimal` but also shows the language name. Other than supporting all the options of `minimal` it adds,
 
-> enable
-> `boolean or nil`
+- language_direction, `string` or nil
 
-When set to `false`, code blocks are not rendered.
+  Changes the position of the language name. Default is **left**. Possible values are,
 
-> style
-> `string`
+  - left
+  - right
 
-Name of the style to use. Currently available styles are.
+- language_names, `table` or nil
 
-- simple,
-  Adds a simple background to the lines of the code block.
+  A list of { pattern, name } tuples for changing the string that is shown.
 
-- minimal,
-  Creates a box around the code block(like shown in the browser).
+- sign, `boolean` or nil
 
-- language,
-  Like `minimal`, but also shows language file icon, language name & signs.
+  Used for toggling the language icon sign.
 
->[!NOTE]
-> The `style` changes what options are available.
+- sign_hl, `string` or nil
 
-> hl
-> `string or nil`
-
-Name of the highlight group to use as the background of the code block.
-
----
-
-> min_width
-> `number or nil`
->
-> For `language` & `minimal` styles only.
-
-Minimum width of the code blocks without the paddings. Default is 60.
-
-> pad_char
-> `string or nil`
->
-> For `language` & `minimal` styles only.
-
-Character to use as the padding of the code block.
-
-> pad_amount
-> `number or nil`
-
-Number of character to add as padding.
-
----
-
-> language_names
-> `{ string, string }[] or nil`
->
-> For `language` style only.
-
-List of tuples containing a **match** and a **replacement**. They are only applied if they text in the code block is the same as the match.
-
-Here's a small example to show why this exists.
-
-```lua
-language_names = {
-    { "py", "python" },
-    { "cpp", "c++" }
-}
-```
-
-Normally you need to use `py` for *python* code blocks. With this you can make it say `python` instead of `py`.
-
-> name_hl
-> `string or nil`
->
-> For `language` style only.
-
-Highlight group for the language name. When nil the highlight group of the icon is used.
-
-> language_direction
-> `string or nil`
->
-> For `language` style only.
-
-When set to `left` the language name & icon are shown on the top left of the code block. When set to `right`, it is placed on the top right corner instead.
-
-> position
-> `string or nil`
->
-> For `language` & `minimal` styles only.
-
-Changes the `virt_text_pos` of the top & bottom border. Default is `inline`.
-
-Possible values are explained in the `nvim_buf_set_extmark()` help file.
-
----
-
-> sign
-> `boolean or nil`
->
-> For `language` style only.
-
-When set to `true`, the file icon of that language is shown in the **sign column** on the line a code block starts.
-
-> sign_hl
->
-> For `language` style only.
-
-Name of the highlight group for `sign`. By default the icon's highlight group is used.
-
-## Gallery
-
-![code_blocks_submitted](./wiki_img/code_blocks(su).png)
+  Highlight group for the sign. If nil the highlight group provided by `nvim-web-devicon` is used.
 

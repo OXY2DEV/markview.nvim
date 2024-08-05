@@ -1,90 +1,54 @@
-# Lists
-
-![list_items](./wiki_img/list_items.jpg)
-
-## Configuration options
-
-The `list_items` option comes with these sub-options.
+# 🧾 List items
 
 ```lua
 list_items = {
     enable = true,
-    shift_width = 4,
 
-    marker_plus = {},
     marker_minus = {},
-    marler_star = {},
-
+    marker_plus = {},
+    marker_star = {},
     marker_dot = {}
 }
 ```
 
-### Global options
+## 🔩 Configuration options
 
-These options affect all types of list items.
+- enable, `boolean` or nil
 
-> enable
-> `boolean or nil`
+  Used for toggling list item rendering.
 
-When set to `false`, list items are not rendered.
+- marker_plus, `table`
 
-> shift_width
-> `number or nil`
+  Configuration table for list items made with `+`.
 
-The number of spaces to add per level of the list item.
+- marker_minus, `table`
 
-### List specific options
+  Configuration table for list items made with `-`.
 
-> marker_plus
-> `table or nil`
+- marker_star, `table`
 
-Configuration table for list items that use `+`.
+  Configuration table for list items made with `*`.
 
-> marker_minus
-> `table or nil`
+- marker_dot, `table`
 
-Configuration table for list items that use `-`.
+  Configuration table for numbered list.
 
-> marker_star
-> `table or nil`
+## 🚀 List item configuration
 
-Configuration table for list items that use `*`.
+Each list type has the following options.
 
-> marker_dot
-> `table or nil`
+- add_padding, `boolean` or nil
 
-Configuration table for numbered list items.
+  Enables adding padding before lost items.
 
-### List item configuration options
+  >[!NOTE]
+  > List items are indented by 2 spaces(not 4).
 
-Each of the list types have the following options.
+- text, `string`
 
-```lua
-marker_plus = {
-    add_padding = true,
-    
-    text = "•",
-    hl = "rainbow5"
-}
-```
+  Text to use as the marker when rendered. Not supported by **marker_dot**.
 
-> add_padding
-> `boolean or nil`
+- hl, `string` or nil
 
-When true, adds padding based on the item level & `shift_width`.
-
-> text
-> `string or nil`
-
-Text to use as the marker for the list item.
-
-> hl
-> `string or nil`
-
-Highlight group for `text`.
-
-## Gallery
-
-Wow, so empty 😐
-
+  Highlight group for `text`.
 

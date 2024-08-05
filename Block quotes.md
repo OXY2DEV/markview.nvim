@@ -1,224 +1,75 @@
-# Block quotes
-
-![block_quotes](./wiki_img/block_quotes.jpg)
-![block_quotes_submitted](./wiki_img/block_quote(su).png)
-<sub> Image submitted by <a href="https://github.com/nebunebu">@nebunebu</a></sub>
-
-## Configuration options
-
-The `block_quotes` option comes with these sub-options.
+# 🚨 Block quotes
 
 ```lua
 block_quotes = {
     enable = true,
 
     default = {
-        border = "",
-        border_hl = "Comment"
+         border = "▋",
     },
-    callouts = {
-        {
-            match_string = "CUSTOM",
-            aliases = nil,
-
-            callout_preview = "🦠 Custom",
-            callout_preview_hl = nil,
-
-            custom_title = true,
-            custom_icon = "🦠 ",
-
-            border = { "▉", "▊", "▋", "▌" },
-            border_hl = "@comment.warning"
-        }
-    }
+    callouts = nil
 }
 ```
 
-## Global options
+## 🔩 Configuration option
 
-The `block_quotes` option has the following sub-options for controlling all kinds of block quotes.
+- enable, `boolean` or nil
 
-> enable
-> `boolean or nil`
+  For disabling rendering of block quotes.
 
-When set to `false`, block_quotes are not rendered.
+- default, `table`
 
-> default
-> `table`
+  Default Configuration for block quotes. It has the following options,
 
-The **default style** to use for block quotes.
+  - border, used to hide `>`.
+  - border_hl, highlight group for border.
 
-## Sub-options
+- callouts, `table` or nil
 
-### Sub-options for normal block quotes
+  A list containing configuration table for callouts/alerts.
 
-> border
-> `string or string[]`
-
-A string/list of strings to use as the border for the block quotes.
-
-> border_hl
-> `string or string[]`
-
-The name of the highlight group to use for `border`. This can also be a list of strings.
-
-### Sub-options for callouts/alerts
-
-> match_string
-> `string`
-
-The string to match for the calllout/alert. It is case-insensitive.
-
-For example, if you have a callout set like this.
+## 🧰 Callout/Alert configuration
 
 ```lua
-callouts = {
-    {
-        match_string = "NOTE",
-        -- Other options
-    }
+{
+    match_string = "",
+
+    callout_preview = "",
+    callout_preview_hl = nil,
+
+    custom_title = false,
+    custom_icon = nil,
+
+    border = "▋",
+    border_hl = nil
 }
 ```
 
-You can match callouts that look like this.
+- match_string, `string` or `table`
 
-```markdown
-These are valid callouts. They will be matched.
+  String to use as the match pattern. If the value is a `table` then it is used as a list of possible matches.
 
-    >[!NOTE]
+- callout_preview, `string`
 
-    >[!Note]
+  Text to show on the first line.
 
-This however is not valid. This won't be matched.
+- callout_preview_hl, `string` or nil
 
-    > NOTE
-```
+  highlight group for **callout_preview**. Also applies to custom titles.
 
-> aliases
-> `string[] or nil`
+- custom_title, `boolean` or nil
 
-Optional list of strings to match.
+  Allows showing the title of a callout instead of the preview string.
 
-> callout_preview
-> `string`
+- custom_icon, `string` or nil
 
-The text to show for the callout/alert. It is added after the border.
+  Icon to add before **custom_title**.
 
-> callout_preview_hl
-> `string or nil`
+- border, `string`
 
-Highlight group name for `callout_preview`.
+  String to use as the callout's border.
 
-> custom_title
-> `boolean or nil`
+- border_hl, `string` or nil
 
-When set to **true**, Any text after `![]` will be used as the preview.
-
-> custom_icon
-> `string or nil`
-
-The icon to use when a `custom_title` is available.
-
-> border
-> `string or string[]`
-
-A string/list of strings to use as the border for the callout.
-
-> border_hl
-> `string or string[]`
-
-The name of the highlight group to use for `border`. This can also be a list of strings.
-
-## Examples
-
-### Gradient borders
-
-First create a bunch of highlight groups from a gradient.
-
-```lua
-highlight_groups = {
-    {
-        group_name = "gr_1",
-        value = {
-            fg = "#000000"
-        }
-    },
-    {
-        group_name = "gr_2",
-        value = {
-            fg = "#053333"
-        }
-    },
-    {
-        group_name = "gr_3",
-        value = {
-            fg = "#0a6666"
-        }
-    },
-    {
-        group_name = "gr_4",
-        value = {
-            fg = "#0f9999"
-        }
-    },
-    {
-        group_name = "gr_5",
-        value = {
-            fg = "#14cccc"
-        }
-    },
-    {
-        group_name = "gr_6",
-        value = {
-            fg = "#19ffff"
-        }
-    },
-}
-```
-
-Now we make a new `callout`.
-
-```lua
-block_quotes = {
-    -- Other options
-    callouts = {
-        {
-            match_string = "CUSTOM",
-            callout_preview = "Custom",
-
-            border = "▋",
-            border_hl = {
-                "gr_1", "gr_2", "gr_3",
-                "gr_4", "gr_5", "gr_6"
-            }
-        }
-    }
-}
-```
-
-### Custom titles
-
-You can make specific callouts support a custom titles too.
-
-```lua
-block_quotes = {
-    -- Other options
-    callouts = {
-        {
-            match_string = "TITLE",
-            callout_preview = "Title",
-
-            custom_title = true,
-            custom_icon = "▚▚ "
-        }
-    }
-}
-```
-
-## Gallery
-
-![block_quotes_mocha](./wiki_img/block_quotes_mocha.jpg)
-![block_quotes_latte](./wiki_img/block_quotes_latte.jpg)
-![block_quotes_cyberdream](./wiki_img/block_quotes_cyberdream.jpg)
-![block_quotes_cyberdream_light](./wiki_img/block_quotes_cyberdream_light.jpg)
+  Highlight group for **border**.
 
