@@ -1474,7 +1474,6 @@ end, {
 	end
 })
 
-
 markview.setup = function (user_config)
 	---@type markview.config
 	-- Merged configuration tables

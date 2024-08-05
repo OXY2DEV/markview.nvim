@@ -25,8 +25,10 @@ if vim.islist(markview.configuration.buf_ignore) and vim.list_contains(markview.
 	return
 end
 
-if vim.islist(markview.configuration.highlight_groups) then
+-- Don't add hls unless absolutely necessary
+if not markview.added_hls and vim.islist(markview.configuration.highlight_groups) then
 	markview.add_hls(markview.configuration.highlight_groups)
+	markview.added_hls = true;
 end
 
 local markview_augroup = vim.api.nvim_create_augroup("markview_buf_" .. vim.api.nvim_get_current_buf(), { clear = true });
@@ -72,13 +74,6 @@ vim.api.nvim_create_autocmd({ "BufWinEnter" }, {
 		end
 
 		markview.state.buf_states[buffer] = true;
-
-		if vim.tbl_isempty(markview.global_options) then
-			markview.global_options = {
-				conceallevel = vim.o.conceallevel,
-				concealcursor = vim.o.concealcursor
-			}
-		end
 
 		local parsed_content = markview.parser.init(buffer, markview.configuration);
 
