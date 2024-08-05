@@ -983,6 +983,7 @@ renderer.render_code_blocks = function (buffer, content, config_table)
 		end
 
 		local lang_width = vim.fn.strchars(" " .. icon .. " " .. languageName .. " ");
+		local info_width = math.min(vim.fn.strchars(content.info_string or ""), content.largest_line);
 
 		if config_table.language_direction == nil or config_table.language_direction == "left" then
 			vim.api.nvim_buf_set_extmark(buffer, renderer.namespace, content.row_start, content.col_start + 3 + vim.fn.strlen(content.language), {
@@ -999,10 +1000,26 @@ renderer.render_code_blocks = function (buffer, content, config_table)
 				hl_mode = "combine",
 			});
 		elseif config_table.language_direction == "right" then
-			vim.api.nvim_buf_set_extmark(buffer, renderer.namespace, content.row_start, content.col_start + 3 + vim.fn.strlen(content.language), {
+			vim.api.nvim_buf_set_extmark(buffer, renderer.namespace, content.row_start, content.col_start, {
+				end_col = vim.fn.strchars(content.info_string),
+				conceal = "",
+			});
+
+			local rendered_info = vim.fn.strcharpart(content.block_info or "", 0, block_length - lang_width + ((config_table.pad_amount or 1) * 2) - 4);
+
+			if content.block_info ~= "" and vim.fn.strchars(content.block_info) > (block_length - lang_width - ((content.pad_amount or 1) * 2)) then
+				rendered_info = rendered_info .. "...";
+				-- Hi
+			end
+			vim.print(rendered_info)
+
+			-- vim.print(content.col_start + vim.fn.strchars(content.info_string))
+
+			vim.api.nvim_buf_set_extmark(buffer, renderer.namespace, content.row_start, content.col_start + 3, {
 				virt_text_pos = config_table.position or "inline",
 				virt_text = {
-					{ string.rep(config_table.pad_char or " ", block_length - lang_width + ((config_table.pad_amount or 1) * 2)), set_hl(config_table.hl) },
+					{ rendered_info, set_hl(config_table.info_hl or config_table.hl) },
+					{ string.rep(config_table.pad_char or " ", block_length - lang_width - vim.fn.strchars(rendered_info) + ((config_table.pad_amount or 1) * 2)), set_hl(config_table.hl) },
 					{ " " .. icon .. " ", set_hl(hl) },
 					{ languageName .. " ", set_hl(config_table.name_hl) or set_hl(hl) },
 				},

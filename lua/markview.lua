@@ -704,6 +704,33 @@ markview.configuration = {
 			end
 		},
 		{
+			group_name = "CodeInfo",
+			value = function ()
+				local bg = markview.colors.get({
+					markview.colors.get_hl_value(0, "Normal", "bg"),
+					markview.colors.get_hl_value(0, "Cursor", "fg"),
+
+					vim.o.background == "dark" and "#1e1e2e" or "#cdd6f4"
+				});
+
+				local luminosity = markview.colors.get_brightness(bg);
+
+				if luminosity < 0.5 then
+					return {
+						bg = markview.colors.mix(bg, bg, 1, math.max(luminosity, 0.25)),
+						fg = markview.colors.get_hl_value(0, "Comment", "fg"),
+						default = true
+					};
+				else
+					return {
+						bg = markview.colors.mix(bg, bg, 1, math.min(luminosity, 0.25) * -1),
+						fg = markview.colors.get_hl_value(0, "Comment", "fg"),
+						default = true
+					};
+				end
+			end
+		},
+		{
 			group_name = "InlineCode",
 			value = function ()
 				local bg = markview.colors.get({
@@ -991,6 +1018,7 @@ markview.configuration = {
 
 		style = "language",
 		hl = "MarkviewCode",
+		info_hl = "MarkviewCodeInfo",
 
 		min_width = 60,
 		pad_amount = 3,

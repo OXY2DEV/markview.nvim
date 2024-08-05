@@ -168,7 +168,6 @@ parser.md = function (buffer, TStree, from, to)
 
 			local heading_txt = capture_node:next_sibling();
 			local title = heading_txt ~= nil and vim.treesitter.get_node_text(heading_txt, buffer) or nil;
-			local h_txt_r_start, h_txt_c_start, h_txt_r_end, h_txt_c_end;
 
 			table.insert(parser.parsed_content, {
 				node = capture_node,
@@ -205,10 +204,26 @@ parser.md = function (buffer, TStree, from, to)
 				table.insert(line_lens, len);
 			end
 
+			local language_string, additional_info = "", nil;
+
+			-- chore: This needs more work
+			if block_start:match("^%s*```{{?([^}]*)}}?") then
+				language_string = block_start:match("^%s*```{{?([^}]*)}}?");
+				additional_info = block_start:match("^%s*```{{?[^}]*}}?%s*(.*)$");
+			elseif block_start:match("^%s*```(%S*)$") then
+				language_string = block_start:match("^%s*```(%S*)$");
+			elseif block_start:match("%s*```(%S*)%s*") then
+				language_string = block_start:match("%s*```(%S*)%s");
+				additional_info = block_start:match("^%s*```%S*%s+(.*)$");
+			end
+
 			table.insert(parser.parsed_content, {
 				node = capture_node,
 				type = "code_block",
-				language = block_start:match("%s*```(%S*)$") or "",
+				language = language_string,
+
+				info_string = block_start:gsub("^%s*", ""),
+				block_info = additional_info,
 
 				line_lengths = line_lens,
 				largest_line = highest_len,
