@@ -83,7 +83,7 @@
 --- Table for hyperlink configuration
 ---@field links markview.render_config.links
 ---
---- Table for hyperlink configuration
+--- Table for inline code configuration
 ---@field inline_codes markview.render_config.inline_codes
 ---
 --- Table for list item configuration
@@ -137,7 +137,7 @@
 --- Used for highlighting the line when the style is "simple"
 ---@field hl string?
 ---
---- Character added before the heading name to seperate heading levels
+--- Character added before the heading name to separate heading levels
 ---@field shift_char string?
 ---
 --- Highlight group for shift_char
@@ -258,10 +258,7 @@
 ---@class markview.render_config.block_quotes.callouts
 ---
 --- String to match to detect the callout, this is not case-sensitive
----@field match_string string
----
---- Aliases for the callout, this is not case-sensitive
----@field aliases string[]?
+---@field match_string string|string[]
 ---
 --- The text to show for the callout
 ---@field callout_preview string
@@ -370,12 +367,6 @@
 ---
 --- Default highlight group for the various parts
 ---@field hl string?
----
---- Custom text for the heading. The heading text is used when nil
----@field text string?
----
---- Highlight group for the heading text, inherits from icon_hl
----@field text_hl string?
 ---
 --- Used bu the "label" style to add text before the left padding
 ---@field corner_left string?

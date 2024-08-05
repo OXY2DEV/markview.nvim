@@ -235,8 +235,8 @@ local display_width = function (text, config)
 		local tag_conf = html_conf.tags;
 		local conf = tag_conf.default or {};
 
-		if tag_conf.config and tag_conf.config[string.lower(filtered_tag)] then
-			conf = tag_conf.config[string.lower(filtered_tag)]
+		if tag_conf.configs and tag_conf.configs[string.lower(filtered_tag)] then
+			conf = tag_conf.configs[string.lower(filtered_tag)]
 		end
 
 		local internal_text = tmp_string:match("<" .. start_tag .. ">(.-)</" .. end_tag .. ">") or "";
@@ -1068,10 +1068,10 @@ renderer.render_block_quotes = function (buffer, content, config_table)
 
 	if content.callout ~= nil then
 		for _, callout in ipairs(config_table.callouts) do
-			if type(callout.match_string) == "string" and callout.match_string:upper() == content.callout:upper() then
+			if type(callout.match_string) == "string" and string.upper(callout.match_string --[[@as string]]) == content.callout:upper() then
 				qt_config = callout;
-			elseif vim.islist(callout.aliases) then
-				for _, alias in ipairs(callout.aliases) do
+			elseif vim.islist(callout.match_string) then
+				for _, alias in ipairs(callout.match_string --[[@as string[] ]]) do
 					if type(alias) == "string" and alias:upper() == content.callout.upper() then
 						qt_config = callout;
 					end
@@ -1424,8 +1424,8 @@ renderer.render_html_inline = function (buffer, content, user_config)
 
 	local html_conf = user_config.tags.default or {};
 
-	if user_config.tags.config[string.lower(content.tag)] then
-		html_conf = user_config.tags.config[string.lower(content.tag)];
+	if user_config.tags.configs[string.lower(content.tag)] then
+		html_conf = user_config.tags.configs[string.lower(content.tag)];
 	end
 
 	if html_conf.conceal ~= false then

@@ -1197,7 +1197,7 @@ markview.configuration = {
 				conceal = false
 			},
 
-			config = {
+			configs = {
 				b = { conceal = true, hl = "Bold" },
 				strong = { conceal = true, hl = "Bold" },
 

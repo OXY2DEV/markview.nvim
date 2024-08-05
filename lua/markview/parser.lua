@@ -453,25 +453,42 @@ parser.md_inline = function (buffer, TStree, from, to)
 			local title = string.match(line ~= nil and line[1] or "", "%b[]%s*(.*)$")
 
 			if capture_text == "[-]" then
-				table.insert(parser.parsed_content, {
-					node = capture_node,
-					type = "checkbox",
-					state = "pending",
+				for _, extmark in ipairs(parser.parsed_content) do
+					if extmark.type == "list_item" and extmark.row_start == row_start then
+						local start_line = extmark.list_lines[1] or "";
+						local atStart = start_line:match("%-%s+(%[%-%])%s+");
 
-					row_start = row_start,
-					row_end = row_end,
+						local chk_start, _ = start_line:find("%[%-%]");
 
-					col_start = col_start,
-					col_end = col_end
-				})
+						if not atStart or not chk_start or chk_start - 1 ~= col_start then
+							goto invalid;
+						end
+
+						table.insert(parser.parsed_content, {
+							node = capture_node,
+							type = "checkbox",
+							state = "pending",
+
+							row_start = row_start,
+							row_end = row_end,
+
+							col_start = col_start,
+							col_end = col_end
+						});
+
+						break;
+					end
+					::invalid::
+				end
 			else
 				for _, extmark in ipairs(parser.parsed_content) do
 					if extmark.type == "block_quote" and extmark.row_start == row_start then
-
 						extmark.callout = string.match(capture_text, "%[!([^%]]+)%]");
 						extmark.title = title;
 
-						extmark.line_width = vim.fn.strchars(line[1])
+						extmark.line_width = vim.fn.strchars(line[1]);
+
+						break;
 					end
 				end
 			end
