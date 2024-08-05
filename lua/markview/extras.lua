@@ -1,3 +1,5 @@
+-- For testing purposes
+
 local extras = {};
 
 extras.show_headings = {

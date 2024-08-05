@@ -16,8 +16,11 @@
 --- List of modes where the plugin will be active
 ---@field modes string[]?
 ---
---- Options for various plugins states
----@field options markview.config.options?
+--- List of modes where both raw & preview is shown
+---@field hybrid_modes string[]?
+---
+--- Callbacks for plugin states
+---@field callbacks markview.config.callbacks?
 ---
 --- Table for heading configuration
 ---@field headings markview.render_config.headings?
@@ -59,8 +62,11 @@
 --- List of modes where the plugin will be active
 ---@field modes string[]
 ---
+--- List of modes where both raw & preview is shown
+---@field hybrid_modes string[]?
+---
 --- Options for various plugins states
----@field options markview.config.options
+---@field callbacks markview.config.callbacks
 ---
 --- Table for heading configuration
 ---@field headings markview.render_config.headings
@@ -77,7 +83,7 @@
 --- Table for hyperlink configuration
 ---@field links markview.render_config.links
 ---
---- Table for hyperlink configuration
+--- Table for inline code configuration
 ---@field inline_codes markview.render_config.inline_codes
 ---
 --- Table for list item configuration
@@ -90,20 +96,14 @@
 ---@field tables markview.render_config.tables
 
 
---- Definition for the options
----@class markview.config.options
+--- Definition for the plugin callbacks
+---@class markview.config.callbacks
 ---
----@field on_enable markview.config.options.available
+---@field on_enable function?
 ---
----@field on_disable markview.config.options.available
-
---- Available options
----@class markview.config.options.available
+---@field on_disable function?
 ---
---- Conceal level
----@field conceallevel number
----
----@field concealcursor string?
+---@field on_mode_change function?
 
 ---------------------------------------------------------------
 --- For rendering things
@@ -137,7 +137,7 @@
 --- Used for highlighting the line when the style is "simple"
 ---@field hl string?
 ---
---- Character added before the heading name to seperate heading levels
+--- Character added before the heading name to separate heading levels
 ---@field shift_char string?
 ---
 --- Highlight group for shift_char
@@ -258,10 +258,7 @@
 ---@class markview.render_config.block_quotes.callouts
 ---
 --- String to match to detect the callout, this is not case-sensitive
----@field match_string string
----
---- Aliases for the callout, this is not case-sensitive
----@field aliases string[]?
+---@field match_string string|string[]
 ---
 --- The text to show for the callout
 ---@field callout_preview string
@@ -319,7 +316,7 @@
 --- Enable/Disable custom hyperlink
 ---@field enable boolean?
 ---
----@field inline_links markview.render_config.links.link
+---@field hyperlinks markview.render_config.links.link
 ---
 ---@field images markview.render_config.links.link
 ---
@@ -370,12 +367,6 @@
 ---
 --- Default highlight group for the various parts
 ---@field hl string?
----
---- Custom text for the heading. The heading text is used when nil
----@field text string?
----
---- Highlight group for the heading text, inherits from icon_hl
----@field text_hl string?
 ---
 --- Used bu the "label" style to add text before the left padding
 ---@field corner_left string?

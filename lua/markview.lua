@@ -1,11 +1,11 @@
 local markview = {};
 local utils = require("markview.utils");
 
-markview.parser = require("markview/parser");
-markview.renderer = require("markview/renderer");
-markview.keymaps = require("markview/keymaps");
+markview.parser = require("markview.parser");
+markview.renderer = require("markview.renderer");
+markview.keymaps = require("markview.keymaps");
 
-markview.colors = require("markview/colors");
+markview.colors = require("markview.colors");
 
 markview.add_hls = function (obj)
 	local use_hl = {};
@@ -43,264 +43,896 @@ markview.global_options = {};
 
 ---@type markview.config
 markview.configuration = {
-	options = {
-		on_enable = {
-			conceallevel = 2,
-			concealcursor = "n"
-		},
+	callbacks = {
+		on_enable = function (buffer, window)
+			vim.wo[window].conceallevel = 2;
+			vim.wo[window].concealcursor = "nc";
+		end,
+		on_disable = function (buffer, window)
+			vim.wo[window].conceallevel = 0;
+			vim.wo[window].concealcursor = "";
+		end,
 
-		on_disable = {
-			conceallevel = 0,
-			concealcursor = ""
-		}
+		on_mode_change = function (buffer, window, mode)
+			if vim.list_contains(markview.configuration.modes, mode) then
+				vim.wo[window].conceallevel = 2;
+			else
+				vim.wo[window].conceallevel = 0;
+			end
+		end
 	},
 
 	highlight_groups = {
+		---+ ##code##
 		{
+			-- Heading level 1
 			output = function ()
-				local bg = markview.colors.get_hl_value(0, "Normal", "bg") or markview.colors.get_hl_value(0, "Cursor", "fg");
-				local fg = markview.colors.get_hl_value(0, "markdownH1", "fg") or "#f38ba8";
+				if markview.colors.get_hl_value(0, "DiagnosticVirtualTextOk", "bg") and markview.colors.get_hl_value(0, "DiagnosticVirtualTextOk", "fg") then
+					local bg = markview.colors.get_hl_value(0, "DiagnosticVirtualTextOk", "bg");
+					local fg = markview.colors.get_hl_value(0, "DiagnosticVirtualTextOk", "fg");
 
-				return {
-					{
-						group_name = "Col1",
-						value = {
-							bg = markview.colors.mix(bg, fg, 0.7, 0.25),
-							fg = fg
-						}
-					},
-					{
-						group_name = "Col1Fg",
-						value = {
-							fg = fg
-						}
-					},
-					{
-						group_name = "Col1Inv",
-						value = {
-							bg = fg,
-							fg = bg
-						}
-					},
-				}
+					return {
+						{
+							group_name = "Heading1",
+							value = {
+								bg = bg,
+								fg = fg,
+
+								default = true
+							}
+						},
+						{
+							group_name = "Heading1Sign",
+							value = {
+								fg = fg,
+
+								default = true
+							}
+						},
+					}
+				elseif markview.colors.get_hl_value(0, "DiagnosticOk", "fg") and markview.colors.get_hl_value(0, "Normal", "bg") then
+					local bg = markview.colors.get_hl_value(0, "Normal", "bg");
+					local fg = markview.colors.get_hl_value(0, "DiagnosticOk", "fg");
+
+					local nr = markview.colors.get_hl_value(0, "LineNr", "bg");
+
+					return {
+						{
+							group_name = "Heading1",
+							value = {
+								bg = vim.o.background == "dark"
+									and
+									markview.colors.mix(bg, fg, 0.5, 0.15)
+									or
+									markview.colors.mix(bg, fg, 0.85, 0.20),
+								fg = fg,
+
+								default = true
+							}
+						},
+						{
+							group_name = "Heading1Sign",
+							value = {
+								bg = nr,
+								fg = fg,
+
+								default = true
+							}
+						},
+					}
+				else
+					local bg = markview.colors.get_hl_value(0, "Normal", "bg");
+					local fg = vim.o.background == "dark" and "#a6e3a1" or "#40a02b";
+
+					local nr = markview.colors.get_hl_value(0, "LineNr", "bg");
+
+					return {
+						{
+							group_name = "Heading1",
+							value = {
+								bg = vim.o.background == "dark"
+									and
+									markview.colors.mix(bg, fg, 0.5, 0.15)
+									or
+									markview.colors.mix(bg, fg, 0.85, 0.20),
+								fg = fg,
+
+								default = true
+							}
+						},
+						{
+							group_name = "Heading1Sign",
+							value = {
+								bg = nr,
+								fg = fg,
+
+								default = true
+							}
+						},
+					}
+				end
+			end
+		},
+		{
+			-- Heading level 2
+			output = function ()
+				if markview.colors.get_hl_value(0, "DiagnosticVirtualTextHint", "bg") and markview.colors.get_hl_value(0, "DiagnosticVirtualTextHint", "fg") then
+					local bg = markview.colors.get_hl_value(0, "DiagnosticVirtualTextHint", "bg");
+					local fg = markview.colors.get_hl_value(0, "DiagnosticVirtualTextHint", "fg");
+
+					return {
+						{
+							group_name = "Heading2",
+							value = {
+								bg = bg,
+								fg = fg,
+
+								default = true
+							}
+						},
+						{
+							group_name = "Heading2Sign",
+							value = {
+								fg = fg,
+
+								default = true
+							}
+						},
+					}
+				elseif markview.colors.get_hl_value(0, "DiagnosticHint", "fg") and markview.colors.get_hl_value(0, "Normal", "bg") then
+					local bg = markview.colors.get_hl_value(0, "Normal", "bg");
+					local fg = markview.colors.get_hl_value(0, "DiagnosticHint", "fg");
+
+					local nr = markview.colors.get_hl_value(0, "LineNr", "bg");
+
+					return {
+						{
+							group_name = "Heading2",
+							value = {
+								bg = vim.o.background == "dark"
+									and
+									markview.colors.mix(bg, fg, 0.5, 0.15)
+									or
+									markview.colors.mix(bg, fg, 0.85, 0.20),
+								fg = fg,
+
+								default = true
+							}
+						},
+						{
+							group_name = "Heading2Sign",
+							value = {
+								bg = nr,
+								fg = fg,
+
+								default = true
+							}
+						},
+					}
+				else
+					local bg = markview.colors.get_hl_value(0, "Normal", "bg");
+					local fg = vim.o.background == "dark" and "#94e2d5" or "#179299";
+
+					local nr = markview.colors.get_hl_value(0, "LineNr", "bg");
+
+					return {
+						{
+							group_name = "Heading2",
+							value = {
+								bg = vim.o.background == "dark"
+									and
+									markview.colors.mix(bg, fg, 0.5, 0.15)
+									or
+									markview.colors.mix(bg, fg, 0.85, 0.20),
+								fg = fg,
+
+								default = true
+							}
+						},
+						{
+							group_name = "Heading2Sign",
+							value = {
+								bg = nr,
+								fg = fg,
+
+								default = true
+							}
+						},
+					}
+				end
+			end
+		},
+		{
+			-- Heading level 3
+			output = function ()
+				if markview.colors.get_hl_value(0, "DiagnosticVirtualTextInfo", "bg") and markview.colors.get_hl_value(0, "DiagnosticVirtualTextInfo", "fg") then
+					local bg = markview.colors.get_hl_value(0, "DiagnosticVirtualTextInfo", "bg");
+					local fg = markview.colors.get_hl_value(0, "DiagnosticVirtualTextInfo", "fg");
+
+					return {
+						{
+							group_name = "Heading3",
+							value = {
+								bg = bg,
+								fg = fg,
+
+								default = true
+							}
+						},
+						{
+							group_name = "Heading3Sign",
+							value = {
+								fg = fg,
+
+								default = true
+							}
+						},
+					}
+				elseif markview.colors.get_hl_value(0, "DiagnosticInfo", "fg") and markview.colors.get_hl_value(0, "Normal", "bg") then
+					local bg = markview.colors.get_hl_value(0, "Normal", "bg");
+					local fg = markview.colors.get_hl_value(0, "DiagnosticInfo", "fg");
+
+					local nr = markview.colors.get_hl_value(0, "LineNr", "bg");
+
+					return {
+						{
+							group_name = "Heading3",
+							value = {
+								bg = vim.o.background == "dark"
+									and
+									markview.colors.mix(bg, fg, 0.5, 0.15)
+									or
+									markview.colors.mix(bg, fg, 0.85, 0.20),
+								fg = fg,
+
+								default = true
+							}
+						},
+						{
+							group_name = "Heading3Sign",
+							value = {
+								bg = nr,
+								fg = fg,
+
+								default = true
+							}
+						},
+					}
+				else
+					local bg = markview.colors.get_hl_value(0, "Normal", "bg");
+					local fg = vim.o.background == "dark" and "#89dceb" or "#179299";
+
+					local nr = markview.colors.get_hl_value(0, "LineNr", "bg");
+
+					return {
+						{
+							group_name = "Heading3",
+							value = {
+								bg = vim.o.background == "dark"
+									and
+									markview.colors.mix(bg, fg, 0.5, 0.15)
+									or
+									markview.colors.mix(bg, fg, 0.85, 0.20),
+								fg = fg,
+
+								default = true
+							}
+						},
+						{
+							group_name = "Heading3Sign",
+							value = {
+								bg = nr,
+								fg = fg,
+
+								default = true
+							}
+						},
+					}
+				end
+			end
+		},
+		{
+			-- Heading level 4
+			output = function ()
+				if markview.colors.get_hl_value(0, "Special", "bg") and markview.colors.get_hl_value(0, "Special", "fg") then
+					local bg = markview.colors.get_hl_value(0, "Special", "bg");
+					local fg = markview.colors.get_hl_value(0, "Special", "fg");
+
+					return {
+						{
+							group_name = "Heading4",
+							value = {
+								bg = bg,
+								fg = fg,
+
+								default = true
+							}
+						},
+						{
+							group_name = "Heading4Sign",
+							value = {
+								fg = fg,
+
+								default = true
+							}
+						},
+					}
+				elseif markview.colors.get_hl_value(0, "Special", "fg") and markview.colors.get_hl_value(0, "Normal", "bg") then
+					local bg = markview.colors.get_hl_value(0, "Normal", "bg");
+					local fg = markview.colors.get_hl_value(0, "Special", "fg");
+
+					local nr = markview.colors.get_hl_value(0, "LineNr", "bg");
+
+					return {
+						{
+							group_name = "Heading4",
+							value = {
+								bg = vim.o.background == "dark"
+									and
+									markview.colors.mix(bg, fg, 0.5, 0.15)
+									or
+									markview.colors.mix(bg, fg, 0.85, 0.20),
+								fg = fg,
+
+								default = true
+							}
+						},
+						{
+							group_name = "Heading4Sign",
+							value = {
+								bg = nr,
+								fg = fg,
+
+								default = true
+							}
+						},
+					}
+				else
+					local bg = markview.colors.get_hl_value(0, "Normal", "bg");
+					local fg = vim.o.background == "dark" and "#f5c2e7" or "#ea76cb";
+
+					local nr = markview.colors.get_hl_value(0, "LineNr", "bg");
+
+					return {
+						{
+							group_name = "Heading4",
+							value = {
+								bg = vim.o.background == "dark"
+									and
+									markview.colors.mix(bg, fg, 0.5, 0.15)
+									or
+									markview.colors.mix(bg, fg, 0.85, 0.20),
+								fg = fg,
+
+								default = true
+							}
+						},
+						{
+							group_name = "Heading4Sign",
+							value = {
+								bg = nr,
+								fg = fg,
+
+								default = true
+							}
+						},
+					}
+				end
+			end
+		},
+		{
+			-- Heading level 5
+			output = function ()
+				if markview.colors.get_hl_value(0, "DiagnosticVirtualTextWarn", "bg") and markview.colors.get_hl_value(0, "DiagnosticVirtualTextWarn", "fg") then
+					local bg = markview.colors.get_hl_value(0, "DiagnosticVirtualTextWarn", "bg");
+					local fg = markview.colors.get_hl_value(0, "DiagnosticVirtualTextWarn", "fg");
+
+					return {
+						{
+							group_name = "Heading5",
+							value = {
+								bg = bg,
+								fg = fg,
+
+								default = true
+							}
+						},
+						{
+							group_name = "Heading5Sign",
+							value = {
+								fg = fg,
+
+								default = true
+							}
+						},
+					}
+				elseif markview.colors.get_hl_value(0, "DiagnosticWarn", "fg") and markview.colors.get_hl_value(0, "Normal", "bg") then
+					local bg = markview.colors.get_hl_value(0, "Normal", "bg");
+					local fg = markview.colors.get_hl_value(0, "DiagnosticWarn", "fg");
+
+					local nr = markview.colors.get_hl_value(0, "LineNr", "bg");
+
+					return {
+						{
+							group_name = "Heading5",
+							value = {
+								bg = vim.o.background == "dark"
+									and
+									markview.colors.mix(bg, fg, 0.5, 0.15)
+									or
+									markview.colors.mix(bg, fg, 0.85, 0.20),
+								fg = fg,
+
+								default = true
+							}
+						},
+						{
+							group_name = "Heading5Sign",
+							value = {
+								bg = nr,
+								fg = fg,
+
+								default = true
+							}
+						},
+					}
+				else
+					local bg = markview.colors.get_hl_value(0, "Normal", "bg");
+					local fg = vim.o.background == "dark" and "#F9E3AF" or "#DF8E1D";
+
+					local nr = markview.colors.get_hl_value(0, "LineNr", "bg");
+
+					return {
+						{
+							group_name = "Heading5",
+							value = {
+								bg = vim.o.background == "dark"
+									and
+									markview.colors.mix(bg, fg, 0.5, 0.15)
+									or
+									markview.colors.mix(bg, fg, 0.85, 0.20),
+								fg = fg,
+
+								default = true
+							}
+						},
+						{
+							group_name = "Heading5Sign",
+							value = {
+								bg = nr,
+								fg = fg,
+
+								default = true
+							}
+						},
+					}
+				end
+			end
+		},
+		{
+			-- Heading level 6
+			output = function ()
+				if markview.colors.get_hl_value(0, "DiagnosticVirtualTextError", "bg") and markview.colors.get_hl_value(0, "DiagnosticVirtualTextError", "fg") then
+					local bg = markview.colors.get_hl_value(0, "DiagnosticVirtualTextError", "bg");
+					local fg = markview.colors.get_hl_value(0, "DiagnosticVirtualTextError", "fg");
+
+					return {
+						{
+							group_name = "Heading6",
+							value = {
+								bg = bg,
+								fg = fg,
+
+								default = true
+							}
+						},
+						{
+							group_name = "Heading6Sign",
+							value = {
+								fg = fg,
+
+								default = true
+							}
+						},
+					}
+				elseif markview.colors.get_hl_value(0, "DiagnosticError", "fg") and markview.colors.get_hl_value(0, "Normal", "bg") then
+					local bg = markview.colors.get_hl_value(0, "Normal", "bg");
+					local fg = markview.colors.get_hl_value(0, "DiagnosticError", "fg");
+
+					local nr = markview.colors.get_hl_value(0, "LineNr", "bg");
+
+					return {
+						{
+							group_name = "Heading6",
+							value = {
+								bg = vim.o.background == "dark"
+									and
+									markview.colors.mix(bg, fg, 0.5, 0.15)
+									or
+									markview.colors.mix(bg, fg, 0.85, 0.20),
+								fg = fg,
+
+								default = true
+							}
+						},
+						{
+							group_name = "Heading6Sign",
+							value = {
+								bg = nr,
+								fg = fg,
+
+								default = true
+							}
+						},
+					}
+				else
+					local bg = markview.colors.get_hl_value(0, "Normal", "bg");
+					local fg = vim.o.background == "dark" and "#F38BA8" or "#D20F39";
+
+					local nr = markview.colors.get_hl_value(0, "LineNr", "bg");
+
+					return {
+						{
+							group_name = "Heading6",
+							value = {
+								bg = vim.o.background == "dark"
+									and
+									markview.colors.mix(bg, fg, 0.5, 0.15)
+									or
+									markview.colors.mix(bg, fg, 0.85, 0.20),
+								fg = fg,
+
+								default = true
+							}
+						},
+						{
+							group_name = "Heading6Sign",
+							value = {
+								bg = nr,
+								fg = fg,
+
+								default = true
+							}
+						},
+					}
+				end
 			end
 		},
 
-		{
-			output = function ()
-				local bg = markview.colors.get_hl_value(0, "Normal", "bg") or markview.colors.get_hl_value(0, "Cursor", "fg");
-				local fg = markview.colors.get_hl_value(0, "markdownH2", "fg") or "#fab387";
-
-				return {
-					{
-						group_name = "Col2",
-						value = {
-							bg = markview.colors.mix(bg, fg, 0.7, 0.25),
-							fg = fg
-						}
-					},
-					{
-						group_name = "Col2Fg",
-						value = {
-							fg = fg
-						}
-					},
-					{
-						group_name = "Col2Inv",
-						value = {
-							bg = fg,
-							fg = bg
-						}
-					},
-				}
-			end
-		},
 
 		{
-			output = function ()
-				local bg = markview.colors.get_hl_value(0, "Normal", "bg") or markview.colors.get_hl_value(0, "Cursor", "fg");
-				local fg = markview.colors.get_hl_value(0, "markdownH3", "fg") or "#f9e2af";
-
-				return {
-					{
-						group_name = "Col3",
-						value = {
-							bg = markview.colors.mix(bg, fg, 0.7, 0.25),
-							fg = fg
-						}
-					},
-					{
-						group_name = "Col3Fg",
-						value = {
-							fg = fg
-						}
-					},
-					{
-						group_name = "Col3Inv",
-						value = {
-							bg = fg,
-							fg = bg
-						}
-					},
-				}
-			end
-		},
-
-		{
-			output = function ()
-				local bg = markview.colors.get_hl_value(0, "Normal", "bg") or markview.colors.get_hl_value(0, "Cursor", "fg");
-				local fg = markview.colors.get_hl_value(0, "markdownH4", "fg") or "#a6e3a1";
-
-
-				return {
-					{
-						group_name = "Col4",
-						value = {
-							bg = markview.colors.mix(bg, fg, 0.7, 0.25),
-							fg = fg
-						}
-					},
-					{
-						group_name = "Col4Fg",
-						value = {
-							fg = fg
-						}
-					},
-					{
-						group_name = "Col4Inv",
-						value = {
-							bg = fg,
-							fg = bg
-						}
-					},
-				}
-			end
-		},
-
-		{
-			output = function ()
-				local bg = markview.colors.get_hl_value(0, "Normal", "bg") or markview.colors.get_hl_value(0, "Cursor", "fg");
-				local fg = markview.colors.get_hl_value(0, "markdownH5", "fg") or "#74c7ec";
-
-				return {
-					{
-						group_name = "Col5",
-						value = {
-							bg = markview.colors.mix(bg, fg, 0.7, 0.25),
-							fg = fg
-						}
-					},
-					{
-						group_name = "Col5Fg",
-						value = {
-							fg = fg
-						}
-					},
-					{
-						group_name = "Col5Inv",
-						value = {
-							bg = fg,
-							fg = bg
-						}
-					},
-				}
-			end
-		},
-
-		{
-			output = function ()
-				local bg = markview.colors.get_hl_value(0, "Normal", "bg") or markview.colors.get_hl_value(0, "Cursor", "fg");
-				local fg = markview.colors.get_hl_value(0, "markdownH6", "fg") or "#b4befe";
-
-				return {
-					{
-						group_name = "Col6",
-						value = {
-							bg = markview.colors.mix(bg, fg, 0.7, 0.25),
-							fg = fg
-						}
-					},
-					{
-						group_name = "Col6Fg",
-						value = {
-							fg = fg
-						}
-					},
-					{
-						group_name = "Col6Inv",
-						value = {
-							bg = fg,
-							fg = bg
-						}
-					},
-				}
-			end
-		},
-
-		{
-			output = function ()
-				local bg = markview.colors.get_hl_value(0, "Normal", "bg") or markview.colors.get_hl_value(0, "Cursor", "fg");
-				local fg = markview.colors.get_hl_value(0, "Comment", "fg");
-
-				return {
-					{
-						group_name = "Col7",
-						value = {
-							bg = markview.colors.mix(bg, fg, 0.7, 0.25),
-							fg = fg
-						}
-					},
-					{
-						group_name = "Col7Fg",
-						value = {
-							fg = fg
-						}
-					},
-					{
-						group_name = "Col7Inv",
-						value = {
-							bg = fg,
-							fg = bg
-						}
-					},
-				}
-			end
-		},
-
-		{
-			group_name = "Layer",
+			group_name = "BlockQuoteDefault",
 			value = function ()
-				local bg = markview.colors.get_hl_value(0, "Normal", "bg") or markview.colors.get_hl_value(0, "Cursor", "fg");
-				local fg = markview.colors.get_hl_value(0, "Comment", "fg");
+				local fg = markview.colors.get({
+					markview.colors.get_hl_value(0, "Comment", "fg"),
 
-				local txt = markview.colors.get_hl_value(0, "FloatTitle", "fg")
+					vim.o.background == "dark" and "#6c7086" or "#9ca0b0";
+				});
 
-				return {
-					bg = markview.colors.mix(bg, fg, 1, 0.20),
-					fg = txt
-				}
+				return { fg = fg, default = true };
 			end
 		},
 		{
-			group_name = "Layer2",
+			group_name = "BlockQuoteError",
 			value = function ()
-				local bg = markview.colors.get_hl_value(0, "Normal", "bg") or markview.colors.get_hl_value(0, "Cursor", "fg");
-				local fg = markview.colors.get_hl_value(0, "Comment", "fg");
+				local fg = markview.colors.get({
+					markview.colors.get_hl_value(0, "DiagnosticError", "fg"),
 
-				return {
-					bg = markview.colors.mix(bg, fg, 0.85, 0.13),
-				}
+					vim.o.background == "dark" and "#F38BA8" or "#D20F39";
+				});
+
+				return { fg = fg, default = true };
 			end
 		},
+		{
+			group_name = "BlockQuoteWarn",
+			value = function ()
+				local fg = markview.colors.get({
+					markview.colors.get_hl_value(0, "DiagnosticWarn", "fg"),
+
+					vim.o.background == "dark" and "#F9E3AF" or "#DF8E1D";
+				});
+
+				return { fg = fg, default = true };
+			end
+		},
+		{
+			group_name = "BlockQuoteOk",
+			value = function ()
+				local fg = markview.colors.get({
+					markview.colors.get_hl_value(0, "DiagnosticOk", "fg"),
+
+					vim.o.background == "dark" and "#a6e3a1" or "#40a02b";
+				});
+
+				return { fg = fg, default = true };
+			end
+		},
+		{
+			group_name = "BlockQuoteNote",
+			value = function ()
+				local fg = markview.colors.get({
+					markview.colors.get_hl_value(0, "@comment.note", "bg"),
+					markview.colors.get_hl_value(0, "@comment.note", "fg"),
+
+					markview.colors.get_hl_value(0, "Title", "fg"),
+					vim.o.background == "dark" and "#89b4fa" or "#1e66f5"
+				});
+
+				return { fg = fg, default = true };
+			end
+		},
+		{
+			group_name = "BlockQuoteSpecial",
+			value = function ()
+				local fg = markview.colors.get({
+					markview.colors.get_hl_value(0, "Conditional", "fg"),
+					markview.colors.get_hl_value(0, "Keyword", "fg"),
+
+					vim.o.background == "dark" and "#cba6f7" or "#8839ef"
+				});
+
+				return { fg = fg, default = true };
+			end
+		},
+
+
+
+		{
+			group_name = "Code",
+			value = function ()
+				local bg = markview.colors.get({
+					markview.colors.get_hl_value(0, "Normal", "bg"),
+					markview.colors.get_hl_value(0, "Cursor", "fg"),
+
+					vim.o.background == "dark" and "#1e1e2e" or "#cdd6f4"
+				});
+
+				local luminosity = markview.colors.get_brightness(bg);
+
+				if luminosity < 0.5 then
+					return {
+						bg = markview.colors.mix(bg, bg, 1, math.max(luminosity, 0.25)),
+						default = true
+					};
+				else
+					return {
+						bg = markview.colors.mix(bg, bg, 1, math.min(luminosity, 0.25) * -1),
+						default = true
+					};
+				end
+			end
+		},
+		{
+			group_name = "InlineCode",
+			value = function ()
+				local bg = markview.colors.get({
+					markview.colors.get_hl_value(0, "Normal", "bg"),
+					markview.colors.get_hl_value(0, "Cursor", "fg"),
+
+					vim.o.background == "dark" and "#1e1e2e" or "#cdd6f4"
+				});
+
+				local luminosity = markview.colors.get_brightness(bg);
+
+				if luminosity < 0.5 then
+					return {
+						bg = markview.colors.mix(bg, bg, 1, math.max(luminosity, 0.5)),
+						default = true
+					};
+				else
+					return {
+						bg = markview.colors.mix(bg, bg, 1, math.min(luminosity, 0.5) * -1),
+						default = true
+					};
+				end
+			end
+		},
+
+
+		{
+			group_name = "CheckboxChecked",
+			value = function ()
+				local fg = markview.colors.get({
+					markview.colors.get_hl_value(0, "DiagnosticOk", "fg"),
+
+					vim.o.background == "dark" and "#a6e3a1" or "#40a02b";
+				});
+
+				return { fg = fg, default = true };
+			end
+		},
+		{
+			group_name = "CheckboxUnchecked",
+			value = function ()
+				local fg = markview.colors.get({
+					markview.colors.get_hl_value(0, "DiagnosticError", "fg"),
+
+					vim.o.background == "dark" and "#F38BA8" or "#D20F39";
+				});
+
+				return { fg = fg, default = true };
+			end
+		},
+		{
+			group_name = "CheckboxPending",
+			value = function ()
+				local fg = markview.colors.get({
+					markview.colors.get_hl_value(0, "DiagnosticWarn", "fg"),
+
+					vim.o.background == "dark" and "#F9E3AF" or "#DF8E1D";
+				});
+
+				return { fg = fg, default = true };
+			end
+		},
+
+
+		{
+			group_name = "TableBorder",
+			value = function ()
+				local fg = markview.colors.get({
+					markview.colors.get_hl_value(0, "@comment.note", "bg"),
+					markview.colors.get_hl_value(0, "@comment.note", "fg"),
+
+					markview.colors.get_hl_value(0, "Title", "fg"),
+					vim.o.background == "dark" and "#89b4fa" or "#1e66f5"
+				});
+
+				return { fg = fg, default = true };
+			end
+		},
+		{
+			group_name = "TableAlignLeft",
+			value = function ()
+				local fg = markview.colors.get({
+					markview.colors.get_hl_value(0, "@comment.note", "bg"),
+					markview.colors.get_hl_value(0, "@comment.note", "fg"),
+
+					markview.colors.get_hl_value(0, "Title", "fg"),
+					vim.o.background == "dark" and "#89b4fa" or "#1e66f5"
+				});
+
+				return { fg = fg, default = true };
+			end
+		},
+		{
+			group_name = "TableAlignRight",
+			value = function ()
+				local fg = markview.colors.get({
+					markview.colors.get_hl_value(0, "@comment.note", "bg"),
+					markview.colors.get_hl_value(0, "@comment.note", "fg"),
+
+					markview.colors.get_hl_value(0, "Title", "fg"),
+					vim.o.background == "dark" and "#89b4fa" or "#1e66f5"
+				});
+
+				return { fg = fg, default = true };
+			end
+		},
+		{
+			group_name = "TableAlignCenter",
+			value = function ()
+				local fg = markview.colors.get({
+					markview.colors.get_hl_value(0, "@comment.note", "bg"),
+					markview.colors.get_hl_value(0, "@comment.note", "fg"),
+
+					markview.colors.get_hl_value(0, "Title", "fg"),
+					vim.o.background == "dark" and "#89b4fa" or "#1e66f5"
+				});
+
+				return { fg = fg, default = true };
+			end
+		},
+
+
+		{
+			group_name = "ListItemMinus",
+			value = function ()
+				local fg = markview.colors.get({
+					markview.colors.get_hl_value(0, "DiagnosticWarn", "fg"),
+
+					vim.o.background == "dark" and "#F9E3AF" or "#DF8E1D";
+				});
+
+				return { fg = fg, default = true };
+			end
+		},
+		{
+			group_name = "ListItemPlus",
+			value = function ()
+				local fg = markview.colors.get({
+					markview.colors.get_hl_value(0, "DiagnosticOk", "fg"),
+
+					vim.o.background == "dark" and "#a6e3a1" or "#40a02b";
+				});
+
+				return { fg = fg, default = true };
+			end
+		},
+		{
+			group_name = "ListItemStar",
+			value = function ()
+				local fg = markview.colors.get({
+					markview.colors.get_hl_value(0, "@comment.note", "bg"),
+					markview.colors.get_hl_value(0, "@comment.note", "fg"),
+
+					markview.colors.get_hl_value(0, "Title", "fg"),
+					vim.o.background == "dark" and "#89b4fa" or "#1e66f5"
+				});
+
+				return { fg = fg, default = true };
+			end
+		},
+
+
+		{
+			group_name = "Hyperlink",
+			value = function ()
+				if markview.colors.get_hl_value(0, "markdownLinkText", "fg") then
+					return { link = "markdownLinkText", default = true };
+				elseif markview.colors.get_hl_value(0, "@markup.link.label.markdown_inline", "fg") then
+					return { link = "@markup.link.label.markdown_inline", default = true };
+				end
+
+				local fg = markview.colors.get({
+					markview.colors.get_hl_value(0, "Label", "fg"),
+
+					vim.o.background == "dark" and "#74c7ec" or "#209fb5"
+				});
+
+				return { fg = fg, underline = true, default = true };
+			end
+		},
+		{
+			group_name = "ImageLink",
+			value = function ()
+				if markview.colors.get_hl_value(0, "markdownLinkText", "fg") then
+					return { link = "markdownLinkText", default = true };
+				elseif markview.colors.get_hl_value(0, "@markup.link.label.markdown_inline", "fg") then
+					return { link = "@markup.link.label.markdown_inline", default = true };
+				end
+
+				local fg = markview.colors.get({
+					markview.colors.get_hl_value(0, "Label", "fg"),
+
+					vim.o.background == "dark" and "#74c7ec" or "#209fb5"
+				});
+
+				return { fg = fg, underline = true, default = true };
+			end
+		},
+		{
+			group_name = "Email",
+			value = function ()
+				if markview.colors.get_hl_value(0, "@markup.link.url.markdown_inline", "fg") then
+					return { link = "@markup.link.url.markdown_inline", default = true };
+				elseif markview.colors.get_hl_value(0, "@markup.link.url", "fg") then
+					return { link = "@markup.link.url", default = true };
+				end
+
+				local fg = markview.colors.get({
+					markview.colors.get_hl_value(0, "Label", "fg"),
+
+					vim.o.background == "dark" and "#f5e0dc" or "#dc8a78"
+				});
+
+				return { fg = fg, underline = true, default = true };
+			end
+		},
+
+
 		{
 			output = function ()
 				return markview.colors.create_gradient("Gradient", markview.colors.get_hl_value(0, "Normal", "bg") or markview.colors.get_hl_value(0, "Cursor", "fg"), markview.colors.get_hl_value(0, "Title", "fg"), 10, "fg");
 			end
 		}
+		---_
 	},
 	buf_ignore = { "nofile" },
 
 	modes = { "n", "no" },
+	special_modes = nil,
 
 	headings = {
 		enable = true,
@@ -308,48 +940,48 @@ markview.configuration = {
 
 		heading_1 = {
 			style = "icon",
-			sign = "󰌕 ", sign_hl = "MarkviewCol1Fg",
+			sign = "󰌕 ", sign_hl = "MarkviewHeading1Sign",
 
-			icon = "󰼏  ", hl = "MarkviewCol1",
+			icon = "󰼏  ", hl = "MarkviewHeading1",
 
 		},
 		heading_2 = {
 			style = "icon",
-			sign = "󰌖 ", sign_hl = "MarkviewCol2Fg",
+			sign = "󰌖 ", sign_hl = "MarkviewHeading2Sign",
 
-			icon = "󰎨  ", hl = "MarkviewCol2",
+			icon = "󰎨  ", hl = "MarkviewHeading2",
 		},
 		heading_3 = {
 			style = "icon",
 
-			icon = "󰼑  ", hl = "MarkviewCol3",
+			icon = "󰼑  ", hl = "MarkviewHeading3",
 		},
 		heading_4 = {
 			style = "icon",
 
-			icon = "󰎲  ", hl = "MarkviewCol4",
+			icon = "󰎲  ", hl = "MarkviewHeading4",
 		},
 		heading_5 = {
 			style = "icon",
 
-			icon = "󰼓  ", hl = "MarkviewCol5",
+			icon = "󰼓  ", hl = "MarkviewHeading5",
 		},
 		heading_6 = {
 			style = "icon",
 
-			icon = "󰎴  ", hl = "MarkviewCol6",
+			icon = "󰎴  ", hl = "MarkviewHeading6",
 		},
 
 		setext_1 = {
 			style = "github",
 
-			icon = "   ", hl = "MarkviewCol1",
+			icon = "   ", hl = "MarkviewHeading1",
 			underline = "━"
 		},
 		setext_2 = {
 			style = "github",
 
-			icon = "   ", hl = "MarkviewCol2",
+			icon = "   ", hl = "MarkviewHeading2",
 			underline = "─"
 		}
 	},
@@ -358,7 +990,7 @@ markview.configuration = {
 		enable = true,
 
 		style = "language",
-		hl = "Layer2",
+		hl = "MarkviewCode",
 
 		min_width = 60,
 		pad_amount = 3,
@@ -376,7 +1008,7 @@ markview.configuration = {
 		enable = true,
 
 		default = {
-			border = "▋", border_hl = "MarkviewCol7Fg"
+			border = "▋", border_hl = "MarkviewBlockQuoteDefault"
 		},
 
 		callouts = {
@@ -384,139 +1016,139 @@ markview.configuration = {
 			{
 				match_string = "ABSTRACT",
 				callout_preview = "󱉫 Abstract",
-				callout_preview_hl = "MarkviewCol5Fg",
+				callout_preview_hl = "MarkviewBlockQuoteNote",
 
 				custom_title = true,
 				custom_icon = "󱉫 ",
 
-				border = "▋", border_hl = "MarkviewCol5Fg"
+				border = "▋", border_hl = "MarkviewBlockQuoteNote"
 			},
 			{
 				match_string = "TODO",
 				callout_preview = " Todo",
-				callout_preview_hl = "MarkviewCol5Fg",
+				callout_preview_hl = "MarkviewBlockQuoteNote",
 
 				custom_title = true,
 				custom_icon = " ",
 
-				border = "▋", border_hl = "MarkviewCol5Fg"
+				border = "▋", border_hl = "MarkviewBlockQuoteNote"
 			},
 			{
 				match_string = "SUCCESS",
 				callout_preview = "󰗠 Success",
-				callout_preview_hl = "MarkviewCol4Fg",
+				callout_preview_hl = "MarkviewBlockQuoteOk",
 
 				custom_title = true,
 				custom_icon = "󰗠 ",
 
-				border = "▋", border_hl = "MarkviewCol4Fg"
+				border = "▋", border_hl = "MarkviewBlockQuoteOk"
 			},
 			{
 				match_string = "QUESTION",
 				callout_preview = "󰋗 Question",
-				callout_preview_hl = "MarkviewCol2Fg",
+				callout_preview_hl = "MarkviewBlockQuoteWarn",
 
 				custom_title = true,
 				custom_icon = "󰋗 ",
 
-				border = "▋", border_hl = "MarkviewCol2Fg"
+				border = "▋", border_hl = "MarkviewBlockQuoteWarn"
 			},
 			{
 				match_string = "FAILURE",
 				callout_preview = "󰅙 Failure",
-				callout_preview_hl = "MarkviewCol1Fg",
+				callout_preview_hl = "MarkviewBlockQuoteError",
 
 				custom_title = true,
 				custom_icon = "󰅙 ",
 
-				border = "▋", border_hl = "MarkviewCol1Fg"
+				border = "▋", border_hl = "MarkviewBlockQuoteError"
 			},
 			{
 				match_string = "DANGER",
 				callout_preview = " Danger",
-				callout_preview_hl = "MarkviewCol1Fg",
+				callout_preview_hl = "MarkviewBlockQuoteError",
 
 				custom_title = true,
 				custom_icon = "  ",
 
-				border = "▋", border_hl = "MarkviewCol1Fg"
+				border = "▋", border_hl = "MarkviewBlockQuoteError"
 			},
 			{
 				match_string = "BUG",
 				callout_preview = " Bug",
-				callout_preview_hl = "MarkviewCol1Fg",
+				callout_preview_hl = "MarkviewBlockQuoteError",
 
 				custom_title = true,
 				custom_icon = "  ",
 
-				border = "▋", border_hl = "MarkviewCol1Fg"
+				border = "▋", border_hl = "MarkviewBlockQuoteError"
 			},
 			{
 				match_string = "EXAMPLE",
 				callout_preview = "󱖫 Example",
-				callout_preview_hl = "MarkviewCol6Fg",
+				callout_preview_hl = "MarkviewBlockQuoteSpecial",
 
 				custom_title = true,
 				custom_icon = " 󱖫 ",
 
-				border = "▋", border_hl = "MarkviewCol6Fg"
+				border = "▋", border_hl = "MarkviewBlockQuoteSpecial"
 			},
 			{
 				match_string = "QUOTE",
 				callout_preview = " Quote",
-				callout_preview_hl = "MarkviewCol7Fg",
+				callout_preview_hl = "MarkviewBlockQuoteDefault",
 
 				custom_title = true,
 				custom_icon = "  ",
 
-				border = "▋", border_hl = "MarkviewCol7Fg"
+				border = "▋", border_hl = "MarkviewBlockQuoteDefault"
 			},
 
 
 			{
 				match_string = "NOTE",
 				callout_preview = "󰋽 Note",
-				callout_preview_hl = "MarkviewCol5Fg",
+				callout_preview_hl = "MarkviewBlockQuoteNote",
 
-				border = "▋", border_hl = "MarkviewCol5Fg"
+				border = "▋", border_hl = "MarkviewBlockQuoteNote"
 			},
 			{
 				match_string = "TIP",
 				callout_preview = " Tip",
-				callout_preview_hl = "MarkviewCol4Fg",
+				callout_preview_hl = "MarkviewBlockQuoteOk",
 
-				border = "▋", border_hl = "MarkviewCol4Fg"
+				border = "▋", border_hl = "MarkviewBlockQuoteOk"
 			},
 			{
 				match_string = "IMPORTANT",
 				callout_preview = " Important",
-				callout_preview_hl = "MarkviewCol3Fg",
+				callout_preview_hl = "MarkviewBlockQuoteSpecial",
 
-				border = "▋", border_hl = "MarkviewCol3Fg"
+				border = "▋", border_hl = "MarkviewBlockQuoteSpecial"
 			},
 			{
 				match_string = "WARNING",
 				callout_preview = " Warning",
-				callout_preview_hl = "MarkviewCol2Fg",
+				callout_preview_hl = "MarkviewBlockQuoteWarn",
 
-				border = "▋", border_hl = "MarkviewCol2Fg"
+				border = "▋", border_hl = "MarkviewBlockQuoteWarn"
 			},
 			{
 				match_string = "CAUTION",
 				callout_preview = "󰳦 Caution",
-				callout_preview_hl = "MarkviewCol1Fg",
+				callout_preview_hl = "MarkviewBlockQuoteError",
 
-				border = "▋", border_hl = "MarkviewCol1Fg"
+				border = "▋", border_hl = "MarkviewBlockQuoteError"
 			},
 			{
 				match_string = "CUSTOM",
 				callout_preview = "󰠳 Custom",
-				callout_preview_hl = "MarkviewCol3Fg",
+				callout_preview_hl = "MarkviewBlockQuoteWarn",
 
 				custom_title = true,
 				custom_icon = " 󰠳 ",
 
-				border = "▋", border_hl = "MarkviewCol3Fg"
+				border = "▋", border_hl = "MarkviewBlockQuoteWarn"
 			}
 		}
 	},
@@ -557,21 +1189,46 @@ markview.configuration = {
 			}
 		}
 	},
+	html = {
+		tags = {
+			enable = true,
+
+			default = {
+				conceal = false
+			},
+
+			configs = {
+				b = { conceal = true, hl = "Bold" },
+				strong = { conceal = true, hl = "Bold" },
+
+				u = { conceal = true, hl = "Underlined" },
+
+				i = { conceal = true, hl = "Italic" },
+				emphasize = { conceal = true, hl = "Italic" },
+
+				marked = { conceal = true, hl = "Special" },
+			}
+		},
+
+		entites = {
+			enable = true
+		}
+	},
 
 	links = {
 		enable = true,
 
-		inline_links = {
-			icon = "󰌷 ", icon_hl = "markdownLinkText",
-			hl = "markdownLinkText",
+		hyperlinks = {
+			icon = "󰌷 ",
+			hl = "MarkviewHyperlink",
 		},
 		images = {
-			icon = "󰥶 ", icon_hl = "markdownLinkText",
-			hl = "markdownLinkText",
+			icon = "󰥶 ",
+			hl = "MarkviewImageLink",
 		},
 		emails = {
-			icon = " ", icon_hl = "@markup.link.url",
-			hl = "@markup.link.url",
+			icon = " ",
+			hl = "MarkviewEmail",
 		}
 	},
 
@@ -580,7 +1237,7 @@ markview.configuration = {
 		corner_left = " ",
 		corner_right = " ",
 
-		hl = "Layer"
+		hl = "MarkviewInlineCode"
 	},
 
 	list_items = {
@@ -588,19 +1245,19 @@ markview.configuration = {
 			add_padding = true,
 
 			text = "",
-			hl = "markviewCol2Fg"
+			hl = "MarkviewListItemMinus"
 		},
 		marker_plus = {
 			add_padding = true,
 
 			text = "",
-			hl = "markviewCol4Fg"
+			hl = "MarkviewListItemPlus"
 		},
 		marker_star = {
 			add_padding = true,
 
 			text = "",
-			text_hl = "markviewCol6Fg"
+			text_hl = "MarkviewListItemStar"
 		},
 		marker_dot = {
 			add_padding = true
@@ -611,13 +1268,13 @@ markview.configuration = {
 		enable = true,
 
 		checked = {
-			text = "✔", hl = "markviewCol4Fg"
+			text = "✔", hl = "MarkviewCheckboxChecked"
 		},
 		pending = {
-			text = "◯", hl = "MarkviewCol2Fg"
+			text = "◯", hl = "MarkviewCheckboxPending"
 		},
 		unchecked = {
-			text = "✘", hl = "MarkviewCol1Fg"
+			text = "✘", hl = "MarkviewCheckboxUnchecked"
 		}
 	},
 
@@ -631,14 +1288,14 @@ markview.configuration = {
 			"╼", "╾", "╴", "╶"
 		},
 		hl = {
-			"MarkviewCol1Fg", "MarkviewCol1Fg", "MarkviewCol1Fg", "MarkviewCol1Fg",
-			"MarkviewCol1Fg", "MarkviewCol1Fg", "MarkviewCol1Fg", "MarkviewCol1Fg",
-			"MarkviewCol1Fg", "MarkviewCol1Fg", "MarkviewCol1Fg", "MarkviewCol1Fg",
+			"MarkviewTableBorder", "MarkviewTableBorder", "MarkviewTableBorder", "MarkviewTableBorder",
+			"MarkviewTableBorder", "MarkviewTableBorder", "MarkviewTableBorder", "MarkviewTableBorder",
+			"MarkviewTableBorder", "MarkviewTableBorder", "MarkviewTableBorder", "MarkviewTableBorder",
 
-			"MarkviewCol1Fg", "MarkviewCol1Fg", "MarkviewCol1Fg", "MarkviewCol1Fg"
+			"MarkviewTableAlignLeft", "MarkviewTableAlignRight", "MarkviewTableAlignCenter", "MarkviewTableAlignCenter"
 		},
 
-		use_virt_lines = false
+		use_virt_lines = true
 	},
 };
 
@@ -661,12 +1318,14 @@ markview.commands = {
 		for _, buf in ipairs(markview.attached_buffers) do
 			local parsed_content = markview.parser.init(buf);
 			local windows = utils.find_attached_wins(buffer);
-			local options = markview.configuration.options or {};
 
-			for _, window in ipairs(windows) do
-				vim.wo[window].conceallevel = type(options.on_enable) == "table" and options.on_enable.conceallevel or 2;
-				vim.wo[window].concealcursor = type(options.on_enable) == "table" and options.on_enable.concealcursor or "n";
+			if markview.configuration.callbacks and markview.configuration.callbacks.on_enable then
+				for _, window in ipairs(windows) do
+					pcall(markview.configuration.callbacks.on_enable, buf, window);
+				end
 			end
+
+			markview.state.buf_states[buf] = true;
 
 			markview.renderer.clear(buf);
 			markview.renderer.render(buf, parsed_content, markview.configuration)
@@ -675,12 +1334,14 @@ markview.commands = {
 	disableAll = function ()
 		for _, buf in ipairs(markview.attached_buffers) do
 			local windows = utils.find_attached_wins(buffer);
-			local options = markview.configuration.options or {};
 
-			for _, window in ipairs(windows) do
-				vim.wo[window].conceallevel = type(options.on_disable) == "table" and options.on_disable.conceallevel or markview.global_options.conceallevel;
-				vim.wo[window].concealcursor = type(options.on_disable) == "table" and options.on_disable.concealcursor or markview.global_options.concealcursor;
+			if markview.configuration.callbacks and markview.configuration.callbacks.on_disable then
+				for _, window in ipairs(windows) do
+					pcall(markview.configuration.callbacks.on_disable, buf, window);
+				end
 			end
+
+			markview.state.buf_states[buf] = false;
 
 			markview.renderer.clear(buf);
 		end
@@ -707,7 +1368,6 @@ markview.commands = {
 	end,
 	enable = function (buf)
 		local buffer = tonumber(buf) or vim.api.nvim_get_current_buf();
-		local options = markview.configuration.options or {};
 
 		if not vim.list_contains(markview.attached_buffers, buffer) or not vim.api.nvim_buf_is_valid(buffer) then
 			return;
@@ -720,8 +1380,7 @@ markview.commands = {
 		markview.state.buf_states[buffer] = true;
 
 		for _, window in ipairs(windows) do
-			vim.wo[window].conceallevel = type(options.on_enable) == "table" and options.on_enable.conceallevel or 2;
-			vim.wo[window].concealcursor = type(options.on_enable) == "table" and options.on_enable.concealcursor or "n";
+			pcall(markview.configuration.callbacks.on_enable, buf, window);
 		end
 
 		markview.renderer.clear(buffer);
@@ -730,7 +1389,6 @@ markview.commands = {
 
 	disable = function (buf)
 		local buffer = tonumber(buf) or vim.api.nvim_get_current_buf();
-		local options = markview.configuration.options or {};
 
 		if not vim.list_contains(markview.attached_buffers, buffer) or not vim.api.nvim_buf_is_valid(buffer) then
 			return;
@@ -739,8 +1397,7 @@ markview.commands = {
 		local windows = utils.find_attached_wins(buffer);
 
 		for _, window in ipairs(windows) do
-			vim.wo[window].conceallevel = type(options.on_disable) == "table" and options.on_disable.conceallevel or markview.global_options.conceallevel;
-			vim.wo[window].concealcursor = type(options.on_disable) == "table" and options.on_disable.concealcursor or markview.global_options.concealcursor;
+			pcall(markview.configuration.callbacks.on_disable, buf, window);
 		end
 
 		markview.renderer.clear(buffer);
@@ -816,7 +1473,6 @@ end, {
 		end
 	end
 })
-
 
 markview.setup = function (user_config)
 	---@type markview.config

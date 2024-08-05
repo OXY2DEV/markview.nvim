@@ -1,3 +1,6 @@
 [submodule "wiki"]
 	path = wiki
 	url = https://github.com/OXY2DEV/markview.nvim.wiki.git
+[submodule "markview.nvim.wiki"]
+	path = markview.nvim.wiki
+	url = https://github.com/OXY2DEV/markview.nvim.wiki.git

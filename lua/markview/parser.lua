@@ -1,29 +1,54 @@
 local parser = {};
 -- local renderer = require("markview/renderer");
 
-parser.fiter_lines = function (buffer, from, to, marker)
+parser.fiter_lines = function (buffer, from, to)
 	local captured_lines = vim.api.nvim_buf_get_lines(buffer, from, to, false);
 	local filtered_lines = {};
 	local indexes = {};
 	local spaces = {};
 
+	local withinCodeBlock;
+	local parent_marker;
+
 	local tolarence = 3;
 	local found = 0;
 
 	for l, line in ipairs(captured_lines) do
-		if l ~= 1 and line:match(marker) then
-			break;
+		if l ~= 1 then
+			if withinCodeBlock ~= true and line:match("^%s*([+%-*])") then
+				break;
+			elseif withinCodeBlock ~= true and line:match("^%s*(%d+%.)") then
+				break;
+			end
 		end
 
 		if found >= tolarence then
 			break;
 		end
 
-		local spaces_before = vim.fn.strchars(line:match("(%s*)"));
+		local spaces_before = vim.fn.strchars(line:match("^(%s*)"));
 
-		if not line:match(marker) then
-			spaces_before = math.max(0, spaces_before - vim.fn.strchars(marker .. " "));
+		if line:match("(```)") and withinCodeBlock ~= true then
+			withinCodeBlock = true;
+			goto withinElement;
+		elseif line:match("(```)") and withinCodeBlock == true then
+			withinCodeBlock = false;
+			goto withinElement;
+		elseif withinCodeBlock == true then
+			goto withinElement;
 		end
+
+		if line:match("^%s*([+%-*])") then
+			parent_marker = line:match("^%s*([+%-*])");
+		elseif line:match("^%s*(%d+%.)") then
+			parent_marker = line:match("^%s*(%d+%.)");
+		end
+
+		if not line:match("^%s*([+%-*])") and not line:match("^%s*(%d+%.)") and parent_marker then
+			spaces_before = math.max(0, spaces_before - vim.fn.strchars((parent_marker or "") .. " "));
+		end
+
+		::withinElement::
 
 		table.insert(filtered_lines, line);
 		table.insert(indexes, l);
@@ -75,6 +100,16 @@ parser.parsed_content = {};
 ---@param buffer number
 ---@param TStree any
 parser.md = function (buffer, TStree, from, to)
+	if not parser.cached_conf or not parser.cached_conf.on_injected or parser.cached_conf.on_injected == false then
+		local root = TStree:root();
+		local root_r_start, _, root_r_end, _ = root:range();
+		local buf_lines = vim.api.nvim_buf_line_count(buffer);
+
+		if root_r_start ~= 0 or root_r_end ~= buf_lines then
+			return;
+		end
+	end
+
 	local scanned_queies = vim.treesitter.query.parse("markdown", [[
 		((setext_heading) @setext_heading)
 
@@ -129,13 +164,11 @@ parser.md = function (buffer, TStree, from, to)
 				col_end = col_end
 			})
 		elseif capture_name == "heading" then
-			local heading_txt = capture_node:next_sibling();
-			local title = heading_txt ~= nil and vim.treesitter.get_node_text(heading_txt, buffer) or "";
-			local h_txt_r_start, h_txt_c_start, h_txt_r_end, h_txt_c_end;
+			local parent = capture_node:parent();
 
-			if heading_txt ~= nil then
-				h_txt_r_start, h_txt_c_start, h_txt_r_end, h_txt_c_end = heading_txt:range();
-			end
+			local heading_txt = capture_node:next_sibling();
+			local title = heading_txt ~= nil and vim.treesitter.get_node_text(heading_txt, buffer) or nil;
+			local h_txt_r_start, h_txt_c_start, h_txt_r_end, h_txt_c_end;
 
 			table.insert(parser.parsed_content, {
 				node = capture_node,
@@ -143,9 +176,9 @@ parser.md = function (buffer, TStree, from, to)
 
 				level = vim.fn.strchars(capture_text),
 
+				line = vim.treesitter.get_node_text(parent, buffer),
 				marker = capture_text,
 				title = title,
-				title_pos = { h_txt_r_start, h_txt_c_start, h_txt_r_end, h_txt_c_end },
 
 				row_start = row_start,
 				row_end = row_end,
@@ -157,6 +190,8 @@ parser.md = function (buffer, TStree, from, to)
 			local line_lens = {};
 			local lines = {};
 			local highest_len = 0;
+
+			local block_start = vim.api.nvim_buf_get_lines(buffer, row_start, row_start + 1, false)[1];
 
 			for i = 1,(row_end - row_start) - 2 do
 				local this_code = vim.api.nvim_buf_get_lines(buffer, row_start + i, row_start + i + 1, false)[1];
@@ -173,7 +208,7 @@ parser.md = function (buffer, TStree, from, to)
 			table.insert(parser.parsed_content, {
 				node = capture_node,
 				type = "code_block",
-				language = not capture_node:named_child(1) and "" or vim.treesitter.get_node_text(capture_node:named_child(1), buffer),
+				language = block_start:match("%s*```(%S*)$") or "",
 
 				line_lengths = line_lens,
 				largest_line = highest_len,
@@ -237,8 +272,22 @@ parser.md = function (buffer, TStree, from, to)
 			local table_structure = {};
 			local alignments = {};
 
+			local line_positions = {};
+
 			for row in capture_node:iter_children() do
 				local tmp = {};
+
+				local row_text = vim.treesitter.get_node_text(row, buffer)
+				local r_row_start, r_col_start, r_row_end, r_col_end = row:range();
+
+				--- Separator gets counted from the start of the line
+				--- So, we will instead count the number of spaces at the start
+				table.insert(line_positions, {
+					row_start = r_row_start,
+					col_start = r_col_start == 0 and vim.fn.strchars(row_text:match("^(%s*)")) or r_col_start,
+					row_end = r_row_end,
+					col_end = r_col_end
+				})
 
 				if row:type() == "pipe_table_header" then
 					table.insert(table_structure, "header");
@@ -262,7 +311,7 @@ parser.md = function (buffer, TStree, from, to)
 						end
 					end
 
-					table.insert(table_structure, "seperator");
+					table.insert(table_structure, "separator");
 				elseif row:type() == "pipe_table_row" then
 					table.insert(table_structure, "content");
 				else
@@ -281,6 +330,25 @@ parser.md = function (buffer, TStree, from, to)
 				table.insert(rows, tmp)
 			end
 
+			local s_start, s_end;
+
+			-- This is a workaround for hybrid-mode
+			--
+			-- When ,`use_virt_lines` is true the table will take the
+			-- line above it and the line below it.
+			--
+			-- So we must adjust the ranges to match the render.
+			--
+			-- Don't worry, the renderer will use the __r ones in that
+			-- case
+			if parser.cached_conf and parser.cached_conf.tables and parser.cached_conf.tables.use_virt_lines == false then
+				s_start = row_start;
+				s_end = row_end;
+
+				row_start = row_start - 1;
+				row_end = row_end + 1;
+			end
+
 			table.insert(parser.parsed_content, {
 				node = capture_node,
 				type = "table",
@@ -289,22 +357,26 @@ parser.md = function (buffer, TStree, from, to)
 				rows = rows,
 
 				content_alignments = alignments,
+				content_positions = line_positions,
+
+				__r_start = s_start,
+				__r_end = s_end,
 
 				row_start = row_start,
 				row_end = row_end,
 
 				col_start = col_start,
-				col_end = col_end
+				col_end = col_end,
 			})
 		elseif capture_name == "list_item" then
 			local marker = capture_node:named_child(0);
 			local marker_text = vim.treesitter.get_node_text(marker, buffer);
 			local symbol = marker_text:gsub("%s", "");
 
-			local list_lines, lines, spaces = parser.fiter_lines(buffer, row_start, row_end, symbol);
+			local list_lines, lines, spaces = parser.fiter_lines(buffer, row_start, row_end);
 			local spaces_before_marker = list_lines[1]:match("^(%s*)" .. symbol .. "%s*");
 
-			local c_end, r_end = parser.get_list_end_range(buffer, row_start, row_end, symbol)
+			local c_end, _ = parser.get_list_end_range(buffer, row_start, row_end, symbol)
 
 			table.insert(parser.parsed_content, {
 				node = capture_node,
@@ -366,6 +438,8 @@ parser.md_inline = function (buffer, TStree, from, to)
 			] @link)
 
 		((code_span) @code)
+
+		((entity_reference) @entity)
 	]]);
 
 	-- The last 2 _ represent the metadata & query
@@ -379,25 +453,42 @@ parser.md_inline = function (buffer, TStree, from, to)
 			local title = string.match(line ~= nil and line[1] or "", "%b[]%s*(.*)$")
 
 			if capture_text == "[-]" then
-				table.insert(parser.parsed_content, {
-					node = capture_node,
-					type = "checkbox",
-					state = "pending",
+				for _, extmark in ipairs(parser.parsed_content) do
+					if extmark.type == "list_item" and extmark.row_start == row_start then
+						local start_line = extmark.list_lines[1] or "";
+						local atStart = start_line:match("%-%s+(%[%-%])%s+");
 
-					row_start = row_start,
-					row_end = row_end,
+						local chk_start, _ = start_line:find("%[%-%]");
 
-					col_start = col_start,
-					col_end = col_end
-				})
+						if not atStart or not chk_start or chk_start - 1 ~= col_start then
+							goto invalid;
+						end
+
+						table.insert(parser.parsed_content, {
+							node = capture_node,
+							type = "checkbox",
+							state = "pending",
+
+							row_start = row_start,
+							row_end = row_end,
+
+							col_start = col_start,
+							col_end = col_end
+						});
+
+						break;
+					end
+					::invalid::
+				end
 			else
 				for _, extmark in ipairs(parser.parsed_content) do
 					if extmark.type == "block_quote" and extmark.row_start == row_start then
-
 						extmark.callout = string.match(capture_text, "%[!([^%]]+)%]");
 						extmark.title = title;
 
-						extmark.line_width = vim.fn.strchars(line[1])
+						extmark.line_width = vim.fn.strchars(line[1]);
+
+						break;
 					end
 				end
 			end
@@ -450,6 +541,74 @@ parser.md_inline = function (buffer, TStree, from, to)
 				col_start = col_start,
 				col_end = col_end
 			})
+		elseif capture_name == "entity" then
+			table.insert(parser.parsed_content, {
+				node = capture_node,
+				type = "html_entity",
+
+				text = capture_text,
+
+				row_start = row_start,
+				row_end = row_end,
+
+				col_start = col_start,
+				col_end = col_end
+			})
+		end
+	end
+end
+
+parser.html = function (buffer, TStree, from, to)
+	if not parser.cached_conf or not parser.cached_conf.on_injected or parser.cached_conf.on_injected == false then
+		local root = TStree:root();
+		local root_r_start, _, _, _ = root:range();
+
+		local start_line = vim.api.nvim_buf_get_lines(buffer, root_r_start - 1, root_r_start, false)[1] or "";
+
+		if start_line:match("```") then
+			return;
+		end
+	end
+
+	local scanned_queies = vim.treesitter.query.parse("html", [[
+		((element) @elem)
+	]]);
+
+	for capture_id, capture_node, _, _ in scanned_queies:iter_captures(TStree:root(), buffer, from, to) do
+		local capture_name = scanned_queies.captures[capture_id];
+		local capture_text = vim.treesitter.get_node_text(capture_node, buffer);
+		local row_start, col_start, row_end, col_end = capture_node:range();
+
+		if capture_name == "elem" then
+			local node_childs = capture_node:named_child_count();
+
+			local start_tag = capture_node:named_child(0);
+			local end_tag = capture_node:named_child(node_childs - 1);
+
+			if start_tag:type() == "start_tag" and end_tag:type() == "end_tag" and row_start == row_end then
+				local _, ts_col_start, _, ts_col_end = start_tag:range();
+				local _, te_col_start, _, te_col_end = end_tag:range();
+
+				table.insert(parser.parsed_content, {
+					node = capture_node,
+					type = "html_inline",
+
+					tag = vim.treesitter.get_node_text(start_tag, buffer):gsub("[</>]", ""):match("%a+"),
+					text = capture_text,
+
+					start_tag_col_start = ts_col_start,
+					start_tag_col_end = ts_col_end,
+
+					end_tag_col_start = te_col_start,
+					end_tag_col_end = te_col_end,
+
+					row_start = row_start,
+					row_end = row_end,
+
+					col_start = col_start,
+					col_end = col_end
+				})
+			end
 		end
 	end
 end
@@ -458,13 +617,16 @@ end
 --- Parsed data is stored as a "view" in renderer.lua
 ---
 ---@param buffer number
-parser.init = function (buffer)
+parser.init = function (buffer, config_table)
 	local root_parser = vim.treesitter.get_parser(buffer);
 	root_parser:parse(true);
 
+	if config_table then
+		parser.cached_conf = config_table;
+	end
+
 	-- Clear the previous contents
 	parser.parsed_content = {};
-	local main_tree_parsed = false;
 
 	root_parser:for_each_tree(function (TStree, language_tree)
 		local tree_language = language_tree:lang();
@@ -473,32 +635,34 @@ parser.init = function (buffer)
 			parser.md(buffer, TStree)
 		elseif tree_language == "markdown_inline" then
 			parser.md_inline(buffer, TStree);
+		elseif tree_language == "html" then
+			parser.html(buffer, TStree);
 		end
 	end)
 
 	return parser.parsed_content;
 end
 
-parser.parse_range = function (buffer, from, to)
+parser.parse_range = function (buffer, config_table, from, to)
+	if not from or not to then
+		return {};
+	end
+
 	local root_parser = vim.treesitter.get_parser(buffer);
 	root_parser:parse(true);
 
-	if (not from or not to) and _G.__markview_render_ranges and _G.__markview_render_ranges[buffer] then
-		from = _G.__markview_render_ranges[buffer][1];
-		to = _G.__markview_render_ranges[buffer][2];
-	end
-	--
 	-- Clear the previous contents
 	parser.parsed_content = {};
-	local main_tree_parsed = false;
 
 	root_parser:for_each_tree(function (TStree, language_tree)
 		local tree_language = language_tree:lang();
 
 		if tree_language == "markdown" then
-			parser.md(buffer, TStree, from, to)
+			parser.md(buffer, TStree, from, to);
 		elseif tree_language == "markdown_inline" then
 			parser.md_inline(buffer, TStree, from, to);
+		elseif tree_language == "html" then
+			parser.html(buffer, TStree, from, to);
 		end
 	end)
 
