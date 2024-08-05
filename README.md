@@ -3,8 +3,12 @@
 An experimental `markdown` previewer for Neovim.
 
 <p align="center">
-    <a href="https://github.com/OXY2DEV/markview.nvim/wiki" style="font-size: 1.5rem;">Wiki page</a>
+    <a href="https://github.com/OXY2DEV/markview.nvim/wiki" style="font-size: 2rem;">Wiki page</a>
 </p>
+
+![hybrid_mode_showcase](https://github.com/OXY2DEV/markview.nvim/blob/images/Main/hybrid_mode_showcase.gif)
+![screenshot](https://github.com/OXY2DEV/markview.nvim/blob/images/Main/plugin_showcase_landscape.jpg)
+![screenshot_small](https://github.com/OXY2DEV/markview.nvim/blob/images/Main/plugin_showcase_mobile.jpg)
 
 ## ✨ Features
 
