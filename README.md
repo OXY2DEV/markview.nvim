@@ -307,7 +307,7 @@ For the column alignment markers these highlight groups are used,
 
 ## ⭐ Plugin showcase
 
-![showcase_1](./images/preview_1.png)
+![showcase_1](https://github.com/OXY2DEV/markview.nvim/blob/images/Submitted/sc_scottmckendry.png)
 
 <sub>Taken by <a href="https://github.com/scottmckendry">@scottmckendry</a></sub>
 
