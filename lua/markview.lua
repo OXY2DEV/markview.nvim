@@ -1477,7 +1477,7 @@ end, {
 markview.setup = function (user_config)
 	---@type markview.config
 	-- Merged configuration tables
-	markview.configuration = vim.tbl_extend("keep", user_config or {}, markview.configuration);
+	markview.configuration = vim.tbl_deep_extend("keep", user_config or {}, markview.configuration);
 
 	if vim.islist(markview.configuration.highlight_groups) then
 		markview.add_hls(markview.configuration.highlight_groups);
