@@ -7,6 +7,7 @@ An experimental `markdown` previewer for Neovim.
 </p>
 
 ![hybrid_mode_showcase](https://github.com/OXY2DEV/markview.nvim/blob/images/Main/hybrid_mode_showcase.gif)
+![html_showcase](https://github.com/OXY2DEV/markview.nvim/blob/images/Main/html_showcase.gif)
 ![screenshot](https://github.com/OXY2DEV/markview.nvim/blob/images/Main/plugin_showcase_landscape.jpg)
 ![screenshot_small](https://github.com/OXY2DEV/markview.nvim/blob/images/Main/plugin_showcase_mobile.jpg)
 
