@@ -96,52 +96,107 @@ local display_width = function (text, config)
 	end
 
 	local lnk_conf = config.links ~= nil and config.links.hyperlinks or nil;
+	---@type markview.render_config.links.link?
 	local img_conf = config.links ~= nil and config.links.images or nil;
 	local email_conf = config.links ~= nil and config.links.emails or nil;
 
-	for img_identifier, link, address in final_string:gmatch("(!?)%[([^%]]+)%]%(([^%)]+)%)") do
-		if img_identifier ~= "" then
-			d_width = d_width - vim.fn.strchars("![" .. "](" .. address .. ")");
+	--- Image link(normal)
+	for link, address in final_string:gmatch("!%[([^%]]+)%]%(([^%)]+)%)") do
+		if not img_conf then
+			break;
+		end
 
-			if img_conf ~= nil and img_conf.enable ~= false then
-				d_width = d_width + vim.fn.strchars(table.concat({
-					img_conf.corner_left or "",
-					img_conf.padding_left or "",
-					img_conf.icon or "",
-					img_conf.padding_right or "",
-					img_conf.corner_right or ""
-				}));
+		d_width = d_width - vim.fn.strchars("![" .. "](" .. address .. ")");
 
-				final_string = final_string:gsub("!%[" .. link .. "%]%(" .. address .. "%)", table.concat({
-					img_conf.corner_left or "",
-					img_conf.padding_left or "",
-					img_conf.icon or "",
-					link,
-					img_conf.padding_right or "",
-					img_conf.corner_right or ""
-				}));
-			end
-		else
-			d_width = d_width - vim.fn.strchars("[" .. "](" .. address .. ")");
+		d_width = d_width + vim.fn.strchars(table.concat({
+			img_conf.corner_left or "",
+			img_conf.padding_left or "",
+			img_conf.icon or "",
+			img_conf.padding_right or "",
+			img_conf.corner_right or ""
+		}));
 
-			if lnk_conf ~= nil and lnk_conf.enable ~= false then
-				d_width = d_width + vim.fn.strchars(table.concat({
-					lnk_conf.corner_left or "",
-					lnk_conf.padding_left or "",
-					lnk_conf.icon or "",
-					lnk_conf.padding_right or "",
-					lnk_conf.corner_right or ""
-				}));
+		final_string = final_string:gsub("!%[" .. link .. "%]%(" .. address .. "%)", table.concat({
+			img_conf.corner_left or "",
+			img_conf.padding_left or "",
+			img_conf.icon or "",
+			link,
+			img_conf.padding_right or "",
+			img_conf.corner_right or ""
+		}));
+	end
 
-				final_string = final_string:gsub("%[" .. link .. "%]%(" .. address .. "%)", table.concat({
-					lnk_conf.corner_left or "",
-					lnk_conf.padding_left or "",
-					lnk_conf.icon or "",
-					link,
-					lnk_conf.padding_right or "",
-					lnk_conf.corner_right or ""
-				}));
-			end
+	-- Image link: labels
+	for link, address in final_string:gmatch("!%[([^%]]+)%]%[([^%)]+)%]") do
+		if not img_conf then
+			break;
+		end
+
+		d_width = d_width - vim.fn.strchars("![" .. "][" .. address .. "]");
+
+		d_width = d_width + vim.fn.strchars(table.concat({
+			img_conf.corner_left or "",
+			img_conf.padding_left or "",
+			img_conf.icon or "",
+			img_conf.padding_right or "",
+			img_conf.corner_right or ""
+		}));
+
+		final_string = final_string:gsub("!%[" .. link .. "%]%[" .. address .. "%]", table.concat({
+			img_conf.corner_left or "",
+			img_conf.padding_left or "",
+			img_conf.icon or "",
+			link,
+			img_conf.padding_right or "",
+			img_conf.corner_right or ""
+		}));
+	end
+
+	-- Hyperlinks: normal
+	for link, address in final_string:gmatch("%[([^%]]+)%]%(([^%)]+)%)") do
+		d_width = d_width - vim.fn.strchars("[" .. "](" .. address .. ")");
+
+		if lnk_conf ~= nil and lnk_conf.enable ~= false then
+			d_width = d_width + vim.fn.strchars(table.concat({
+				lnk_conf.corner_left or "",
+				lnk_conf.padding_left or "",
+				lnk_conf.icon or "",
+				lnk_conf.padding_right or "",
+				lnk_conf.corner_right or ""
+			}));
+
+			final_string = final_string:gsub("%[" .. link .. "%]%(" .. address .. "%)", table.concat({
+				lnk_conf.corner_left or "",
+				lnk_conf.padding_left or "",
+				lnk_conf.icon or "",
+				link,
+				lnk_conf.padding_right or "",
+				lnk_conf.corner_right or ""
+			}));
+		end
+	end
+
+	-- Hyperlink: full_reference_link
+	for link, address in final_string:gmatch("[^!]%[([^%]]+)%]%[([^%]]+)%]") do
+		d_width = d_width - vim.fn.strchars("[" .. "][" .. address .. "]");
+
+		if lnk_conf ~= nil and lnk_conf.enable ~= false then
+			d_width = d_width + vim.fn.strchars(table.concat({
+				lnk_conf.corner_left or "",
+				lnk_conf.padding_left or "",
+				lnk_conf.icon or "",
+				lnk_conf.padding_right or "",
+				lnk_conf.corner_right or ""
+			}));
+
+			final_string = final_string:gsub("%[" .. link .. "%]%[" .. address .. "%]", table.concat({
+				lnk_conf.corner_left or "",
+				lnk_conf.padding_left or "",
+				lnk_conf.icon or "",
+				link,
+				lnk_conf.padding_right or "",
+				lnk_conf.corner_right or ""
+			}));
 		end
 	end
 
@@ -1239,20 +1294,14 @@ renderer.render_links = function (buffer, content, config_table)
 		return;
 	end
 
-	if content.link_type == "inline_link" then
-		lnk_conf = config_table.hyperlinks;
-	elseif content.link_type == "image" then
-		lnk_conf = config_table.images;
-	elseif content.link_type == "email_autolink" then
-		lnk_conf = config_table.emails;
-	end
+	lnk_conf = config_table.hyperlinks;
 
 	-- Do not render links with no config
 	if not lnk_conf then
 		return;
 	end
 
-	vim.api.nvim_buf_set_extmark(buffer, renderer.namespace, content.row_start, content.link_type == "email_autolink" and content.col_start or content.col_start + 1, {
+	vim.api.nvim_buf_set_extmark(buffer, renderer.namespace, content.row_start, content.col_start + 1, {
 		virt_text_pos = "inline",
 		virt_text = {
 			{ lnk_conf.corner_left or "", set_hl(lnk_conf.corner_left_hl) or set_hl(lnk_conf.hl) },
@@ -1260,20 +1309,94 @@ renderer.render_links = function (buffer, content, config_table)
 			{ lnk_conf.icon or "", set_hl(lnk_conf.icon_hl) or set_hl(lnk_conf.hl) },
 		},
 
-		end_col = content.link_type == "email_autolink" and content.col_start + 1 or content.col_start,
+		end_col = content.col_start,
 		conceal = ""
 	});
 
 	vim.api.nvim_buf_add_highlight(buffer, renderer.namespace, set_hl(lnk_conf.hl) or "", content.row_start, content.col_start, content.col_end);
 
-	vim.api.nvim_buf_set_extmark(buffer, renderer.namespace, content.row_end, content.link_type == "email_autolink" and content.col_end - 1 or content.col_end, {
+	vim.api.nvim_buf_set_extmark(buffer, renderer.namespace, content.row_end, content.col_end, {
 		virt_text_pos = "inline",
 		virt_text = {
 			{ lnk_conf.padding_right or "", set_hl(lnk_conf.padding_right_hl) or set_hl(lnk_conf.hl) },
 			{ lnk_conf.corner_right or "", set_hl(lnk_conf.corner_right_hl) or set_hl(lnk_conf.hl) },
 		},
 
-		end_col = content.link_type == "email_autolink" and content.col_end or content.col_start,
+		end_col = content.col_start,
+		conceal = ""
+	});
+end
+
+renderer.render_email_links = function (buffer, content, config_table)
+	if not config_table or config_table.enable == false then
+		return;
+	end
+
+	local email_conf = config_table.emails;
+
+	if not email_conf then
+		return;
+	end
+
+	vim.api.nvim_buf_set_extmark(buffer, renderer.namespace, content.row_start, content.col_start, {
+		virt_text_pos = "inline",
+		virt_text = {
+			{ email_conf.corner_left or "", set_hl(email_conf.corner_left_hl) or set_hl(email_conf.hl) },
+			{ email_conf.padding_left or "", set_hl(email_conf.padding_left_hl) or set_hl(email_conf.hl) },
+			{ email_conf.icon or "", set_hl(email_conf.icon_hl) or set_hl(email_conf.hl) },
+		},
+
+		end_col = content.col_start + 1,
+		conceal = ""
+	});
+
+	vim.api.nvim_buf_add_highlight(buffer, renderer.namespace, set_hl(email_conf.hl) or "", content.row_start, content.col_start, content.col_end);
+
+	vim.api.nvim_buf_set_extmark(buffer, renderer.namespace, content.row_end, content.col_end - 1, {
+		virt_text_pos = "inline",
+		virt_text = {
+			{ email_conf.padding_right or "", set_hl(email_conf.padding_right_hl) or set_hl(email_conf.hl) },
+			{ email_conf.corner_right or "", set_hl(email_conf.corner_right_hl) or set_hl(email_conf.hl) },
+		},
+
+		end_col = content.col_end,
+		conceal = ""
+	});
+end
+
+renderer.render_img_links = function (buffer, content, config_table)
+	if not config_table or config_table.enable == false then
+		return;
+	end
+
+	local img_conf = config_table.images;
+
+	if not img_conf then
+		return;
+	end
+
+	vim.api.nvim_buf_set_extmark(buffer, renderer.namespace, content.row_start, content.col_start + 1, {
+		virt_text_pos = "inline",
+		virt_text = {
+			{ img_conf.corner_left or "", set_hl(img_conf.corner_left_hl) or set_hl(img_conf.hl) },
+			{ img_conf.padding_left or "", set_hl(img_conf.padding_left_hl) or set_hl(img_conf.hl) },
+			{ img_conf.icon or "", set_hl(img_conf.icon_hl) or set_hl(img_conf.hl) },
+		},
+
+		end_col = content.col_start,
+		conceal = ""
+	});
+
+	vim.api.nvim_buf_add_highlight(buffer, renderer.namespace, set_hl(img_conf.hl) or "", content.row_start, content.col_start, content.col_end);
+
+	vim.api.nvim_buf_set_extmark(buffer, renderer.namespace, content.row_end, content.col_end - vim.fn.strchars(content.address), {
+		virt_text_pos = "inline",
+		virt_text = {
+			{ img_conf.padding_right or "", set_hl(img_conf.padding_right_hl) or set_hl(img_conf.hl) },
+			{ img_conf.corner_right or "", set_hl(img_conf.corner_right_hl) or set_hl(img_conf.hl) },
+		},
+
+		end_col = content.col_end,
 		conceal = ""
 	});
 end
@@ -1521,8 +1644,10 @@ renderer.render_in_range = function (buffer, partial_contents, config_table)
 			pcall(renderer.render_horizontal_rules, buffer, content, config_table.horizontal_rules);
 		elseif type == "link" then
 			pcall(renderer.render_links, buffer, content, config_table.links);
+		elseif type == "email" then
+			pcall(renderer.render_email_links, buffer, content, config_table.links);
 		elseif type == "image" then
-			pcall(renderer.render_links, buffer, content, config_table.images);
+			pcall(renderer.render_img_links, buffer, content, config_table.links);
 		elseif type == "inline_code" then
 			pcall(renderer.render_inline_codes, buffer, content, config_table.inline_codes)
 		elseif type == "list_item" then
@@ -1581,8 +1706,10 @@ renderer.render = function (buffer, parsed_content, config_table, conceal_start,
 			pcall(renderer.render_horizontal_rules, buffer, content, config_table.horizontal_rules);
 		elseif type == "link" then
 			pcall(renderer.render_links, buffer, content, config_table.links);
+		elseif type == "email" then
+			pcall(renderer.render_email_links, buffer, content, config_table.links);
 		elseif type == "image" then
-			pcall(renderer.render_links, buffer, content, config_table.images);
+			pcall(renderer.render_img_links, buffer, content, config_table.links);
 		elseif type == "inline_code" then
 			pcall(renderer.render_inline_codes, buffer, content, config_table.inline_codes)
 		elseif type == "list_item" then

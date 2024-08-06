@@ -447,10 +447,12 @@ parser.md_inline = function (buffer, TStree, from, to)
 		((shortcut_link) @callout)
 
 		([
-			(image)
 			(inline_link)
-			(email_autolink)
-			] @link)
+			(full_reference_link)
+		] @link)
+			
+		((email_autolink) @email)
+		((image) @image)
 
 		((code_span) @code)
 
@@ -508,14 +510,20 @@ parser.md_inline = function (buffer, TStree, from, to)
 				end
 			end
 		elseif capture_name == "link" then
-			local link_type = capture_node:type();
-			local link_text = string.match(capture_text, "%[(.-)%]");
-			local link_address = string.match(capture_text, "%((.-)%)")
+			local link_text = "";
+			local link_address;
+
+			if capture_node:named_child(0) and capture_node:named_child(0):type() == "link_text" then
+				link_text = vim.treesitter.get_node_text(capture_node:named_child(0), buffer);
+			end
+
+			if capture_node:named_child(1) and (capture_node:named_child(q):type() == "link_destination" or capture_node:named_child(q):type() == "link_label") then
+				link_address = vim.treesitter.get_node_text(capture_node:named_child(1), buffer);
+			end
 
 			table.insert(parser.parsed_content, {
 				node = capture_node,
 				type = "link",
-				link_type = link_type,
 
 				text = link_text,
 				address = link_address,
@@ -526,9 +534,30 @@ parser.md_inline = function (buffer, TStree, from, to)
 				col_start = col_start,
 				col_end = col_end,
 			})
+		elseif capture_name == "email" then
+			table.insert(parser.parsed_content, {
+				node = capture_node,
+				type = "email",
+
+				text = capture_text,
+
+				row_start = row_start,
+				row_end = row_end,
+
+				col_start = col_start,
+				col_end = col_end,
+			})
 		elseif capture_name == "image" then
-			local link_text = string.match(capture_text, "%[(.-)%]");
-			local link_address = string.match(capture_text, "%((.-)%)")
+			local desc = capture_node:named_child(0);
+			local sibl = capture_node:named_child(1);
+
+			local link_text = vim.treesitter.get_node_text(desc, buffer);
+			local link_address = ""
+
+			-- vim.print(sibl == nil)
+			if sibl then
+				link_address = vim.treesitter.get_node_text(sibl, buffer);
+			end
 
 			table.insert(parser.parsed_content, {
 				node = capture_node,
