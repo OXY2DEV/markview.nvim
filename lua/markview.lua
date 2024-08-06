@@ -1323,6 +1323,7 @@ markview.configuration = {
 			"MarkviewTableAlignLeft", "MarkviewTableAlignRight", "MarkviewTableAlignCenter", "MarkviewTableAlignCenter"
 		},
 
+		block_decorator = true,
 		use_virt_lines = true
 	},
 };

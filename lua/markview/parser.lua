@@ -356,7 +356,7 @@ parser.md = function (buffer, TStree, from, to)
 			--
 			-- Don't worry, the renderer will use the __r ones in that
 			-- case
-			if parser.cached_conf and parser.cached_conf.tables and parser.cached_conf.tables.use_virt_lines == false then
+			if parser.cached_conf and parser.cached_conf.tables and parser.cached_conf.block_decorator ~= false and parser.cached_conf.tables.use_virt_lines == false then
 				s_start = row_start;
 				s_end = row_end;
 

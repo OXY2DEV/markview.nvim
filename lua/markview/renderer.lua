@@ -391,14 +391,14 @@ local table_header = function (buffer, content, config_table)
 
 			table.insert(virt_txt, { tbl_conf.text[3], set_hl(tbl_conf.hl[3]) })
 
-			if config_table.tables.use_virt_lines == true then
+			if tbl_conf.block_decorator ~= false and config_table.tables.use_virt_lines == true then
 				vim.api.nvim_buf_set_extmark(buffer, renderer.namespace, row_start, 0, {
 					virt_lines_above = true,
 					virt_lines = {
 						virt_txt
 					}
 				});
-			elseif row_start > 0 then
+			elseif tbl_conf.block_decorator ~= false and row_start > 0 then
 				-- BUG: Nearby tables can cause text to overlap
 				vim.api.nvim_buf_clear_namespace(buffer, renderer.namespace, row_start - 1, row_start);
 
@@ -626,14 +626,14 @@ local table_footer = function (buffer, content, config_table)
 
 			table.insert(virt_txt, { tbl_conf.text[11], set_hl(tbl_conf.hl[11]) })
 
-			if config_table.tables.use_virt_lines == true then
+			if tbl_conf.block_decorator ~= false and config_table.tables.use_virt_lines == true then
 				vim.api.nvim_buf_set_extmark(buffer, renderer.namespace, row_end - 1, 0, {
 					virt_lines_above = false,
 					virt_lines = {
 						virt_txt
 					}
 				});
-			elseif content.row_start < vim.api.nvim_buf_line_count(buffer) then
+			elseif tbl_conf.block_decorator ~= false and content.row_start < vim.api.nvim_buf_line_count(buffer) then
 				vim.api.nvim_buf_set_extmark(buffer, renderer.namespace, row_end, 0, {
 					virt_text_pos = "inline",
 					virt_text = virt_txt
@@ -707,6 +707,7 @@ end
 local table_content = function (buffer, content, config_table, r_num)
 	local tbl_conf = config_table.tables;
 
+	local row_start = content.__r_start or content.row_start;
 	local col_start = content.col_start;
 
 	local curr_col = 0;
@@ -718,7 +719,7 @@ local table_content = function (buffer, content, config_table, r_num)
 
 	for index, col in ipairs(content.rows[r_num]) do
 		if index == 1 then
-			vim.api.nvim_buf_set_extmark(buffer, renderer.namespace, content.row_start + r_num - 1, col_start, {
+			vim.api.nvim_buf_set_extmark(buffer, renderer.namespace, row_start + r_num - 1, col_start, {
 				virt_text_pos = "inline",
 				virt_text = {
 					{ tbl_conf.text[6], set_hl(tbl_conf.hl[6]) }
@@ -730,7 +731,7 @@ local table_content = function (buffer, content, config_table, r_num)
 
 			curr_col = curr_col + 1
 		elseif index == #content.rows[1] then
-			vim.api.nvim_buf_set_extmark(buffer, renderer.namespace, content.row_start + r_num - 1, col_start + curr_col, {
+			vim.api.nvim_buf_set_extmark(buffer, renderer.namespace, row_start + r_num - 1, col_start + curr_col, {
 				virt_text_pos = "inline",
 				virt_text = {
 					{ tbl_conf.text[6], set_hl(tbl_conf.hl[6]) }
@@ -742,7 +743,7 @@ local table_content = function (buffer, content, config_table, r_num)
 
 			curr_col = curr_col + 1
 		elseif col == "|" then
-			vim.api.nvim_buf_set_extmark(buffer, renderer.namespace, content.row_start + r_num - 1, col_start + curr_col, {
+			vim.api.nvim_buf_set_extmark(buffer, renderer.namespace, row_start + r_num - 1, col_start + curr_col, {
 				virt_text_pos = "inline",
 				virt_text = {
 					{ tbl_conf.text[6], set_hl(tbl_conf.hl[6]) }
@@ -759,14 +760,14 @@ local table_content = function (buffer, content, config_table, r_num)
 
 			if width < actual_width then
 				if align == "left" then
-					vim.api.nvim_buf_set_extmark(buffer, renderer.namespace, content.row_start + r_num - 1, col_start + curr_col + vim.fn.strchars(col), {
+					vim.api.nvim_buf_set_extmark(buffer, renderer.namespace, row_start + r_num - 1, col_start + curr_col + vim.fn.strchars(col), {
 						virt_text_pos = "inline",
 						virt_text = {
 							{ string.rep(" ", (actual_width - width)) }
 						}
 					});
 				elseif align == "right" then
-					vim.api.nvim_buf_set_extmark(buffer, renderer.namespace, content.row_start + r_num - 1, col_start + curr_col, {
+					vim.api.nvim_buf_set_extmark(buffer, renderer.namespace, row_start + r_num - 1, col_start + curr_col, {
 						virt_text_pos = "inline",
 						virt_text = {
 							{ string.rep(" ", (actual_width - width)) }
@@ -775,14 +776,14 @@ local table_content = function (buffer, content, config_table, r_num)
 				else
 					local before, after = math.floor((actual_width - width) / 2), math.ceil((actual_width - width) / 2);
 
-					vim.api.nvim_buf_set_extmark(buffer, renderer.namespace, content.row_start + r_num - 1, col_start + curr_col + vim.fn.strchars(col), {
+					vim.api.nvim_buf_set_extmark(buffer, renderer.namespace, row_start + r_num - 1, col_start + curr_col + vim.fn.strchars(col), {
 						virt_text_pos = "inline",
 						virt_text = {
 							{ string.rep(" ", after) }
 						}
 					});
 
-					vim.api.nvim_buf_set_extmark(buffer, renderer.namespace, content.row_start + r_num - 1, col_start + curr_col, {
+					vim.api.nvim_buf_set_extmark(buffer, renderer.namespace, row_start + r_num - 1, col_start + curr_col, {
 						virt_text_pos = "inline",
 						virt_text = {
 							{ string.rep(" ", before) }
