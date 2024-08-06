@@ -1,6 +1,4 @@
 local renderer = {};
-local devicons = require("nvim-web-devicons");
-
 local entites = require("markview.entites");
 local languages = require("markview.languages");
 
@@ -955,6 +953,7 @@ renderer.render_code_blocks = function (buffer, content, config_table)
 			})
 		end
 	elseif config_table.style == "language" then
+		local devicons = require("nvim-web-devicons");
 		local language = content.language;
 		local icon, hl = devicons.get_icon(nil, language, { default = true });
 		local block_length = content.largest_line;
