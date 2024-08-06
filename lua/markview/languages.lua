@@ -1,221 +1,281 @@
 local languages = {};
 
+languages.reverse_map = {
+    ["c"] = "c",
+    ["c_plus_plus"] = "cpp",
+    ["java"] = "java",
+    ["python"] = "py",
+    ["javascript"] = "js",
+    ["typescript"] = "ts",
+    ["ruby"] = "rb",
+    ["php"] = "php",
+    ["c_sharp"] = "cs",
+    ["swift"] = "swift",
+    ["kotlin"] = "kt",
+    ["go"] = "go",
+    ["rust"] = "rs",
+    ["r"] = "r",
+    ["perl"] = "pl",
+    ["lua"] = "lua",
+    ["shell"] = "sh",
+    ["powershell"] = "ps1",
+    ["scala"] = "scala",
+    ["haskell"] = "hs",
+    ["visual_basic"] = "vb",
+    ["julia"] = "jl",
+    ["clojure"] = "clj",
+    ["dart"] = "dart",
+    ["groovy"] = "groovy",
+    ["matlab"] = "m",
+    ["erlang"] = "erl",
+    ["elixir"] = "ex",
+    ["elm"] = "elm",
+    ["fortran"] = "f90",
+    ["ocaml"] = "ml",
+    ["verilog"] = "v",
+    ["vhdl"] = "vhd",
+    ["sql"] = "sql",
+    ["ada"] = "adb",
+    ["prolog"] = "p",
+    ["tcl"] = "tcl",
+    ["scheme"] = "scm",
+    ["nim"] = "nim",
+    ["awk"] = "awk",
+    ["coffeescript"] = "coffee",
+    ["f_sharp"] = "fs",
+    ["pascal"] = "pas",
+    ["haxe"] = "hx",
+    ["haxe_shader_language"] = "hxsl",
+    ["haxe_project"] = "hxproj",
+    ["xquery"] = "x",
+    ["idl"] = "idp",
+    ["interface_definition_language"] = "idl",
+    ["asp"] = "asp",
+    ["lisp"] = "lsp",
+    ["common_lisp"] = "cl",
+    ["opencl"] = "cl",
+    ["d"] = "d",
+    ["gdscript"] = "gd",
+    ["glsl"] = "glsl",
+    ["c_header"] = "h",
+    ["c_plus_plus_header"] = "hpp",
+    ["erlang_header"] = "hrl",
+    ["lisp_identifier"] = "lid",
+    ["node_js_es_module"] = "mjs",
+    ["markdown"] = "md",
+    ["n"] = "n",
+    ["processing"] = "pde",
+    ["qml"] = "qml",
+    ["red"] = "red",
+    ["reason"] = "re",
+    ["racket"] = "rkt",
+    ["supercollider"] = "sc",
+    ["solidity"] = "sol",
+    ["smalltalk"] = "st",
+    ["stylus"] = "styl",
+    ["scheme_source"] = "sx",
+    ["isabelle"] = "thy",
+    ["toml"] = "toml",
+    ["vala"] = "vala",
+    ["vala_api"] = "vapi",
+    ["vim_script"] = "vim",
+    ["wix"] = "wxs",
+    ["xslt"] = "xt",
+    ["yaml"] = "yaml",
+    ["zcml"] = "zcml",
+    ["zenscript"] = "zs",
+    ["zsh"] = "zsh",
+    ["basic"] = "bas",
+    ["batch"] = "bat",
+    ["blitzmax"] = "bmx",
+    ["boo"] = "boo",
+    ["bluespec_systemverilog"] = "bsv",
+    ["c2hs"] = "chs",
+    ["clips"] = "clp",
+    ["batch_script"] = "cmd",
+    ["cobol"] = "cob",
+    ["cobol_legacy"] = "cbl",
+    ["camal"] = "cma",
+    ["crmscript"] = "crm",
+    ["eiffel"] = "e",
+    ["eagle"] = "ea",
+    ["emberscript"] = "em",
+    ["elixir_script"] = "exs",
+    ["f"] = "f",
+    ["fennel"] = "fnl",
+    ["g"] = "g",
+    ["gds"] = "gd",
+    ["gsl"] = "glf",
+    ["google_apps_script"] = "gs",
+    ["hcl"] = "hcl",
+    ["haxe_project_file"] = "hxproj",
+    ["agda"] = "lagda",
+    ["lean"] = "lean",
+    ["lassoscript"] = "ls",
+    ["lasso"] = "lss",
+    ["maxscript"] = "mc",
+    ["mumps"] = "mu",
+    ["myghty"] = "myt",
+    ["runoff"] = "rno",
+    ["sass"] = "scss",
+    ["smarty"] = "tpl",
+    ["ur"] = "ur",
+    ["vbscript"] = "vbproj",
+    ["wolfram"] = "wlk",
+    ["xpl"] = "xpl",
+    ["xquery_file"] = "xqy",
+    ["xs"] = "xs",
+    ["z"] = "z"
+};
+
 languages.patterns = {
-	{ ".*%.feature", "Cucumber" },
-
-	{ ".*%.abap", "Abap" },
-
-	{ ".*%.ada", "Ada" },
-	{ "adb", "Ada" },
-	{ "ads$", "Ada" },
-
-	{ "htaccess", "Apacheconf" },
-	{ "apache.conf", "Apacheconf" },
-	{ "apache2.conf", "Apacheconf" },
-
-	{ ".*%.as", "As" },
-	{ ".%*%.asy", "Asy" },
-
-	{ "ahkl", "Ahk" },
-
-	{ "sh", "Bash" },
-	{ "ksh", "Bash" },
-	{ "ksh", "Bash" },
-	{ ".*%.ebuild", "Bash" },
-	{ ".*%.eclass", "Bash" },
-
-	{ ".*%.befunge", "Befunge" },
-	{ ".*%.bmx", "Blitzmax" },
-	{ ".*%.boo", "Boo" },
-
-	{ "bf", "Brainfuck" },
-	{ "b", "Brainfuck" },
-
-	{ "cmd", "Bat" },
-
-	{ ".*%.cfc", "Cfm" },
-	{ "cfml", "Cfm" },
-
-	{ "cl", "Cl" },
-	{ "lisp", "Cl" },
-	{ ".*%.el", "Cl" },
-
-	{ "clj", "Clojure" },
-	{ "cljs", "Clojure" },
-
-	{ "h", "C" },
-	{ "c", "C" },
-	{ ".*.cmake", "Cmake" },
-
-	{ "coffee", "Cofeescript" },
-	{ ".*%.sh%-session", "Console" },
-
-	{ "cpp", "C++" },
-	{ "hpp", "C++" },
-	{ "cc", "C++" },
-	{ "hh", "C++" },
-	{ "cxx", "C++" },
-	{ "hxx", "C++" },
-	{ ".*%.pde", "C++" },
-
-	{ "csharp", "C#" },
-	{ "cs", "C#" },
-	{ ".*.%cs", "C#" },
-
-	{ "css", "CSS" },
-
-	{ "pyx", "Cython" },
-	{ "pxd", "Cython" },
-	{ ".*%.pxi", "Cython" },
-
-	{ "d", "D" },
-	{ "di", "D" },
-
-	{ ".*%.pas", "Delphi" },
-
-	{ "patch", "Diff" },
-
-	{ "darcspatch", "Dpatch" },
-
-	{ "jbst", "Duel" },
-
-	{ "dyl", "Dylan" },
-
-	{ ".*%.erb", "Erb" },
-
-	{ ".*%.erl%-sh", "Erl" },
-
-	{ "erl", "Erlang" },
-	{ "hrl", "Erlang" },
-
-	{ "flx", "Felix" },
-	{ "flxh", "Felix" },
-
-	{ "f", "Fortran" },
-	{ "f90", "Fortran" },
-
-	{ "s", "Gas" },
-	{ "S", "Gas" },
-
-	{ ".*%.kid", "Genshi" },
-
-	{ "gitignore", "Gitignore" },
-
-	{ "vert", "GLSL" },
-	{ "frag", "GLSL" },
-	{ ".*%.geo", "GLSL" },
-
-	{ "plot", "Gnuplot" },
-	{ "plt", "Gnuplot" },
-
-	{ ".*%.go", "Go" },
-
-	{ "hs", "Haskell" },
-	{ ".*%.hs", "Haskell" },
-
-	{ "htm", "Html" },
-	{ "xhtml", "Html" },
-	{ "xslt", "Html" },
-
-	{ ".*%.hx", "Hx" },
-
-	{ "hy", "Hybris" },
-	{ "hyb", "Hybris" },
-
-	{ "ini", "INI" },
-	{ "cfg", "INI" },
-
-	{ ".*%.io", "Io" },
-	{ "ik", "Ioke" },
-
-	{ ".*%.jade", "Jade" },
-
-	{ ".*%.Java", "Java" },
-
-	{ "ll", "LLVM" },
-
-	{ "wlua", "Lua" },
-
-	{ "mak", "Make" },
-	{ "makefile", "Make" },
-	{ "Makefile", "Make" },
-	{ "GNUmakefile", "Make" },
-
-	{ ".*%.mao", "Make" },
-
-	{ "mhtml", "Mason" },
-	{ "mc", "Mason" },
-	{ ".*%.mi", "Mason" },
-	{ "autohandler", "Mason" },
-	{ "dhandler", "Mason" },
-
-	{ "md", "Markdown" },
-
-	{ "m", "Objective C" },
-	{ ".*%.m", "Objective C" },
-	{ ".*%.j", "Objective J" },
-
-	{ "ml", "Ocaml" },
-	{ "mli", "Ocaml" },
-	{ "mll", "Ocaml" },
-	{ "mly", "Ocaml" },
-
-	{ "pm", "Perl" },
-	{ "pl", "Perl" },
-
-	{ "php", "PHP" },
-
-	{ "ps", "Postscript" },
-	{ "eps", "Postscript" },
-
-	{ "pro", "Prolog" },
-	{ ".*%.pl", "Prolog" },
-
-	{ ".*%.properties", "Properties" },
-
-	{ ".*%.py3tb", "Py3tb" },
-	{ ".*%.pytb", "Pytb" },
-	{ "py", "Python" },
-	{ "pyw", "Python" },
-	{ "sc", "Python" },
-	{ "SConstruct", "Python" },
-	{ "SConscript", "Python" },
-	{ "tac", "Python" },
-
-	{ ".*%.R", "R" },
-
-	{ "rb", "Ruby" },
-	{ "rbw", "Ruby" },
-	{ "RakeFile", "Ruby" },
-	{ "rake", "Ruby" },
-	{ "gemspec", "Ruby" },
-	{ "rbx", "Ruby" },
-	{ "duby", "Ruby" },
-
-	{ "rs", "rust" },
-
-	{ "sql", "SQL" },
-	{ ".*%.sql", "SQL" },
-
-	{ "txt", "Text" },
-
-	{ "ts", "Typescript" },
-
-	{ "yml", "Yaml" },
+    ["c"] = "C",
+    ["cpp"] = "C++",
+    ["java"] = "Java",
+    ["py"] = "Python",
+    ["js"] = "JavaScript",
+    ["ts"] = "TypeScript",
+    ["rb"] = "Ruby",
+    ["php"] = "PHP",
+    ["cs"] = "C#",
+    ["swift"] = "Swift",
+    ["kt"] = "Kotlin",
+    ["go"] = "Go",
+    ["rs"] = "Rust",
+    ["r"] = "R",
+    ["pl"] = "Perl",
+    ["lua"] = "Lua",
+    ["sh"] = "Shell",
+    ["ps1"] = "PowerShell",
+    ["scala"] = "Scala",
+    ["hs"] = "Haskell",
+    ["vb"] = "Visual Basic",
+    ["jl"] = "Julia",
+    ["clj"] = "Clojure",
+    ["dart"] = "Dart",
+    ["groovy"] = "Groovy",
+    ["m"] = "MATLAB",
+    ["erl"] = "Erlang",
+    ["ex"] = "Elixir",
+    ["elm"] = "Elm",
+    ["f90"] = "Fortran",
+    ["ml"] = "OCaml",
+    ["v"] = "Verilog",
+    ["vhd"] = "VHDL",
+    ["sql"] = "SQL",
+    ["adb"] = "Ada",
+    ["p"] = "Prolog",
+    ["tcl"] = "Tcl",
+    ["scm"] = "Scheme",
+    ["nim"] = "Nim",
+    ["awk"] = "AWK",
+    ["coffee"] = "CoffeeScript",
+    ["fs"] = "F#",
+    ["pas"] = "Pascal",
+    ["hx"] = "Haxe",
+    ["hxsl"] = "Haxe Shader Language",
+    ["hxproj"] = "Haxe Project",
+    ["x"] = "XQuery",
+    ["idp"] = "IDL",
+    ["idl"] = "Interface Definition Language",
+    ["ada"] = "Ada",
+    ["asp"] = "ASP",
+    ["lsp"] = "Lisp",
+    ["cl"] = "Common Lisp",
+    ["d"] = "D",
+    ["g"] = "G",
+    ["gd"] = "GDScript",
+    ["glsl"] = "GLSL",
+    ["h"] = "C Header",
+    ["hpp"] = "C++ Header",
+    ["hrl"] = "Erlang Header",
+    ["lid"] = "Lisp Identifier",
+    ["mjs"] = "Node.js ES Module",
+    ["md"] = "Markdown",
+    ["n"] = "N",
+    ["pde"] = "Processing",
+    ["qml"] = "QML",
+    ["red"] = "Red",
+    ["re"] = "Reason",
+    ["rkt"] = "Racket",
+    ["sc"] = "SuperCollider",
+    ["sol"] = "Solidity",
+    ["st"] = "Smalltalk",
+    ["styl"] = "Stylus",
+    ["sx"] = "Scheme Source",
+    ["thy"] = "Isabelle",
+    ["toml"] = "TOML",
+    ["vala"] = "Vala",
+    ["vapi"] = "Vala API",
+    ["vim"] = "Vim script",
+    ["wxs"] = "WiX",
+    ["xt"] = "XSLT",
+    ["yaml"] = "YAML",
+    ["yml"] = "YAML",
+    ["zcml"] = "ZCML",
+    ["zs"] = "ZenScript",
+    ["zsh"] = "Zsh",
+    ["bas"] = "BASIC",
+    ["bat"] = "Batch",
+    ["bmx"] = "BlitzMax",
+    ["boo"] = "Boo",
+    ["bsv"] = "Bluespec SystemVerilog",
+    ["chs"] = "C2HS",
+    ["clp"] = "CLIPS",
+    ["cmd"] = "Batch script",
+    ["cob"] = "COBOL",
+    ["cbl"] = "COBOL",
+    ["cma"] = "CAMAL",
+    ["crm"] = "CrmScript",
+    ["e"] = "Eiffel",
+    ["ea"] = "Eagle",
+    ["em"] = "EmberScript",
+    ["exs"] = "Elixir",
+    ["f"] = "F",
+    ["fnl"] = "Fennel",
+    ["glf"] = "GSL",
+    ["gs"] = "Google Apps Script",
+    ["hcl"] = "HCL",
+    ["lagda"] = "Agda",
+    ["lean"] = "Lean",
+    ["ls"] = "LassoScript",
+    ["lss"] = "Lasso",
+    ["mc"] = "MAXScript",
+    ["mu"] = "MUMPS",
+    ["myt"] = "Myghty",
+    ["rno"] = "RUNOFF",
+    ["scss"] = "Sass",
+    ["tpl"] = "Smarty",
+    ["ur"] = "Ur",
+    ["vbproj"] = "VBScript",
+    ["wlk"] = "Wolfram",
+    ["xpl"] = "XPL",
+    ["xqy"] = "XQuery",
+    ["xquery"] = "XQuery",
+    ["xs"] = "XS",
+    ["z"] = "Z",
 };
 
 languages.get_name = function (name)
 	if not name or name == "" then
 		return "Unknown";
-	end
-
-	for _, pattern in ipairs(languages.patterns) do
-		if name:match("^" .. pattern[1] .. "$") then
-			return pattern[2];
-		end
+	elseif languages.patterns[name] then
+		return languages.patterns[name];
 	end
 
 	return string.gsub(name, "^%l", string.upper);
 end
+
+languages.get_fs = function (name)
+	if not name or name == "" then
+		return "Unknown";
+	elseif languages.reverse_map[name] then
+		return languages.reverse_map[name];
+	else
+		return name;
+	end
+end
+
+vim.print(languages.get_name("cs"))
 
 return languages;
