@@ -288,12 +288,14 @@ parser.md = function (buffer, TStree, from, to)
 			local alignments = {};
 
 			local line_positions = {};
+			local col_widths = {};
 
 			for row in capture_node:iter_children() do
 				local tmp = {};
-
 				local row_text = vim.treesitter.get_node_text(row, buffer)
 				local r_row_start, r_col_start, r_row_end, r_col_end = row:range();
+
+				local line = vim.api.nvim_buf_get_lines(buffer, r_row_start, r_row_start + 1, false)[1];
 
 				--- Separator gets counted from the start of the line
 				--- So, we will instead count the number of spaces at the start
@@ -322,6 +324,18 @@ parser.md = function (buffer, TStree, from, to)
 								table.insert(alignments, "left");
 							elseif char_e == ":" then
 								table.insert(alignments, "right");
+							end
+
+							if line:match("|([^|]+)|") then
+								local col_content = line:match("|([^|]+)|");
+								line = line:gsub("|" .. col_content, "");
+
+								table.insert(col_widths, vim.fn.strchars(col_content));
+							elseif line:match("|([^|]+)$") then
+								local col_content = line:match("|([^|]+)$");
+								line = line:gsub("|" .. col_content, "");
+
+								table.insert(col_widths, vim.fn.strchars(col_content));
 							end
 						end
 					end
@@ -371,6 +385,7 @@ parser.md = function (buffer, TStree, from, to)
 				row_type = table_structure;
 				rows = rows,
 
+				col_widths = col_widths,
 				content_alignments = alignments,
 				content_positions = line_positions,
 
@@ -554,7 +569,6 @@ parser.md_inline = function (buffer, TStree, from, to)
 			local link_text = vim.treesitter.get_node_text(desc, buffer);
 			local link_address = ""
 
-			-- vim.print(sibl == nil)
 			if sibl then
 				link_address = vim.treesitter.get_node_text(sibl, buffer);
 			end

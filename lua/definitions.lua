@@ -206,6 +206,9 @@
 --- Used for highlighting the lines when the style is "simple"
 ---@field hl string?
 ---
+--- Highlight group for the info string
+---@field info_hl string?
+---
 --- The minimum number of columns to take(without the paddings)
 ---@field min_width number
 ---
@@ -462,6 +465,9 @@
 ---
 --- Enable/Disable the usage of virtual lines for the top/bottom border
 ---@field use_virt_lines boolean?
+---
+--- Enable/Disable the usage of the top & bottom border
+---@field block_decorator boolean?
 ---
 --- List of various parts for the table
 ---@field text string[]

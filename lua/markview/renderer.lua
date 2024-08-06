@@ -426,6 +426,17 @@ local table_header = function (buffer, content, config_table)
 			local width, actual_width = display_width(col, config_table);
 			local align = content.content_alignments[curr_tbl_col];
 
+			-- Extracted width of separator
+			local tbl_col_width = content.col_widths[curr_tbl_col];
+
+			-- The column number of headers must match the 
+			-- column number of separators
+			--
+			-- No need to add unnecessary condition
+			if tbl_col_width then
+				actual_width = math.min(math.max(actual_width, tbl_col_width), tbl_col_width);
+			end
+
 			if width < actual_width then
 				if align == "left" then
 					vim.api.nvim_buf_set_extmark(buffer, renderer.namespace, row_start, col_start + curr_col + vim.fn.strchars(col), {
@@ -658,6 +669,13 @@ local table_footer = function (buffer, content, config_table)
 			local width, actual_width = display_width(col, config_table);
 			local align = content.content_alignments[curr_tbl_col];
 
+			-- Extracted width of separator
+			local tbl_col_width = content.col_widths[curr_tbl_col];
+
+			if #content.rows[#content.rows] == #content.rows[2] and tbl_col_width then
+				actual_width = math.min(math.max(actual_width, tbl_col_width), tbl_col_width);
+			end
+
 			if width < actual_width then
 				if align == "left" then
 					vim.api.nvim_buf_set_extmark(buffer, renderer.namespace, row_end - 1, col_start + curr_col + vim.fn.strchars(col), {
@@ -757,6 +775,13 @@ local table_content = function (buffer, content, config_table, r_num)
 		else
 			local width, actual_width = display_width(col, config_table);
 			local align = content.content_alignments[curr_tbl_col];
+
+			-- Extracted width of separator
+			local tbl_col_width = content.col_widths[curr_tbl_col];
+
+			if #content.rows[r_num] == #content.rows[2] and tbl_col_width then
+				actual_width = math.min(math.max(actual_width, tbl_col_width), tbl_col_width);
+			end
 
 			if width < actual_width then
 				if align == "left" then
@@ -1065,11 +1090,7 @@ renderer.render_code_blocks = function (buffer, content, config_table)
 
 			if content.block_info ~= "" and vim.fn.strchars(content.block_info) > (block_length - lang_width - ((content.pad_amount or 1) * 2)) then
 				rendered_info = rendered_info .. "...";
-				-- Hi
 			end
-			vim.print(rendered_info)
-
-			-- vim.print(content.col_start + vim.fn.strchars(content.info_string))
 
 			vim.api.nvim_buf_set_extmark(buffer, renderer.namespace, content.row_start, content.col_start + 3, {
 				virt_text_pos = config_table.position or "inline",
