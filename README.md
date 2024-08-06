@@ -143,6 +143,52 @@ It has the following `sub-commands`,
 - enable {buffer}, Enables/Refreshes the plugin on a specific buffer.
 - disable {buffer}, Disables the plugin & clears decorations on a specific buffer.
 
+## 🚀 Hybrid mode
+
+Hybrid mode is a new feature added to the plugin. It can be used for showcasing or editing files while you type.
+
+It uses `tree-sitter` to remove decorations from a range. It will do the following,
+
+- Removes decorations from the entire block element the cursor is currently on.
+- Removes decorations from parent list items to make editing more **practical**.
+- Removes decorations from the entire code block to prevent losing indentation.
+
+Here's the recommended config to use this feature.
+
+```lua
+require("markview").setup({
+    modes = { "n", "no", "c" }, -- Change these modes
+                                -- to what you need
+
+    hybrid_modes = { "n" },     -- Uses this feature on
+                                -- normal mode
+
+    -- This is nice to have
+    callbacks = {
+        on_enable = function (_, win)
+            vim.wo[win].conceallevel = 2;
+            vim.wo[win].conecalcursor = "c";
+        end
+    }
+})
+```
+
+Here's a minimal config for using this in `insert-mode`.
+
+```lua
+require("markview").setup({
+    modes = { "n", "i", "no", "c" },
+    hybrid_modes = { "i" },
+
+    -- This is nice to have
+    callbacks = {
+        on_enable = function (_, win)
+            vim.wo[win].conceallevel = 2;
+            vim.wo[win].conecalcursor = "nc";
+        end
+    }
+})
+```
 
 ## 🧭 Configuration
 
@@ -176,7 +222,7 @@ Currently there are presets for the following items,
 - Headings
 - Tables
 
-You can find more on presets on the [wiki page]().
+You can find more on presets on the [wiki page](https://github.com/OXY2DEV/markview.nvim/wiki).
 
 ### 🎨 Manual
 

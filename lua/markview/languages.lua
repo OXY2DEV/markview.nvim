@@ -276,6 +276,4 @@ languages.get_fs = function (name)
 	end
 end
 
-vim.print(languages.get_name("cs"))
-
 return languages;
