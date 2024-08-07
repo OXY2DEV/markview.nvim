@@ -251,7 +251,7 @@ require("markview").setup({
 
 You can check the [wiki](https://github.com/OXY2DEV/markview.nvim/wiki) to learn more about configuration.
 
-You can also check the [starter guide]() for some simple examples.
+You can also check the [Recipes](https://github.com/OXY2DEV/markview.nvim/blob/dev/RECIPES.md) for some simple examples.
 
 ## 🌃 highlight groups
 
