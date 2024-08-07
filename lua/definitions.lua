@@ -202,6 +202,9 @@
 --- Name of the style to use
 ---@field style string
 ---
+--- Used for disabling icons on language view
+---@field icons boolean?
+---
 --- Default highlight group used by the rest of the options
 --- Used for highlighting the lines when the style is "simple"
 ---@field hl string?

@@ -1102,6 +1102,7 @@ markview.configuration = {
 
 	code_blocks = {
 		enable = true,
+		icons = true,
 
 		style = "language",
 		hl = "MarkviewCode",
