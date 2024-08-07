@@ -2,7 +2,7 @@ local presets = {};
 local colors = require("markview.colors");
 
 presets.highlight_groups = {
-	colorful_heading_bg = {
+	h_decorated = {
 		---+ ##code##
 		{
 			-- Heading level 1
@@ -10,8 +10,6 @@ presets.highlight_groups = {
 				if colors.get_hl_value(0, "DiagnosticOk", "fg") and colors.get_hl_value(0, "Normal", "bg") then
 					local fg = colors.get_hl_value(0, "Normal", "bg");
 					local bg = colors.get_hl_value(0, "DiagnosticOk", "fg");
-
-					local nr = colors.get_hl_value(0, "LineNr", "bg");
 
 					return {
 						{
@@ -24,9 +22,8 @@ presets.highlight_groups = {
 							}
 						},
 						{
-							group_name = "Heading1Sign",
+							group_name = "Heading1Corner",
 							value = {
-								bg = nr,
 								fg = bg,
 
 								default = true
@@ -37,8 +34,6 @@ presets.highlight_groups = {
 					local fg = colors.get_hl_value(0, "Normal", "bg");
 					local bg = vim.o.background == "dark" and "#a6e3a1" or "#40a02b";
 
-					local nr = colors.get_hl_value(0, "LineNr", "bg");
-
 					return {
 						{
 							group_name = "Heading1",
@@ -50,9 +45,8 @@ presets.highlight_groups = {
 							}
 						},
 						{
-							group_name = "Heading1Sign",
+							group_name = "Heading1Corner",
 							value = {
-								bg = nr,
 								fg = bg,
 
 								default = true
@@ -69,8 +63,6 @@ presets.highlight_groups = {
 					local fg = colors.get_hl_value(0, "Normal", "bg");
 					local bg = colors.get_hl_value(0, "DiagnosticHint", "fg");
 
-					local nr = colors.get_hl_value(0, "LineNr", "bg");
-
 					return {
 						{
 							group_name = "Heading2",
@@ -82,9 +74,8 @@ presets.highlight_groups = {
 							}
 						},
 						{
-							group_name = "Heading2Sign",
+							group_name = "Heading2Corner",
 							value = {
-								bg = nr,
 								fg = bg,
 
 								default = true
@@ -95,8 +86,6 @@ presets.highlight_groups = {
 					local fg = colors.get_hl_value(0, "Normal", "bg");
 					local bg = vim.o.background == "dark" and "#94e2d5" or "#179299";
 
-					local nr = colors.get_hl_value(0, "LineNr", "bg");
-
 					return {
 						{
 							group_name = "Heading2",
@@ -108,9 +97,8 @@ presets.highlight_groups = {
 							}
 						},
 						{
-							group_name = "Heading2Sign",
+							group_name = "Heading2Corner",
 							value = {
-								bg = nr,
 								fg = bg,
 
 								default = true
@@ -127,8 +115,6 @@ presets.highlight_groups = {
 					local fg = colors.get_hl_value(0, "Normal", "bg");
 					local bg = colors.get_hl_value(0, "DiagnosticInfo", "fg");
 
-					local nr = colors.get_hl_value(0, "LineNr", "bg");
-
 					return {
 						{
 							group_name = "Heading3",
@@ -140,9 +126,8 @@ presets.highlight_groups = {
 							}
 						},
 						{
-							group_name = "Heading3Sign",
+							group_name = "Heading3Corner",
 							value = {
-								bg = nr,
 								fg = bg,
 
 								default = true
@@ -153,8 +138,6 @@ presets.highlight_groups = {
 					local fg = colors.get_hl_value(0, "Normal", "bg");
 					local bg = vim.o.background == "dark" and "#89dceb" or "#179299";
 
-					local nr = colors.get_hl_value(0, "LineNr", "bg");
-
 					return {
 						{
 							group_name = "Heading3",
@@ -166,9 +149,8 @@ presets.highlight_groups = {
 							}
 						},
 						{
-							group_name = "Heading3Sign",
+							group_name = "Heading3Corner",
 							value = {
-								bg = nr,
 								fg = bg,
 
 								default = true
@@ -185,8 +167,6 @@ presets.highlight_groups = {
 					local fg = colors.get_hl_value(0, "Normal", "bg");
 					local bg = colors.get_hl_value(0, "Special", "fg");
 
-					local nr = colors.get_hl_value(0, "LineNr", "bg");
-
 					return {
 						{
 							group_name = "Heading4",
@@ -198,9 +178,8 @@ presets.highlight_groups = {
 							}
 						},
 						{
-							group_name = "Heading4Sign",
+							group_name = "Heading4Corner",
 							value = {
-								bg = nr,
 								fg = bg,
 
 								default = true
@@ -211,8 +190,6 @@ presets.highlight_groups = {
 					local fg = colors.get_hl_value(0, "Normal", "bg");
 					local bg = vim.o.background == "dark" and "#f5c2e7" or "#ea76cb";
 
-					local nr = colors.get_hl_value(0, "LineNr", "bg");
-
 					return {
 						{
 							group_name = "Heading4",
@@ -224,9 +201,8 @@ presets.highlight_groups = {
 							}
 						},
 						{
-							group_name = "Heading4Sign",
+							group_name = "Heading4Corner",
 							value = {
-								bg = nr,
 								fg = bg,
 
 								default = true
@@ -243,8 +219,6 @@ presets.highlight_groups = {
 					local fg = colors.get_hl_value(0, "Normal", "bg");
 					local bg = colors.get_hl_value(0, "DiagnosticWarn", "fg");
 
-					local nr = colors.get_hl_value(0, "LineNr", "bg");
-
 					return {
 						{
 							group_name = "Heading5",
@@ -256,9 +230,8 @@ presets.highlight_groups = {
 							}
 						},
 						{
-							group_name = "Heading5Sign",
+							group_name = "Heading5Corner",
 							value = {
-								bg = nr,
 								fg = bg,
 
 								default = true
@@ -269,8 +242,6 @@ presets.highlight_groups = {
 					local fg = colors.get_hl_value(0, "Normal", "bg");
 					local bg = vim.o.background == "dark" and "#F9E3AF" or "#DF8E1D";
 
-					local nr = colors.get_hl_value(0, "LineNr", "bg");
-
 					return {
 						{
 							group_name = "Heading5",
@@ -282,9 +253,8 @@ presets.highlight_groups = {
 							}
 						},
 						{
-							group_name = "Heading5Sign",
+							group_name = "Heading5Corner",
 							value = {
-								bg = nr,
 								fg = bg,
 
 								default = true
@@ -301,8 +271,6 @@ presets.highlight_groups = {
 					local fg = colors.get_hl_value(0, "Normal", "bg");
 					local bg = colors.get_hl_value(0, "DiagnosticError", "fg");
 
-					local nr = colors.get_hl_value(0, "LineNr", "bg");
-
 					return {
 						{
 							group_name = "Heading6",
@@ -314,9 +282,8 @@ presets.highlight_groups = {
 							}
 						},
 						{
-							group_name = "Heading6Sign",
+							group_name = "Heading6Corner",
 							value = {
-								bg = nr,
 								fg = bg,
 
 								default = true
@@ -327,8 +294,6 @@ presets.highlight_groups = {
 					local fg = colors.get_hl_value(0, "Normal", "bg");
 					local bg = vim.o.background == "dark" and "#F38BA8" or "#D20F39";
 
-					local nr = colors.get_hl_value(0, "LineNr", "bg");
-
 					return {
 						{
 							group_name = "Heading6",
@@ -340,9 +305,8 @@ presets.highlight_groups = {
 							}
 						},
 						{
-							group_name = "Heading6Sign",
+							group_name = "Heading6Corner",
 							value = {
-								bg = nr,
 								fg = bg,
 
 								default = true
@@ -451,7 +415,7 @@ presets.headings = {
 			padding_right = " ",
 
 			corner_right = "",
-			corner_right_hl = "MarkviewHeading1Sign",
+			corner_right_hl = "MarkviewHeading1Corner",
 
 			hl = "MarkviewHeading1"
 		},
@@ -462,9 +426,9 @@ presets.headings = {
 			padding_right = " ",
 
 			corner_right = "",
-			corner_right_hl = "MarkviewHeading2",
+			corner_right_hl = "MarkviewHeading2Corner",
 
-			hl = "MarkviewHeading2Sign"
+			hl = "MarkviewHeading2"
 		},
 		heading_3 = {
 			style = "label",
@@ -473,9 +437,9 @@ presets.headings = {
 			padding_right = " ",
 
 			corner_right = "",
-			corner_right_hl = "MarkviewHeading3",
+			corner_right_hl = "MarkviewHeading3Corner",
 
-			hl = "MarkviewHeading3Sign"
+			hl = "MarkviewHeading3"
 		},
 		heading_4 = {
 			style = "label",
@@ -484,9 +448,9 @@ presets.headings = {
 			padding_right = " ",
 
 			corner_right = "",
-			corner_right_hl = "MarkviewHeading4",
+			corner_right_hl = "MarkviewHeading4Corner",
 
-			hl = "MarkviewHeading4Sign"
+			hl = "MarkviewHeading4"
 		},
 		heading_5 = {
 			style = "label",
@@ -495,9 +459,9 @@ presets.headings = {
 			padding_right = " ",
 
 			corner_right = "",
-			corner_right_hl = "MarkviewHeading5",
+			corner_right_hl = "MarkviewHeading5Corner",
 
-			hl = "MarkviewHeading5Sign"
+			hl = "MarkviewHeading5"
 		},
 		heading_6 = {
 			style = "label",
@@ -506,9 +470,9 @@ presets.headings = {
 			padding_right = " ",
 
 			corner_right = "",
-			corner_right_hl = "MarkviewHeading6",
+			corner_right_hl = "MarkviewHeading6Corner",
 
-			hl = "MarkviewHeading6Sign"
+			hl = "MarkviewHeading6"
 		},
 	},
 
@@ -1069,7 +1033,7 @@ presets.heading = {
 			padding_left = " ",
 			padding_right = " ",
 
-			corner_right = "",
+			corner_right = "",
 			corner_right_hl = "decorated_h1_inv",
 
 			hl = "decorated_h1"
@@ -1080,7 +1044,7 @@ presets.heading = {
 			padding_left = " ",
 			padding_right = " ",
 
-			corner_right = "",
+			corner_right = "",
 			corner_right_hl = "decorated_h2_inv",
 
 			hl = "decorated_h2"
@@ -1091,7 +1055,7 @@ presets.heading = {
 			padding_left = " ",
 			padding_right = " ",
 
-			corner_right = "",
+			corner_right = "",
 			corner_right_hl = "decorated_h3_inv",
 
 			hl = "decorated_h3"
@@ -1102,7 +1066,7 @@ presets.heading = {
 			padding_left = " ",
 			padding_right = " ",
 
-			corner_right = "",
+			corner_right = "",
 			corner_right_hl = "decorated_h4_inv",
 
 			hl = "decorated_h4"
@@ -1113,7 +1077,7 @@ presets.heading = {
 			padding_left = " ",
 			padding_right = " ",
 
-			corner_right = "",
+			corner_right = "",
 			corner_right_hl = "decorated_h5_inv",
 
 			hl = "decorated_h5"
@@ -1124,7 +1088,7 @@ presets.heading = {
 			padding_left = " ",
 			padding_right = " ",
 
-			corner_right = "",
+			corner_right = "",
 			corner_right_hl = "decorated_h6_inv",
 
 			hl = "decorated_h6"

@@ -854,7 +854,7 @@ renderer.render_headings = function (buffer, content, config)
 		});
 	elseif conf.style == "label" then
 		local conceal_start = string.match(content.line, "^[#]+(%s*)");
-		local line_length = vim.fn.strchars(content.line);
+		local line_length = #content.line;
 
 		-- Heading rules
 		-- 1. Must start at the first column
@@ -876,8 +876,10 @@ renderer.render_headings = function (buffer, content, config)
 			conceal = ""
 		});
 
+		vim.api.nvim_buf_add_highlight(buffer, renderer.namespace, set_hl(conf.hl), content.row_start, 0, line_length);
+
 		vim.api.nvim_buf_set_extmark(buffer, renderer.namespace, content.row_start, line_length, {
-			virt_text_pos = "inline",
+			virt_text_pos = "overlay",
 			virt_text = {
 				{ conf.padding_right or "", set_hl(conf.padding_right_hl) or set_hl(conf.hl) },
 				{ conf.corner_right or "", set_hl(conf.corner_right_hl) or set_hl(conf.hl) }
@@ -885,8 +887,6 @@ renderer.render_headings = function (buffer, content, config)
 
 			hl_mode = "combine"
 		});
-
-		vim.api.nvim_buf_add_highlight(buffer, renderer.namespace, set_hl(conf.hl), content.row_start, 0, line_length);
 	elseif conf.style == "icon" then
 		local conceal_start = string.match(content.line, "^[#]+(%s*)");
 

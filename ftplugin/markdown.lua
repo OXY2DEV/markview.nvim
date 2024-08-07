@@ -8,7 +8,7 @@ end
 
 -- Check for requirements
 if vim.fn.has("nvim-0.10") == 0 then
-	vim.notify("[ markview.nvim ] : Thie plugin is only available on version 0.10.0 and higher!", vim.log.levels.WARN);
+	vim.notify("[ markview.nvim ] : This plugin is only available on version 0.10.0 and higher!", vim.log.levels.WARN);
 	return;
 elseif not parser_installed("markdown") then
 	vim.notify("[ markview.nvim ] : Treesitter parser for 'markdown' wasn't found!", vim.log.levels.WARN);

@@ -8,7 +8,16 @@ colors.lerp = function (x, y, t)
 	return x + ((y - x) * t);
 end
 
+--- I really hate to do this but this needs to be done
+-- colors.bg_map = {
+-- 	---+ ##code##
+-- 	["witch-dark"] = "#161f31",
+-- 	["witch-light"] = "#dee2ea",
+-- 	---_
+-- };
+
 colors.name_to_hex = function (name)
+	---+ ##code##
 	local lookup = {
 		["red"] = "#FF0000",        ["lightred"] = "#FFBBBB",      ["darkred"] = "#8B0000",
 		["green"] = "#00FF00",      ["lightgreen"] = "#90EE90",    ["darkgreen"] = "#006400",    ["seagreen"] = "#2E8B57",
@@ -38,6 +47,7 @@ colors.name_to_hex = function (name)
 		["nvimdarkred"] = "#590008",     ["nvimlightred"] = "#FFC0B9",
 		["nvimdarkyellow"] = "#6B5300",  ["nvimlightyellow"] = "#FCE094",
 	};
+	---_
 
 	return lookup[string.lower(name)] or lookup_nvim[string.lower(name)];
 end
@@ -281,6 +291,14 @@ colors.get = function (col_list)
 	end
 
 	return col_list[1];
+end
+
+colors.bg = function ()
+	return colors.get({
+		colors.get_hl_value(0, "Normal", "bg"),
+		colors.get_hl_value(0, "EndOfBuffer", "bg"),
+		colors.get_hl_value(0, "EndOfBuffer", "fg"),
+	})
 end
 
 return colors;

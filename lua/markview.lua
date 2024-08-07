@@ -7,14 +7,91 @@ markview.keymaps = require("markview.keymaps");
 
 markview.colors = require("markview.colors");
 
+markview.list_contains = function (tbl, value)
+	for index, item in ipairs(tbl) do
+		if item == value or vim.deep_equal(item, value) then
+			return true, index;
+		end
+	end
+
+	return false;
+end
+
+markview.deep_merge = function (behavior, tbl_1, tbl_2)
+	if not tbl_1 or type(tbl_1) ~= "table" then
+		tbl_1 = {};
+	end
+
+	if not tbl_2 or type(tbl_2) ~= "table" then
+		tbl_2 = {};
+	end
+
+	for key, value in pairs(tbl_2) do
+		if not tbl_1[key] then
+			tbl_1[key] = value;
+			goto skip;
+		end
+
+		if type(value) ~= type(tbl_1[key]) then
+			goto skip;
+		end
+
+		if vim.islist(value) then
+			for index, item in ipairs(value) do
+				if not markview.list_contains(tbl_1[key], item) then
+					table.insert(tbl_1[key], item);
+				else
+					tbl_1[key][index] = markview.deep_merge(behavior, tbl_1[key][index], item);
+				end
+			end
+		elseif type(value) == "table" then
+			tbl_1[key] = markview.deep_merge(behavior, tbl_1[key], value);
+		elseif behavior == "force" then
+			tbl_1[key] = value;
+		end
+
+		::skip::
+	end
+
+	return tbl_1;
+end
+
+markview.hl_exits = function (hl_list, hl)
+	for index, item in ipairs(hl_list) do
+		if item.group_name == hl.group_name then
+			return true, index;
+		end
+	end
+
+	return false;
+end
+
 markview.add_hls = function (obj)
+	local added = {};
 	local use_hl = {};
 
 	for _, hl in ipairs(obj) do
 		if hl.output and type(hl.output) == "function" and pcall(hl.output) then
-			use_hl = vim.list_extend(use_hl, hl.output())
+			local _o = hl.output();
+
+			for _, item in ipairs(_o) do
+				local exists, index = markview.hl_exits(use_hl, item);
+
+				if exists == true then
+					table.remove(use_hl, index);
+				end
+			end
+
+			use_hl = vim.list_extend(use_hl, _o)
 		elseif hl.group_name and hl.value then
-			table.insert(use_hl, hl)
+			local contains, index = markview.list_contains(added, hl.group_name);
+
+			if contains == true and index then
+				use_hl[index] = hl;
+			else
+				table.insert(use_hl, hl)
+				table.insert(added, hl.group_name);
+			end
 		end
 	end
 
@@ -25,7 +102,6 @@ markview.add_hls = function (obj)
 			_opt = hl.value();
 		end
 
-		_opt.default = true;
 		vim.api.nvim_set_hl(0, "Markview" .. hl.group_name, _opt);
 	end
 end
@@ -90,8 +166,8 @@ markview.configuration = {
 							}
 						},
 					}
-				elseif markview.colors.get_hl_value(0, "DiagnosticOk", "fg") and markview.colors.get_hl_value(0, "Normal", "bg") then
-					local bg = markview.colors.get_hl_value(0, "Normal", "bg");
+				elseif markview.colors.get_hl_value(0, "DiagnosticOk", "fg") and markview.colors.bg() then
+					local bg = markview.colors.bg();
 					local fg = markview.colors.get_hl_value(0, "DiagnosticOk", "fg");
 
 					local nr = markview.colors.get_hl_value(0, "LineNr", "bg");
@@ -179,8 +255,8 @@ markview.configuration = {
 							}
 						},
 					}
-				elseif markview.colors.get_hl_value(0, "DiagnosticHint", "fg") and markview.colors.get_hl_value(0, "Normal", "bg") then
-					local bg = markview.colors.get_hl_value(0, "Normal", "bg");
+				elseif markview.colors.get_hl_value(0, "DiagnosticHint", "fg") and markview.colors.bg() then
+					local bg = markview.colors.bg();
 					local fg = markview.colors.get_hl_value(0, "DiagnosticHint", "fg");
 
 					local nr = markview.colors.get_hl_value(0, "LineNr", "bg");
@@ -268,8 +344,8 @@ markview.configuration = {
 							}
 						},
 					}
-				elseif markview.colors.get_hl_value(0, "DiagnosticInfo", "fg") and markview.colors.get_hl_value(0, "Normal", "bg") then
-					local bg = markview.colors.get_hl_value(0, "Normal", "bg");
+				elseif markview.colors.get_hl_value(0, "DiagnosticInfo", "fg") and markview.colors.bg() then
+					local bg = markview.colors.bg();
 					local fg = markview.colors.get_hl_value(0, "DiagnosticInfo", "fg");
 
 					local nr = markview.colors.get_hl_value(0, "LineNr", "bg");
@@ -357,8 +433,8 @@ markview.configuration = {
 							}
 						},
 					}
-				elseif markview.colors.get_hl_value(0, "Special", "fg") and markview.colors.get_hl_value(0, "Normal", "bg") then
-					local bg = markview.colors.get_hl_value(0, "Normal", "bg");
+				elseif markview.colors.get_hl_value(0, "Special", "fg") and markview.colors.bg() then
+					local bg = markview.colors.bg();
 					local fg = markview.colors.get_hl_value(0, "Special", "fg");
 
 					local nr = markview.colors.get_hl_value(0, "LineNr", "bg");
@@ -446,8 +522,8 @@ markview.configuration = {
 							}
 						},
 					}
-				elseif markview.colors.get_hl_value(0, "DiagnosticWarn", "fg") and markview.colors.get_hl_value(0, "Normal", "bg") then
-					local bg = markview.colors.get_hl_value(0, "Normal", "bg");
+				elseif markview.colors.get_hl_value(0, "DiagnosticWarn", "fg") and markview.colors.bg() then
+					local bg = markview.colors.bg();
 					local fg = markview.colors.get_hl_value(0, "DiagnosticWarn", "fg");
 
 					local nr = markview.colors.get_hl_value(0, "LineNr", "bg");
@@ -535,8 +611,8 @@ markview.configuration = {
 							}
 						},
 					}
-				elseif markview.colors.get_hl_value(0, "DiagnosticError", "fg") and markview.colors.get_hl_value(0, "Normal", "bg") then
-					local bg = markview.colors.get_hl_value(0, "Normal", "bg");
+				elseif markview.colors.get_hl_value(0, "DiagnosticError", "fg") and markview.colors.bg() then
+					local bg = markview.colors.bg();
 					local fg = markview.colors.get_hl_value(0, "DiagnosticError", "fg");
 
 					local nr = markview.colors.get_hl_value(0, "LineNr", "bg");
@@ -684,6 +760,8 @@ markview.configuration = {
 				local bg = markview.colors.get({
 					markview.colors.get_hl_value(0, "Normal", "bg"),
 					markview.colors.get_hl_value(0, "Cursor", "fg"),
+					markview.colors.get_hl_value(0, "EndOfBuffer", "bg"),
+					markview.colors.get_hl_value(0, "EndOfBuffer", "fg"),
 
 					vim.o.background == "dark" and "#1e1e2e" or "#cdd6f4"
 				});
@@ -696,8 +774,9 @@ markview.configuration = {
 						default = true
 					};
 				else
+					vim.print(luminosity)
 					return {
-						bg = markview.colors.mix(bg, bg, 1, math.min(luminosity, 0.25) * -1),
+						bg = markview.colors.mix(bg, bg, 1, math.max(1 - luminosity, 0.05) * -1),
 						default = true
 					};
 				end
@@ -709,6 +788,8 @@ markview.configuration = {
 				local bg = markview.colors.get({
 					markview.colors.get_hl_value(0, "Normal", "bg"),
 					markview.colors.get_hl_value(0, "Cursor", "fg"),
+					markview.colors.get_hl_value(0, "EndOfBuffer", "bg"),
+					markview.colors.get_hl_value(0, "EndOfBuffer", "fg"),
 
 					vim.o.background == "dark" and "#1e1e2e" or "#cdd6f4"
 				});
@@ -736,6 +817,8 @@ markview.configuration = {
 				local bg = markview.colors.get({
 					markview.colors.get_hl_value(0, "Normal", "bg"),
 					markview.colors.get_hl_value(0, "Cursor", "fg"),
+					markview.colors.get_hl_value(0, "EndOfBuffer", "bg"),
+					markview.colors.get_hl_value(0, "EndOfBuffer", "fg"),
 
 					vim.o.background == "dark" and "#1e1e2e" or "#cdd6f4"
 				});
@@ -749,7 +832,7 @@ markview.configuration = {
 					};
 				else
 					return {
-						bg = markview.colors.mix(bg, bg, 1, math.min(luminosity, 0.5) * -1),
+						bg = markview.colors.mix(bg, bg, 1, math.min(luminosity, 0.15) * -1),
 						default = true
 					};
 				end
@@ -1506,7 +1589,7 @@ end, {
 markview.setup = function (user_config)
 	---@type markview.config
 	-- Merged configuration tables
-	markview.configuration = vim.tbl_deep_extend("keep", user_config or {}, markview.configuration);
+	markview.configuration = markview.deep_merge("force", markview.configuration, user_config or {});
 
 	if vim.islist(markview.configuration.highlight_groups) then
 		markview.add_hls(markview.configuration.highlight_groups);
