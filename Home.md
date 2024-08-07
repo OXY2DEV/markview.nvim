@@ -6,8 +6,8 @@
 
 ## 📖 Table of contents
 
-- [🍰 Recipes]()
-- [🔩 Configuration Options]()
+- [🍰 Recipes](https://github.com/OXY2DEV/markview.nvim/wiki/Recipes)
+- [🔩 Configuration Options](https://github.com/OXY2DEV/markview.nvim/wiki/Configuration-options)
 - [🚨 Block quotes](https://github.com/OXY2DEV/markview.nvim/wiki/Block-quotes)
 - [✅ Checkboxes](https://github.com/OXY2DEV/markview.nvim/wiki/Checkboxes)
 - [💻 Code blocks](https://github.com/OXY2DEV/markview.nvim/wiki/Code-blocks)
