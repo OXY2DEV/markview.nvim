@@ -82,6 +82,7 @@ Adds a border surrounding the code block. It adds the following options,
 ```lua
 code_blocks = {
     style = "minimal",
+    icons = true,
     position = nil,
     min_width = 70,
     
@@ -99,6 +100,10 @@ code_blocks = {
 ```
 
 Like `minimal` but also shows the language name. Other than supporting all the options of `minimal` it adds,
+
+- icons, `boolean` or nil
+
+  Allows disabling icons.
 
 - language_direction, `string` or nil
 
