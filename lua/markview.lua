@@ -1046,7 +1046,7 @@ markview.configuration = {
 	buf_ignore = { "nofile" },
 
 	modes = { "n", "no" },
-	special_modes = nil,
+	hybrid_modes = nil,
 
 	headings = {
 		enable = true,

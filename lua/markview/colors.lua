@@ -8,14 +8,6 @@ colors.lerp = function (x, y, t)
 	return x + ((y - x) * t);
 end
 
---- I really hate to do this but this needs to be done
--- colors.bg_map = {
--- 	---+ ##code##
--- 	["witch-dark"] = "#161f31",
--- 	["witch-light"] = "#dee2ea",
--- 	---_
--- };
-
 colors.name_to_hex = function (name)
 	---+ ##code##
 	local lookup = {
