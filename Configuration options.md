@@ -32,6 +32,8 @@ Markview comes with a ton of configuration options.
     highlight_groups = {},
 
     -- Render configs
+    -- They are explained in their own
+    -- pages
     block_quotes = {},
     checkboxes = {},
     code_blocks = {},
