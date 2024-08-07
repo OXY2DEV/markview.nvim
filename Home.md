@@ -1,10 +1,13 @@
 <p align="center">An experimental markdown previewer for Neovim</p>
 
-<p align="center"><sub style="font-size: 0.125rem;">Written completely on a phone!</sub></p>
+![landscape](https://github.com/OXY2DEV/markview.nvim/blob/images/Main/plugin_showcase_landscape.jpg)
+
+<p align="center" style="font-size: 0.125rem;"><sub>Written completely on a phone!</sub></p>
 
 ## 📖 Table of contents
 
 - [🍰 Recipes]()
+- [🔩 Configuration Options]()
 - [🚨 Block quotes](https://github.com/OXY2DEV/markview.nvim/wiki/Block-quotes)
 - [✅ Checkboxes](https://github.com/OXY2DEV/markview.nvim/wiki/Checkboxes)
 - [💻 Code blocks](https://github.com/OXY2DEV/markview.nvim/wiki/Code-blocks)
@@ -18,6 +21,5 @@
 
 ## ✨ Gallery
 
-![landscape](https://github.com/OXY2DEV/markview.nvim/blob/images/Main/plugin_showcase_landscape.jpg)
 ![in_termux](https://github.com/OXY2DEV/markview.nvim/blob/images/Main/plugin_showcase_mobile.jpg)
 
