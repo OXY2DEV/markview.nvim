@@ -37,12 +37,16 @@ markview.deep_merge = function (behavior, tbl_1, tbl_2)
 		end
 
 		if vim.islist(value) then
-			for index, item in ipairs(value) do
-				if not markview.list_contains(tbl_1[key], item) then
-					table.insert(tbl_1[key], item);
-				else
-					tbl_1[key][index] = markview.deep_merge(behavior, tbl_1[key][index], item);
+			if not tbl_1.overwrite or tbl_1.overwrite and not vim.list_contains(tbl_1.overwrite, key) then
+				for index, item in ipairs(value) do
+					if not markview.list_contains(tbl_1[key], item) then
+						table.insert(tbl_1[key], item);
+					else
+						tbl_1[key][index] = markview.deep_merge(behavior, tbl_1[key][index], item);
+					end
 				end
+			else
+				tbl_1[key] = value;
 			end
 		elseif type(value) == "table" then
 			tbl_1[key] = markview.deep_merge(behavior, tbl_1[key], value);
@@ -1117,6 +1121,7 @@ markview.configuration = {
 
 	block_quotes = {
 		enable = true,
+		overwrite = { "callouts" },
 
 		default = {
 			border = "▋", border_hl = "MarkviewBlockQuoteDefault"
@@ -1265,6 +1270,7 @@ markview.configuration = {
 	},
 	horizontal_rules = {
 		enable = true,
+		overwrite = { "parts" },
 
 		parts = {
 			{
@@ -1594,6 +1600,8 @@ markview.setup = function (user_config)
 	if vim.islist(markview.configuration.highlight_groups) then
 		markview.add_hls(markview.configuration.highlight_groups);
 	end
+
+	markview.commands.enableAll();
 end
 
 return markview;
