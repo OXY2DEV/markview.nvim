@@ -148,6 +148,8 @@ This is due to not being able to check the correct `textoff` value.
 
 But if you manually set it up you can center it.
 
+![centered_hrs](https://github.com/OXY2DEV/markview.nvim/blob/images/Recipes/centered_hrs.jpg)
+
 Let's start by creating a repeating part.
 
 ```lua
