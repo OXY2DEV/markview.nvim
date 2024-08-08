@@ -164,6 +164,10 @@ vim.api.nvim_create_autocmd({ "ModeChanged", "TextChanged" }, {
 				markview.keymaps.init(buffer, window, parsed_content, markview.configuration);
 			end
 
+			if not markview.configuration.hybrid_modes or not vim.list_contains(markview.configuration.hybrid_modes, mode) then
+				return;
+			end
+
 			local cursor = vim.api.nvim_win_get_cursor(0);
 			local start = math.max(0, cursor[1] - 1);
 			local stop = math.min(lines, cursor[1]);
