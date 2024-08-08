@@ -266,7 +266,7 @@ languages.get_name = function (name)
 	return string.gsub(name, "^%l", string.upper);
 end
 
-languages.get_fs = function (name)
+languages.get_ft = function (name)
 	if not name or name == "" then
 		return "Unknown";
 	elseif languages.reverse_map[name] then

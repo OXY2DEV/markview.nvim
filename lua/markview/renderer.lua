@@ -1052,8 +1052,8 @@ renderer.render_code_blocks = function (buffer, content, config_table)
 			})
 		end
 	elseif config_table.style == "language" then
-		local language = languages.get_fs(content.language);
-		local icon, hl = renderer.get_icon(content.language, config_table);
+		local language = languages.get_ft(content.language);
+		local icon, hl = renderer.get_icon(language, config_table);
 		local block_length = content.largest_line;
 
 		local languageName;
