@@ -26,9 +26,9 @@ if vim.islist(markview.configuration.buf_ignore) and vim.list_contains(markview.
 end
 
 -- Don't add hls unless absolutely necessary
-if not markview.added_hls and vim.islist(markview.configuration.highlight_groups) then
+if not markview.set_hl_complete and vim.islist(markview.configuration.highlight_groups) then
 	markview.add_hls(markview.configuration.highlight_groups)
-	markview.added_hls = true;
+	markview.set_hl_complete = true;
 end
 
 local markview_augroup = vim.api.nvim_create_augroup("markview_buf_" .. vim.api.nvim_get_current_buf(), { clear = true });
