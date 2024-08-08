@@ -1725,6 +1725,8 @@ renderer.render = function (buffer, parsed_content, config_table, conceal_start,
 		_G.__markview_render_ranges[buffer] = {};
 	end
 
+	-- vim.print(#parsed_content)
+
 	for _, content in ipairs(_G.__markview_views[buffer]) do
 		local type = content.type;
 		local fold_closed = vim.fn.foldclosed(content.row_start + 1);

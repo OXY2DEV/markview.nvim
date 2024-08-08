@@ -41,8 +41,10 @@ markview.deep_merge = function (behavior, tbl_1, tbl_2)
 				for index, item in ipairs(value) do
 					if not markview.list_contains(tbl_1[key], item) then
 						table.insert(tbl_1[key], item);
-					else
+					elseif tbl_1[key][index] and type(tbl_1[key][index]) == "table" and type(item) == "table" then
 						tbl_1[key][index] = markview.deep_merge(behavior, tbl_1[key][index], item);
+					elseif not markview.list_contains(tbl_1[key], item) then
+						tbl_1[key][index] = item;
 					end
 				end
 			else
@@ -70,31 +72,49 @@ markview.hl_exits = function (hl_list, hl)
 	return false;
 end
 
+markview.added_hls = {};
+
+markview.remove_hls = function ()
+	if vim.tbl_isempty(markview.added_hls) then
+		return;
+	end
+
+	for _, hl in ipairs(markview.added_hls) do
+		if vim.fn.hlexists("Markview" .. hl) == 1 then
+			vim.api.nvim_set_hl(0, "Markview" .. hl, {});
+		end
+	end
+end
+
 markview.add_hls = function (obj)
-	local added = {};
+	markview.added_hls = {};
 	local use_hl = {};
 
 	for _, hl in ipairs(obj) do
 		if hl.output and type(hl.output) == "function" and pcall(hl.output) then
 			local _o = hl.output();
+			local _n = {};
 
 			for _, item in ipairs(_o) do
 				local exists, index = markview.hl_exits(use_hl, item);
 
 				if exists == true then
 					table.remove(use_hl, index);
+				else
+					table.insert(_n, item.group_name);
 				end
 			end
 
-			use_hl = vim.list_extend(use_hl, _o)
+			use_hl = vim.list_extend(use_hl, _o);
+			markview.added_hls = vim.list_extend(markview.added_hls, _n);
 		elseif hl.group_name and hl.value then
-			local contains, index = markview.list_contains(added, hl.group_name);
+			local contains, index = markview.list_contains(markview.added_hls, hl.group_name);
 
 			if contains == true and index then
 				use_hl[index] = hl;
 			else
 				table.insert(use_hl, hl)
-				table.insert(added, hl.group_name);
+				table.insert(markview.added_hls, hl.group_name);
 			end
 		end
 	end
@@ -124,16 +144,16 @@ markview.global_options = {};
 ---@type markview.config
 markview.configuration = {
 	callbacks = {
-		on_enable = function (buffer, window)
+		on_enable = function (_, window)
 			vim.wo[window].conceallevel = 2;
 			vim.wo[window].concealcursor = "nc";
 		end,
-		on_disable = function (buffer, window)
+		on_disable = function (_, window)
 			vim.wo[window].conceallevel = 0;
 			vim.wo[window].concealcursor = "";
 		end,
 
-		on_mode_change = function (buffer, window, mode)
+		on_mode_change = function (_, window, mode)
 			if vim.list_contains(markview.configuration.modes, mode) then
 				vim.wo[window].conceallevel = 2;
 			else
@@ -1594,11 +1614,17 @@ end, {
 })
 
 markview.setup = function (user_config)
+	if user_config and user_config.highlight_groups then
+		markview.configuration.highlight_groups = vim.list_extend(markview.configuration.highlight_groups, user_config.highlight_groups);
+		user_config.highlight_groups = nil;
+	end
+
 	---@type markview.config
 	-- Merged configuration tables
-	markview.configuration = markview.deep_merge("force", markview.configuration, user_config or {});
+	markview.configuration = vim.tbl_deep_extend("force", markview.configuration, user_config or {});
 
 	if vim.islist(markview.configuration.highlight_groups) then
+		markview.remove_hls();
 		markview.add_hls(markview.configuration.highlight_groups);
 	end
 

@@ -19,6 +19,12 @@
 --- List of modes where both raw & preview is shown
 ---@field hybrid_modes string[]?
 ---
+--- Max number of lines in a file to do full rendering
+---@field max_length number?
+---
+--- Number of lines to render on partial render mode
+---@field render_range number?
+---
 --- Callbacks for plugin states
 ---@field callbacks markview.config.callbacks?
 ---
@@ -64,6 +70,12 @@
 ---
 --- List of modes where both raw & preview is shown
 ---@field hybrid_modes string[]?
+---
+--- Max number of lines in a file to do full rendering
+---@field max_length number?
+---
+--- Number of lines to render on partial render mode
+---@field render_range number?
 ---
 --- Options for various plugins states
 ---@field callbacks markview.config.callbacks

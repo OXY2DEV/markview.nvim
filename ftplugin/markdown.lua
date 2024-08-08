@@ -75,17 +75,33 @@ vim.api.nvim_create_autocmd({ "BufWinEnter" }, {
 
 		markview.state.buf_states[buffer] = true;
 
-		local parsed_content = markview.parser.init(buffer, markview.configuration);
+		local lines = vim.api.nvim_buf_line_count(buffer);
 
 		markview.renderer.clear(buffer);
-		markview.renderer.render(buffer, parsed_content, markview.configuration)
+
+		if lines < (markview.configuration.max_length or 1000) then
+			local parsed_content = markview.parser.init(buffer, markview.configuration);
+
+			markview.renderer.render(buffer, parsed_content, markview.configuration)
+		else
+			local cursor = vim.api.nvim_win_get_cursor(0);
+			local start = math.max(0, cursor[1] - (markview.configuration.render_range or 100));
+			local stop = math.min(lines, cursor[1] + (markview.configuration.render_range or 100));
+
+			local parsed_content = markview.parser.parse_range(buffer, markview.configuration, start, stop);
+
+			markview.renderer.render(buffer, parsed_content, markview.configuration)
+		end
+
+		-- This needs all of the buffer to be parsed
+		local keymap_content = markview.parser.init(buffer, markview.configuration);
 
 		for _, window in ipairs(windows) do
 			if markview.configuration.callbacks and markview.configuration.callbacks.on_enable then
 				pcall(markview.configuration.callbacks.on_enable, buffer, window);
 			end
 
-			markview.keymaps.init(buffer, window, parsed_content, markview.configuration);
+			markview.keymaps.init(buffer, window, keymap_content, markview.configuration);
 		end
 	end
 });
@@ -123,28 +139,45 @@ vim.api.nvim_create_autocmd({ "ModeChanged", "TextChanged" }, {
 
 		::noCallbacks::
 
+		-- Mode is a valid mode
 		if markview.configuration.modes and vim.list_contains(markview.configuration.modes, mode) then
-			local parsed_content = markview.parser.init(buffer, markview.configuration);
-			local parse_start, parse_stop = utils.get_cursor_range(buffer, windows[1]);
+			local lines = vim.api.nvim_buf_line_count(buffer);
+			local parsed_content;
 
 			markview.renderer.clear(buffer);
 
-			local partial_contents = markview.parser.parse_range(event.buf, markview.configuration, parse_start, parse_stop);
-			local current_range = markview.renderer.get_content_range(partial_contents);
+			if lines < (markview.configuration.max_length or 1000) then
+				parsed_content = markview.parser.init(buffer, markview.configuration);
 
-			if markview.configuration.hybrid_modes and vim.list_contains(markview.configuration.hybrid_modes, mode) then
-				markview.renderer.render(buffer, parsed_content, markview.configuration, parse_start, parse_stop);
-				markview.renderer.clear_content_range(event.buf, partial_contents)
-			else
 				markview.renderer.render(buffer, parsed_content, markview.configuration);
-			end
+			else
+				local cursor = vim.api.nvim_win_get_cursor(0);
+				local start = math.max(0, cursor[1] - (markview.configuration.render_range or 100));
+				local stop = math.min(lines, cursor[1] + (markview.configuration.render_range or 100));
 
-			-- Or else things won't render on first redraw from the other autocmd
-			markview.renderer.update_range(buffer, current_range);
+				parsed_content = markview.parser.parse_range(buffer, markview.configuration, start, stop);
+
+				markview.renderer.render(buffer, parsed_content, markview.configuration)
+			end
 
 			for _, window in ipairs(windows) do
 				markview.keymaps.init(buffer, window, parsed_content, markview.configuration);
 			end
+
+			local cursor = vim.api.nvim_win_get_cursor(0);
+			local start = math.max(0, cursor[1] - 1);
+			local stop = math.min(lines, cursor[1]);
+
+			local under_cursor = markview.parser.parse_range(event.buf, markview.configuration, start, stop);
+			local clear_range = markview.renderer.get_content_range(under_cursor);
+
+			if not clear_range or not clear_range[1] or not clear_range[2] then
+				return;
+			end
+
+			markview.renderer.clear(event.buf, clear_range[1], clear_range[2])
+
+		-- Mode is not a valid mode. Clear decorations.
 		else
 			-- Call an extra redraw to flush out screen updates
 			markview.renderer.clear(buffer);
@@ -186,35 +219,47 @@ vim.api.nvim_create_autocmd(events, {
 
 		move_timer:stop();
 		move_timer:start(100, 0, vim.schedule_wrap(function ()
-			if not _G.__markview_render_ranges then
-				_G.__markview_render_ranges = {};
+			local lines = vim.api.nvim_buf_line_count(event.buf);
+			local buffer = event.buf;
+
+			local parsed_content;
+
+			markview.renderer.clear(buffer);
+
+			if lines < (markview.configuration.max_length or 1000) then
+				parsed_content = markview.parser.init(buffer, markview.configuration);
+
+				markview.renderer.render(buffer, parsed_content, markview.configuration)
+			else
+				local cursor = vim.api.nvim_win_get_cursor(0);
+				local start = math.max(0, cursor[1] - (markview.configuration.render_range or 100));
+				local stop = math.min(lines, cursor[1] + (markview.configuration.render_range or 100));
+
+				parsed_content = markview.parser.parse_range(buffer, markview.configuration, start, stop);
+
+				markview.renderer.render(buffer, parsed_content, markview.configuration)
 			end
 
-			if not _G.__markview_render_ranges[event.buf] then
-				_G.__markview_render_ranges[event.buf] = {};
+			if parsed_content and #parsed_content > 0 then
+				local windows = utils.find_attached_wins(event.buf);
+
+				for _, window in ipairs(windows) do
+					markview.keymaps.init(buffer, window, parsed_content, markview.configuration);
+				end
 			end
 
-			local windows = utils.find_attached_wins(event.buf);
+			local cursor = vim.api.nvim_win_get_cursor(0);
+			local start = math.max(0, cursor[1] - 1);
+			local stop = math.min(lines, cursor[1]);
 
-			local old_start, old_stop = _G.__markview_render_ranges[event.buf][1], _G.__markview_render_ranges[event.buf][2];
-			local parse_start, parse_stop = utils.get_cursor_range(event.buf, windows[1]);
+			local under_cursor = markview.parser.parse_range(event.buf, markview.configuration, start, stop);
+			local clear_range = markview.renderer.get_content_range(under_cursor);
 
-			local prev_contents = markview.parser.parse_range(event.buf, markview.configuration, old_start, old_stop);
-			local partial_contents = markview.parser.parse_range(event.buf, markview.configuration, parse_start, parse_stop);
-
-			local current_range = markview.renderer.get_content_range(partial_contents);
-
-			if _G.__markview_render_ranges[event.buf] and vim.deep_equal(_G.__markview_render_ranges[event.buf], current_range) then
-				markview.renderer.clear_content_range(event.buf, partial_contents)
+			if not clear_range or not clear_range[1] or not clear_range[2] then
 				return;
 			end
 
-			markview.renderer.clear_content_range(event.buf, partial_contents)
-			markview.renderer.clear_content_range(event.buf, prev_contents);
-			markview.renderer.clear(event.buf, parse_start, parse_stop);
-
-			markview.renderer.render_in_range(event.buf, prev_contents, markview.configuration);
-			markview.renderer.update_range(event.buf, current_range);
+			markview.renderer.clear(event.buf, clear_range[1], clear_range[2])
 		end));
 	end
 })
