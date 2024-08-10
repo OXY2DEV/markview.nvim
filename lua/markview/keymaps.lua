@@ -23,13 +23,26 @@ keymaps.createKeymap = function (buffer)
 
 				if err then
 					vim.print("[ Markview.nvim ] : Failed to open: " .. link.address)
+					break;
 				end
 
 				if cmd then
 					cmd:wait();
+					break;
 				end
 
+
 			    ::continue::
+			end
+
+			local def_cmd, def_err = vim.ui.open(vim.fn.expand("<cfile>"))
+
+			if def_err then
+				vim.print("[ Markview.nvim ] : Failed to open: " .. vim.fn.expand("<cfile>"))
+			end
+
+			if def_cmd then
+				def_cmd:wait();
 			end
 		end,
 	})
