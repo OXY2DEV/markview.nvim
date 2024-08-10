@@ -417,6 +417,9 @@
 --- Enable/Disable custom list items
 ---@field enable boolean?
 ---
+--- Indent size of list items
+---@field indent_size number?
+---
 --- Number of characters to shift per level
 ---@field shift_width number?
 ---

@@ -1496,7 +1496,7 @@ renderer.render_lists = function (buffer, content, config_table)
 		ls_conf = config_table.marker_dot or {};
 	end
 
-	-- Do not render list types with no configuraton
+	-- Do not render list types with no configuration
 	if not ls_conf then
 		return;
 	end
@@ -1518,10 +1518,12 @@ renderer.render_lists = function (buffer, content, config_table)
 					use_text = "";
 				end
 
+				local level = math.floor(before / (config_table.indent_size or 2)) + 1;
+
 				vim.api.nvim_buf_set_extmark(buffer, renderer.namespace, line_num, 0, {
 					virt_text_pos = "inline",
 					virt_text = {
-						{ string.rep(" ", (math.floor(before / 2) + 1) * shift) },
+						{ string.rep(" ", level * shift) },
 						{ vim.trim(use_text), set_hl(ls_conf.hl) or "Special" }
 					},
 
@@ -1531,10 +1533,12 @@ renderer.render_lists = function (buffer, content, config_table)
 			elseif vim.list_contains(content.list_candidates, l) then
 				local line_len = vim.fn.strchars(line);
 
+				local level = math.floor(before / (config_table.indent_size or 2)) + 1;
+
 				vim.api.nvim_buf_set_extmark(buffer, renderer.namespace, line_num, 0, {
 					virt_text_pos = "inline",
 					virt_text = {
-						{ string.rep(" ", (math.floor(before / 2) + 1) * shift) }
+						{ string.rep(" ", level * shift) }
 					},
 
 					end_col = line_len < before and line_len or before,

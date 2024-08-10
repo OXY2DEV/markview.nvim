@@ -1,6 +1,8 @@
 local parser = {};
 -- local renderer = require("markview/renderer");
 
+parser.cached_conf = {};
+
 parser.fiter_lines = function (buffer, from, to)
 	local captured_lines = vim.api.nvim_buf_get_lines(buffer, from, to, false);
 	local filtered_lines = {};
@@ -708,6 +710,10 @@ parser.parse_range = function (buffer, config_table, from, to)
 
 	local root_parser = vim.treesitter.get_parser(buffer);
 	root_parser:parse(true);
+
+	if config_table then
+		parser.cached_conf = config_table;
+	end
 
 	-- Clear the previous contents
 	parser.parsed_content = {};
