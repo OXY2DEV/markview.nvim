@@ -3,13 +3,12 @@ local keymaps = {};
 keymaps.views = {};
 keymaps.on_bufs = {};
 
-keymaps.createKeymap = function (buffer, window)
-	local buf_links = keymaps.views[buffer];
-
+keymaps.createKeymap = function (buffer)
 	vim.api.nvim_buf_set_keymap(buffer, "n", "gx", "", {
 		desc = "gx patch for Markview.nvim",
 		callback = function ()
-			local cursor = vim.api.nvim_win_get_cursor(window);
+			local buf_links = keymaps.views[buffer];
+			local cursor = vim.api.nvim_win_get_cursor(0);
 
 			for _, link in ipairs(buf_links) do
 				if link.row_start + 1 ~= cursor[1] then
@@ -36,7 +35,7 @@ keymaps.createKeymap = function (buffer, window)
 	})
 end
 
-keymaps.init = function (buffer, window, parsed_content, config_table)
+keymaps.init = function (buffer, parsed_content, config_table)
 	if parsed_content ~= nil then
 		keymaps.views[buffer] = {};
 	end
@@ -44,11 +43,13 @@ keymaps.init = function (buffer, window, parsed_content, config_table)
 	for _, content in ipairs(parsed_content) do
 		if content.type == "link" then
 			table.insert(keymaps.views[buffer], content);
+		elseif content.type == "image" then
+			table.insert(keymaps.views[buffer], content);
 		end
 	end
 
 	if not vim.list_contains(keymaps.on_bufs, buffer) then
-		keymaps.createKeymap(buffer, window);
+		keymaps.createKeymap(buffer);
 
 		table.insert(keymaps.on_bufs, buffer)
 	end

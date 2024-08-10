@@ -532,7 +532,7 @@ parser.md_inline = function (buffer, TStree, from, to)
 				link_text = vim.treesitter.get_node_text(capture_node:named_child(0), buffer);
 			end
 
-			if capture_node:named_child(1) and (capture_node:named_child(q):type() == "link_destination" or capture_node:named_child(q):type() == "link_label") then
+			if capture_node:named_child(1) and (capture_node:named_child(1):type() == "link_destination" or capture_node:named_child(1):type() == "link_label") then
 				link_address = vim.treesitter.get_node_text(capture_node:named_child(1), buffer);
 			end
 

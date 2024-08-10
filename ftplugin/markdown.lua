@@ -96,12 +96,12 @@ vim.api.nvim_create_autocmd({ "BufWinEnter" }, {
 		-- This needs all of the buffer to be parsed
 		local keymap_content = markview.parser.init(buffer, markview.configuration);
 
+
+		markview.keymaps.init(buffer, keymap_content, markview.configuration);
 		for _, window in ipairs(windows) do
 			if markview.configuration.callbacks and markview.configuration.callbacks.on_enable then
 				pcall(markview.configuration.callbacks.on_enable, buffer, window);
 			end
-
-			markview.keymaps.init(buffer, window, keymap_content, markview.configuration);
 		end
 	end
 });
@@ -160,9 +160,7 @@ vim.api.nvim_create_autocmd({ "ModeChanged", "TextChanged" }, {
 				markview.renderer.render(buffer, parsed_content, markview.configuration)
 			end
 
-			for _, window in ipairs(windows) do
-				markview.keymaps.init(buffer, window, parsed_content, markview.configuration);
-			end
+			markview.keymaps.init(buffer, parsed_content, markview.configuration);
 
 			if not markview.configuration.hybrid_modes or not vim.list_contains(markview.configuration.hybrid_modes, mode) then
 				return;
@@ -245,11 +243,7 @@ vim.api.nvim_create_autocmd(events, {
 			end
 
 			if parsed_content and #parsed_content > 0 then
-				local windows = utils.find_attached_wins(event.buf);
-
-				for _, window in ipairs(windows) do
-					markview.keymaps.init(buffer, window, parsed_content, markview.configuration);
-				end
+				markview.keymaps.init(buffer, parsed_content, markview.configuration);
 			end
 
 			local cursor = vim.api.nvim_win_get_cursor(0);
