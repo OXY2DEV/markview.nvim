@@ -8,7 +8,7 @@ Markview comes with a ton of configuration options.
     buf_ignore = { "nofile" },
 
     -- Modes where preview is enabled
-    mode = { "n", "no" },
+    modes = { "n", "no" },
 
     -- Modes where hybrid mode is enabled
     hybrid_modes = {},
