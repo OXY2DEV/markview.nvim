@@ -35,7 +35,7 @@ Steps to reproduce the bug:
 
 **Configuration table**
 
-If you are configured the plugin then you **must** share your config.
+If you have configured the plugin then you **must** share your config.
 
 ```lua
 require("markview").setup({
