@@ -3,6 +3,8 @@
 ```lua
 list_items = {
     enable = true,
+    shift_width = 4,
+    indent_size = 2,
 
     marker_minus = {},
     marker_plus = {},
@@ -16,6 +18,14 @@ list_items = {
 - enable, `boolean` or nil
 
   Used for toggling list item rendering.
+
+- shift_width, `number`
+
+  Number of spaces to add per indent level of the list item.
+
+- indent_size, `number`
+
+  Indentation size of list items.
 
 - marker_plus, `table`
 
