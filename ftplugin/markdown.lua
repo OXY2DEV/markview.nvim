@@ -136,12 +136,10 @@ vim.api.nvim_create_autocmd({ "ModeChanged", "TextChanged" }, {
 
 		mode_timer:stop();
 		mode_timer:start(mode_debounce, 0, vim.schedule_wrap(function ()
-			-- In case something managed to change the mode
 			mode = vim.api.nvim_get_mode().mode;
-			cached_mode = mode; -- Still gotta update the cache
 
-			-- Only on mode change
-			if event.event == "ModeChanged" then
+			-- Only on mode change or if the mode changed due to text changed
+			if mode ~= cached_mode or event.event == "ModeChanged" then
 				-- Call the on_mode_change callback before exiting
 				if not markview.configuration.callbacks or not markview.configuration.callbacks.on_mode_change then
 					goto noCallbacks;
@@ -153,6 +151,9 @@ vim.api.nvim_create_autocmd({ "ModeChanged", "TextChanged" }, {
 			end
 
 			::noCallbacks::
+
+			-- In case something managed to change the mode
+			cached_mode = mode; -- Still gotta update the cache
 
 			-- Mode is a valid mode
 			if markview.configuration.modes and vim.list_contains(markview.configuration.modes, mode) then
