@@ -106,6 +106,9 @@ vim.api.nvim_create_autocmd({ "BufWinEnter" }, {
 	end
 });
 
+local cached_mode = nil;
+local mode_timer = vim.uv.new_timer();
+
 -- ISSUE: Work in progress
 vim.api.nvim_create_autocmd({ "ModeChanged", "TextChanged" }, {
 	buffer = vim.api.nvim_get_current_buf(),
@@ -115,7 +118,13 @@ vim.api.nvim_create_autocmd({ "ModeChanged", "TextChanged" }, {
 		local buffer = event.buf;
 		local windows = utils.find_attached_wins(event.buf);
 
+		local mode_debounce = 50;
+
 		local mode = vim.api.nvim_get_mode().mode;
+
+		if cached_mode and cached_mode == mode then
+			mode_debounce = 0;
+		end
 
 		if markview.state.enable == false then
 			return;
@@ -125,66 +134,73 @@ vim.api.nvim_create_autocmd({ "ModeChanged", "TextChanged" }, {
 			return;
 		end
 
-		-- Only on mode change
-		if event.event == "ModeChanged" then
-			-- Call the on_mode_change callback before exiting
-			if not markview.configuration.callbacks or not markview.configuration.callbacks.on_mode_change then
-				goto noCallbacks;
+		mode_timer:stop();
+		mode_timer:start(mode_debounce, 0, vim.schedule_wrap(function ()
+			-- In case something managed to change the mode
+			mode = vim.api.nvim_get_mode().mode;
+			cached_mode = mode; -- Still gotta update the cache
+
+			-- Only on mode change
+			if event.event == "ModeChanged" then
+				-- Call the on_mode_change callback before exiting
+				if not markview.configuration.callbacks or not markview.configuration.callbacks.on_mode_change then
+					goto noCallbacks;
+				end
+
+				for _, window in ipairs(windows) do
+					pcall(markview.configuration.callbacks.on_mode_change, buffer, window, mode);
+				end
 			end
 
-			for _, window in ipairs(windows) do
-				pcall(markview.configuration.callbacks.on_mode_change, buffer, window, mode);
-			end
-		end
+			::noCallbacks::
 
-		::noCallbacks::
+			-- Mode is a valid mode
+			if markview.configuration.modes and vim.list_contains(markview.configuration.modes, mode) then
+				local lines = vim.api.nvim_buf_line_count(buffer);
+				local parsed_content;
 
-		-- Mode is a valid mode
-		if markview.configuration.modes and vim.list_contains(markview.configuration.modes, mode) then
-			local lines = vim.api.nvim_buf_line_count(buffer);
-			local parsed_content;
+				markview.renderer.clear(buffer);
 
-			markview.renderer.clear(buffer);
+				if lines < (markview.configuration.max_length or 1000) then
+					parsed_content = markview.parser.init(buffer, markview.configuration);
 
-			if lines < (markview.configuration.max_length or 1000) then
-				parsed_content = markview.parser.init(buffer, markview.configuration);
+					markview.renderer.render(buffer, parsed_content, markview.configuration);
+				else
+					local cursor = vim.api.nvim_win_get_cursor(0);
+					local start = math.max(0, cursor[1] - (markview.configuration.render_range or 100));
+					local stop = math.min(lines, cursor[1] + (markview.configuration.render_range or 100));
 
-				markview.renderer.render(buffer, parsed_content, markview.configuration);
-			else
+					parsed_content = markview.parser.parse_range(buffer, markview.configuration, start, stop);
+
+					markview.renderer.render(buffer, parsed_content, markview.configuration)
+				end
+
+				markview.keymaps.init(buffer, parsed_content, markview.configuration);
+
+				if not markview.configuration.hybrid_modes or not vim.list_contains(markview.configuration.hybrid_modes, mode) then
+					return;
+				end
+
 				local cursor = vim.api.nvim_win_get_cursor(0);
-				local start = math.max(0, cursor[1] - (markview.configuration.render_range or 100));
-				local stop = math.min(lines, cursor[1] + (markview.configuration.render_range or 100));
+				local start = math.max(0, cursor[1] - 1);
+				local stop = math.min(lines, cursor[1]);
 
-				parsed_content = markview.parser.parse_range(buffer, markview.configuration, start, stop);
+				local under_cursor = markview.parser.parse_range(event.buf, markview.configuration, start, stop);
+				local clear_range = markview.renderer.get_content_range(under_cursor);
 
-				markview.renderer.render(buffer, parsed_content, markview.configuration)
+				if not clear_range or not clear_range[1] or not clear_range[2] then
+					return;
+				end
+
+				markview.renderer.clear(event.buf, clear_range[1], clear_range[2])
+
+			-- Mode is not a valid mode. Clear decorations.
+			else
+				-- Call an extra redraw to flush out screen updates
+				markview.renderer.clear(buffer);
+				vim.cmd("redraw!");
 			end
-
-			markview.keymaps.init(buffer, parsed_content, markview.configuration);
-
-			if not markview.configuration.hybrid_modes or not vim.list_contains(markview.configuration.hybrid_modes, mode) then
-				return;
-			end
-
-			local cursor = vim.api.nvim_win_get_cursor(0);
-			local start = math.max(0, cursor[1] - 1);
-			local stop = math.min(lines, cursor[1]);
-
-			local under_cursor = markview.parser.parse_range(event.buf, markview.configuration, start, stop);
-			local clear_range = markview.renderer.get_content_range(under_cursor);
-
-			if not clear_range or not clear_range[1] or not clear_range[2] then
-				return;
-			end
-
-			markview.renderer.clear(event.buf, clear_range[1], clear_range[2])
-
-		-- Mode is not a valid mode. Clear decorations.
-		else
-			-- Call an extra redraw to flush out screen updates
-			markview.renderer.clear(buffer);
-			vim.cmd("redraw!");
-		end
+		end));
 	end
 });
 
@@ -221,6 +237,12 @@ vim.api.nvim_create_autocmd(events, {
 
 		move_timer:stop();
 		move_timer:start(100, 0, vim.schedule_wrap(function ()
+			local mode = vim.api.nvim_get_mode().mode;
+
+			if not markview.configuration.hybrid_modes or not vim.list_contains(markview.configuration.hybrid_modes, mode) then
+				return;
+			end
+
 			local lines = vim.api.nvim_buf_line_count(event.buf);
 			local buffer = event.buf;
 
