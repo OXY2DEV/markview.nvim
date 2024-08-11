@@ -29,7 +29,6 @@ Markview.nvim comes with a ton of features such as,
 - Fully customisable setup! You can customise everything to your needs!
 - A `hybrid mode` that allows rendering in real-time! It will even unconceal nodes under the cursor.
 - Dynamic `highlight groups` that allows support for almost any colorscheme!
-- Can be loaded on other filetypes too!
 
 And a lot more to come!
 

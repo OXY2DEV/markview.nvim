@@ -75,16 +75,16 @@ local set_hl = function (hl)
 end
 
 local display_width = function (text, config)
-	local d_width = vim.fn.strchars(text);
+	local d_width = vim.fn.strdisplaywidth(text);
 	local inl_conf = config.inline_codes;
 
 	local final_string = text;
 
 	for inline_code in final_string:gmatch("`([^`]+)`") do
-		d_width = d_width - (vim.fn.strchars("`" .. inline_code .. "`"));
+		d_width = d_width - (vim.fn.strdisplaywidth("`" .. inline_code .. "`"));
 
 		if inl_conf ~= nil and inl_conf.enable ~= false then
-			d_width = d_width + vim.fn.strchars(table.concat({
+			d_width = d_width + vim.fn.strdisplaywidth(table.concat({
 				inl_conf.corner_left or "",
 				inl_conf.padding_left or "",
 
@@ -117,9 +117,9 @@ local display_width = function (text, config)
 			break;
 		end
 
-		d_width = d_width - vim.fn.strchars("![" .. "](" .. address .. ")");
+		d_width = d_width - vim.fn.strdisplaywidth("![" .. "](" .. address .. ")");
 
-		d_width = d_width + vim.fn.strchars(table.concat({
+		d_width = d_width + vim.fn.strdisplaywidth(table.concat({
 			img_conf.corner_left or "",
 			img_conf.padding_left or "",
 			img_conf.icon or "",
@@ -143,9 +143,9 @@ local display_width = function (text, config)
 			break;
 		end
 
-		d_width = d_width - vim.fn.strchars("![" .. "][" .. address .. "]");
+		d_width = d_width - vim.fn.strdisplaywidth("![" .. "][" .. address .. "]");
 
-		d_width = d_width + vim.fn.strchars(table.concat({
+		d_width = d_width + vim.fn.strdisplaywidth(table.concat({
 			img_conf.corner_left or "",
 			img_conf.padding_left or "",
 			img_conf.icon or "",
@@ -165,10 +165,10 @@ local display_width = function (text, config)
 
 	-- Hyperlinks: normal
 	for link, address in final_string:gmatch("%[([^%]]+)%]%(([^%)]+)%)") do
-		d_width = d_width - vim.fn.strchars("[" .. "](" .. address .. ")");
+		d_width = d_width - vim.fn.strdisplaywidth("[" .. "](" .. address .. ")");
 
 		if lnk_conf ~= nil and lnk_conf.enable ~= false then
-			d_width = d_width + vim.fn.strchars(table.concat({
+			d_width = d_width + vim.fn.strdisplaywidth(table.concat({
 				lnk_conf.corner_left or "",
 				lnk_conf.padding_left or "",
 				lnk_conf.icon or "",
@@ -189,10 +189,10 @@ local display_width = function (text, config)
 
 	-- Hyperlink: full_reference_link
 	for link, address in final_string:gmatch("[^!]%[([^%]]+)%]%[([^%]]+)%]") do
-		d_width = d_width - vim.fn.strchars("[" .. "][" .. address .. "]");
+		d_width = d_width - vim.fn.strdisplaywidth("[" .. "][" .. address .. "]");
 
 		if lnk_conf ~= nil and lnk_conf.enable ~= false then
-			d_width = d_width + vim.fn.strchars(table.concat({
+			d_width = d_width + vim.fn.strdisplaywidth(table.concat({
 				lnk_conf.corner_left or "",
 				lnk_conf.padding_left or "",
 				lnk_conf.icon or "",
@@ -217,7 +217,7 @@ local display_width = function (text, config)
 	end
 
 	for str_a, internal, str_b in final_string:gmatch("([*]+)([^*]+)([*]+)") do
-		local min_signs = vim.fn.strchars(str_a) > vim.fn.strchars(str_b) and vim.fn.strchars(str_a) or vim.fn.strchars(str_b);
+		local min_signs = vim.fn.strdisplaywidth(str_a) > vim.fn.strdisplaywidth(str_b) and vim.fn.strdisplaywidth(str_a) or vim.fn.strdisplaywidth(str_b);
 
 		local start_pos, _ = final_string:find("([*]+)[^*]+([*]+)");
 
@@ -244,10 +244,10 @@ local display_width = function (text, config)
 	end
 
 	for username, domain, tdl in final_string:gmatch("<([%w._%+-]+)@([%w.-]+)%.([%w.-]+)>") do
-		d_width = d_width - vim.fn.strchars("<" .. ">");
+		d_width = d_width - vim.fn.strdisplaywidth("<" .. ">");
 
 		if email_conf ~= nil and email_conf.enable ~= false then
-			d_width = d_width + vim.fn.strchars(table.concat({
+			d_width = d_width + vim.fn.strdisplaywidth(table.concat({
 				email_conf.corner_left or "",
 				email_conf.padding_left or "",
 				email_conf.icon or "",
@@ -315,7 +315,7 @@ local display_width = function (text, config)
 		-- Tag isn't concealed
 		if conf.conceal ~= false then
 			final_string = final_string:gsub("<" .. start_tag .. ">" .. internal_text .. "</" .. end_tag .. ">", internal_text)
-			d_width = d_width - vim.fn.strchars("<" .. start_tag .. ">" .. "</" .. end_tag .. ">", internal_text);
+			d_width = d_width - vim.fn.strdisplaywidth("<" .. start_tag .. ">" .. "</" .. end_tag .. ">", internal_text);
 		end
 
 		tmp_string = tmp_string:gsub("<" .. start_tag .. ">" .. internal_text .. "</" .. end_tag .. ">", internal_text)
@@ -339,19 +339,19 @@ local display_width = function (text, config)
 		if semicolon then
 			final_string = final_string:gsub("&" .. entity_name .. ";", entity);
 
-			d_width = d_width - vim.fn.strchars("&" .. entity_name .. ";");
+			d_width = d_width - vim.fn.strdisplaywidth("&" .. entity_name .. ";");
 			d_width = d_width + vim.fn.strdisplaywidth(entity);
 		else
 			final_string = final_string:gsub("&" .. entity_name, entity);
 
-			d_width = d_width - vim.fn.strchars("&" .. entity_name);
+			d_width = d_width - vim.fn.strdisplaywidth("&" .. entity_name);
 			d_width = d_width + vim.fn.strdisplaywidth(entity);
 		end
 
 		::invalid::
 	end
 
-	return d_width, vim.fn.strchars(text), final_string;
+	return d_width, vim.fn.strdisplaywidth(text), final_string;
 end
 
 
@@ -450,10 +450,10 @@ local table_header = function (buffer, content, config_table)
 
 			if width < actual_width then
 				if align == "left" then
-					vim.api.nvim_buf_set_extmark(buffer, renderer.namespace, row_start, col_start + curr_col + vim.fn.strchars(col), {
+					vim.api.nvim_buf_set_extmark(buffer, renderer.namespace, row_start, col_start + curr_col + #col, {
 						virt_text_pos = "inline",
 						virt_text = {
-							{ string.rep(" ", (actual_width - width)) }
+							{ string.rep("X", (actual_width - width)) }
 						}
 					});
 				elseif align == "right" then
@@ -466,7 +466,7 @@ local table_header = function (buffer, content, config_table)
 				else
 					local before, after = math.floor((actual_width - width) / 2), math.ceil((actual_width - width) / 2);
 
-					vim.api.nvim_buf_set_extmark(buffer, renderer.namespace, row_start, col_start + curr_col + vim.fn.strchars(col), {
+					vim.api.nvim_buf_set_extmark(buffer, renderer.namespace, row_start, col_start + curr_col + #col, {
 						virt_text_pos = "inline",
 						virt_text = {
 							{ string.rep(" ", after) }
@@ -483,7 +483,7 @@ local table_header = function (buffer, content, config_table)
 			end
 
 			table.insert(virt_txt, { string.rep(tbl_conf.text[2], actual_width), set_hl(tbl_conf.hl[2]) })
-			curr_col = curr_col + vim.fn.strchars(col);
+			curr_col = curr_col + #col;
 			curr_tbl_col = curr_tbl_col + 1;
 		end
 	end
@@ -689,7 +689,7 @@ local table_footer = function (buffer, content, config_table)
 
 			if width < actual_width then
 				if align == "left" then
-					vim.api.nvim_buf_set_extmark(buffer, renderer.namespace, row_end - 1, col_start + curr_col + vim.fn.strchars(col), {
+					vim.api.nvim_buf_set_extmark(buffer, renderer.namespace, row_end - 1, col_start + curr_col + #col, {
 						virt_text_pos = "inline",
 						virt_text = {
 							{ string.rep(" ", (actual_width - width)) }
@@ -705,7 +705,7 @@ local table_footer = function (buffer, content, config_table)
 				else
 					local before, after = math.floor((actual_width - width) / 2), math.ceil((actual_width - width) / 2);
 
-					vim.api.nvim_buf_set_extmark(buffer, renderer.namespace, row_end - 1, col_start + curr_col + vim.fn.strchars(col), {
+					vim.api.nvim_buf_set_extmark(buffer, renderer.namespace, row_end - 1, col_start + curr_col + #col, {
 						virt_text_pos = "inline",
 						virt_text = {
 							{ string.rep(" ", after) }
@@ -722,7 +722,7 @@ local table_footer = function (buffer, content, config_table)
 			end
 
 			table.insert(virt_txt, { string.rep(tbl_conf.text[10], actual_width), set_hl(tbl_conf.hl[10]) })
-			curr_col = curr_col + vim.fn.strchars(col);
+			curr_col = curr_col + #col;
 			curr_tbl_col = curr_tbl_col + 1;
 		end
 	end
@@ -796,7 +796,7 @@ local table_content = function (buffer, content, config_table, r_num)
 
 			if width < actual_width then
 				if align == "left" then
-					vim.api.nvim_buf_set_extmark(buffer, renderer.namespace, row_start + r_num - 1, col_start + curr_col + vim.fn.strchars(col), {
+					vim.api.nvim_buf_set_extmark(buffer, renderer.namespace, row_start + r_num - 1, col_start + curr_col + #col, {
 						virt_text_pos = "inline",
 						virt_text = {
 							{ string.rep(" ", (actual_width - width)) }
@@ -812,7 +812,7 @@ local table_content = function (buffer, content, config_table, r_num)
 				else
 					local before, after = math.floor((actual_width - width) / 2), math.ceil((actual_width - width) / 2);
 
-					vim.api.nvim_buf_set_extmark(buffer, renderer.namespace, row_start + r_num - 1, col_start + curr_col + vim.fn.strchars(col), {
+					vim.api.nvim_buf_set_extmark(buffer, renderer.namespace, row_start + r_num - 1, col_start + curr_col + #col, {
 						virt_text_pos = "inline",
 						virt_text = {
 							{ string.rep(" ", after) }
@@ -828,7 +828,7 @@ local table_content = function (buffer, content, config_table, r_num)
 				end
 			end
 
-			curr_col = curr_col + vim.fn.strchars(col);
+			curr_col = curr_col + #col;
 			curr_tbl_col = curr_tbl_col + 1;
 		end
 	end

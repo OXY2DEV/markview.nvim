@@ -303,7 +303,7 @@ parser.md = function (buffer, TStree, from, to)
 				--- So, we will instead count the number of spaces at the start
 				table.insert(line_positions, {
 					row_start = r_row_start,
-					col_start = r_col_start == 0 and vim.fn.strchars(row_text:match("^(%s*)")) or r_col_start,
+					col_start = r_col_start == 0 and vim.fn.strdisplaywidth(row_text:match("^(%s*)")) or r_col_start,
 					row_end = r_row_end,
 					col_end = r_col_end
 				})
@@ -328,16 +328,17 @@ parser.md = function (buffer, TStree, from, to)
 								table.insert(alignments, "right");
 							end
 
+							-- TODO: This needs rework
 							if line:match("|([^|]+)|") then
 								local col_content = line:match("|([^|]+)|");
-								line = line:gsub("|" .. col_content, "");
+								line = vim.fn.strcharpart(line, vim.fn.strchars("|" .. col_content));
 
-								table.insert(col_widths, vim.fn.strchars(col_content));
+								table.insert(col_widths, vim.fn.strdisplaywidth(col_content));
 							elseif line:match("|([^|]+)$") then
 								local col_content = line:match("|([^|]+)$");
-								line = line:gsub("|" .. col_content, "");
+								line = vim.fn.strcharpart(line, vim.fn.strchars("|" .. col_content));
 
-								table.insert(col_widths, vim.fn.strchars(col_content));
+								table.insert(col_widths, vim.fn.strdisplaywidth(col_content));
 							end
 						end
 					end
