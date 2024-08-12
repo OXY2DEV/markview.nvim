@@ -119,7 +119,7 @@ You can install the plugin by running the following command.
 
 ### 👾 Github releases
 
-You can also download one of the [releases](https://github.com/OXY2DEV/markview.nvim/releases/tag/v1.0.0).
+You can also download one of the [releases](https://github.com/OXY2DEV/markview.nvim/releases).
 
 ### 🛸 Testing
 
