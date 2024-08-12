@@ -798,7 +798,6 @@ markview.configuration = {
 						default = true
 					};
 				else
-					vim.print(luminosity)
 					return {
 						bg = markview.colors.mix(bg, bg, 1, math.max(1 - luminosity, 0.05) * -1),
 						default = true
@@ -1454,9 +1453,6 @@ markview.commands = {
 	enableAll = function ()
 		markview.state.enable = true;
 
-		vim.o.conceallevel = 2;
-		vim.o.concealcursor = "n";
-
 		for _, buf in ipairs(markview.attached_buffers) do
 			local parsed_content = markview.parser.init(buf);
 			local windows = utils.find_attached_wins(buffer);
@@ -1484,7 +1480,6 @@ markview.commands = {
 			end
 
 			markview.state.buf_states[buf] = false;
-
 			markview.renderer.clear(buf);
 		end
 
