@@ -1455,7 +1455,7 @@ markview.commands = {
 
 		for _, buf in ipairs(markview.attached_buffers) do
 			local parsed_content = markview.parser.init(buf);
-			local windows = utils.find_attached_wins(buffer);
+			local windows = utils.find_attached_wins(buf);
 
 			if markview.configuration.callbacks and markview.configuration.callbacks.on_enable then
 				for _, window in ipairs(windows) do
@@ -1471,7 +1471,7 @@ markview.commands = {
 	end,
 	disableAll = function ()
 		for _, buf in ipairs(markview.attached_buffers) do
-			local windows = utils.find_attached_wins(buffer);
+			local windows = utils.find_attached_wins(buf);
 
 			if markview.configuration.callbacks and markview.configuration.callbacks.on_disable then
 				for _, window in ipairs(windows) do
