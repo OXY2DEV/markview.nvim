@@ -15,6 +15,8 @@ parser.fiter_lines = function (buffer, from, to)
 	local tolarence = 3;
 	local found = 0;
 
+	local code_block_indent = 0;
+
 	for l, line in ipairs(captured_lines) do
 		if l ~= 1 then
 			if withinCodeBlock ~= true and line:match("^%s*([+%-*])") then
@@ -32,11 +34,11 @@ parser.fiter_lines = function (buffer, from, to)
 
 		if line:match("(```)") and withinCodeBlock ~= true then
 			withinCodeBlock = true;
-			goto withinElement;
+			code_block_indent = spaces_before;
 		elseif line:match("(```)") and withinCodeBlock == true then
 			withinCodeBlock = false;
-			goto withinElement;
 		elseif withinCodeBlock == true then
+			spaces_before = spaces_before > code_block_indent and spaces_before - code_block_indent or spaces_before;
 			goto withinElement;
 		end
 
@@ -48,6 +50,10 @@ parser.fiter_lines = function (buffer, from, to)
 
 		if not line:match("^%s*([+%-*])") and not line:match("^%s*(%d+%.)") and parent_marker then
 			spaces_before = math.max(0, spaces_before - vim.fn.strchars((parent_marker or "") .. " "));
+
+			if line:match("(```)") then
+				code_block_indent = spaces_before;
+			end
 		end
 
 		::withinElement::
@@ -208,15 +214,14 @@ parser.md = function (buffer, TStree, from, to)
 
 			local language_string, additional_info = "", nil;
 
-			-- chore: This needs more work
-			if block_start:match("^%s*```{{?([^}]*)}}?") then
-				language_string = block_start:match("^%s*```{{?([^}]*)}}?");
-				additional_info = block_start:match("^%s*```{{?[^}]*}}?%s*(.*)$");
-			elseif block_start:match("^%s*```(%S*)$") then
-				language_string = block_start:match("^%s*```(%S*)$");
+			if block_start:match("%s*```{{?([^}]*)}}?") then
+				language_string = block_start:match("%s*```{{?([^}]*)}}?");
+				additional_info = block_start:match("%s*```{{?[^}]*}}?%s*(.*)$");
+			elseif block_start:match("%s*```(%S*)$") then
+				language_string = block_start:match("%s*```(%S*)$");
 			elseif block_start:match("%s*```(%S*)%s*") then
 				language_string = block_start:match("%s*```(%S*)%s");
-				additional_info = block_start:match("^%s*```%S*%s+(.*)$");
+				additional_info = block_start:match("%s*```%S*%s+(.*)$");
 			end
 
 			table.insert(parser.parsed_content, {
@@ -224,7 +229,7 @@ parser.md = function (buffer, TStree, from, to)
 				type = "code_block",
 				language = language_string,
 
-				info_string = block_start:gsub("^%s*", ""),
+				info_string = vim.fn.strcharpart(block_start, col_start),
 				block_info = additional_info,
 
 				line_lengths = line_lens,

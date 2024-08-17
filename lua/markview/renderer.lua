@@ -1079,7 +1079,7 @@ renderer.render_code_blocks = function (buffer, content, config_table)
 
 		if config_table.language_direction == nil or config_table.language_direction == "left" then
 			vim.api.nvim_buf_set_extmark(buffer, renderer.namespace, content.row_start, content.col_start, {
-				end_col = vim.fn.strchars(content.info_string),
+				end_col = content.col_start + vim.fn.strchars(content.info_string),
 				conceal = "",
 			});
 
@@ -1105,7 +1105,7 @@ renderer.render_code_blocks = function (buffer, content, config_table)
 			});
 		elseif config_table.language_direction == "right" then
 			vim.api.nvim_buf_set_extmark(buffer, renderer.namespace, content.row_start, content.col_start, {
-				end_col = vim.fn.strchars(content.info_string),
+				end_col = content.col_start + vim.fn.strchars(content.info_string),
 				conceal = "",
 			});
 
