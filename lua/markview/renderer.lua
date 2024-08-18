@@ -1538,10 +1538,11 @@ renderer.render_lists = function (buffer, content, config_table)
 				vim.api.nvim_buf_set_extmark(buffer, renderer.namespace, line_num, 0, {
 					virt_text_pos = "inline",
 					virt_text = {
-						{ string.rep(" ", level * shift) }
+						{ string.rep(" ", level * shift) },
+						{ string.rep(" ", content.align_spaces[l] or 0) },
 					},
 
-					end_col = line_len < before and line_len or before,
+					end_col = line_len < before and line_len + (content.align_spaces[l] or 0) or before + (content.align_spaces[l] or 0),
 					conceal = ""
 				})
 			end
