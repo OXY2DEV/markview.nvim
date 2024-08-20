@@ -9,6 +9,7 @@ parser.fiter_lines = function (buffer, from, to)
 	local indexes = {};
 	local spaces = {};
 	local align_spaces = {};
+	local start_pos = {};
 
 	local withinCodeBlock, insideDescription;
 	local parent_marker;
@@ -19,7 +20,21 @@ parser.fiter_lines = function (buffer, from, to)
 	local code_block_indent = 0;
 	local desc_indent = 0;
 
+	local start = 0;
+
 	for l, line in ipairs(captured_lines) do
+		-- TODO: Find better conditions
+		if l == 1 and line:match(">%s-([+%-*])") then
+			local before = line:match("(.*>%s-)[+%-*]");
+			start = vim.fn.strchars(before);
+
+			line = line:gsub(before, "");
+			table.insert(start_pos, start)
+		else
+			line = line:sub(start, #line);
+			table.insert(start_pos, start);
+		end
+
 		if l ~= 1 then
 			if withinCodeBlock ~= true and line:match("^%s*([+%-*])") then
 				break;
@@ -83,7 +98,7 @@ parser.fiter_lines = function (buffer, from, to)
 		end
 	end
 
-	return filtered_lines, indexes, spaces, align_spaces;
+	return filtered_lines, indexes, spaces, align_spaces, start_pos;
 end
 
 parser.get_list_end_range = function (buffer, from, to, marker)
@@ -427,7 +442,7 @@ parser.md = function (buffer, TStree, from, to)
 			local marker_text = vim.treesitter.get_node_text(marker, buffer);
 			local symbol = marker_text:gsub("%s", "");
 
-			local list_lines, lines, spaces, align_spaces = parser.fiter_lines(buffer, row_start, row_end);
+			local list_lines, lines, spaces, align_spaces, starts = parser.fiter_lines(buffer, row_start, row_end);
 			local spaces_before_marker = list_lines[1]:match("^(%s*)" .. symbol .. "%s*");
 
 			local c_end, _ = parser.get_list_end_range(buffer, row_start, row_end, symbol)
@@ -440,6 +455,7 @@ parser.md = function (buffer, TStree, from, to)
 				list_candidates = lines,
 				list_lines = list_lines,
 
+				starts = starts,
 				spaces = spaces,
 				align_spaces = align_spaces,
 				conceal_spaces = vim.fn.strchars(spaces_before_marker),

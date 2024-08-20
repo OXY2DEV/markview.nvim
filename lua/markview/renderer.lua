@@ -1520,7 +1520,7 @@ renderer.render_lists = function (buffer, content, config_table)
 
 				local level = math.floor(before / (config_table.indent_size or 2)) + 1;
 
-				vim.api.nvim_buf_set_extmark(buffer, renderer.namespace, line_num, 0, {
+				vim.api.nvim_buf_set_extmark(buffer, renderer.namespace, line_num, content.starts[l] or 0, {
 					virt_text_pos = "inline",
 					virt_text = {
 						{ string.rep(" ", level * shift) },
@@ -1535,7 +1535,7 @@ renderer.render_lists = function (buffer, content, config_table)
 
 				local level = math.floor(before / (config_table.indent_size or 2)) + 1;
 
-				vim.api.nvim_buf_set_extmark(buffer, renderer.namespace, line_num, 0, {
+				vim.api.nvim_buf_set_extmark(buffer, renderer.namespace, line_num, content.starts[l] or 0, {
 					virt_text_pos = "inline",
 					virt_text = {
 						{ string.rep(" ", level * shift) },
