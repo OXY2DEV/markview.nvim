@@ -1,5 +1,40 @@
 # Changelog
 
+## [20.0.0](https://github.com/OXY2DEV/markview.nvim/compare/v19.0.0...v20.0.0) (2024-08-20)
+
+
+### ⚠ BREAKING CHANGES
+
+* **renderer:** Added experimental support for lists inside block elements
+
+### Bug Fixes
+
+* Added experimental support for aligned checkbox desvription ([f9aba72](https://github.com/OXY2DEV/markview.nvim/commit/f9aba72c8d35ebe11eee7b4a4d7b10e92f18ec06)), closes [#107](https://github.com/OXY2DEV/markview.nvim/issues/107)
+* Added option to change the indent size of list items ([d54039e](https://github.com/OXY2DEV/markview.nvim/commit/d54039e57fc6b263775a78473569f01224e2ddee)), closes [#96](https://github.com/OXY2DEV/markview.nvim/issues/96)
+* Added the ability to open &lt;cfile&gt; links under cursor ([7f4639a](https://github.com/OXY2DEV/markview.nvim/commit/7f4639a53b3e3aac3ad5deab99b21097264f07cc)), closes [#97](https://github.com/OXY2DEV/markview.nvim/issues/97)
+* Fixed a big casuing hybrid mode to become active on mode change ([15a49b5](https://github.com/OXY2DEV/markview.nvim/commit/15a49b532f2d79471db2c3ac2ee56e974ffb1dd4))
+* Fixed a big causing highlight groups to not apply on empty config table ([1dd1d30](https://github.com/OXY2DEV/markview.nvim/commit/1dd1d3069d7f25ebefbeaf692af9f792e3414eab))
+* Fixed a bug causing `callbacks` to not work on some functions ([a8e104b](https://github.com/OXY2DEV/markview.nvim/commit/a8e104badcc77534f3b4db2310545c70e28a890b)), closes [#104](https://github.com/OXY2DEV/markview.nvim/issues/104)
+* Fixed a bug causing the `on_mode_changed()` callback to not fire ([cb7570b](https://github.com/OXY2DEV/markview.nvim/commit/cb7570be20acb3ad191385dee55db4e304bba42b))
+* **gx:** Fixed a bug causing gx to not work with links. ([6d0bcce](https://github.com/OXY2DEV/markview.nvim/commit/6d0bcce3a74b10bcc79c04c5944bfc000381be49)), closes [#97](https://github.com/OXY2DEV/markview.nvim/issues/97)
+* Made tables compatible with multi-col characters ([03290ce](https://github.com/OXY2DEV/markview.nvim/commit/03290ce2e0c9e426c53dc9a1efabd8a6ee1f4904)), closes [#42](https://github.com/OXY2DEV/markview.nvim/issues/42)
+* **parser:** Added support for extra info on the code block start line ([7e0ad40](https://github.com/OXY2DEV/markview.nvim/commit/7e0ad400638b09205079693eb73307580f6303f3)), closes [#77](https://github.com/OXY2DEV/markview.nvim/issues/77)
+* **parser:** Added support for labels in links ([1fc5d90](https://github.com/OXY2DEV/markview.nvim/commit/1fc5d90dbe6f8a171443b50875f7bbd794fdd607))
+* Removed auto setting conceallevel & concealcursor ([798fd99](https://github.com/OXY2DEV/markview.nvim/commit/798fd991f5d163ed676877e87d8c65dc2d886cb9))
+* Removed debug print for luminosity ([798fd99](https://github.com/OXY2DEV/markview.nvim/commit/798fd991f5d163ed676877e87d8c65dc2d886cb9)), closes [#101](https://github.com/OXY2DEV/markview.nvim/issues/101) [#102](https://github.com/OXY2DEV/markview.nvim/issues/102)
+* **renderer:** `[]` are now counted when rendering tables ([c4f3d54](https://github.com/OXY2DEV/markview.nvim/commit/c4f3d544bd67b4ac0ebacc72091556841e81ca8b)), closes [#75](https://github.com/OXY2DEV/markview.nvim/issues/75)
+* **renderer:** Added debounce to ModeChanged event ([c9fa106](https://github.com/OXY2DEV/markview.nvim/commit/c9fa1065098663c3bfe7e07656937c3d2f3dabea)), closes [#99](https://github.com/OXY2DEV/markview.nvim/issues/99) [#98](https://github.com/OXY2DEV/markview.nvim/issues/98)
+* **renderer:** Added experimental support for lists inside block elements ([81c64a8](https://github.com/OXY2DEV/markview.nvim/commit/81c64a8cef523192aa084ccef469369f6ed8d7d1)), closes [#115](https://github.com/OXY2DEV/markview.nvim/issues/115)
+* **renderer:** Added mode validator for hybrid_mode listeners ([c9fa106](https://github.com/OXY2DEV/markview.nvim/commit/c9fa1065098663c3bfe7e07656937c3d2f3dabea))
+* **renderer:** Added option to disable top/bottom border & fixed a rendering error that occured when disabling "use_virt_lines" ([31d36e9](https://github.com/OXY2DEV/markview.nvim/commit/31d36e935fd962099fdacffe2629305e26eff8ed))
+* **renderer:** Added support for language names in code blocks ([5db0e8e](https://github.com/OXY2DEV/markview.nvim/commit/5db0e8ea917d07ea1de6670cf256a4169c3d5601)), closes [#72](https://github.com/OXY2DEV/markview.nvim/issues/72)
+* **renderer:** Added the filetype finding function to the code blocks renderer ([d69122d](https://github.com/OXY2DEV/markview.nvim/commit/d69122dbf3f340bd9f5dfbb55bef2f71ed65858d)), closes [#72](https://github.com/OXY2DEV/markview.nvim/issues/72)
+* **renderer:** Fixed a big causing numbered lists to use virtual text ([6404094](https://github.com/OXY2DEV/markview.nvim/commit/6404094d692262bb446e2887822e2aa7d69f7efa))
+* **renderer:** Fixed incorrect alignment of nested code blocks within lists ([738ddc0](https://github.com/OXY2DEV/markview.nvim/commit/738ddc0390449c0652f34b99a6cbe0699b2fcf58))
+* **renderer:** Made icons optional ([6671dd4](https://github.com/OXY2DEV/markview.nvim/commit/6671dd45ea5eabbc11ba9c400b54991681e95464))
+* **renderer:** Reworked hybrid_mode ([e29b7b5](https://github.com/OXY2DEV/markview.nvim/commit/e29b7b5ac6a9f238b7a3ff85042c91ba76edbda8))
+* **renderer:** Table cells now respect the column count & the cell width ([a0d8a5d](https://github.com/OXY2DEV/markview.nvim/commit/a0d8a5db74107ffe91cb3cab6b3065b7baccb663)), closes [#75](https://github.com/OXY2DEV/markview.nvim/issues/75)
+
 ## [19.0.0](https://github.com/OXY2DEV/markview.nvim/compare/v18.0.0...v19.0.0) (2024-08-05)
 
 
