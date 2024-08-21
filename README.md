@@ -16,16 +16,16 @@ An experimental `markdown` previewer for Neovim.
 Markview.nvim comes with a ton of features such as,
 
 - Close to `full render` of markdown documents. Currently supported items are,
-  * Block quotes(includes `callouts`/`alerts`
-  * Chekboxes(checked, unchecked & pending state)
-  * Headings(atx_headings & setext_headings)
-  * Horizontal rules
-  * Html support(only for simple tags, e.g. `<u>Underline</u>`)
-  * Html entites(both `&<name>;` and `&<name>` support)
-  * Inline codes
-  * Links(hyprlinks, images & email support)
-  * List item(ordered & unordered)
-  * Tables
+  * Block quotes(includes `callouts`/`alerts`.
+  * Chekboxes(checked, unchecked, pending & custom states, e.g. `[~]` for in progress).
+  * Headings(atx_headings & setext_headings).
+  * Horizontal rules.
+  * Html support(only for simple tags, e.g. `<u>Underline</u>`).
+  * Html entites(both `&<name>;` and `&<name>` support).
+  * Inline codes.
+  * Links(hyprlinks, images & email support).
+  * List item(ordered & unordered).
+  * Tables.
 - Fully customisable setup! You can customise everything to your needs!
 - A `hybrid mode` that allows rendering in real-time! It will even unconceal nodes under the cursor.
 - Dynamic `highlight groups` that allows support for almost any colorscheme!
@@ -277,6 +277,17 @@ Checkboxes use these highlight groups,
 - MarkviewCheckboxChecked, from `DiagnosticOk`.
 - MarkviewCheckboxUnhecked, from `DiagnosticError`.
 - MarkviewCheckboxPending, from `DiagnosticWarn`.
+
+Markview also comes with 2 custom checkbox states,
+
+>[!Note]
+> These are purely for custom notes and aren't taken from external tools(e.g. Obsidian).
+
+- MarkviewCheckboxProgress, from `Keyword`.
+  Checkboes using `[~]`.
+
+- MarkviewCheckboxCancelled, from `Comment`.
+  Checkboxes using `[o]`.
 
 ### 💻 Code blocks & inline codes
 

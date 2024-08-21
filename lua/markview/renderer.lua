@@ -1574,6 +1574,12 @@ renderer.render_checkboxes = function (buffer, content, config_table)
 		chk_config = config_table.unchecked;
 	elseif content.state == "pending" then
 		chk_config = config_table.pending;
+	elseif vim.islist(config_table.custom) then
+		for _, config in ipairs(config_table.custom) do
+			if content.state == config.match then
+				chk_config = config;
+			end
+		end
 	end
 
 	if not chk_config or type(chk_config.text) ~= "string" then

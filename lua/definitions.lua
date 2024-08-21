@@ -463,12 +463,18 @@
 ---
 --- Configuration table for the unchecked state
 ---@field unchecked markview.render_config.checkbox.state
+---
+--- Configuration table for the unchecked state
+---@field custom markview.render_config.checkbox.state[]?
 
 
 --- Configuration table for the checkbox state
 ---@class markview.render_config.checkbox.state
 ---
---- Text to use as the ustom checkbox
+--- The text inside [] checkboxes to match
+---@field match string?
+---
+--- Text to use as the custom checkbox
 ---@field text string
 ---
 --- Highlight group for text

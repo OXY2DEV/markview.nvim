@@ -899,6 +899,31 @@ markview.configuration = {
 				return { fg = fg, default = true };
 			end
 		},
+		{
+			group_name = "CheckboxProgress",
+			value = function ()
+				local fg = markview.colors.get({
+					markview.colors.get_hl_value(0, "Conditional", "fg"),
+					markview.colors.get_hl_value(0, "Keyword", "fg"),
+
+					vim.o.background == "dark" and "#cba6f7" or "#8839ef"
+				});
+
+				return { fg = fg, default = true };
+			end
+		},
+		{
+			group_name = "CheckboxCancelled",
+			value = function ()
+				local fg = markview.colors.get({
+					markview.colors.get_hl_value(0, "Comment", "fg"),
+
+					vim.o.background == "dark" and "#6c7086" or "#9ca0b0";
+				});
+
+				return { fg = fg, default = true };
+			end
+		},
 
 
 		{
@@ -1415,6 +1440,18 @@ markview.configuration = {
 		},
 		unchecked = {
 			text = "✘", hl = "MarkviewCheckboxUnchecked"
+		},
+		custom = {
+			{
+				match = "~",
+				text = "◕",
+				hl = "MarkviewCheckboxProgress"
+			},
+			{
+				match = "o",
+				text = "󰩹",
+				hl = "MarkviewCheckboxCancelled"
+			}
 		}
 	},
 

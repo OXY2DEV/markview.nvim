@@ -525,13 +525,15 @@ parser.md_inline = function (buffer, TStree, from, to)
 			local line = vim.api.nvim_buf_get_lines(buffer, row_start, row_start + 1, false);
 			local title = string.match(line ~= nil and line[1] or "", "%b[]%s*(.*)$")
 
-			if capture_text == "[-]" then
+			if capture_text:match("%[(.)%]") then
 				for _, extmark in ipairs(parser.parsed_content) do
 					if extmark.type == "list_item" and extmark.row_start == row_start then
-						local start_line = extmark.list_lines[1] or "";
-						local atStart = start_line:match("%-%s+(%[%-%])%s+");
+						local marker = capture_text:match("%[(.)%]");
 
-						local chk_start, _ = start_line:find("%[%-%]");
+						local start_line = extmark.list_lines[1] or "";
+						local atStart = start_line:match("[+%-*]%s+(%[%" .. marker .. "%])%s+");
+
+						local chk_start, _ = start_line:find("%[%" .. marker .. "%]");
 
 						if not atStart or not chk_start or chk_start - 1 ~= col_start then
 							goto invalid;
@@ -540,7 +542,7 @@ parser.md_inline = function (buffer, TStree, from, to)
 						table.insert(parser.parsed_content, {
 							node = capture_node,
 							type = "checkbox",
-							state = "pending",
+							state = capture_text:match("%[(.)%]") == "-" and "pending" or capture_text:match("%[(.)%]"),
 
 							row_start = row_start,
 							row_end = row_end,
