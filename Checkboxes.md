@@ -8,7 +8,15 @@ Checkboxes = {
         text = "✔", hl = "TabLineSel"
     },
     unchecked = {},
-    pending = {}
+    pending = {},
+
+    custom = {
+        {
+            match = "~",
+            text = "◕",
+            hl = "CheckboxProgress"
+        }
+    }
 }
 ```
 
@@ -30,7 +38,25 @@ Checkboxes = {
 
   Configuration table for pending(uses `[-]`) Checkboxes.
 
+- custom, `table`
+
+  List of configuration for custom checkboxes.
+
 ## 📦 Checkbox configuration
+
+- text, `string`
+
+  Text to show as the checkbox.
+
+- hl, `string` or nil
+
+  Highlight group for `text`.
+
+## 📦 Custom checkbox configuration
+
+- match, `string`
+
+  The text inside `[]`(must be a single character) to match.
 
 - text, `string`
 
