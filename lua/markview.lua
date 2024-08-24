@@ -1383,6 +1383,27 @@ markview.configuration = {
 		hyperlinks = {
 			icon = "󰌷 ",
 			hl = "MarkviewHyperlink",
+
+			custom = {
+				{
+					match = "https://(.+)$",
+
+					icon = "󰞉 ",
+					hl = "MarkviewHyperlink",
+				},
+				{
+					match = "http://(.+)$",
+
+					icon = "󰕑 ",
+					hl = "MarkviewHyperlink",
+				},
+				{
+					match = "[%.]md$",
+
+					icon = " ",
+					hl = "MarkviewHyperlink",
+				}
+			}
 		},
 		images = {
 			icon = "󰥶 ",
@@ -1390,7 +1411,7 @@ markview.configuration = {
 		},
 		emails = {
 			icon = " ",
-			hl = "MarkviewEmail",
+			hl = "MarkviewEmail"
 		}
 	},
 

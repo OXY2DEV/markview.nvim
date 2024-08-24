@@ -165,48 +165,64 @@ local display_width = function (text, config)
 
 	-- Hyperlinks: normal
 	for link, address in final_string:gmatch("%[([^%]]+)%]%(([^%)]+)%)") do
+		local cnf = lnk_conf;
+
+		for _, conf in ipairs(config.links.hyperlinks.custom or {}) do
+			if conf.match and string.match(address or "", conf.match) then
+				cnf = conf
+			end
+		end
+
 		d_width = d_width - vim.fn.strdisplaywidth("[" .. "](" .. address .. ")");
 
-		if lnk_conf ~= nil and lnk_conf.enable ~= false then
+		if cnf and lnk_conf and lnk_conf.enable ~= false then
 			d_width = d_width + vim.fn.strdisplaywidth(table.concat({
-				lnk_conf.corner_left or "",
-				lnk_conf.padding_left or "",
-				lnk_conf.icon or "",
-				lnk_conf.padding_right or "",
-				lnk_conf.corner_right or ""
+				cnf.corner_left or "",
+				cnf.padding_left or "",
+				cnf.icon or "",
+				cnf.padding_right or "",
+				cnf.corner_right or ""
 			}));
 
 			final_string = final_string:gsub("%[" .. link .. "%]%(" .. address .. "%)", table.concat({
-				lnk_conf.corner_left or "",
-				lnk_conf.padding_left or "",
-				lnk_conf.icon or "",
+				cnf.corner_left or "",
+				cnf.padding_left or "",
+				cnf.icon or "",
 				link,
-				lnk_conf.padding_right or "",
-				lnk_conf.corner_right or ""
+				cnf.padding_right or "",
+				cnf.corner_right or ""
 			}));
 		end
 	end
 
 	-- Hyperlink: full_reference_link
 	for link, address in final_string:gmatch("[^!]%[([^%]]+)%]%[([^%]]+)%]") do
+		local cnf = lnk_conf;
+
+		for _, conf in ipairs(config.links.hyperlinks.custom or {}) do
+			if conf.match and string.match(address or "", conf.match) then
+				cnf = conf
+			end
+		end
+
 		d_width = d_width - vim.fn.strdisplaywidth("[" .. "][" .. address .. "]");
 
-		if lnk_conf ~= nil and lnk_conf.enable ~= false then
+		if cnf ~= nil and lnk_conf and lnk_conf.enable ~= false then
 			d_width = d_width + vim.fn.strdisplaywidth(table.concat({
-				lnk_conf.corner_left or "",
-				lnk_conf.padding_left or "",
-				lnk_conf.icon or "",
-				lnk_conf.padding_right or "",
-				lnk_conf.corner_right or ""
+				cnf.corner_left or "",
+				cnf.padding_left or "",
+				cnf.icon or "",
+				cnf.padding_right or "",
+				cnf.corner_right or ""
 			}));
 
 			final_string = final_string:gsub("%[" .. link .. "%]%[" .. address .. "%]", table.concat({
-				lnk_conf.corner_left or "",
-				lnk_conf.padding_left or "",
-				lnk_conf.icon or "",
+				cnf.corner_left or "",
+				cnf.padding_left or "",
+				cnf.icon or "",
 				link,
-				lnk_conf.padding_right or "",
-				lnk_conf.corner_right or ""
+				cnf.padding_right or "",
+				cnf.corner_right or ""
 			}));
 		end
 	end
@@ -1340,6 +1356,12 @@ renderer.render_links = function (buffer, content, config_table)
 	end
 
 	lnk_conf = config_table.hyperlinks;
+
+	for _, conf in ipairs(config_table.hyperlinks.custom or {}) do
+		if conf.match and string.match(content.address or "", conf.match) then
+			lnk_conf = conf
+		end
+	end
 
 	-- Do not render links with no config
 	if not lnk_conf then
