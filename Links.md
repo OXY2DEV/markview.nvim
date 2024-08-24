@@ -66,3 +66,23 @@ links = {
 
   Highlight group for `corner_right`.
 
+- custom, `table` or nil
+
+  **Only for hyperlinks**, A list of configuration tables allowing customization of how the link is shown based on a match pattern.
+
+## 🚀 Custom emails
+
+```lua
+custom = {
+    {
+        match = "^https://",
+        icon = "✔ "
+    }
+}
+```
+
+Custom config for *hyperlinks* captured by `match`.
+
+Supports all the previously mentioned options.
+
+
