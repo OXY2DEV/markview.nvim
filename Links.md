@@ -70,7 +70,7 @@ links = {
 
   **Only for hyperlinks**, A list of configuration tables allowing customization of how the link is shown based on a match pattern.
 
-## 🚀 Custom emails
+## 🚀 Custom hyperlinks
 
 ```lua
 custom = {
