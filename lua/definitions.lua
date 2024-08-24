@@ -334,14 +334,57 @@
 --- Enable/Disable custom hyperlink
 ---@field enable boolean?
 ---
----@field hyperlinks markview.render_config.links.link
+---@field hyperlinks markview.render_config.links.hyperlink
 ---
 ---@field images markview.render_config.links.link
 ---
 ---@field emails markview.render_config.links.link
 
+
+--- Configuration table for various link types
+---@class markview.render_config.links.hyperlink
+---
+---@field custom? markview.render_config.links.link[]
+---
+--- Default highlight group for the various parts
+---@field hl string?
+---
+--- The icon to use for the heading
+---@field icon string?
+---
+--- Highlight group for the icon
+---@field icon_hl string?
+---
+--- Used bu the "label" style to add text before the left padding
+---@field corner_left string?
+---
+--- Highlight group for the left corner
+---@field corner_left_hl string?
+---
+--- Used bu the "label" style to add text after the right padding
+---@field corner_right string?
+---
+--- Highlight group for the right corner
+---@field corner_right_hl string?
+---
+--- Used bu the "label" style to add text before the heading text
+---@field padding_left string?
+---
+--- Highlight group for the left padding
+---@field padding_left_hl string?
+---
+--- Used bu the "label" style to add text after the heading text
+---@field padding_right string?
+---
+--- Highlight group for the left padding
+---@field padding_right_hl string?
+
+
 --- Configuration table for various link types
 ---@class markview.render_config.links.link
+---
+--- Only for custom hyperlinks. Match string
+---@field match? string
 ---
 --- Default highlight group for the various parts
 ---@field hl string?

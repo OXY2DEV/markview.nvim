@@ -597,7 +597,7 @@ parser.md_inline = function (buffer, TStree, from, to)
 				node = capture_node,
 				type = "email",
 
-				text = capture_text,
+				text = capture_text:gsub("^([<])", ""):gsub("([>])$", ""),
 
 				row_start = row_start,
 				row_end = row_end,
