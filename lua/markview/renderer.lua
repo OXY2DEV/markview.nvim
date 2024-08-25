@@ -471,7 +471,7 @@ local table_header = function (buffer, content, config_table)
 					vim.api.nvim_buf_set_extmark(buffer, renderer.namespace, row_start, col_start + curr_col + #col, {
 						virt_text_pos = "inline",
 						virt_text = {
-							{ string.rep("X", (actual_width - width)) }
+							{ string.rep(" ", (actual_width - width)) }
 						}
 					});
 				elseif align == "right" then

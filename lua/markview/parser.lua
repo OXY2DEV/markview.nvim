@@ -386,15 +386,20 @@ parser.md = function (buffer, TStree, from, to)
 					table.insert(table_structure, "unknown");
 				end
 
-				for col in vim.treesitter.get_node_text(row, buffer):gmatch("%s*|([^|\n]*)") do
-					if col ~= "" then
+				local t_col = nil;
+
+				for col in vim.treesitter.get_node_text(row, buffer):gmatch("|([^|\n]*)") do
+					if col:match("\\$") then
+						t_col =  col .. "|";
+					elseif col ~= "" then
 						table.insert(tmp, "|")
-						table.insert(tmp, col)
+						table.insert(tmp, (t_col or "") .. col)
+
+						t_col = nil;
 					end
 				end
 
 				table.insert(tmp, "|")
-
 				table.insert(rows, tmp)
 			end
 
