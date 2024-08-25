@@ -1,6 +1,7 @@
 local renderer = {};
 local devicons_loaded, devicons = pcall(require, "nvim-web-devicons");
 
+local utils = require("markview.utils");
 local entites = require("markview.entites");
 local languages = require("markview.languages");
 
@@ -885,13 +886,13 @@ renderer.render_headings = function (buffer, content, config)
 		local conceal_start = string.match(content.line, "^[#]+(%s*)");
 		local line_length = #content.line;
 
-		local space = shift * (content.level - 1);
+		local spaces = shift * (content.level - 1);
 
 		if conf.align then
 			if conf.align == "left" then
-				space = 0;
+				spaces = 0;
 			elseif conf.align == "center" then
-				local win = vim.api.nvim_get_current_win();
+				local win = utils.find_attached_wins(buffer)[1] or vim.api.nvim_get_current_win();
 				local textoff = config.textoff or vim.fn.getwininfo(win)[1].textoff;
 
 				local w = vim.api.nvim_win_get_width(win) - textoff;
@@ -907,9 +908,9 @@ renderer.render_headings = function (buffer, content, config)
 					conf.corner_right or "",
 				}));
 
-				space = math.floor((w - t) / 2);
+				spaces = math.floor((w - t) / 2);
 			else
-				local win = vim.api.nvim_get_current_win();
+				local win = utils.find_attached_wins(buffer)[1] or vim.api.nvim_get_current_win();
 				local textoff = config.textoff or vim.fn.getwininfo(win)[1].textoff;
 
 				local w = vim.api.nvim_win_get_width(win) - textoff;
@@ -925,7 +926,7 @@ renderer.render_headings = function (buffer, content, config)
 					conf.corner_right or "",
 				}));
 
-				space = w - t;
+				spaces = w - t;
 			end
 		end
 
@@ -935,7 +936,7 @@ renderer.render_headings = function (buffer, content, config)
 		vim.api.nvim_buf_set_extmark(buffer, renderer.namespace, content.row_start, content.col_start, {
 			virt_text_pos = "inline",
 			virt_text = {
-				{ string.rep(conf.shift_char or " ", space), conf.shift_hl },
+				{ string.rep(conf.shift_char or " ", spaces), conf.shift_hl },
 
 				{ conf.corner_left or "", set_hl(conf.corner_left_hl) or set_hl(conf.hl) },
 				{ conf.padding_left or "", set_hl(conf.padding_left_hl) or set_hl(conf.hl) },
