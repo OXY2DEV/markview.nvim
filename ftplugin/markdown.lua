@@ -120,6 +120,8 @@ if vim.list_contains(markview.configuration.modes, "i") then
 	table.insert(update_events, "TextChangedI"); -- For smoother experience when writing, potentially can cause bugs
 end
 
+local prev_pos = vim.api.nvim_win_get_cursor(0)[1];
+
 -- ISSUE: Work in progress
 vim.api.nvim_create_autocmd(update_events, {
 	buffer = vim.api.nvim_get_current_buf(),
@@ -133,7 +135,7 @@ vim.api.nvim_create_autocmd(update_events, {
 
 		local mode = vim.api.nvim_get_mode().mode;
 
-		if cached_mode and cached_mode == mode then
+		if not vim.list_contains({ "CursorMoved", "CursorMovedI" }, event.event) and cached_mode and cached_mode == mode then
 			mode_debounce = 0;
 		end
 
@@ -149,6 +151,15 @@ vim.api.nvim_create_autocmd(update_events, {
 
 			-- In case something managed to change the mode
 			mode = vim.api.nvim_get_mode().mode;
+
+			local current_pos = vim.api.nvim_win_get_cursor(0)[1];
+
+			-- Experimental
+			-- May introduce bugs
+			if vim.list_contains({ "CursorMoved", "CursorMovedI" }, event.event) and math.abs(prev_pos - current_pos) < 100 then
+				prev_pos = current_pos;
+				return;
+			end
 
 			-- Only on mode change or if the mode changed due to text changed
 			if mode ~= cached_mode or event.event == "ModeChanged" then
