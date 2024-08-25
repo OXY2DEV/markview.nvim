@@ -94,11 +94,13 @@ local display_width = function (text, config)
 				inl_conf.corner_right or ""
 			}));
 
-			final_string = final_string:gsub("`" .. inline_code .. "`", table.concat({
+			local escaped = inline_code:gsub("%p", "%%%1");
+
+			final_string = final_string:gsub("`" .. escaped .. "`", table.concat({
 				inl_conf.corner_left or "",
 				inl_conf.padding_left or "",
 
-				inline_code or "",
+				inline_code:gsub(".", "|"),
 
 				inl_conf.padding_right or "",
 				inl_conf.corner_right or ""
@@ -227,7 +229,7 @@ local display_width = function (text, config)
 		end
 	end
 
-	for pattern in final_string:gmatch("%[([^%]]*)%]") do
+	for pattern in final_string:gmatch("%[([^%]]+)%]") do
 		d_width = d_width - 2;
 		final_string = final_string:gsub( "[" .. pattern .. "]", pattern);
 	end
