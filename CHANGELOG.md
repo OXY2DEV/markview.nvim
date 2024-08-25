@@ -1,5 +1,15 @@
 # Changelog
 
+## [21.0.1](https://github.com/OXY2DEV/markview.nvim/compare/v21.0.0...v21.0.1) (2024-08-25)
+
+
+### Bug Fixes
+
+* Fixed a bug causing markview to not render on cursor move in large files ([eba9507](https://github.com/OXY2DEV/markview.nvim/commit/eba950746173f8443b79b0b334f0c6a5d5797b55))
+* Markview now assumes window width of the buffer. ([ec92e61](https://github.com/OXY2DEV/markview.nvim/commit/ec92e611419ca603aa0f1ae21ec159a7b4b82a54)), closes [#126](https://github.com/OXY2DEV/markview.nvim/issues/126)
+* Markview now updats when entering the attached buffer ([87badab](https://github.com/OXY2DEV/markview.nvim/commit/87badab362d692025e717042c2ac052e7ff69fca)), closes [#126](https://github.com/OXY2DEV/markview.nvim/issues/126)
+* Reduced flickering when scrolling short distances ([a1923f9](https://github.com/OXY2DEV/markview.nvim/commit/a1923f9a3ef6c0843eb95168c1ee510e2e6c86ab))
+
 ## [21.0.0](https://github.com/OXY2DEV/markview.nvim/compare/v20.1.0...v21.0.0) (2024-08-25)
 
 
