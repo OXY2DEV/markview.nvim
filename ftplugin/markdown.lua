@@ -156,7 +156,7 @@ vim.api.nvim_create_autocmd(update_events, {
 
 			-- Experimental
 			-- May introduce bugs
-			if vim.list_contains({ "CursorMoved", "CursorMovedI" }, event.event) and math.abs(prev_pos - current_pos) < 100 then
+			if cached_mode == mode and vim.list_contains({ "CursorMoved", "CursorMovedI" }, event.event) and math.abs(prev_pos - current_pos) < 100 then
 				prev_pos = current_pos;
 				return;
 			end
