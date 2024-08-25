@@ -3,6 +3,8 @@
 ```lua
 headings = {
     enable = true,
+
+    textoff = 0,
     shift_width = 1,
 
     heading_1 = {
@@ -27,6 +29,12 @@ headings = {
 - enable, `boolean` or nil
 
   Used for toggling the rendering of headings.
+
+- textoff, `number` or nil
+
+  Default value of `textoff` when headings have alignment added.
+
+  Only affects `label` style headings who use the `align` option.
 
 - shift_width, `number` or nil
 
@@ -72,6 +80,8 @@ Adds a simple background to the heading.
 ```lua
 heading_1 = {
     style = "label",
+    align = "left",
+
     shift_char = "",
     shift_hl = nil,
 
@@ -98,6 +108,10 @@ heading_1 = {
 ```
 
 Makes headings look like labels. It adds the following options,
+
+- align, `string` or nil
+
+  Alignment of the label. Can either be `left`, `center` or `right`.
 
 - shift_char, `string` or nil
 
