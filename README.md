@@ -261,107 +261,107 @@ To make configuration easier `markview.nvim` comes with the following highlight 
 
 Block quotes have the following highlight group by default,
 
-- MarkviewBlockQuoteDefault, also used by `Quote`.
+- **MarkviewBlockQuoteDefault**, also used by `Quote`.
 
 Various callouts/alerts use the following highlight groups,
 
-- MarkviewBlockQuoteOk, used by `Tip`, `Success`.
-- MarkviewBlockQuoteWarn, used by `Question`, `Custom`, `Warning`.
-- MarkviewBlockQuoteError, used by `Caution`, `Bug`, `Danger`, `Failure`.
-- MarkviewBlockQuoteNote, used by `Note`, `Todo`, `Abstract`.
-- MarkviewBlockQuoteSpecial, used `Important`, `Example`.
+- **MarkviewBlockQuoteOk**, used by `Tip`, `Success`.
+- **MarkviewBlockQuoteWarn**, used by `Question`, `Custom`, `Warning`.
+- **MarkviewBlockQuoteError**, used by `Caution`, `Bug`, `Danger`, `Failure`.
+- **MarkviewBlockQuoteNote**, used by `Note`, `Todo`, `Abstract`.
+- **MarkviewBlockQuoteSpecial**, used `Important`, `Example`.
 
 ### 🎯 Checkboxes
 
 Checkboxes use these highlight groups,
 
-- MarkviewCheckboxChecked, from `DiagnosticOk`.
-- MarkviewCheckboxUnhecked, from `DiagnosticError`.
-- MarkviewCheckboxPending, from `DiagnosticWarn`.
+- **MarkviewCheckboxChecked**, from `DiagnosticOk`.
+- **MarkviewCheckboxUnhecked**, from `DiagnosticError`.
+- **MarkviewCheckboxPending**, from `DiagnosticWarn`.
 
 Markview also comes with 2 custom checkbox states,
 
 >[!Note]
 > These are purely for custom notes and aren't taken from external tools(e.g. Obsidian).
 
-- MarkviewCheckboxProgress, from `Keyword`.
+- **MarkviewCheckboxProgress**, from `Keyword`.
   Checkboes using `[~]`.
 
-- MarkviewCheckboxCancelled, from `Comment`.
+- **MarkviewCheckboxCancelled**, from `Comment`.
   Checkboxes using `[o]`.
 
 ### 💻 Code blocks & inline codes
 
 Code blocks use the following highlight group,
 
-- MarkviewCode
+- **MarkviewCode**
 
 Inline codes use the following highlight group,
 
-- MarkviewInlineCode
+- **MarkviewInlineCode**
 
 ### 🔖 Headings
 
 Headings are highlighted with the following groups,
 
-- MarkviewHeading1, from `DiagnosticVirtualTextOk`
-- MarkviewHeading2, from `DiagnosticVirtualTextHint`
-- MarkviewHeading3, from `DiagnosticVirtualTextInfo`
-- MarkviewHeading4, from `Special`
-- MarkviewHeading5, from `DiagnosticVirtualTextWarn`
-- MarkviewHeading6, from `DiagnosticVirtualTextError`
+- **MarkviewHeading1**, from `DiagnosticVirtualTextOk`
+- **MarkviewHeading2**, from `DiagnosticVirtualTextHint`
+- **MarkviewHeading3**, from `DiagnosticVirtualTextInfo`
+- **MarkviewHeading4**, from `Special`
+- **MarkviewHeading5**, from `DiagnosticVirtualTextWarn`
+- **MarkviewHeading6**, from `DiagnosticVirtualTextError`
 
 Signs are highlighted with the following groups,
 
-- MarkviewHeading1Sign, from `DiagnosticOk`
-- MarkviewHeading2Sign, from `DiagnosticHint`
-- MarkviewHeading3Sign, from `DiagnosticInfo`
-- MarkviewHeading4Sign, from `Special`
-- MarkviewHeading5Sign, from `DiagnosticWarn`
-- MarkviewHeading6Sign, from `DiagnosticError`
+- **MarkviewHeading1Sign**, from `DiagnosticOk`
+- **MarkviewHeading2Sign**, from `DiagnosticHint`
+- **MarkviewHeading3Sign**, from `DiagnosticInfo`
+- **MarkviewHeading4Sign**, from `Special`
+- **MarkviewHeading5Sign**, from `DiagnosticWarn`
+- **MarkviewHeading6Sign**, from `DiagnosticError`
 
 ### 📏 Horizontal rules
 
 Horizontal rules use the following highlight groups for the gradient.
 
-- MarkviewGradient1, from `Normal`.
-- MarkviewGradient2
-- MarkviewGradient3
-- MarkviewGradient4
-- MarkviewGradient5
-- MarkviewGradient6
-- MarkviewGradient7
-- MarkviewGradient8
-- MarkviewGradient9
-- MarkviewGradient10, from `Cursor`.
+- **MarkviewGradient1**, from `Normal`.
+- **MarkviewGradient2**
+- **MarkviewGradient3**
+- **MarkviewGradient4**
+- **MarkviewGradient5**
+- **MarkviewGradient6**
+- **MarkviewGradient7**
+- **MarkviewGradient8**
+- **MarkviewGradient9**
+- **MarkviewGradient10**, from `Cursor`.
 
 ### 🔗 Links
 
 Links use the following highlight groups,
 
-- MarkviewHyperlink, from `markdownLinkText`.
-- MarkviewImageLink, from `markdownLinkText`.
-- MarkviewEmail, from `@markup.link.url.markdown_inline`.
+- **MarkviewHyperlink**, from `markdownLinkText`.
+- **MarkviewImageLink**, from `markdownLinkText`.
+- **MarkviewEmail**, from `@markup.link.url.markdown_inline`.
 
 ### 📝 List items
 
 List items use the following highlight groups,
 
-- MarkviewListItemMinus, from `DiagnosticWarn`.
-- MarkviewListItemPlus, from `DiagnosticOk`.
-- MarkviewListItemStar, from `@comment.note`.
+- **MarkviewListItemMinus**, from `DiagnosticWarn`.
+- **MarkviewListItemPlus**, from `DiagnosticOk`.
+- **MarkviewListItemStar**, from `@comment.note`.
 
 ### 📐 Tables
 
 Tables use the following highlight group for the border,
 
-- MarkviewTableBorder, from `Title`.
+- **MarkviewTableBorder**, from `Title`.
 
 For the column alignment markers these highlight groups are used,
 
-- MarkviewTableAlignLeft, from `Title`.
-- MarkviewTableAlignRight, from `Title`.
-- MarkviewTableAlignCenter, from `Title`.
+- **MarkviewTableAlignLeft**, from `Title`.
+- **MarkviewTableAlignRight**, from `Title`.
+- **MarkviewTableAlignCenter**, from `Title`.
 
 ## ⭐ Plugin showcase
 
