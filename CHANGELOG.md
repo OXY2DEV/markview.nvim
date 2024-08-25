@@ -1,5 +1,24 @@
 # Changelog
 
+## [21.0.0](https://github.com/OXY2DEV/markview.nvim/compare/v20.1.0...v21.0.0) (2024-08-25)
+
+
+### ⚠ BREAKING CHANGES
+
+* Deprecated old presets
+
+### Features
+
+* Added alignment support for `label` headings ([2e0761e](https://github.com/OXY2DEV/markview.nvim/commit/2e0761ef44ffcd863898309509b5b40103aeb9c9)), closes [#124](https://github.com/OXY2DEV/markview.nvim/issues/124)
+* Added support for custom hyperlinks ([03188a4](https://github.com/OXY2DEV/markview.nvim/commit/03188a4658f0c0fdc0b9dc0f9926eb4c393ca97a)), closes [#121](https://github.com/OXY2DEV/markview.nvim/issues/121)
+
+
+### Bug Fixes
+
+* Deprecated old presets ([2e0761e](https://github.com/OXY2DEV/markview.nvim/commit/2e0761ef44ffcd863898309509b5b40103aeb9c9))
+* Fixed a bug causing patterns to be matched inside inline codes ([1193286](https://github.com/OXY2DEV/markview.nvim/commit/119328617657e90e775934dd53ffd6b31aae988f))
+* Plugin now recognizes escaped columns ([28c70aa](https://github.com/OXY2DEV/markview.nvim/commit/28c70aa40554963cb79de80286f956edc3181bff))
+
 ## [20.1.0](https://github.com/OXY2DEV/markview.nvim/compare/v20.0.0...v20.1.0) (2024-08-21)
 
 
