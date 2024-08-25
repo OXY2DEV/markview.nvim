@@ -128,6 +128,9 @@
 --- Enable/Disable stylized headings
 ---@field enable boolean?
 ---
+--- Fallback textoff value
+---@field textoff? number
+---
 --- Number of characters to shift per heading level
 ---@field shift_width number?
 ---
@@ -144,6 +147,9 @@
 ---
 --- Name of the style to use
 ---@field style string
+---
+--- Alignment for label styled headings
+---@field align? string
 ---
 --- Default highlight group used by the rest of the options
 --- Used for highlighting the line when the style is "simple"

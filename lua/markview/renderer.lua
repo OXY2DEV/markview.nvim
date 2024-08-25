@@ -885,13 +885,57 @@ renderer.render_headings = function (buffer, content, config)
 		local conceal_start = string.match(content.line, "^[#]+(%s*)");
 		local line_length = #content.line;
 
+		local space = shift * (content.level - 1);
+
+		if conf.align then
+			if conf.align == "left" then
+				space = 0;
+			elseif conf.align == "center" then
+				local win = vim.api.nvim_get_current_win();
+				local textoff = config.textoff or vim.fn.getwininfo(win)[1].textoff;
+
+				local w = vim.api.nvim_win_get_width(win) - textoff;
+
+				local t = vim.fn.strdisplaywidth(table.concat({
+					conf.corner_left or "",
+					conf.padding_left or "",
+					conf.icon or "",
+
+					content.title,
+
+					conf.padding_right or "",
+					conf.corner_right or "",
+				}));
+
+				space = math.floor((w - t) / 2);
+			else
+				local win = vim.api.nvim_get_current_win();
+				local textoff = config.textoff or vim.fn.getwininfo(win)[1].textoff;
+
+				local w = vim.api.nvim_win_get_width(win) - textoff;
+
+				local t = vim.fn.strdisplaywidth(table.concat({
+					conf.corner_left or "",
+					conf.padding_left or "",
+					conf.icon or "",
+
+					content.title,
+
+					conf.padding_right or "",
+					conf.corner_right or "",
+				}));
+
+				space = w - t;
+			end
+		end
+
 		-- Heading rules
 		-- 1. Must start at the first column
 		-- 2. Must have 1 space between the marker and the title
 		vim.api.nvim_buf_set_extmark(buffer, renderer.namespace, content.row_start, content.col_start, {
 			virt_text_pos = "inline",
 			virt_text = {
-				{ string.rep(conf.shift_char or " ", shift * (content.level - 1)), conf.shift_hl },
+				{ string.rep(conf.shift_char or " ", space), conf.shift_hl },
 
 				{ conf.corner_left or "", set_hl(conf.corner_left_hl) or set_hl(conf.hl) },
 				{ conf.padding_left or "", set_hl(conf.padding_left_hl) or set_hl(conf.hl) },
