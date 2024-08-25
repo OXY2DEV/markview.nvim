@@ -1,13 +1,4 @@
 markview.nvim	markview.txt	/*markview.nvim*
-markview.nvim-c-block_quotes	markview.txt	/*markview.nvim-c-block_quotes*
-markview.nvim-c-checkboxes	markview.txt	/*markview.nvim-c-checkboxes*
-markview.nvim-c-code_blocks	markview.txt	/*markview.nvim-c-code_blocks*
-markview.nvim-c-headings	markview.txt	/*markview.nvim-c-headings*
-markview.nvim-c-hrs	markview.txt	/*markview.nvim-c-hrs*
-markview.nvim-c-inline_codes	markview.txt	/*markview.nvim-c-inline_codes*
-markview.nvim-c-links	markview.txt	/*markview.nvim-c-links*
-markview.nvim-c-list_items	markview.txt	/*markview.nvim-c-list_items*
-markview.nvim-c-tables	markview.txt	/*markview.nvim-c-tables*
 markview.nvim-commands	markview.txt	/*markview.nvim-commands*
 markview.nvim-config	markview.txt	/*markview.nvim-config*
 markview.nvim-features	markview.txt	/*markview.nvim-features*
@@ -27,8 +18,6 @@ markview.nvim-h-num_to_rgb	markview.txt	/*markview.nvim-h-num_to_rgb*
 markview.nvim-h-rgb_to_hex	markview.txt	/*markview.nvim-h-rgb_to_hex*
 markview.nvim-helpers	markview.txt	/*markview.nvim-helpers*
 markview.nvim-hls	markview.txt	/*markview.nvim-hls*
-markview.nvim-hr-repeating	markview.txt	/*markview.nvim-hr-repeating*
-markview.nvim-hr-text	markview.txt	/*markview.nvim-hr-text*
 markview.nvim-i-lazy	markview.txt	/*markview.nvim-i-lazy*
 markview.nvim-i-minideps	markview.txt	/*markview.nvim-i-minideps*
 markview.nvim-i-rocks	markview.txt	/*markview.nvim-i-rocks*

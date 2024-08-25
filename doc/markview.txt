@@ -1,32 +1,31 @@
-*markview.nvim*  An experimental markdown previewer for Neovim
+*markview.nvim*                  An experimental markdown previewer for Neovim
+							 
+					   ┏──────────────────────────────┓
+					   │ ✨ Markview.nvim             │
+					   │━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━│
+					   │ An experimental markdown     │
+					   │ previewer for neovim.        │
+					   │                              │
+					   │    ◈ ✔ Close to full render. │
+					   │    ◈ ✔ Hybrid mode.          │
+					   │    ◈ ✔ Fast. even on large   │
+					   │        files.                │
+					   ┗──────────────────────────────┛
 
-							 Created by `OXY2DEV`
+								 By `OXY2DEV`
 
 ==============================================================================
 Table of contents                                        *markview.nvim-toc*
 
 Features ............................................ |markview.nvim-features|
 Requirements .................................... |markview.nvim-requirements|
-
 Installation .................................... |markview.nvim-installation|
 	💤 Lazy.nvim ...................................... |markview.nvim-i-lazy|
 	🦠 Mini.deps .................................. |markview.nvim-i-minideps|
 	🌒 Rocks.nvim .................................... |markview.nvim-i-rocks|
-
 Highlight groups ......................................... |markview.nvim-hls|
 Commands ............................................ |markview.nvim-commands|
-
 Plugin configuration .................................. |markview.nvim-config|
-	Block quotes .............................. |markview.nvim-c-block_quotes|
-	Checkboxes .................................. |markview.nvim-c-checkboxes|
-	Code blocks ................................ |markview.nvim-c-code_blocks|
-	Headings ...................................... |markview.nvim-c-headings|
-	Horizontal rules ................................... |markview.nvim-c-hrs|
-	Inline codes .............................. |markview.nvim-c-inline_codes|
-	Links ............................................ |markview.nvim-c-links|
-	List items .................................. |markview.nvim-c-list_items|
-	Tables .......................................... |markview.nvim-c-tables|
-
 Helper functions ..................................... |markview.nvim-helpers|
 
 ==============================================================================
@@ -37,12 +36,16 @@ Features                                            *markview.nvim-features*
     * atx_headings(uses `#`) & setext_headings(uses `---` or `===`)
 	* inline codes
 	* code blocks
-	* block quotes
-	* list items(both ordered & unordered)
-	* tables
-	* hyperlinks, image links & email urls
-	* horizontal rules
-	* checkboxes
+	* block quotes & callouts/alerts!
+	* list items(both ordered & unordered).
+	* tables(supports elements within the tables)
+	* hyperlinks, image links & email urls(supports content bases
+	  customisation).
+	* horizontal rules.
+	* checkboxes(supports custom states too!)
+	* html elements(basic).
+	* html entities.
+
 - Fully customisable elements. From icons, highlight groups to concealments,
   padding almost everything can be customised.
 - `Dynamically` generated highlight groups. Useful for colorschemes that don't
@@ -58,7 +61,7 @@ And so much more!
 Requirements                                    *markview.nvim-requirements*
 
 - Neovim version `0.10.0` or higher.
-- `Tree-sitter` parser for `markdown` & `markdown_inline`.
+- `Tree-sitter` parser for `markdown`, `markdown_inline` & `html`.
 - `nvim-web-devicons`
 - Optionally, a `tree-sitter` compatible colorscheme.
 
@@ -74,14 +77,14 @@ For `lazy.lua` users.
 >lua
 	{
 		"OXY2DEV/markview.nvim",
-	    ft = "markdown",
+		ft = "markdown",
 
 		dependencies = {
-	        -- You may not need this if you don't lazy load
+			-- You may not need this if you don't lazy load
 			-- Or if the parsers are in your $RUNTIMEPATH
-		    "nvim-treesitter/nvim-treesitter",
+			"nvim-treesitter/nvim-treesitter",
 
-	        "nvim-tree/nvim-web-devicons"
+			"nvim-tree/nvim-web-devicons"
 		},
 	}
 <
@@ -89,15 +92,15 @@ For `plugins/markview.lua` users.
 >lua
 	return {
 		"OXY2DEV/markview.nvim",
-	    ft = "markdown",
+		ft = "markdown",
 
-	    dependencies = {
-		    -- You may not need this if you don't lazy load
+		dependencies = {
+			-- You may not need this if you don't lazy load
 			-- Or if the parsers are in your $RUNTIMEPATH
-	        "nvim-treesitter/nvim-treesitter",
+			"nvim-treesitter/nvim-treesitter",
 
-		    "nvim-tree/nvim-web-devicons"
-	    },
+			"nvim-tree/nvim-web-devicons"
+		},
 	}
 <
 
@@ -116,13 +119,13 @@ if you choose to lazy load.
 	MiniDeps.add({
 		source = "OXY2DEV/markview.nvim",
 
-	    depends = {
-		    -- You may not need this if you don't lazy load
+		depends = {
+			-- You may not need this if you don't lazy load
 			-- Or if the parsers are in your $RUNTIMEPATH
-	        "nvim-treesitter/nvim-treesitter",
+			"nvim-treesitter/nvim-treesitter",
 
-		    "nvim-tree/nvim-web-devicons"
-	    }
+			"nvim-tree/nvim-web-devicons"
+		}
 	});
 <
 ------------------------------------------------------------------------------
@@ -169,12 +172,15 @@ Note:
   `alerts`.
 
 - $MarkviewCode$
+  $MarkviewInlineCode$
 
   Highlight group for showing `code blocks` and `inline codes`.
 
 - $MarkviewCheckboxChecked$
   $MarkviewCheckboxUnchecked$
   $MarkviewCheckboxPending$
+  $MarkviewCheckboxProgress$
+  $MarkviewCheckboxCancelled$
 
   Highlight group for the different `checkbox` states.
 
@@ -208,6 +214,12 @@ Note:
   $MarkviewGradient10$
 
   Highlight groups used by the `horizontal rules`.
+
+- $MarkviewHyperlink$
+  $MarkviewImageLink$
+  $MarkviewEmail$
+
+  Highlight groups use by various `links`.
 
 ==============================================================================
 Commands                                            *markview.nvim-commands*
@@ -267,10 +279,9 @@ The plugin can be configured via the `setup()` function.
 		headings = presets.headings.glow_labels
 	});
 <
-
 The setup function comes with the following options,
 
-- modea `string[]`
+- modes `string[]`
 
   A list of |vim-modes| where the preview will be shown. Default is,
 >lua
@@ -291,12 +302,13 @@ The setup function comes with the following options,
 >lua
 	buf_ignore = { "nofile" }
 <
-- callbacks 
+- callbacks
+
     {
-      on_enable: `function or nil`,
+      on_enable `function or nil`,
 	  on_disable: `function or nil`,
 
-  	  on_mode_change: `function or nil`
+	  on_mode_change: `function or nil`
     }
 
   A table containing `callbacks` that will be run by the plugin on specific
@@ -312,63 +324,119 @@ The setup function comes with the following options,
 <
 - headings `table or nil`
 
-  A table containing configuration for various `headings`. See
-  |markview.nvim-c-headings| for more info.
+  A table containing configuration for various `headings`.
 
   Example usage,
 >lua
 	headings = {
-		enable = false
+		enable = false,
+
+		textoff = 0,
+		shift_width = 1,
+
+		heading_1 = {
+			style = "simple",
+
+			shift_char = " ",
+			hl = "DiagnosticOk"
+		},
+		heading_2 = {},
+		heading_3 = {},
+		heading_4 = {},
+		heading_5 = {},
+		heading_6 = {},
+
+		setext_1 = {
+			style = "github",
+
+			icon = "🔗",
+			hl = "DiagnosticOk"
+		},
+		setext_2 = {}
 	}
 <
 - code_blocks `table or nil`
 
-  A table containing configuration for the `fenced code blocks`. See
-  |markview.nvim-c-code_blocks| for more info.
+  A table containing configuration for the `fenced code blocks`.
 
   Example usage,
 >lua
 	code_blocks = {
-		enable = false
+		enable = false,
+		style = "minimal",
+	    position = nil,
+	    min_width = 70,
+    
+		pad_amount = 3,
+	    pad_char = " ",
+
+	    hl = "CursorLine"
 	}
 <
 - inline_codes `table or nil`
 
-  A table containing configuration for the `inline codes`. See
-  |markview.nvim-c-inline_codes| for more info.
+  A table containing configuration for the `inline codes`.
 
   Example usage,
 >lua
 	inline_codes = {
-		enable = false
+		enable = false,
+		enable = true,
+	    hl = "DiagnosticOk",
+
+	    corner_left = nil,
+	    corner_left_hl = nil,
+
+	    padding_left = " ",
+		padding_left_hl = nil,
+
+	    padding_right = " ",
+		padding_right_hl = nil,
+
+	    corner_right = nil,
+		corner_right_hl = nil
 	}
 <
 - block_quotes `table or nil`
 
   A table containing configuration for the `block quotes`, `alerts` and
-  `callouts`. See |markview.nvim-c-block_quotes| for more info.
+  `callouts`.
 
   Example usage,
 >lua
 	block_quotes = {
-		enable = false
+		enable = false,
+		enable = true,
+
+	    default = {
+			border = "▋",
+	    },
+		callouts = nil
 	}
 <
 - horizontal_rules `table or nil`
 
-  A table containing configuration for the `horizontal rules`. See
-  |markview.nvim-c-hrs| for more info.
+  A table containing configuration for the `horizontal rules`.
 
   Example usage,
 >lua
 	horizontal_rules = {
-		enable = false
+		enable = false,
+
+	    parts = {
+	        {
+		        type = "repeating",
+
+	            repeat_amount = 10,
+		        text = "-",
+			    hl = "Special"
+	        }
+		}
 	}
 <
 - links `table or nil`
 
-  A table containing configuration for various `links`. See
-  |markview.nvim-c-links| for more info.
+  A table containing configuration for various `links`.
 
   Example usage,
 >lua
@@ -378,688 +446,67 @@ The setup function comes with the following options,
 <
 - list_items `table or nil`
 
-  A table containing configuration for various `list items`. See
-  |markview.nvim-c-list_items| for more info.
+  A table containing configuration for various `list items`.
 
   Example usage,
 >lua
 	list_items = {
-		enable = false
+		enable = false,
+
+	    hyperlinks = {},
+	    images = {},
+		emails = {}
 	}
 <
 - checkboxes `table or nil`
 
-  A table containing configuration for various `checkboxes`. See
-  |markview.nvim-c-checkboxes| for more info.
+  A table containing configuration for various `checkboxes`.
 
   Example usage,
 >lua
 	checkboxes = {
-		enable = false
+		enable = false,
+
+	    checked = {
+		    text = "✔", hl = "TabLineSel"
+	    },
+		unchecked = {},
+	    pending = {},
+
+		custom = {
+			{
+	            match = "~",
+		        text = "◕",
+			    hl = "CheckboxProgress"
+	        }
+		}
 	}
 <
 - tables `table or nil`
 
-  A table containing configuration for the `tables`. See 
-  |markview.nvim-c-tables| for more info.
+  A table containing configuration for the `tables`.
 
   Example usage,
 >lua
 	tables = {
-		enable = false
+		enable = false,
+		use_virt_lines = false,
+
+	    text = {},
+		hl = {}
 	}
 <
-------------------------------------------------------------------------------
+- html, `table or nil`
 
-------------------------------------------------------------------------------
-Block quote                                   *markview.nvim-c-block_quotes*
-
-Allows changing how block quotes, callouts & alerts.
+  A tablw containing configuration for html elements & entities.
 >lua
-	block_quotes = {
-		enable = true,
+	html = {
+	    enable = true,
 
-		default = {
-			border = "▋",
-			border_hl = "MarkviewBlockQuoteDefault"
-		},
-
-		callouts = {
-			{
-				match_string = "ABSTRACT" 
-				callout_preview = "󱉫 Abstract",
-				callout_preview_hl = "MarkviewBlockQuoteNote",
-
-				custom_title = true,
-				custom_icon = "󱉫 ",
-			
-				border = "▋",
-				border_hl = "MarkviewBlockQuoteDefault"
-			}
-		}
+	    tags = { enable = true },
+		entities = { enable = true }
 	}
 <
-enable ~
-															  `boolean or nil`
-The `enable` option is used to disable the rendering of block quotes, callouts
-& alerts.
-
-default ~
-																	   `table`
-Configuration for block quotes and unknown callouts/alerts.
-
-It comes with the following properties,
-
-border ~
-																	  `string`
-A string to use as the border. Preferablly a single character.
-
-border_hl
-															   `string or nil`
-Highlight group for the default border.
-
-------------------------------------------------------------------------------
-Checkboxes                                      *markview.nvim-c-checkboxes*
-
-Configuration table for various checkbox states.
->lua
-	checkboxes = {
-		enable = true,
-
-		checked = {
-			text = "✔",
-			hl = "MarkviewCheckboxChecked"
-		},
-		unchecked = {},
-		pending = {}
-	}
-<
-enable ~
-															  `boolean or nil`
-The `enable` option is used to disable the rendering of checkboxes.
-
-checked ~
-																`table or nil`
-Configuration table for checked checkboxes.
-
-unchecked ~
-																`table or nil`
-Configuration table for unchecked checkboxes.
-
-pending ~
-																`table or nil`
-Configuration table for pending checkboxes.
-
-------------------------------------------------------------------------------
-Code blocks                                    *markview.nvim-c-code_blocks*
-
-Allows changing how code_blocks are shown.
->lua
-	headings = {
-		enable = true,
-		style = "minimal",
-
-		position = "minimal",
-		min_width = 60,
-		pad_amount = 3,
-		pad_char = " ",
-
-		language_names = {
-			"cpp", "c++",
-			"py", "python"
-		},
-
-		hl = "MarkviewCode",
-
-		sign = true,
-		sign_hl = nil
-	}
-<
-enable ~
-															  `boolean or nil`
-The `enable` option is used to disable the rendering of headings entirely.
-
-style ~
-																	  `string`
-The rendering style of code blocks.
-
-	- simple
-
-	  The lines within the code blocks are highlighted.
-
-	- minimal
-
-	  Adds padding to the code block and surronds the block in a rectangle.
-
-	- language
-
-	  Like minimal but adds icons, signs and language string to the blocks.
-
-position ~
-Only for the `minimal`, `language` styles.
-															   `string or nil`
-The {virt_text_pos} of the top & bottom border of the code block. Default is
-`inline`.
-
-min_width ~
-Only for the `minimal`, `language` styles.
-																	  `number`
-The minimum width of the code block. This is without counting the
-`pad_amount`.
-
-pad_amount ~
-Only for the `minimal`, `language` styles.
-																	  `number`
-The number of `pad_char` to add before and after the lines of the code block.
-
-pad_char ~
-Only for the `minimal`, `language` styles.
-																	  `string`
-The text used as padding for the code blocks.
-
-language_names ~
-																`table or nil`
-
-A list of `tuples` containing a `match` & a `replacement`. Useful when you
-want to see `c++` instead of `cpp`.
-
-hl ~
-																	  `string`
-Highlight group for the code block.
-
-sign ~
-															  `boolean or nil`
-When `true`, icons are shown in the |'signcolumn'| for code blocks 
-
-sign_hl ~
-															   `string or nil`
-A custom highlight group for the `signs`. When nil, the highlight group
-provided by `nvim-web-devicons` is used.
-
-------------------------------------------------------------------------------
-Headings                                          *markview.nvim-c-headings*
-
-Allows changing how headings are shown.
->lua
-	headings = {
-		enable = true,
-		shift_width = 3,
-
-		heading_1 = {},
-		heading_2 = {},
-		heading_3 = {},
-		heading_4 = {},
-		heading_5 = {},
-		heading_6 = {},
-		
-		setext_1 = {},
-		setext_2 = {},
-	}
-<
-enable ~
-                                                              `boolean or nil`
-The `enable` option is used to disable the rendering of headings entirely.
-
-shift_width ~
-Only for the `simple`, `icon` styles.
-                                                               `number or nil`
-Number of `shift_char` to add per level of the headings.
-
-heading_<1-6> ~
-																`table or nil`
-`heading_1` to `heading_6` are used for styling atx_headings. They all have
-the following properties.
-
-style ~
-																	  `string`
-`atx_headings` support the following styles,
-
-	- simple
-
-	  Adds simple background to the headings.
-	  
-	- label
-
-	  Adds padding, icons, corner text, sign etc. `statusline`-like parts
-	  around the heading text.
-
-	- icon
-
-	  Adds simple icons to the headings. Also hides the `#` of the heading.
-
-NOTE:
-These styles are EXCLUSIVE to `atx_headings` and will not work with
-`setext_headings`.
-
-`setext_headings` support the following styles.
-
-	- simple
-
-	  Adds simple background to the headings.
-
-	- github
-
-	  Adds an icon before the heading text and a line under the heading text.
-	  Kinda like how headings are shown in GitHub.
-
-shift_char ~
-															   `string or nil`
-Thw character to use as padding before the heading.
-
-------------------------------------------------------------------------------
-
-corner_left ~
-Only for the `label` style. 
-															   `string or nil`
-Only useful when adding different colored sections before the left padding.
-
-padding_left ~
-Only for the `label` style.
-															   `string or nil`
-The text to use as padding before the heading.
-
-icon ~
-Only for the `label` style.
-															   `string or nil`
-The text to use as an icon before the heading text.
-
-padding_right ~
-Only for the `label` style.
-															   `string or nil`
-The text to use as padding after the heading.
-
-corner_right ~
-Only for the `label` style.
-															   `string or nil`
-Only useful when adding different colored sections after the right padding.
-
-
-
-hl ~
-                                                               `string or nil`
-Highlight group to be applied to the entire range of the node. It is added as
-the `line_hl_group` when the style is `icon`.
-
-It is used as the default value for the following properties.
-
-corner_left_hl ~
-Only for the `label` style.
-															   `string or nil`
-Highlight group for the left corner.
-
-padding_left_hl ~
-Only for the `label` style.
-															   `string or nil`
-Highlight group for the left padding.
-
-icon_hl ~
-Only for the `label`, `icon` styles.
-                                                               `string or nil`
-Highlight group for icon.
-
-text_hl ~
-Only for the `label`, `icon` styles.
-                                                               `string or nil`
-Highlight group for heading text.
-
-padding_right_hl ~
-Only for the `label` style.
-															   `string or nil`
-Highlight group for the left padding.
-
-corner_right_hl ~
-Only for the `label` style.
-															   `string or nil`
-Highlight group for the left corner.
-
-------------------------------------------------------------------------------
-Horizontal rules                                       *markview.nvim-c-hrs*
-
-Configuration table for line breaks or horizontal rules.
->lua
-horizontal_rules = {
-		enable = true,
-
-		parts = {
-			{
-				type = "repeating",
-
-				text = "─",
-				hl = { "MarkviewGradient1", "MarkviewGradient2" },
-				direction = "left",
-
-				repeat_amount = function ()
-					return vim.o.columns - 3;
-				end
-			},
-			{
-				type = "text",
-				text = " • ",
-				hl = "MarkviewGradient5"
-			}
-		}
-	}
-<
-enable ~
-															  `boolean or nil`
-The `enable` option is used to disable the rendering of line breaks/horizontal
-rules.
-
-parts ~
-																	   `table`
-A list of parts to create a horizontal rule. There are 2 types of parts
-available,
-
-- repeating
-
-	  Repeats the provided text by a number of time.
-
-	- text
-
-	  Renders some raw text to the screen.
-
-------------------------------------------------------------------------------
-
-Parts: repeating ~
-												  *markview.nvim-hr-repeating*
-Repeats a text a specific number of times. It has the following properties,
-
-type ~
-																	  `string`
-The type of a part. In this case it's value would be `repeating`.
-
-text ~
-																	  `string`
-The text to repeat.
-
-hl ~
-																`table or nil`
-A list of colors to use for the part. The `direction` property changes where
-the color is applied in the final string.
-
-direction ~
-															   `string or nil`
-The side of the final string where the `hl` would be applied. Possible values
-are,
-	- left
-	- right
-
-Default is `left`.
-
-repeat_amount ~
-														  `function or number`
-The number of times to repeat `text`. If the value is a `function` then the
-returned value is used.
-
-------------------------------------------------------------------------------
-
-Parts: text ~
-													   *markview.nvim-hr-text*
-Shows some text in the horizontal rule. It has the following properties,
-
-text ~
-																	  `string`
-The text to show.
-
-hl ~
-															   `string or nil`
-Highlight group for coloring `text`
-
-------------------------------------------------------------------------------
-Inline codes                                 *markview.nvim-c-inline_codes*
-
-Configuration table for `inline codes`/codespans.
-
-enable ~
-															  `boolean or nil`
-The `enable` option is used to disable the rendering of inline codes.
-
-corner_left ~
-															   `string or nil`
-Only useful when adding different colored sections before the left padding.
-
-padding_left ~
-															   `string or nil`
-The text to use as padding before the heading.
-
-icon ~
-															   `string or nil`
-The text to use as an icon before the heading text.
-
-padding_right ~
-															   `string or nil`
-The text to use as padding after the heading.
-
-corner_right ~
-															   `string or nil`
-Only useful when adding different colored sections after the right padding.
-
-
-
-hl ~
-                                                               `string or nil`
-Highlight group to be applied to the entire range of the node.
-
-It is used as the default value for the following properties.
-
-corner_left_hl ~
-															   `string or nil`
-Highlight group for the left corner.
-
-padding_left_hl ~
-															   `string or nil`
-Highlight group for the left padding.
-
-icon_hl ~
-                                                               `string or nil`
-Highlight group for icon.
-
-text_hl ~
-                                                               `string or nil`
-Highlight group for heading text.
-
-padding_right_hl ~
-															   `string or nil`
-Highlight group for the left padding.
-
-corner_right_hl ~
-															   `string or nil`
-Highlight group for the left corner.
-
-------------------------------------------------------------------------------
-Links                                                *markview.nvim-c-links*
-
-Configuration tables for various types of links.
->lua
-	links = {
-		enable = true,
-
-		hyperlinks = {
-			icon = "H",
-			hl = "MarkviewHyperlink"
-		},
-		images = {},
-		emails = {}
-	}
-<
-enable ~
-															  `boolean or nil`
-The `enable` option is used to disable the rendering of links.
-
-hyperlinks ~
-																`table or nil`
-Configuration table for regular links(links using `[]()`).
-
-images ~
-																`table or nil`
-Configuration table for image links(links using `![]()`).
-
-emails ~
-																`table or nil`
-Configuration table for email urls(links using `<>`).
-
-------------------------------------------------------------------------------
-
-All the options(other than `enable`) have these properties.
-
-corner_left ~
-															   `string or nil`
-Only useful when adding different colored sections before the left padding.
-
-padding_left ~
-															   `string or nil`
-The text to use as padding before the heading.
-
-icon ~
-															   `string or nil`
-The text to use as an icon before the heading text.
-
-padding_right ~
-															   `string or nil`
-The text to use as padding after the heading.
-
-corner_right ~
-															   `string or nil`
-Only useful when adding different colored sections after the right padding.
-
-
-
-hl ~
-                                                               `string or nil`
-Highlight group to be applied to the entire range of the node.
-
-It is used as the default value for the following properties.
-
-corner_left_hl ~
-															   `string or nil`
-Highlight group for the left corner.
-
-padding_left_hl ~
-															   `string or nil`
-Highlight group for the left padding.
-
-icon_hl ~
-                                                               `string or nil`
-Highlight group for icon.
-
-text_hl ~
-                                                               `string or nil`
-Highlight group for heading text.
-
-padding_right_hl ~
-															   `string or nil`
-Highlight group for the left padding.
-
-corner_right_hl ~
-															   `string or nil`
-Highlight group for the left corner.
-
-------------------------------------------------------------------------------
-List items                                      *markview.nvim-c-list_items*
-
-Configuration table for various list items.
->lua
-	list_items = {
-		enable = true,
-
-		marker_plus = {
-			add_padding = true,
-
-			text = "•",
-			hl = "MarkviewListItemPlus"
-		}
-	}
-<
-Note: List items nodes have different start and end ranges for different list
-level. This can cause issues when you do a lot of nesting inside lists.
-
-It is not recommended to use decorations that can cause items to go out of
-place.
-
-enable ~
-															  `boolean or nil`
-The `enable` option is used to disable the rendering of list items.
-
-marker_plus ~
-																`table or nil`
-Configuration table for lists starting with `+`.
-
-marker_minus ~
-																`table or nil`
-Configuration table for lists starting with `-`.
-
-marker_star ~
-																`table or nil`
-Configuration table for lists starting with `*`.
-
-------------------------------------------------------------------------------
-
-All the options(other than `enable`) have these properties.
-
-text ~
-															   `string or nil`
-The text to use as the marker. It will `conceal` the oroginal marker and
-replace it with this text.
-
-hl ~
-															   `string or nil`
-Highlight group for `text`.
-
-------------------------------------------------------------------------------
-
-All the options(other than `enable`) have these properties.
-
-text ~
-															   `string or nil`
-The text to use as the checkbox. It will `conceal` the original marker and
-replace it with this text.
-
-hl ~
-															   `string or nil`
-Highlight group for `text`.
-
-------------------------------------------------------------------------------
-Tables                                              *markview.nvim-c-tables*
-
-Configuration table for tables.
->lua
-	tables = {
-		enable = true,
-
-		text = {},
-		hl = {},
-
-		use_virt_lines = false
-	}
-<
-enable ~
-															  `boolean or nil`
-The `enable` option is used to disable the rendering of tables.
-
-use_virt_lines ~
-															  `boolean or nil`
-When `true`, the top & bottom borders are made of `virtual lines`. Useful if
-you don't like having gaps between tables.
-
-text ~
-																	   `table`
-A list of `12` string used to create the table.
->txt
-	Main borders        Row & column separtor
-	------------------- ---------------------
-	"╭", "─", "╮",      "┬",
-	"├", "│", "┤",      "┼",
-	"╰", "─", "╯",      "┴",
-
-	Alignment markers
-	-----------------------------------------
-	"╼",     "╾",      "╴", "╶"
-	Left     Right      Center
-<
-
-hl ~
-																`table or nil`
-A list of `12` highlight group for the strings in `text`.
 
 ------------------------------------------------------------------------------
 Helper functions                                       *markview.nvim-helpers*
@@ -1245,26 +692,26 @@ colors.create_gradient(
 
 		• {name_prefix}   The prefix to add before each of the {group_name}.
 
-		                  E.g. setting the {name_prefix} to "Gradient" will
+						  E.g. setting the {name_prefix} to "Gradient" will
 						  result in group names being "Gradient<n>" where
 						  "<n>" is the step number.
 
 		• {from}          The start color of the gradient. Can be a number,
-		                  a string or a table. It will be converted to a
+						  a string or a table. It will be converted to a
 						  table containing r, g, b values.
 		• {to}            The stop color of the gradient. Works like {from}.
 
 		• {steps}         Number of steps in the gradient(including the start
-		                  and stop colors).
+						  and stop colors).
 		• {mode}          The color mode of the gradient. Possible values are,
-		                      • bg: Applies the color to the background.
-		                      • fg: Applies the color to the foreground.
+							  • bg: Applies the color to the background.
+							  • fg: Applies the color to the foreground.
 							  • both: Does all of the above.
 
 	Result: ~
 
 		• {table}         A list of tables containing a {group_name} and a
-		                  {value}. Mainly for use in {highlight_groups}.
+						  {value}. Mainly for use in {highlight_groups}.
 
 														 *markview.nvim-h-mix*
 colors.mix(
@@ -1284,10 +731,10 @@ colors.mix(
 	Parameters: ~
 
 		• {color_1}       The first color to mix. Can be a number,
-		                  a string or a table. It will be converted to a
+						  a string or a table. It will be converted to a
 						  table containing r, g, b values.
 		• {color_2}       The stop color of the gradient. Works like
-		                  {color_1}.
+						  {color_1}.
 
 		• {per_1}         The % of {color_1} to mix.
 		• {per_2}         The % of {color_2} to mix.
@@ -1305,7 +752,7 @@ colors.get_brightness({color}: color) -> number
 	Parameters: ~
 
 		• {color}       The first color to mix. Can be a number,
-		                a string or a table. It will be converted to a
+						a string or a table. It will be converted to a
 						table containing r, g, b values.
 	
 	Result: ~
@@ -1319,13 +766,13 @@ colors.brightest({list}: color[]) -> string
 
 	Parameters: ~
 		• {list}    A list of colors. Can contain hexadecimal numbers, numbers,
-		            color names & tables with r, g, b values.
+					color names & tables with r, g, b values.
 
 	Result: ~
 
 		• {string}  The brightest color's hex color code. 
 
-						 								 *markview.nvim-h-get*
+														 *markview.nvim-h-get*
 colors.get({list}: any[]) -> any
 
 	Gets the first `non-nil` value from a list(with empty holes) of values.
