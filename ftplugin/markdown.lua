@@ -109,8 +109,19 @@ vim.api.nvim_create_autocmd({ "BufWinEnter" }, {
 local cached_mode = nil;
 local mode_timer = vim.uv.new_timer();
 
+local update_events = { "ModeChanged", "TextChanged" };
+
+if vim.list_contains(markview.configuration.modes, "n") or vim.list_contains(markview.configuration.modes, "v") then
+	table.insert(update_events, "CursorMoved");
+end
+
+if vim.list_contains(markview.configuration.modes, "i") then
+	table.insert(update_events, "CursorMovedI");
+	table.insert(update_events, "TextChangedI"); -- For smoother experience when writing, potentially can cause bugs
+end
+
 -- ISSUE: Work in progress
-vim.api.nvim_create_autocmd({ "ModeChanged", "TextChanged" }, {
+vim.api.nvim_create_autocmd(update_events, {
 	buffer = vim.api.nvim_get_current_buf(),
 	group = markview_augroup,
 
