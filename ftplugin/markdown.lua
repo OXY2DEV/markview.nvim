@@ -109,7 +109,7 @@ vim.api.nvim_create_autocmd({ "BufWinEnter" }, {
 local cached_mode = nil;
 local mode_timer = vim.uv.new_timer();
 
-local update_events = { "ModeChanged", "TextChanged" };
+local update_events = { "BufEnter", "ModeChanged", "TextChanged" };
 
 if vim.list_contains(markview.configuration.modes, "n") or vim.list_contains(markview.configuration.modes, "v") then
 	table.insert(update_events, "CursorMoved");
