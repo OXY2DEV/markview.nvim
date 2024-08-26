@@ -143,6 +143,7 @@ markview.global_options = {};
 
 ---@type markview.config
 markview.configuration = {
+	filetypes = { "markdown", "quarto", "rmd" },
 	callbacks = {
 		on_enable = function (_, window)
 			vim.wo[window].conceallevel = 2;

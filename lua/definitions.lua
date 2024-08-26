@@ -10,6 +10,9 @@
 --- List of custom highlight groups
 ---@field highlight_groups table[]?
 ---
+--- List of filetypes where the plugin will be active
+---@field filetypes string[]
+---
 --- List of buffer types to ignore
 ---@field buf_ignore string[]?
 --- 
@@ -61,6 +64,9 @@
 ---
 --- List of custom highlight groups
 ---@field highlight_groups table[]?
+---
+--- List of filetypes where the plugin will be active
+---@field filetypes string[]
 ---
 --- List of buffer types to ignore
 ---@field buf_ignore string[]?
