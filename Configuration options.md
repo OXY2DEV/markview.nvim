@@ -4,6 +4,9 @@ Markview comes with a ton of configuration options.
 
 ```lua
 {
+    -- Filetypes where the plugin will be enabled
+    filetypes = { "markdown", "quarto", "rmd" },
+
     -- Buftypes to ignore
     buf_ignore = { "nofile" },
 
