@@ -1,5 +1,21 @@
 # Changelog
 
+## [22.0.0](https://github.com/OXY2DEV/markview.nvim/compare/v21.0.1...v22.0.0) (2024-08-26)
+
+
+### ⚠ BREAKING CHANGES
+
+* Added the ability to use the plugin in other filetypes
+
+### Features
+
+* Added the ability to use the plugin in other filetypes ([e7e91ad](https://github.com/OXY2DEV/markview.nvim/commit/e7e91ad3320c8a3feabba27f5ac79953f99c2632))
+
+
+### Bug Fixes
+
+* Fixed a bug causing things not to render when scrolling short distances ([8f0b69a](https://github.com/OXY2DEV/markview.nvim/commit/8f0b69a170320c21f4b70517753ddf0aede15055))
+
 ## [21.0.1](https://github.com/OXY2DEV/markview.nvim/compare/v21.0.0...v21.0.1) (2024-08-25)
 
 
