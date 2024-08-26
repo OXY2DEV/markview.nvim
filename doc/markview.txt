@@ -77,7 +77,7 @@ For `lazy.lua` users.
 >lua
 	{
 		"OXY2DEV/markview.nvim",
-		ft = "markdown",
+		lazy = false,
 
 		dependencies = {
 			-- You may not need this if you don't lazy load
@@ -92,7 +92,7 @@ For `plugins/markview.lua` users.
 >lua
 	return {
 		"OXY2DEV/markview.nvim",
-		ft = "markdown",
+		lazy = false,
 
 		dependencies = {
 			-- You may not need this if you don't lazy load
@@ -295,6 +295,12 @@ The setup function comes with the following options,
   Default is nil.
 >lua
 	hybrid_modes = nil
+<
+- filetypes `string[]`
+
+  List of filetyoes where the plugin will be enabled.
+>luw
+	filetypes = { "markdown", "quarto", "rmd" }
 <
 - buf_ignore `string[] or nil`
 
