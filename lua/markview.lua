@@ -1390,19 +1390,16 @@ markview.configuration = {
 					match = "https://(.+)$",
 
 					icon = "󰞉 ",
-					hl = "MarkviewHyperlink",
 				},
 				{
 					match = "http://(.+)$",
 
 					icon = "󰕑 ",
-					hl = "MarkviewHyperlink",
 				},
 				{
 					match = "[%.]md$",
 
 					icon = " ",
-					hl = "MarkviewHyperlink",
 				}
 			}
 		},

@@ -1406,7 +1406,7 @@ renderer.render_links = function (buffer, content, config_table)
 
 	for _, conf in ipairs(config_table.hyperlinks.custom or {}) do
 		if conf.match and string.match(content.address or "", conf.match) then
-			lnk_conf = conf
+			lnk_conf = vim.tbl_extend("force", lnk_conf or {}, conf);
 		end
 	end
 
@@ -1561,7 +1561,7 @@ renderer.render_lists = function (buffer, content, config_table)
 		ls_conf = config_table.marker_plus or {};
 	elseif string.match(content.marker_symbol, "*") then
 		ls_conf = config_table.marker_star or {};
-	elseif string.match(content.marker_symbol, "[.]") then
+	elseif string.match(content.marker_symbol, "[.%)]") then
 		ls_conf = config_table.marker_dot or {};
 	end
 

@@ -57,7 +57,7 @@ parser.get_md_len = function (text)
 	return len, final_string;
 end
 
-parser.fiter_lines = function (buffer, from, to)
+parser.filter_lines = function (buffer, from, to)
 	local captured_lines = vim.api.nvim_buf_get_lines(buffer, from, to, false);
 	local filtered_lines = {};
 	local indexes = {};
@@ -92,7 +92,7 @@ parser.fiter_lines = function (buffer, from, to)
 		if l ~= 1 then
 			if withinCodeBlock ~= true and line:match("^%s*([+%-*])") then
 				break;
-			elseif withinCodeBlock ~= true and line:match("^%s*(%d+%.)") then
+			elseif withinCodeBlock ~= true and line:match("^%s*(%d+[%.%)])") then
 				break;
 			end
 		end
@@ -105,8 +105,8 @@ parser.fiter_lines = function (buffer, from, to)
 
 		if line:match("^%s*([+%-*])") then
 			parent_marker = line:match("^%s*([+%-*])");
-		elseif line:match("^%s*(%d+%.)") then
-			parent_marker = line:match("^%s*(%d+%.)");
+		elseif line:match("^%s*(%d+[%.%)])") then
+			parent_marker = line:match("^%s*(%d+[%.%)])");
 		end
 
 		if line:match("(```)") and withinCodeBlock ~= true then
@@ -130,7 +130,7 @@ parser.fiter_lines = function (buffer, from, to)
 			insideDescription = false;
 		end
 
-		if not line:match("^%s*([+%-*])") and not line:match("^%s*(%d+%.)") and parent_marker then
+		if not line:match("^%s*([+%-*])") and not line:match("^%s*(%d+[%.%)])") and parent_marker then
 			spaces_before = math.max(0, spaces_before - vim.fn.strchars((parent_marker or "") .. " "));
 
 			if line:match("(```)") then
@@ -511,8 +511,9 @@ parser.md = function (buffer, TStree, from, to)
 			local marker = capture_node:named_child(0);
 			local marker_text = vim.treesitter.get_node_text(marker, buffer);
 			local symbol = marker_text:gsub("%s", "");
+			symbol = symbol:gsub("%)", "%%)")
 
-			local list_lines, lines, spaces, align_spaces, starts = parser.fiter_lines(buffer, row_start, row_end);
+			local list_lines, lines, spaces, align_spaces, starts = parser.filter_lines(buffer, row_start, row_end);
 			local spaces_before_marker = list_lines[1]:match("^(%s*)" .. symbol .. "%s*");
 
 			local c_end, _ = parser.get_list_end_range(buffer, row_start, row_end, symbol)
