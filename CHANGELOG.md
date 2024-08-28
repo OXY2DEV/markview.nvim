@@ -1,5 +1,13 @@
 # Changelog
 
+## [22.0.1](https://github.com/OXY2DEV/markview.nvim/compare/v22.0.0...v22.0.1) (2024-08-28)
+
+
+### Bug Fixes
+
+* Added support for n) type number list ([a954ec8](https://github.com/OXY2DEV/markview.nvim/commit/a954ec86be1259d547d6fd9c18e8781c8c73c92f)), closes [#129](https://github.com/OXY2DEV/markview.nvim/issues/129) [#121](https://github.com/OXY2DEV/markview.nvim/issues/121)
+* Custom links now inherit from `default` value ([a954ec8](https://github.com/OXY2DEV/markview.nvim/commit/a954ec86be1259d547d6fd9c18e8781c8c73c92f))
+
 ## [22.0.0](https://github.com/OXY2DEV/markview.nvim/compare/v21.0.1...v22.0.0) (2024-08-26)
 
 
