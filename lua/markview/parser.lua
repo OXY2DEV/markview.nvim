@@ -510,7 +510,10 @@ parser.md = function (buffer, TStree, from, to)
 		elseif capture_name == "list_item" then
 			local marker = capture_node:named_child(0);
 			local marker_text = vim.treesitter.get_node_text(marker, buffer);
+
 			local symbol = marker_text:gsub("%s", "");
+
+			-- Escape special characters
 			symbol = symbol:gsub("%)", "%%)")
 
 			local list_lines, lines, spaces, align_spaces, starts = parser.filter_lines(buffer, row_start, row_end);
