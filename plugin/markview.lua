@@ -114,7 +114,7 @@ local redraw_autocmd = function (augroup, buffer)
 				end
 
 				-- Only on mode change or if the mode changed due to text changed
-				if mode ~= cached_mode or event.event == "ModeChanged" then
+				if event.buffer and event.buffer == buffer and mode ~= cached_mode or event.event == "ModeChanged" then
 					-- Call the on_mode_change callback before exiting
 					if not markview.configuration.callbacks or not markview.configuration.callbacks.on_mode_change then
 						goto noCallbacks;
