@@ -1505,6 +1505,7 @@ markview.splitView = {
 
 	close = function (self)
 		pcall(vim.api.nvim_win_close, self.window, true);
+		self.augroup = vim.api.nvim_create_augroup("markview_splitview", { clear = true });
 
 		self.attached_buffer = nil;
 		self.window = nil;
@@ -1561,7 +1562,7 @@ markview.splitView = {
 		pcall(markview.configuration.callbacks.on_enable, self.buf, self.window);
 
 		local cursor = vim.api.nvim_win_get_cursor(windows[1]);
-		vim.api.nvim_win_set_cursor(self.window, cursor);
+		pcall(vim.api.nvim_win_set_cursor, self.window, cursor);
 
 		local parsed_content;
 
@@ -1591,7 +1592,7 @@ markview.splitView = {
 			callback = vim.schedule_wrap(function ()
 				-- Set cursor
 				cursor = vim.api.nvim_win_get_cursor(windows[1]);
-				vim.api.nvim_win_set_cursor(self.window, cursor);
+				pcall(vim.api.nvim_win_set_cursor, self.window, cursor);
 			end)
 		});
 
@@ -1602,6 +1603,15 @@ markview.splitView = {
 			buffer = buffer,
 			callback = vim.schedule_wrap(function ()
 				self:close();
+			end)
+		});
+		vim.api.nvim_create_autocmd({
+			"BufHidden"
+		}, {
+			group = self.augroup,
+			buffer = self.buffer,
+			callback = vim.schedule_wrap(function ()
+				markview.commands.splitDisable(self.attached_buffer);
 			end)
 		});
 
