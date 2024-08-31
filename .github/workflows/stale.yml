@@ -16,8 +16,8 @@ jobs:
     - uses: actions/stale@v5
       with:
         repo-token: ${{ secrets.GITHUB_TOKEN }}
-        stale-issue-message: 'Stale issue message'
-        stale-pr-message: 'Stale pull request message'
+        stale-issue-message: '🤖 Bot: **Issue** has not seen activity in **30** days and will therefore be marked as stale. It will be closed in 7 days if no further response is found.'
+        stale-pr-message: '🤖 Bot: **PR** has not seen activity in **30** days and will therefore be marked as stale. It will be closed in 7 days if no further response is found.'
         stale-issue-label: 'no-issue-activity'
         stale-pr-label: 'no-pr-activity'
         days-before-stale: 30
