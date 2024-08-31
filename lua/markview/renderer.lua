@@ -19,22 +19,6 @@ end
 
 _G.__markview_views = {};
 
-renderer.view_ranges = {};
-renderer.removed_elements = {};
-
-local get_str_width = function (str)
-	local width = 0;
-	local overlflow = 0;
-
-	for match in str:gmatch("[%z\1-\127\194-\244][\128-\191]*") do
-		overlflow = overlflow + (vim.fn.strdisplaywidth(match) - 1);
-		width = width + #match
-	end
-
-	return width, overlflow
-end
-
-
 --- Returns a value with the specified index from entry
 --- If index is nil then return the last value
 --- If entry isn't a table then return it
@@ -1104,12 +1088,12 @@ renderer.render_code_blocks = function (buffer, content, config_table)
 				}
 			})
 
-			local position, reduce_cols = get_str_width(text)
+			local position, width = #text, vim.fn.strdisplaywidth(vim.fn.strcharpart(text, content.col_start) or "");
 
 			vim.api.nvim_buf_set_extmark(buffer, renderer.namespace, content.row_start + line, position, {
 				virt_text_pos = "inline",
 				virt_text = {
-					{ string.rep(config_table.pad_char or " ", block_length - length - reduce_cols), set_hl(config_table.hl) },
+					{ string.rep(config_table.pad_char or " ", block_length - width), set_hl(config_table.hl) },
 					{ string.rep(config_table.pad_char or " ", config_table.pad_amount or 1), set_hl(config_table.hl) }
 				}
 			})
@@ -1227,12 +1211,12 @@ renderer.render_code_blocks = function (buffer, content, config_table)
 				}
 			})
 
-			local position, reduce_cols = get_str_width(text);
+			local position, width = #text, vim.fn.strdisplaywidth(vim.fn.strcharpart(text, content.col_start) or "");
 
 			vim.api.nvim_buf_set_extmark(buffer, renderer.namespace, content.row_start + line, position, {
 				virt_text_pos = "inline",
 				virt_text = {
-					{ string.rep(config_table.pad_char or " ", block_length - length - reduce_cols), set_hl(config_table.hl) },
+					{ string.rep(config_table.pad_char or " ", block_length - width), set_hl(config_table.hl) },
 					{ string.rep(config_table.pad_char or " ", config_table.pad_amount or 1), set_hl(config_table.hl) }
 				}
 			})

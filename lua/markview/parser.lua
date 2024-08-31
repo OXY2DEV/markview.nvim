@@ -302,7 +302,7 @@ parser.md = function (buffer, TStree, from, to)
 
 			for i = 1,(row_end - row_start) - 2 do
 				local this_code = vim.api.nvim_buf_get_lines(buffer, row_start + i, row_start + i + 1, false)[1];
-				local len = vim.fn.strchars(this_code) or 0;
+				local len = vim.fn.strdisplaywidth(this_code) or 0;
 
 				if vim.list_contains(parser.cached_conf.filetypes or {}, string.lower(lang.get_name(language_string))) then
 					len = parser.get_md_len(this_code)
