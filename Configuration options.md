@@ -4,6 +4,11 @@ Markview comes with a ton of configuration options.
 
 ```lua
 {
+    -- Configuration table for the split window
+    split_conf = {
+        split = "right"
+    },
+
     -- Filetypes where the plugin will be enabled
     filetypes = { "markdown", "quarto", "rmd" },
 
