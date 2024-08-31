@@ -1666,6 +1666,12 @@ markview.commands = {
 		markview.state.enable = true;
 
 		for _, buf in ipairs(markview.attached_buffers) do
+			if markview.splitView.window and buf == markview.splitView.attached_buffer and vim.api.nvim_win_is_valid(markview.splitView.window) then
+				goto continue;
+			elseif markview.splitView.window and buf == markview.splitView.buffer and vim.api.nvim_win_is_valid(markview.splitView.window) then
+				goto continue;
+			end
+
 			local parsed_content = markview.parser.init(buf);
 			local windows = utils.find_attached_wins(buf);
 
@@ -1678,11 +1684,19 @@ markview.commands = {
 			markview.state.buf_states[buf] = true;
 
 			markview.renderer.clear(buf);
-			markview.renderer.render(buf, parsed_content, markview.configuration)
+			markview.renderer.render(buf, parsed_content, markview.configuration);
+
+			::continue::
 		end
 	end,
 	disableAll = function ()
 		for _, buf in ipairs(markview.attached_buffers) do
+			if markview.splitView.window and buf == markview.splitView.attached_buffer and vim.api.nvim_win_is_valid(markview.splitView.window) then
+				goto continue;
+			elseif markview.splitView.window and buf == markview.splitView.buffer and vim.api.nvim_win_is_valid(markview.splitView.window) then
+				goto continue;
+			end
+
 			local windows = utils.find_attached_wins(buf);
 
 			if markview.configuration.callbacks and markview.configuration.callbacks.on_disable then
@@ -1693,6 +1707,8 @@ markview.commands = {
 
 			markview.state.buf_states[buf] = false;
 			markview.renderer.clear(buf);
+
+			::continue::
 		end
 
 		markview.state.enable = false;
@@ -1702,6 +1718,8 @@ markview.commands = {
 		local buffer = tonumber(buf) or vim.api.nvim_get_current_buf();
 
 		if not vim.list_contains(markview.attached_buffers, buffer) or not vim.api.nvim_buf_is_valid(buffer) then
+			return;
+		elseif markview.splitView.window and buf == markview.splitView.buffer and vim.api.nvim_win_is_valid(markview.splitView.window) then
 			return;
 		end
 
