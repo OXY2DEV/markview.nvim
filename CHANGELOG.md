@@ -1,5 +1,18 @@
 # Changelog
 
+## [22.1.0](https://github.com/OXY2DEV/markview.nvim/compare/v22.0.1...v22.1.0) (2024-08-31)
+
+
+### Features
+
+* Added split-view to the plugin ([308024c](https://github.com/OXY2DEV/markview.nvim/commit/308024cbcb783fe0c179a18f8e2a7b31406c8a37)), closes [#131](https://github.com/OXY2DEV/markview.nvim/issues/131)
+
+
+### Bug Fixes
+
+* Fixed a bug causing callbacks to not work. ([6641174](https://github.com/OXY2DEV/markview.nvim/commit/6641174ed030a0d7f305ce860f21097c28560fb9))
+* Minor bug fixes for splitView ([3471b7b](https://github.com/OXY2DEV/markview.nvim/commit/3471b7b84b618464aed8e80f35531e5352d3869f))
+
 ## [22.0.1](https://github.com/OXY2DEV/markview.nvim/compare/v22.0.0...v22.0.1) (2024-08-28)
 
 
