@@ -47,7 +47,7 @@ block_quotes = {
 
 - match_string, `string` or `table`
 
-  String to use as the match pattern. If the value is a `table` then it is used as a list of possible matches.
+  String to use as the match pattern.
 
 - callout_preview, `string`
 
