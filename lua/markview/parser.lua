@@ -1,6 +1,5 @@
 local parser = {};
 local lang = require("markview.languages")
--- local renderer = require("markview/renderer");
 
 parser.cached_conf = {};
 parser.avoid_ranges = {};
@@ -258,7 +257,7 @@ parser.md = function (buffer, TStree, from, to)
 
 				col_start = col_start,
 				col_end = col_end
-			})
+			});
 		elseif capture_name == "heading" then
 			local parent = capture_node:parent();
 

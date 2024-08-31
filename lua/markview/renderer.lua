@@ -1241,7 +1241,7 @@ renderer.render_block_quotes = function (buffer, content, config_table)
 				qt_config = callout;
 			elseif vim.islist(callout.match_string) then
 				for _, alias in ipairs(callout.match_string --[[@as string[] ]]) do
-					if type(alias) == "string" and alias:upper() == content.callout.upper() then
+					if type(alias) == "string" and alias:upper() == content.callout:upper() then
 						qt_config = callout;
 					end
 				end

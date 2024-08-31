@@ -265,19 +265,19 @@ To make configuration easier `markview.nvim` comes with the following highlight 
 
 Block quotes have the following highlight group by default,
 
-- **MarkviewBlockQuoteDefault**, also used by `Quote`.
+- **MarkviewBlockQuoteDefault**, also used by `Quote`, `Cite`.
 
 Various callouts/alerts use the following highlight groups,
 
-- **MarkviewBlockQuoteOk**, used by `Tip`, `Success`.
-- **MarkviewBlockQuoteWarn**, used by `Question`, `Custom`, `Warning`.
-- **MarkviewBlockQuoteError**, used by `Caution`, `Bug`, `Danger`, `Failure`.
-- **MarkviewBlockQuoteNote**, used by `Note`, `Todo`, `Abstract`.
+- **MarkviewBlockQuoteOk**, used by `Tip`, `Hint`, `Success`, `Check`, `Done`.
+- **MarkviewBlockQuoteWarn**, used by `Question`, `Help`, `Faq`, `Custom`, `Warning`, `Attention`.
+- **MarkviewBlockQuoteError**, used by `Caution`, `Bug`, `Danger`, `Error`, `Failure`, `Fail`, `Missing`.
+- **MarkviewBlockQuoteNote**, used by `Note`, `Todo`, `Info`, `Abstract`, `Summary`, `Tldr`.
 - **MarkviewBlockQuoteSpecial**, used `Important`, `Example`.
 
 ### 🎯 Checkboxes
 
-Checkboxes use these highlight groups,
+Checkbox use these highlight groups,
 
 - **MarkviewCheckboxChecked**, from `DiagnosticOk`.
 - **MarkviewCheckboxUnhecked**, from `DiagnosticError`.

@@ -1189,8 +1189,38 @@ markview.configuration = {
 				border = "▋", border_hl = "MarkviewBlockQuoteNote"
 			},
 			{
+				match_string = "SUMMARY",
+				callout_preview = "󱉫 Summary",
+				callout_preview_hl = "MarkviewBlockQuoteNote",
+
+				custom_title = true,
+				custom_icon = "󱉫 ",
+
+				border = "▋", border_hl = "MarkviewBlockQuoteNote"
+			},
+			{
+				match_string = "TLDR",
+				callout_preview = "󱉫 Tldr",
+				callout_preview_hl = "MarkviewBlockQuoteNote",
+
+				custom_title = true,
+				custom_icon = "󱉫 ",
+
+				border = "▋", border_hl = "MarkviewBlockQuoteNote"
+			},
+			{
 				match_string = "TODO",
 				callout_preview = " Todo",
+				callout_preview_hl = "MarkviewBlockQuoteNote",
+
+				custom_title = true,
+				custom_icon = " ",
+
+				border = "▋", border_hl = "MarkviewBlockQuoteNote"
+			},
+			{
+				match_string = "INFO",
+				callout_preview = " Info",
 				callout_preview_hl = "MarkviewBlockQuoteNote",
 
 				custom_title = true,
@@ -1209,8 +1239,48 @@ markview.configuration = {
 				border = "▋", border_hl = "MarkviewBlockQuoteOk"
 			},
 			{
+				match_string = "CHECK",
+				callout_preview = "󰗠 Check",
+				callout_preview_hl = "MarkviewBlockQuoteOk",
+
+				custom_title = true,
+				custom_icon = "󰗠 ",
+
+				border = "▋", border_hl = "MarkviewBlockQuoteOk"
+			},
+			{
+				match_string = "DONE",
+				callout_preview = "󰗠 Done",
+				callout_preview_hl = "MarkviewBlockQuoteOk",
+
+				custom_title = true,
+				custom_icon = "󰗠 ",
+
+				border = "▋", border_hl = "MarkviewBlockQuoteOk"
+			},
+			{
 				match_string = "QUESTION",
 				callout_preview = "󰋗 Question",
+				callout_preview_hl = "MarkviewBlockQuoteWarn",
+
+				custom_title = true,
+				custom_icon = "󰋗 ",
+
+				border = "▋", border_hl = "MarkviewBlockQuoteWarn"
+			},
+			{
+				match_string = "HELP",
+				callout_preview = "󰋗 Help",
+				callout_preview_hl = "MarkviewBlockQuoteWarn",
+
+				custom_title = true,
+				custom_icon = "󰋗 ",
+
+				border = "▋", border_hl = "MarkviewBlockQuoteWarn"
+			},
+			{
+				match_string = "FAQ",
+				callout_preview = "󰋗 Faq",
 				callout_preview_hl = "MarkviewBlockQuoteWarn",
 
 				custom_title = true,
@@ -1229,8 +1299,38 @@ markview.configuration = {
 				border = "▋", border_hl = "MarkviewBlockQuoteError"
 			},
 			{
+				match_string = "FAIL",
+				callout_preview = "󰅙 Fail",
+				callout_preview_hl = "MarkviewBlockQuoteError",
+
+				custom_title = true,
+				custom_icon = "󰅙 ",
+
+				border = "▋", border_hl = "MarkviewBlockQuoteError"
+			},
+			{
+				match_string = "MISSING",
+				callout_preview = "󰅙 Missing",
+				callout_preview_hl = "MarkviewBlockQuoteError",
+
+				custom_title = true,
+				custom_icon = "󰅙 ",
+
+				border = "▋", border_hl = "MarkviewBlockQuoteError"
+			},
+			{
 				match_string = "DANGER",
 				callout_preview = " Danger",
+				callout_preview_hl = "MarkviewBlockQuoteError",
+
+				custom_title = true,
+				custom_icon = "  ",
+
+				border = "▋", border_hl = "MarkviewBlockQuoteError"
+			},
+			{
+				match_string = "ERROR",
+				callout_preview = " Error",
 				callout_preview_hl = "MarkviewBlockQuoteError",
 
 				custom_title = true,
@@ -1267,6 +1367,30 @@ markview.configuration = {
 				custom_icon = "  ",
 
 				border = "▋", border_hl = "MarkviewBlockQuoteDefault"
+			},
+			{
+				match_string = "CITE",
+				callout_preview = " Cite",
+				callout_preview_hl = "MarkviewBlockQuoteDefault",
+
+				custom_title = true,
+				custom_icon = "  ",
+
+				border = "▋", border_hl = "MarkviewBlockQuoteDefault"
+			},
+			{
+				match_string = "HINT",
+				callout_preview = " Hint",
+				callout_preview_hl = "MarkviewBlockQuoteOk",
+
+				border = "▋", border_hl = "MarkviewBlockQuoteOk"
+			},
+			{
+				match_string = "ATTENTION",
+				callout_preview = " Attention",
+				callout_preview_hl = "MarkviewBlockQuoteWarn",
+
+				border = "▋", border_hl = "MarkviewBlockQuoteWarn"
 			},
 
 
