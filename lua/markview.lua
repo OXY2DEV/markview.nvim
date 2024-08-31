@@ -143,6 +143,9 @@ markview.global_options = {};
 
 ---@type markview.config
 markview.configuration = {
+	split_conf = {
+		split = "right"
+	},
 	filetypes = { "markdown", "quarto", "rmd" },
 	callbacks = {
 		on_enable = function (_, window)

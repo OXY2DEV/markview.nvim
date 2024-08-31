@@ -143,7 +143,9 @@ It has the following `sub-commands`,
 - toggle {buffer}, Toggles the state of buffer.
 - enable {buffer}, Enables/Refreshes the plugin on a specific buffer.
 - disable {buffer}, Disables the plugin & clears decorations on a specific buffer.
-- splitToggle {buffer}, Opens preview in a split(experimental).
+- splitToggle {buffer}, Toggles the preview in a split.
+- splitEnable {buffer}, Enables the preview in a split.
+- splitDisable { buffer}, Disables the preview.
 
 ## 🚀 Hybrid mode
 
