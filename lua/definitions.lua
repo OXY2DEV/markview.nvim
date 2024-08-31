@@ -7,6 +7,9 @@
 --- Definition for the table passed into setup()
 ---@class markview.config.user
 ---
+--- Window config for split view
+---@field split_conf? table
+---
 --- List of custom highlight groups
 ---@field highlight_groups table[]?
 ---
@@ -61,6 +64,9 @@
 
 --- Definition for the complete configuration table
 ---@class markview.config
+---
+--- Window config for split view
+---@field split_conf? table
 ---
 --- List of custom highlight groups
 ---@field highlight_groups table[]?

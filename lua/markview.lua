@@ -143,6 +143,9 @@ markview.global_options = {};
 
 ---@type markview.config
 markview.configuration = {
+	split_conf = {
+		split = "right"
+	},
 	filetypes = { "markdown", "quarto", "rmd" },
 	callbacks = {
 		on_enable = function (_, window)
@@ -1496,6 +1499,162 @@ markview.configuration = {
 	},
 };
 
+markview.splitView = {
+	attached_buffer = nil,
+	augroup = vim.api.nvim_create_augroup("markview_splitview", { clear = true }),
+
+	buffer = vim.api.nvim_create_buf(false, true),
+	window = nil,
+
+	close = function (self)
+		pcall(vim.api.nvim_win_close, self.window, true);
+		self.augroup = vim.api.nvim_create_augroup("markview_splitview", { clear = true });
+
+		self.attached_buffer = nil;
+		self.window = nil;
+	end,
+
+	init = function (self, buffer)
+		-- If buffer is already opened, exit
+		if self.attached_buffer and (buffer == self.attached_buffer or buffer == self.buffer) then
+			return;
+		end
+
+		self.augroup = vim.api.nvim_create_augroup("markview_splitview", { clear = true });
+
+		-- Register the buffer
+		self.attached_buffer = buffer;
+
+		local windows = utils.find_attached_wins(buffer);
+
+		-- Buffer isn't attached to a window
+		if #windows == 0 then
+			windows = { vim.api.nvim_get_current_win() };
+			-- return;
+		end
+
+		-- If window doesn't exist, open it
+		if not self.window or vim.api.nvim_win_is_valid(self.window) == false then
+			self.window = vim.api.nvim_open_win(self.buffer, false, vim.tbl_deep_extend("force", markview.configuration.split_conf or {}, {
+				win = windows[1],
+				split = "right"
+			}));
+		else
+			vim.api.nvim_win_set_config(self.window, vim.tbl_deep_extend("force", markview.configuration.split_conf or {}, {
+				win = windows[1],
+				split = "right"
+			}));
+		end
+
+		local content = vim.api.nvim_buf_get_lines(buffer, 0, -1, false);
+
+		-- Write text to the split buffer
+		vim.bo[self.buffer].modifiable = true;
+		vim.api.nvim_buf_set_lines(self.buffer, 0, -1, false, content);
+		vim.bo[self.buffer].modifiable = false;
+
+		vim.bo[self.buffer].filetype = vim.bo[buffer].filetype;
+
+		vim.wo[self.window].number = false;
+		vim.wo[self.window].relativenumber = false;
+		vim.wo[self.window].statuscolumn = "";
+
+		vim.wo[self.window].cursorline = true;
+
+		-- Run callback
+		pcall(markview.configuration.callbacks.on_enable, self.buf, self.window);
+
+		local cursor = vim.api.nvim_win_get_cursor(windows[1]);
+		pcall(vim.api.nvim_win_set_cursor, self.window, cursor);
+
+		local parsed_content;
+
+		if #content < (markview.configuration.max_length or 1000) then
+			-- Buffer isn't too big. Render everything
+			parsed_content = markview.parser.init(self.buffer, markview.configuration);
+
+			markview.renderer.render(self.buffer, parsed_content, markview.configuration)
+		else
+			-- Buffer is too big, render only parts of it
+			local start = math.max(0, cursor[1] - (markview.configuration.render_range or 100));
+			local stop = math.min(lines, cursor[1] + (markview.configuration.render_range or 100));
+
+			parsed_content = markview.parser.parse_range(self.buffer, markview.configuration, start, stop);
+
+			markview.renderer.render(self.buffer, parsed_content, markview.configuration)
+		end
+
+
+		local timer = vim.uv.new_timer();
+
+		vim.api.nvim_create_autocmd({
+			"CursorMoved", "CursorMovedI"
+		}, {
+			group = self.augroup,
+			buffer = buffer,
+			callback = vim.schedule_wrap(function ()
+				-- Set cursor
+				cursor = vim.api.nvim_win_get_cursor(windows[1]);
+				pcall(vim.api.nvim_win_set_cursor, self.window, cursor);
+			end)
+		});
+
+		vim.api.nvim_create_autocmd({
+			"BufHidden"
+		}, {
+			group = self.augroup,
+			buffer = buffer,
+			callback = vim.schedule_wrap(function ()
+				self:close();
+			end)
+		});
+		vim.api.nvim_create_autocmd({
+			"BufHidden"
+		}, {
+			group = self.augroup,
+			buffer = self.buffer,
+			callback = vim.schedule_wrap(function ()
+				markview.commands.splitDisable(self.attached_buffer);
+			end)
+		});
+
+		vim.api.nvim_create_autocmd({
+			"TextChanged", "TextChangedI"
+		}, {
+			group = self.augroup,
+			buffer = buffer,
+			callback = vim.schedule_wrap(function ()
+				timer:stop();
+				timer:start(50, 0, vim.schedule_wrap(function ()
+					content = vim.api.nvim_buf_get_lines(buffer, 0, -1, false);
+
+					-- Write text to the split buffer
+					vim.bo[self.buffer].modifiable = true;
+					vim.api.nvim_buf_set_lines(self.buffer, 0, -1, false, content);
+					vim.bo[self.buffer].modifiable = false;
+
+					if #content < (markview.configuration.max_length or 1000) then
+						-- Buffer isn't too big. Render everything
+						parsed_content = markview.parser.init(self.buffer, markview.configuration);
+
+						markview.renderer.render(self.buffer, parsed_content, markview.configuration)
+					else
+						-- Buffer is too big, render only parts of it
+						local start = math.max(0, cursor[1] - (markview.configuration.render_range or 100));
+						local stop = math.min(lines, cursor[1] + (markview.configuration.render_range or 100));
+
+						parsed_content = markview.parser.parse_range(self.buffer, markview.configuration, start, stop);
+
+						markview.renderer.render(self.buffer, parsed_content, markview.configuration)
+					end
+				end));
+			end)
+		});
+
+		return self;
+	end
+};
+
 markview.commands = {
 	toggleAll = function ()
 		if markview.state.enable == true then
@@ -1510,6 +1669,12 @@ markview.commands = {
 		markview.state.enable = true;
 
 		for _, buf in ipairs(markview.attached_buffers) do
+			if markview.splitView.window and buf == markview.splitView.attached_buffer and vim.api.nvim_win_is_valid(markview.splitView.window) then
+				goto continue;
+			elseif markview.splitView.window and buf == markview.splitView.buffer and vim.api.nvim_win_is_valid(markview.splitView.window) then
+				goto continue;
+			end
+
 			local parsed_content = markview.parser.init(buf);
 			local windows = utils.find_attached_wins(buf);
 
@@ -1522,11 +1687,19 @@ markview.commands = {
 			markview.state.buf_states[buf] = true;
 
 			markview.renderer.clear(buf);
-			markview.renderer.render(buf, parsed_content, markview.configuration)
+			markview.renderer.render(buf, parsed_content, markview.configuration);
+
+			::continue::
 		end
 	end,
 	disableAll = function ()
 		for _, buf in ipairs(markview.attached_buffers) do
+			if markview.splitView.window and buf == markview.splitView.attached_buffer and vim.api.nvim_win_is_valid(markview.splitView.window) then
+				goto continue;
+			elseif markview.splitView.window and buf == markview.splitView.buffer and vim.api.nvim_win_is_valid(markview.splitView.window) then
+				goto continue;
+			end
+
 			local windows = utils.find_attached_wins(buf);
 
 			if markview.configuration.callbacks and markview.configuration.callbacks.on_disable then
@@ -1537,6 +1710,8 @@ markview.commands = {
 
 			markview.state.buf_states[buf] = false;
 			markview.renderer.clear(buf);
+
+			::continue::
 		end
 
 		markview.state.enable = false;
@@ -1546,6 +1721,8 @@ markview.commands = {
 		local buffer = tonumber(buf) or vim.api.nvim_get_current_buf();
 
 		if not vim.list_contains(markview.attached_buffers, buffer) or not vim.api.nvim_buf_is_valid(buffer) then
+			return;
+		elseif markview.splitView.window and buf == markview.splitView.buffer and vim.api.nvim_win_is_valid(markview.splitView.window) then
 			return;
 		end
 
@@ -1595,6 +1772,63 @@ markview.commands = {
 
 		markview.renderer.clear(buffer);
 		markview.state.buf_states[buffer] = false;
+	end,
+
+	splitToggle = function (buf)
+		local buffer = tonumber(buf) or vim.api.nvim_get_current_buf();
+
+		if markview.splitView.attached_buffer and vim.api.nvim_buf_is_valid(markview.splitView.attached_buffer) then
+			if buffer == markview.splitView.attached_buffer then
+				markview.commands.splitDisable(buf);
+			else
+				markview.commands.enable(markview.splitView.attached_buffer);
+				markview.commands.splitEnable(buf);
+			end
+		else
+			markview.commands.splitEnable(buf);
+		end
+	end,
+
+	splitDisable = function (buf)
+		local buffer = tonumber(buf) or vim.api.nvim_get_current_buf();
+
+		if not vim.list_contains(markview.attached_buffers, buffer) or not vim.api.nvim_buf_is_valid(buffer) then
+			return;
+		end
+
+		markview.splitView:close();
+
+		local windows = utils.find_attached_wins(buffer);
+
+		local parsed_content = markview.parser.init(buffer);
+
+		markview.state.buf_states[buffer] = true;
+
+		for _, window in ipairs(windows) do
+			pcall(markview.configuration.callbacks.on_enable, buf, window);
+		end
+
+		markview.renderer.clear(buffer);
+		markview.renderer.render(buffer, parsed_content, markview.configuration)
+	end,
+
+	splitEnable = function (buf)
+		local buffer = tonumber(buf) or vim.api.nvim_get_current_buf();
+
+		if not vim.list_contains(markview.attached_buffers, buffer) or not vim.api.nvim_buf_is_valid(buffer) then
+			return;
+		end
+
+		local windows = utils.find_attached_wins(buffer);
+
+		for _, window in ipairs(windows) do
+			pcall(markview.configuration.callbacks.on_disable, buf, window);
+		end
+
+		markview.renderer.clear(buffer);
+		markview.state.buf_states[buffer] = false;
+
+		markview.splitView:init(buffer);
 	end
 }
 
@@ -1627,7 +1861,7 @@ end, {
 			elseif cmdline:find("^Markview%s+(%S+)%s*$") then
 				for cmd, _ in cmdline:gmatch("Markview%s+(%S+)%s*(%S*)") do
 					-- ISSUE: Find a better way to find commands that accept arguments
-					if vim.list_contains({ "enable", "disable", "toggle" }, cmd) then
+					if vim.list_contains({ "enable", "disable", "toggle", "splitToggle" }, cmd) then
 						local bufs = {};
 
 						for _, buf in ipairs(markview.attached_buffers) do
