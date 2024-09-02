@@ -1201,7 +1201,12 @@ renderer.render_code_blocks = function (buffer, content, config_table)
 			-- NOTE: Nested code blocks have a different start position
 			local length = content.line_lengths[line] - content.col_start;
 
-			vim.api.nvim_buf_add_highlight(buffer, renderer.namespace, set_hl(config_table.hl), content.row_start + line, content.col_start, -1)
+			vim.api.nvim_buf_set_extmark(buffer, renderer.namespace, content.row_start + line, content.col_start, {
+				hl_group = set_hl(config_table.hl),
+
+				end_row = content.row_start + line,
+				end_col = #text,
+			});
 
 			-- NOTE: If the line is smaller than the start position of the code block then subtract it
 			vim.api.nvim_buf_set_extmark(buffer, renderer.namespace, content.row_start + line, length < 0 and content.col_start + length or content.col_start, {

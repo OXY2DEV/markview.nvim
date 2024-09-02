@@ -1869,16 +1869,30 @@ markview.commands = {
 
 		local windows = utils.find_attached_wins(buffer);
 
-		local parsed_content = markview.parser.init(buffer);
-
 		markview.state.buf_states[buffer] = true;
 
 		for _, window in ipairs(windows) do
 			pcall(markview.configuration.callbacks.on_enable, buf, window);
 		end
 
-		markview.renderer.clear(buffer);
-		markview.renderer.render(buffer, parsed_content, markview.configuration)
+		local lines = vim.api.nvim_buf_line_count(buffer);
+		local parsed_content;
+
+		if lines < (markview.configuration.max_length or 1000) then
+			-- Buffer isn't too big. Render everything
+			parsed_content = markview.parser.init(buffer, markview.configuration);
+
+			markview.renderer.render(buffer, parsed_content, markview.configuration)
+		else
+			-- Buffer is too big, render only parts of it
+			local cursor = vim.api.nvim_win_get_cursor(0);
+			local start = math.max(0, cursor[1] - (markview.configuration.render_range or 100));
+			local stop = math.min(lines, cursor[1] + (markview.configuration.render_range or 100));
+
+			parsed_content = markview.parser.parse_range(buffer, markview.configuration, start, stop);
+
+			markview.renderer.render(buffer, parsed_content, markview.configuration)
+		end
 	end,
 
 	disable = function (buf)
@@ -1921,6 +1935,10 @@ markview.commands = {
 		end
 
 		markview.splitView:close();
+
+		if markview.state.enable == false then
+			return;
+		end
 
 		local windows = utils.find_attached_wins(buffer);
 
