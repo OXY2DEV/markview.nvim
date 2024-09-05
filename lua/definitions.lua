@@ -198,7 +198,7 @@
 ---@field corner_left_hl string?
 ---
 --- Used bu the "label" style to add text after the right padding
----@field corner_right string?
+---@field corner_right (string | function)?
 ---
 --- Highlight group for the right corner
 ---@field corner_right_hl string?

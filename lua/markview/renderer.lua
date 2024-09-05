@@ -859,6 +859,13 @@ renderer.render_headings = function (buffer, content, config)
 		return;
 	end
 
+	local corner_right = ""
+	if type(conf.corner_right) == "function" and pcall(conf.corner_right --[[@as function]], buffer, content) then
+		corner_right = conf.corner_right(buffer, content);
+	elseif type(conf.corner_right) == "string" then
+		corner_right = conf.corner_right --[[@as string]];
+	end
+
 	if conf.style == "simple" then
 		-- Adds a simple background
 		vim.api.nvim_buf_set_extmark(buffer, renderer.namespace, content.row_start, content.col_start, {
@@ -889,7 +896,7 @@ renderer.render_headings = function (buffer, content, config)
 					content.title,
 
 					conf.padding_right or "",
-					conf.corner_right or "",
+					corner_right,
 				}));
 
 				spaces = math.floor((w - t) / 2);
@@ -907,7 +914,7 @@ renderer.render_headings = function (buffer, content, config)
 					content.title,
 
 					conf.padding_right or "",
-					conf.corner_right or "",
+					corner_right,
 				}));
 
 				spaces = w - t;
@@ -940,7 +947,7 @@ renderer.render_headings = function (buffer, content, config)
 			virt_text_pos = "overlay",
 			virt_text = {
 				{ conf.padding_right or "", set_hl(conf.padding_right_hl) or set_hl(conf.hl) },
-				{ conf.corner_right or "", set_hl(conf.corner_right_hl) or set_hl(conf.hl) }
+				{ corner_right, set_hl(conf.corner_right_hl) or set_hl(conf.hl) }
 			},
 
 			hl_mode = "combine"
