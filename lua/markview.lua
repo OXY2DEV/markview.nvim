@@ -2041,7 +2041,21 @@ end, {
 			end
 		end
 	end
-})
+});
+
+markview.unload = function ()
+	for index, buf in ipairs(markview.attached_buffers) do
+		if vim.api.nvim_buf_is_valid(buf) == false then
+			table.remove(markview.attached_buffers, index);
+		end
+	end
+
+	for index, win in ipairs(markview.attached_windows) do
+		if vim.api.nvim_win_is_valid(win) == false then
+			table.remove(markview.attached_windows, index);
+		end
+	end
+end
 
 markview.setup = function (user_config)
 	if user_config and user_config.highlight_groups then

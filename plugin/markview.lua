@@ -93,7 +93,10 @@ local redraw_autocmd = function (augroup, buffer)
 	local cached_mode = vim.api.nvim_get_mode().mode;
 	local timer = vim.uv.new_timer();
 
-	vim.api.nvim_create_autocmd(update_events, {
+	-- This is just a cache
+	local r_autocmd;
+
+	local tmp = vim.api.nvim_create_autocmd(update_events, {
 		buffer = buffer,
 		group = augroup,
 		callback = function (event)
@@ -112,6 +115,23 @@ local redraw_autocmd = function (augroup, buffer)
 				if markview.state.enable == false or markview.state.buf_states[buffer] == false then
 					return;
 				end
+
+				--- Incorrect file type
+				if not vim.list_contains(markview.configuration.filetypes or { "markdown" }, vim.bo[buffer].filetype) then
+					markview.unload();
+					vim.api.nvim_del_autocmd(r_autocmd);
+
+					return;
+				end
+
+				-- Incorrect buffer type
+				if vim.islist(markview.configuration.buf_ignore) and vim.list_contains(markview.configuration.buf_ignore, vim.bo[buffer].buftype) then
+					markview.unload();
+					vim.api.nvim_del_autocmd(r_autocmd);
+
+					return
+				end
+
 
 				-- Only on mode change or if the mode changed due to text changed
 				if mode ~= cached_mode or event.event == "ModeChanged" then
@@ -139,6 +159,8 @@ local redraw_autocmd = function (augroup, buffer)
 			end));
 		end
 	});
+
+	r_autocmd = tmp;
 end
 
 vim.api.nvim_create_autocmd({ "BufWinEnter" }, {
