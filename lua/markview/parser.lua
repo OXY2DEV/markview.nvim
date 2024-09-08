@@ -1,6 +1,11 @@
 local parser = {};
 local lang = require("markview.languages")
 
+local ts_available, treesitter_parsers = pcall(require, "nvim-treesitter.parsers");
+local function parser_installed(parser_name)
+	return (ts_available and treesitter_parsers.has_parser(parser_name)) or pcall(vim.treesitter.query.get, parser_name, "highlights")
+end
+
 parser.cached_conf = {};
 parser.avoid_ranges = {};
 
@@ -804,6 +809,255 @@ parser.html = function (buffer, TStree, from, to)
 	end
 end
 
+parser.latex = function (buffer, TStree, from, to)
+	if not parser_installed("latex") then
+		return;
+	end
+
+	local scanned_queies = vim.treesitter.query.parse("latex", [[
+		((curly_group) @bracket)
+
+		((generic_command
+			.
+			command: ((command_name) @c (#eq? @c "\\frac"))
+			arg: (curly_group)
+			arg: (curly_group)
+			.
+			) @fractional)
+		
+		((generic_command
+			.
+			command: ((command_name) @c (#eq? @c "\\sqrt"))
+			arg: (curly_group)
+			.
+			) @root)
+
+		((generic_command
+			.
+			command: (command_name)
+			.
+			) @symbol)
+
+		((superscript) @superscript)
+		((subscript) @subscript)
+
+		((inline_formula) @inline)
+		((displayed_equation) @block)
+	]]);
+
+	for capture_id, capture_node, _, _ in scanned_queies:iter_captures(TStree:root(), buffer, from, to) do
+		local capture_name = scanned_queies.captures[capture_id];
+		local capture_text = vim.treesitter.get_node_text(capture_node, buffer);
+		local row_start, col_start, row_end, col_end = capture_node:range();
+
+		if capture_name == "inline" then
+			table.insert(parser.parsed_content, {
+				node = capture_node,
+				type = "latex_inline",
+
+				row_start = row_start,
+				row_end = row_end,
+
+				col_start = col_start,
+				col_end = col_end
+			});
+		elseif capture_name == "block" then
+			table.insert(parser.parsed_content, {
+				node = capture_node,
+				type = "latex_block",
+
+				row_start = row_start,
+				row_end = row_end,
+
+				col_start = col_start,
+				col_end = col_end
+			});
+		elseif capture_name == "bracket" then
+			local text = vim.api.nvim_buf_get_lines(buffer, row_start, row_start + 1, false)[1];
+			text = string.sub(text, 1, col_start);
+
+			if text:match("%^$") and capture_text:match("^%{(%d+)%}$") then
+				-- Superscript
+				goto invalidBracket;
+			elseif text:match("%_$") and capture_text:match("^%{(%d+)%}$") then
+				-- Subscript
+				goto invalidBracket;
+			end
+
+			local node = capture_node;
+			local level = 1;
+
+			-- Need more efficiency
+			while node do
+				local foundSubNode = false;
+
+				for sub_node in node:iter_children() do
+					if sub_node:type() == "curly_group" then
+						level = level + 1;
+						node = sub_node;
+
+						foundSubNode = true;
+						break;
+					end
+				end
+
+				if foundSubNode == false then
+					break;
+				end
+			end
+
+			table.insert(parser.parsed_content, {
+				node = capture_node,
+				type = "latex_bracket",
+
+				level = level,
+
+				row_start = row_start,
+				row_end = row_end,
+
+				col_start = col_start,
+				col_end = col_end
+			});
+
+			::invalidBracket::
+		elseif capture_name == "fractional" then
+			local command = capture_node:field("command");
+			local arguments = capture_node:field("arg");
+
+			local c_r_start, c_c_start, c_r_end, c_c_end = command[1]:range();
+
+			local arg_1_r_start, arg_1_c_start, arg_1_r_end, arg_1_c_end = arguments[1]:range();
+			local arg_2_r_start, arg_2_c_start, arg_2_r_end, arg_2_c_end = arguments[2]:range();
+
+			table.insert(parser.parsed_content, {
+				node = capture_node,
+				type = "latex_fractional",
+
+				command = {
+					row_start = c_r_start,
+					row_end = c_r_end,
+
+					col_start = c_c_start,
+					col_end = c_c_end
+				},
+
+				argument_1 = {
+					row_start = arg_1_r_start,
+					row_end = arg_1_r_end,
+
+					col_start = arg_1_c_start,
+					col_end = arg_1_c_end
+				},
+				argument_2 = {
+					row_start = arg_2_r_start,
+					row_end = arg_2_r_end,
+
+					col_start = arg_2_c_start,
+					col_end = arg_2_c_end
+				},
+
+				row_start = row_start,
+				row_end = row_end,
+
+				col_start = col_start,
+				col_end = col_end
+			})
+		elseif capture_name == "symbol" then
+			table.insert(parser.parsed_content, {
+				node = capture_node,
+				type = "latex_symbol",
+
+				text = capture_text:match("%\\(.-)%{?$"),
+
+				row_start = row_start,
+				row_end = row_end,
+
+				col_start = col_start,
+				col_end = col_end
+			});
+		elseif capture_name == "root" then
+			table.insert(parser.parsed_content, {
+				node = capture_node,
+				type = "latex_root",
+
+				text = capture_text,
+
+				row_start = row_start,
+				row_end = row_end,
+
+				col_start = col_start,
+				col_end = col_end
+			});
+		elseif capture_name == "superscript" then
+			local isNumOnly = capture_text:match("^%^(%d+)$");
+			local isBracketed = capture_text:match("^%^%{(%d+)%}$");
+
+			if isNumOnly then
+				table.insert(parser.parsed_content, {
+					node = capture_node,
+					type = "latex_superscript",
+
+					isBracketed = false,
+					text = isNumOnly,
+
+					row_start = row_start,
+					row_end = row_end,
+
+					col_start = col_start,
+					col_end = col_end
+				});
+			elseif isBracketed then
+				table.insert(parser.parsed_content, {
+					node = capture_node,
+					type = "latex_superscript",
+
+					isBracketed = true,
+					text = isBracketed,
+
+					row_start = row_start,
+					row_end = row_end,
+
+					col_start = col_start,
+					col_end = col_end
+				});
+			end
+		elseif capture_name == "subscript" then
+			local isNumOnly = capture_text:match("^%_(%d+)$");
+			local isBracketed = capture_text:match("^%_%{(%d+)%}$");
+
+			if isNumOnly then
+				table.insert(parser.parsed_content, {
+					node = capture_node,
+					type = "latex_subscript",
+
+					isBracketed = false,
+					text = isNumOnly,
+
+					row_start = row_start,
+					row_end = row_end,
+
+					col_start = col_start,
+					col_end = col_end
+				});
+			elseif isBracketed then
+				table.insert(parser.parsed_content, {
+					node = capture_node,
+					type = "latex_subscript",
+
+					isBracketed = true,
+					text = isBracketed,
+
+					row_start = row_start,
+					row_end = row_end,
+
+					col_start = col_start,
+					col_end = col_end
+				});
+			end
+		end
+	end
+end
+
 --- Initializes the parsers on the specified buffer
 --- Parsed data is stored as a "view" in renderer.lua
 ---
@@ -828,6 +1082,8 @@ parser.init = function (buffer, config_table)
 			parser.md_inline(buffer, TStree);
 		elseif tree_language == "html" then
 			parser.html(buffer, TStree);
+		elseif tree_language == "latex" then
+			parser.latex(buffer, TStree);
 		end
 	end)
 
@@ -858,6 +1114,8 @@ parser.parse_range = function (buffer, config_table, from, to)
 			parser.md_inline(buffer, TStree, from, to);
 		elseif tree_language == "html" then
 			parser.html(buffer, TStree, from, to);
+		elseif tree_language == "latex" then
+			parser.latex(buffer, TStree, from, to);
 		end
 	end)
 

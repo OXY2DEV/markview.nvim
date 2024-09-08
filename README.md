@@ -31,6 +31,7 @@ Markview.nvim comes with a ton of features such as,
 - A `hybrid mode` that allows rendering in real-time! It will even unconceal nodes under the cursor.
 - Dynamic `highlight groups` that allows support for almost any colorscheme!
 - Supports other filetypes too(e.g. quarto/.qmd, r markdown/.rmd for now)! You can also add your own one.
+- Latex support(experimental).
 
 And a lot more to come!
 
@@ -41,6 +42,7 @@ And a lot more to come!
   * markdown
   * markdown_inline
   * html
+  * latex(optional)
 - Nerd font.
 
 Optional:

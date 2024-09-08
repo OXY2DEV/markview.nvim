@@ -1148,6 +1148,50 @@ markview.configuration = {
 		}
 	},
 
+	latex = {
+		enable = true,
+
+		brackets = {
+			enable = true,
+			opening = {
+				{ "(", "MarkviewHeading1Sign" },
+				{ "{", "MarkviewHeading2Sign" },
+				{ "[", "MarkviewHeading3Sign" },
+			},
+			closing = {
+				{ ")", "MarkviewHeading1Sign" },
+				{ "}", "MarkviewHeading2Sign" },
+				{ "]", "MarkviewHeading3" },
+			},
+
+			-- scope = {
+			-- 	"DiagnosticVirtualTextError",
+			-- 	"DiagnosticVirtualTextOk",
+			-- 	"DiagnosticVirtualTextWarn",
+			-- }
+		},
+
+		inline = {
+			enable = true
+		},
+		block = {
+			hl = "Code",
+			text = { " Latex ", "Special" }
+		},
+
+		symbols = {
+			enable = true,
+			overwrite = {}
+		},
+
+		subscript = {
+			enable = true
+		},
+		superscript = {
+			enable = true
+		},
+	},
+
 	code_blocks = {
 		enable = true,
 		icons = true,

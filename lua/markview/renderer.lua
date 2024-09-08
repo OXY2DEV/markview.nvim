@@ -4,6 +4,7 @@ local devicons_loaded, devicons = pcall(require, "nvim-web-devicons");
 local utils = require("markview.utils");
 local entites = require("markview.entites");
 local languages = require("markview.languages");
+local latex_renderer = require("markview.latex_renderer");
 
 renderer.get_icon = function (language, config_table)
 	if config_table.icons == false then
@@ -838,6 +839,7 @@ local table_content = function (buffer, content, config_table, r_num)
 end
 
 renderer.namespace = vim.api.nvim_create_namespace("markview");
+latex_renderer.set_namespace(renderer.namespace);
 
 renderer.views = {};
 
@@ -1737,6 +1739,9 @@ renderer.render_html_entities = function (buffer, content, user_config)
 	});
 end
 
+
+
+
 renderer.render_in_range = function (buffer, partial_contents, config_table)
 	for _, content in ipairs(partial_contents) do
 		local type = content.type;
@@ -1774,6 +1779,8 @@ renderer.render_in_range = function (buffer, partial_contents, config_table)
 			pcall(renderer.render_html_entities, buffer, content, config_table.html);
 		elseif type == "table" then
 			pcall(renderer.render_tables, buffer, content, config_table)
+		elseif type:match("^(latex_)") then
+			pcall(latex_renderer.render, type, buffer, content, config_table)
 		end
 
 		::extmark_skipped::
@@ -1836,6 +1843,8 @@ renderer.render = function (buffer, parsed_content, config_table, conceal_start,
 			pcall(renderer.render_html_entities, buffer, content, config_table.html);
 		elseif type == "table" then
 			pcall(renderer.render_tables, buffer, content, config_table);
+		elseif type:match("^(latex_)") then
+			pcall(latex_renderer.render, type, buffer, content, config_table)
 		end
 
 		::extmark_skipped::
