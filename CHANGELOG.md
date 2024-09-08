@@ -1,5 +1,24 @@
 # Changelog
 
+## [23.0.0](https://github.com/OXY2DEV/markview.nvim/compare/v22.1.0...v23.0.0) (2024-09-08)
+
+
+### ⚠ BREAKING CHANGES
+
+* **renderer:** Added missing Obsidian callouts
+
+### Features
+
+* Added simple Latex support ([92f5320](https://github.com/OXY2DEV/markview.nvim/commit/92f53209eab8e1661cca4a2635b76a5c926d8fad)), closes [#138](https://github.com/OXY2DEV/markview.nvim/issues/138)
+* **renderer:** Added missing Obsidian callouts ([ea71a5b](https://github.com/OXY2DEV/markview.nvim/commit/ea71a5bc6e0a0b28af62e2f21d264ddcc466bd51)), closes [#135](https://github.com/OXY2DEV/markview.nvim/issues/135)
+
+
+### Bug Fixes
+
+* Fixed a bug causing deleted buffers to not be removed from the attached buffers list ([e4b4b9d](https://github.com/OXY2DEV/markview.nvim/commit/e4b4b9d03b90350236ce88f5be723aa5a8610931)), closes [#137](https://github.com/OXY2DEV/markview.nvim/issues/137)
+* Fixed how widths are calculated in code blocks ([59c15a2](https://github.com/OXY2DEV/markview.nvim/commit/59c15a2baec56c8fbb3f22151407978c27f389f8))
+* Split view no longer loses it's state when changing plugin state with `:Markview ...` ([d6f0cb8](https://github.com/OXY2DEV/markview.nvim/commit/d6f0cb87b8cf8929fa8626f06ff0544b89eb9b7a))
+
 ## [22.1.0](https://github.com/OXY2DEV/markview.nvim/compare/v22.0.1...v22.1.0) (2024-08-31)
 
 
