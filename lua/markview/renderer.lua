@@ -1432,6 +1432,10 @@ renderer.render_links = function (buffer, content, config_table)
 	});
 end
 
+--- Renderer for custom emails
+---@param buffer number
+---@param content any
+---@param config_table markview.render_config.links
 renderer.render_email_links = function (buffer, content, config_table)
 	if not config_table or config_table.enable == false then
 		return;
@@ -1469,6 +1473,10 @@ renderer.render_email_links = function (buffer, content, config_table)
 	});
 end
 
+--- Renderer for custom image links
+---@param buffer number
+---@param content any
+---@param config_table markview.render_config.links
 renderer.render_img_links = function (buffer, content, config_table)
 	if not config_table or config_table.enable == false then
 		return;

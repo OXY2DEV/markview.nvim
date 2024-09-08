@@ -62,7 +62,7 @@ markview.deep_merge = function (behavior, tbl_1, tbl_2)
 	return tbl_1;
 end
 
-markview.hl_exits = function (hl_list, hl)
+markview.hl_exists = function (hl_list, hl)
 	for index, item in ipairs(hl_list) do
 		if item.group_name == hl.group_name then
 			return true, index;
@@ -96,7 +96,7 @@ markview.add_hls = function (obj)
 			local _n = {};
 
 			for _, item in ipairs(_o) do
-				local exists, index = markview.hl_exits(use_hl, item);
+				local exists, index = markview.hl_exists(use_hl, item);
 
 				if exists == true then
 					table.remove(use_hl, index);
