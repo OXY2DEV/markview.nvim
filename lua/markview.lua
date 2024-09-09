@@ -1704,6 +1704,10 @@ markview.configuration = {
 		block_decorator = true,
 		use_virt_lines = true
 	},
+
+	escaped = {
+		enable = false
+	}
 };
 
 markview.splitView = {

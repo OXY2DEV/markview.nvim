@@ -66,6 +66,15 @@ local display_width = function (text, config)
 
 	local final_string = text;
 
+	for escaped_char in final_string:gmatch("\\([\\%.%*%_%{%}%[%]%<%>%(%)%#%+%-%`%!%|%$])") do
+		if config.escaped ~= nil and config.escaped.enable ~= false then
+			final_string = final_string:gsub("\\" .. escaped_char, " ");
+			d_width = d_width - 1;
+		else
+			final_string = final_string:gsub("\\" .. escaped_char, "  ");
+		end
+	end
+
 	for inline_code in final_string:gmatch("`([^`]+)`") do
 		d_width = d_width - (vim.fn.strdisplaywidth("`" .. inline_code .. "`"));
 
@@ -1763,7 +1772,16 @@ renderer.render_html_entities = function (buffer, content, user_config)
 	});
 end
 
+renderer.render_escaped = function (buffer, content, user_config)
+	if not user_config or user_config.enable == false then
+		return;
+	end
 
+	vim.api.nvim_buf_set_extmark(buffer, renderer.namespace, content.row_start, content.col_start, {
+		end_col = content.col_start + #"\\",
+		conceal = ""
+	});
+end
 
 
 renderer.render = function (buffer, parsed_content, config_table, conceal_start, conceal_stop)
@@ -1822,6 +1840,8 @@ renderer.render = function (buffer, parsed_content, config_table, conceal_start,
 			pcall(renderer.render_html_entities, buffer, content, config_table.html);
 		elseif type == "table" then
 			pcall(renderer.render_tables, buffer, content, config_table);
+		elseif type == "escaped" then
+			pcall(renderer.render_escaped, buffer, content, config_table.escaped);
 		elseif type:match("^(latex_)") then
 			pcall(latex_renderer.render, type, buffer, content, config_table)
 		end

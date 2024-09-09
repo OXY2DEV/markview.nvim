@@ -633,6 +633,8 @@ parser.md_inline = function (buffer, TStree, from, to)
 		((code_span) @code)
 
 		((entity_reference) @entity)
+
+		((backslash_escape) @escaped)
 	]]);
 
 	-- The last 2 _ represent the metadata & query
@@ -767,6 +769,19 @@ parser.md_inline = function (buffer, TStree, from, to)
 			table.insert(parser.parsed_content, {
 				node = capture_node,
 				type = "html_entity",
+
+				text = capture_text,
+
+				row_start = row_start,
+				row_end = row_end,
+
+				col_start = col_start,
+				col_end = col_end
+			})
+		elseif capture_name == "escaped" then
+			table.insert(parser.parsed_content, {
+				node = capture_node,
+				type = "escaped",
 
 				text = capture_text,
 
