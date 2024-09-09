@@ -60,11 +60,16 @@ local set_hl = function (hl)
 	end
 end
 
+-- NOTE: Table cells with list chars in a link or image are overindented
+local sub_indent_chars = function(text)
+	return text:gsub("[-+*]", " ")
+end
+
 local display_width = function (text, config)
 	local d_width = vim.fn.strdisplaywidth(text);
 	local inl_conf = config.inline_codes;
 
-	local final_string = text;
+	local final_string = sub_indent_chars(text);
 
 	for escaped_char in final_string:gmatch("\\([\\%.%*%_%{%}%[%]%<%>%(%)%#%+%-%`%!%|%$])") do
 		if config.escaped ~= nil and config.escaped.enable ~= false then
