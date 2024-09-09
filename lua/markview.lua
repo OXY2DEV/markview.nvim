@@ -1706,7 +1706,7 @@ markview.configuration = {
 	},
 
 	escaped = {
-		enable = false
+		enable = true
 	}
 };
 
