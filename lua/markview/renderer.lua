@@ -1761,51 +1761,6 @@ end
 
 
 
-renderer.render_in_range = function (buffer, partial_contents, config_table)
-	for _, content in ipairs(partial_contents) do
-		local type = content.type;
-		local fold_closed = vim.fn.foldclosed(content.row_start + 1);
-
-		if fold_closed ~= -1 then
-			goto extmark_skipped;
-		end
-
-		if type == "heading_s" then
-			pcall(renderer.render_headings_s, buffer, content, config_table.headings);
-		elseif type == "heading" then
-			pcall(renderer.render_headings, buffer, content, config_table.headings)
-		elseif type == "code_block" then
-			pcall(renderer.render_code_blocks, buffer, content, config_table.code_blocks)
-		elseif type == "block_quote" then
-			pcall(renderer.render_block_quotes, buffer, content, config_table.block_quotes);
-		elseif type == "horizontal_rule" then
-			pcall(renderer.render_horizontal_rules, buffer, content, config_table.horizontal_rules);
-		elseif type == "link" then
-			pcall(renderer.render_links, buffer, content, config_table.links);
-		elseif type == "email" then
-			pcall(renderer.render_email_links, buffer, content, config_table.links);
-		elseif type == "image" then
-			pcall(renderer.render_img_links, buffer, content, config_table.links);
-		elseif type == "inline_code" then
-			pcall(renderer.render_inline_codes, buffer, content, config_table.inline_codes)
-		elseif type == "list_item" then
-			pcall(renderer.render_lists, buffer, content, config_table.list_items)
-		elseif type == "checkbox" then
-			pcall(renderer.render_checkboxes, buffer, content, config_table.checkboxes)
-		elseif type == "html_inline" then
-			pcall(renderer.render_html_inline, buffer, content, config_table.html);
-		elseif type == "html_entity" then
-			pcall(renderer.render_html_entities, buffer, content, config_table.html);
-		elseif type == "table" then
-			pcall(renderer.render_tables, buffer, content, config_table)
-		elseif type:match("^(latex_)") then
-			pcall(latex_renderer.render, type, buffer, content, config_table)
-		end
-
-		::extmark_skipped::
-	end
-end
-
 renderer.render = function (buffer, parsed_content, config_table, conceal_start, conceal_stop)
 	if not _G.__markview_views then
 		_G.__markview_views = {};

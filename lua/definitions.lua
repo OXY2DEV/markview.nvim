@@ -7,6 +7,9 @@
 --- Definition for the table passed into setup()
 ---@class markview.config.user
 ---
+--- Debounce for redraw
+---@field debounce? number
+---
 --- Window config for split view
 ---@field split_conf? table
 ---
@@ -64,6 +67,9 @@
 
 --- Definition for the complete configuration table
 ---@class markview.config
+---
+--- Debounce for redraw
+---@field debounce? number
 ---
 --- Window config for split view
 ---@field split_conf? table

@@ -148,6 +148,7 @@ It has the following `sub-commands`,
 - splitToggle {buffer}, Toggles the preview in a split.
 - splitEnable {buffer}, Enables the preview in a split.
 - splitDisable { buffer}, Disables the preview.
+- hybridToggle, Toggles `hybrid_mode`.
 
 ## 🚀 Hybrid mode
 

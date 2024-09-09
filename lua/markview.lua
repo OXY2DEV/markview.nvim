@@ -136,6 +136,7 @@ markview.attached_windows = {};
 
 markview.state = {
 	enable = true,
+	hybrid_mode = true,
 	buf_states = {}
 };
 
@@ -149,8 +150,26 @@ markview.configuration = {
 	filetypes = { "markdown", "quarto", "rmd" },
 	callbacks = {
 		on_enable = function (_, window)
+			local _m = {};
+
+			if markview.state.hybrid_mode == true and vim.islist(markview.configuration.hybrid_modes) then
+				for _, mod in ipairs(markview.configuration.modes) do
+					if vim.list_contains({ "n", "i", "v", "c" }, mod) and
+						not vim.list_contains(markview.configuration.hybrid_modes, mod)
+					then
+						table.insert(_m, mod);
+					end
+				end
+			else
+				for _, mod in ipairs(markview.configuration.modes) do
+					if vim.list_contains({ "n", "i", "v", "c" }, mod) then
+						table.insert(_m, mod);
+					end
+				end
+			end
+
 			vim.wo[window].conceallevel = 2;
-			vim.wo[window].concealcursor = "nc";
+			vim.wo[window].concealcursor = table.concat(_m);
 		end,
 		on_disable = function (_, window)
 			vim.wo[window].conceallevel = 0;
@@ -159,9 +178,29 @@ markview.configuration = {
 
 		on_mode_change = function (_, window, mode)
 			if vim.list_contains(markview.configuration.modes, mode) then
+				local _m = {};
+
+				if markview.state.hybrid_mode == true and vim.islist(markview.configuration.hybrid_modes) then
+					for _, mod in ipairs(markview.configuration.modes) do
+						if vim.list_contains({ "n", "i", "v", "c" }, mod) and
+							not vim.list_contains(markview.configuration.hybrid_modes, mod)
+						then
+							table.insert(_m, mod);
+						end
+					end
+				else
+					for _, mod in ipairs(markview.configuration.modes) do
+						if vim.list_contains({ "n", "i", "v", "c" }, mod) then
+							table.insert(_m, mod);
+						end
+					end
+				end
+
+				vim.wo[window].concealcursor = table.concat(_m);
 				vim.wo[window].conceallevel = 2;
 			else
 				vim.wo[window].conceallevel = 0;
+				vim.wo[window].concealcursor = "";
 			end
 		end
 	},
@@ -1703,15 +1742,15 @@ markview.splitView = {
 
 		-- If window doesn't exist, open it
 		if not self.window or vim.api.nvim_win_is_valid(self.window) == false then
-			self.window = vim.api.nvim_open_win(self.buffer, false, vim.tbl_deep_extend("force", markview.configuration.split_conf or {}, {
+			self.window = vim.api.nvim_open_win(self.buffer, false, vim.tbl_deep_extend("force", {
 				win = windows[1],
 				split = "right"
-			}));
+			}, markview.configuration.split_conf or {}));
 		else
-			vim.api.nvim_win_set_config(self.window, vim.tbl_deep_extend("force", markview.configuration.split_conf or {}, {
+			vim.api.nvim_win_set_config(self.window, vim.tbl_deep_extend("force", {
 				win = windows[1],
 				split = "right"
-			}));
+			}, markview.configuration.split_conf or {}));
 		end
 
 		local content = vim.api.nvim_buf_get_lines(buffer, 0, -1, false);
@@ -2015,6 +2054,14 @@ markview.commands = {
 		markview.state.buf_states[buffer] = false;
 
 		markview.splitView:init(buffer);
+	end,
+
+	hybridToggle = function ()
+		if markview.state.hybrid_mode == false then
+			markview.state.hybrid_mode = true;
+		else
+			markview.state.hybrid_mode = false;
+		end
 	end
 }
 
@@ -2112,10 +2159,8 @@ markview.setup = function (user_config)
 	markview.configuration = vim.tbl_deep_extend("force", markview.configuration, user_config or {});
 
 	if vim.islist(markview.configuration.highlight_groups) then
-		markview.remove_hls();
 		markview.add_hls(markview.configuration.highlight_groups);
 	end
-
 	markview.commands.enableAll();
 end
 

@@ -55,6 +55,8 @@ local buf_render = function (buffer)
 	-- Don't do hybrid mode stuff unless needed
 	if not markview.configuration.hybrid_modes or not vim.list_contains(markview.configuration.hybrid_modes, mode) then
 		return;
+	elseif markview.state.hybrid_mode == false then
+		return;
 	end
 
 	local win = utils.find_attached_wins(buffer)[1];
@@ -104,7 +106,7 @@ local redraw_autocmd = function (augroup, buffer)
 		group = augroup,
 		callback = function (event)
 			local windows = utils.find_attached_wins(buffer);
-			local debounce = 50;
+			local debounce = markview.configuration.debounce or 50;
 
 			-- Current mode
 			local mode = vim.api.nvim_get_mode().mode;
