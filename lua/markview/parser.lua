@@ -9,6 +9,26 @@ end
 parser.cached_conf = {};
 parser.avoid_ranges = {};
 
+parser.escape_string = function (input)
+	input = input:gsub("%%", "%%%");
+
+	input = input:gsub("%(", "%%(");
+	input = input:gsub("%)", "%%)");
+	--
+	input = input:gsub("%.", "%%.");
+	input = input:gsub("%+", "%%+");
+	input = input:gsub("%-", "%%-");
+	input = input:gsub("%*", "%%*");
+	input = input:gsub("%?", "%%?");
+	input = input:gsub("%^", "%%^");
+	input = input:gsub("%$", "%%$");
+
+	input = input:gsub("%[", "%%[");
+	input = input:gsub("%]", "%%]");
+
+	return input;
+end
+
 parser.get_md_len = function (text)
 	local final_string = text;
 	local len = vim.fn.strdisplaywidth(text);
@@ -524,12 +544,14 @@ parser.md = function (buffer, TStree, from, to)
 			local list_lines, lines, spaces, align_spaces, starts = parser.filter_lines(buffer, row_start, row_end);
 			local spaces_before_marker = list_lines[1]:match("^(%s*)" .. symbol .. "%s*");
 
+			local checkbox = list_lines[1]:match(parser.escape_string(marker_text) .. "%s*(%[.%])");
 			local c_end, _ = parser.get_list_end_range(buffer, row_start, row_end, symbol)
 
 			table.insert(parser.parsed_content, {
 				node = capture_node,
 				type = "list_item",
 				marker_symbol = vim.treesitter.get_node_text(marker, buffer),
+				is_checkbox = checkbox and true or false,
 
 				list_candidates = lines,
 				list_lines = list_lines,
@@ -646,6 +668,7 @@ parser.md_inline = function (buffer, TStree, from, to)
 
 						break;
 					end
+
 					::invalid::
 				end
 			else

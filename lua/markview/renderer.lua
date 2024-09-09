@@ -1597,6 +1597,11 @@ renderer.render_lists = function (buffer, content, config_table)
 					use_text = "";
 				end
 
+				if content.is_checkbox == true then
+					conceal_end = content.col_start + vim.fn.strchars(content.marker_symbol);
+					use_text = "";
+				end
+
 				local level = math.floor(before / (config_table.indent_size or 2)) + 1;
 
 				vim.api.nvim_buf_set_extmark(buffer, renderer.namespace, line_num, content.starts[l] or 0, {
