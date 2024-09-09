@@ -1274,11 +1274,15 @@ renderer.render_block_quotes = function (buffer, content, config_table)
 				{ tbl_clamp(qt_config.border, 1), set_hl(tbl_clamp(qt_config.border_hl, 1)) },
 				{ " " },
 				{ qt_config.custom_icon, set_hl(qt_config.callout_preview_hl) },
-				{ content.title, set_hl(qt_config.callout_preview_hl) },
 			},
 
-			end_col = content.line_width,
+			end_col = content.col_start + vim.fn.strdisplaywidth(">[!" .. content.callout .. "]"),
 			conceal = ""
+		});
+
+		vim.api.nvim_buf_set_extmark(buffer, renderer.namespace, content.row_start, content.col_start, {
+			hl_group = set_hl(qt_config.callout_preview_hl),
+			end_col = content.col_start + #content.lines[1],
 		});
 	elseif qt_config.callout_preview ~= nil then
 		vim.api.nvim_buf_set_extmark(buffer, renderer.namespace, content.row_start, content.col_start, {
@@ -1325,6 +1329,13 @@ renderer.render_block_quotes = function (buffer, content, config_table)
 
 			hl_mode = "combine"
 		});
+
+		if config_table.wrap ~= true then
+			goto nowrap;
+		end
+
+		vim.print(content.lines[line + 1])
+		::nowrap::
 	end
 end
 

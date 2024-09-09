@@ -351,6 +351,7 @@ parser.md = function (buffer, TStree, from, to)
 			-- NOTE: row index is 0-based
 			for number = 0, (row_end - row_start) - 1 do
 				local txt = vim.api.nvim_buf_get_lines(buffer, row_start + number, row_start + number + 1, false)[1];
+				table.insert(quote_lines, txt);
 
 				if txt ~= nil then
 					if vim.fn.strchars(txt) > largest_len then
@@ -358,7 +359,7 @@ parser.md = function (buffer, TStree, from, to)
 					end
 
 					txt = txt:match("^(>%s*)(.*)$");
-					table.insert(quote_lines, txt);
+					table.insert(quote_markers, txt);
 				end
 			end
 
