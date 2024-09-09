@@ -2022,16 +2022,17 @@ markview.commands = {
 		end
 
 		markview.splitView:close();
+		markview.state.buf_states[buffer] = true;
 
-		if markview.state.enable == false then
+		local mode = vim.api.nvim_get_mode().mode;
+
+		if markview.state.enable == false or not vim.list_contains(markview.configuration.modes, mode) then
 			return;
 		end
 
 		local windows = utils.find_attached_wins(buffer);
 
 		local parsed_content = markview.parser.init(buffer);
-
-		markview.state.buf_states[buffer] = true;
 
 		for _, window in ipairs(windows) do
 			pcall(markview.configuration.callbacks.on_enable, buf, window);
