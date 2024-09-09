@@ -19,8 +19,6 @@ elseif not parser_installed("markdown_inline") then
 elseif not parser_installed("html") then
 	vim.notify("[ markview.nvim ] : Treesitter parser for 'html' wasn't found! It is required for basic html tag support.", vim.log.levels.WARN);
 	return;
-elseif not parser_installed("latex") then
-	vim.notify("[ markview.nvim ] : Treesitter parser for 'latex' wasn't found! You might want to install it for latex support.", vim.log.levels.HINT);
 end
 
 
