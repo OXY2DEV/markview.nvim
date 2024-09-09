@@ -1,5 +1,22 @@
 # Changelog
 
+## [23.1.0](https://github.com/OXY2DEV/markview.nvim/compare/v23.0.0...v23.1.0) (2024-09-09)
+
+
+### Features
+
+* Ability to toggle hybrid mode ([5738773](https://github.com/OXY2DEV/markview.nvim/commit/573877329dbfa2918f27e47dc5c0e92c06fe400e))
+
+
+### Bug Fixes
+
+* Added ability to hide escaped charaters ([1aa54de](https://github.com/OXY2DEV/markview.nvim/commit/1aa54de650b703d5f533494159519a9ee4a077e3)), closes [#144](https://github.com/OXY2DEV/markview.nvim/issues/144)
+* Callout(s) no longer hide underlying text ([77b9b8c](https://github.com/OXY2DEV/markview.nvim/commit/77b9b8c78cf4dcfc433c37e73171f722cc0a6fe8))
+* Checkboxes now hide the list markers ([d283507](https://github.com/OXY2DEV/markview.nvim/commit/d2835077de618d7215bc9aef4c3594497c72b8bf)), closes [#142](https://github.com/OXY2DEV/markview.nvim/issues/142)
+* Removed the need to change callbacks to make hybrid mode work. ([5738773](https://github.com/OXY2DEV/markview.nvim/commit/573877329dbfa2918f27e47dc5c0e92c06fe400e))
+* Tables now ignore (block_continuation) ([a2594d0](https://github.com/OXY2DEV/markview.nvim/commit/a2594d0df31e6b90a5302730148d535d030b1641))
+* Teble renderer now can handle escaped characters ([1aa54de](https://github.com/OXY2DEV/markview.nvim/commit/1aa54de650b703d5f533494159519a9ee4a077e3))
+
 ## [23.0.0](https://github.com/OXY2DEV/markview.nvim/compare/v22.1.0...v23.0.0) (2024-09-08)
 
 
