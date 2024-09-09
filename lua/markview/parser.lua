@@ -14,7 +14,7 @@ parser.escape_string = function (input)
 
 	input = input:gsub("%(", "%%(");
 	input = input:gsub("%)", "%%)");
-	--
+
 	input = input:gsub("%.", "%%.");
 	input = input:gsub("%+", "%%+");
 	input = input:gsub("%-", "%%-");
@@ -419,6 +419,10 @@ parser.md = function (buffer, TStree, from, to)
 			local col_widths = {};
 
 			for row in capture_node:iter_children() do
+				if row:type() == "block_continuation" then
+					goto ignore;
+				end
+
 				local tmp = {};
 				local row_text = vim.treesitter.get_node_text(row, buffer)
 				local r_row_start, r_col_start, r_row_end, r_col_end = row:range();
@@ -433,7 +437,6 @@ parser.md = function (buffer, TStree, from, to)
 					row_end = r_row_end,
 					col_end = r_col_end
 				})
-
 				if row:type() == "pipe_table_header" then
 					table.insert(table_structure, "header");
 				elseif row:type() == "pipe_table_delimiter_row" then
@@ -489,8 +492,10 @@ parser.md = function (buffer, TStree, from, to)
 					end
 				end
 
-				table.insert(tmp, "|")
-				table.insert(rows, tmp)
+				table.insert(tmp, "|");
+				table.insert(rows, tmp);
+
+				::ignore::
 			end
 
 			local s_start, s_end;
