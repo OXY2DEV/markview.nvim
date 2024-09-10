@@ -29,7 +29,8 @@ body:
   - type: textarea
     id: issue-repro
     attributes:
-      label: >-
+      label: 'Steps to reproduce the issue:'
+      description: |
         ### Things to check before opening an issue:
 
         - Ensure that you don't have other `markdown` plugins enabled(unless
@@ -41,7 +42,6 @@ body:
 
         - Ensure that you have the correct `tree-sitter` parsers
         installed(markdown, markdown_inline & html).
-      description: 'Instructions to reproduce the issue:'
       placeholder: nvim
     validations:
       required: true
