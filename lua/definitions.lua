@@ -554,6 +554,9 @@
 --- Enable/Disable custom table
 ---@field enable boolean?
 ---
+--- Minimum width of a column
+---@field col_min_width integer?
+---
 --- Enable/Disable the usage of virtual lines for the top/bottom border
 ---@field use_virt_lines boolean?
 ---

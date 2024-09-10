@@ -456,7 +456,7 @@ local table_header = function (buffer, content, config_table)
 			local align = content.content_alignments[curr_tbl_col];
 
 			-- Extracted width of separator
-			local tbl_col_width = content.col_widths[curr_tbl_col];
+			local tbl_col_width = math.max(tbl_conf.col_min_width or 0, content.col_widths[curr_tbl_col]);
 
 			-- The column number of headers must match the 
 			-- column number of separators
@@ -571,7 +571,7 @@ local table_seperator = function (buffer, content, user_config, r_num)
 						virt_text_pos = "inline",
 						virt_text = {
 							{ tbl_conf.text[13], set_hl(tbl_conf.hl[13]) },
-							{ string.rep(tbl_conf.text[2], vim.fn.strchars(col) - 1), set_hl(tbl_conf.hl[2]) }
+							{ string.rep(tbl_conf.text[2], math.max(tbl_conf.col_min_width or 0, vim.fn.strchars(col)) - 1), set_hl(tbl_conf.hl[2]) }
 						},
 
 						end_col = col_start + curr_col + vim.fn.strchars(col) + 1,
@@ -581,7 +581,7 @@ local table_seperator = function (buffer, content, user_config, r_num)
 					vim.api.nvim_buf_set_extmark(buffer, renderer.namespace, row_start + (r_num - 1), col_start + curr_col, {
 						virt_text_pos = "inline",
 						virt_text = {
-							{ string.rep(tbl_conf.text[2], vim.fn.strchars(col) - 1), set_hl(tbl_conf.hl[2]) },
+							{ string.rep(tbl_conf.text[2], math.max(tbl_conf.col_min_width or 0, vim.fn.strchars(col)) - 1), set_hl(tbl_conf.hl[2]) },
 							{ tbl_conf.text[14], set_hl(tbl_conf.hl[14]) }
 						},
 
@@ -593,7 +593,7 @@ local table_seperator = function (buffer, content, user_config, r_num)
 						virt_text_pos = "inline",
 						virt_text = {
 							{ tbl_conf.text[15], set_hl(tbl_conf.hl[15]) },
-							{ string.rep(tbl_conf.text[2], vim.fn.strchars(col) - 2), set_hl(tbl_conf.hl[2]) },
+							{ string.rep(tbl_conf.text[2], math.max(tbl_conf.col_min_width or 0, vim.fn.strchars(col)) - 2), set_hl(tbl_conf.hl[2]) },
 							{ tbl_conf.text[16], set_hl(tbl_conf.hl[16]) }
 						},
 
@@ -605,7 +605,7 @@ local table_seperator = function (buffer, content, user_config, r_num)
 				vim.api.nvim_buf_set_extmark(buffer, renderer.namespace, row_start + (r_num - 1), col_start + curr_col, {
 					virt_text_pos = "inline",
 					virt_text = {
-						{ string.rep(tbl_conf.text[2], vim.fn.strchars(col)), set_hl(tbl_conf.hl[8]) }
+						{ string.rep(tbl_conf.text[2], math.max(tbl_conf.col_min_width or 0, vim.fn.strchars(col))), set_hl(tbl_conf.hl[8]) }
 					},
 
 					end_col = col_start + curr_col + vim.fn.strchars(col) + 1,
@@ -699,7 +699,7 @@ local table_footer = function (buffer, content, config_table)
 			local align = content.content_alignments[curr_tbl_col];
 
 			-- Extracted width of separator
-			local tbl_col_width = content.col_widths[curr_tbl_col];
+			local tbl_col_width = math.max(tbl_conf.col_min_width or 0, content.col_widths[curr_tbl_col]);
 
 			if #content.rows[#content.rows] == #content.rows[2] and tbl_col_width then
 				actual_width = math.min(math.max(actual_width, tbl_col_width), tbl_col_width);
@@ -806,7 +806,7 @@ local table_content = function (buffer, content, config_table, r_num)
 			local align = content.content_alignments[curr_tbl_col];
 
 			-- Extracted width of separator
-			local tbl_col_width = content.col_widths[curr_tbl_col];
+			local tbl_col_width = math.max(tbl_conf.col_min_width or 0, content.col_widths[curr_tbl_col]);
 
 			if #content.rows[r_num] == #content.rows[2] and tbl_col_width then
 				actual_width = math.min(math.max(actual_width, tbl_col_width), tbl_col_width);
