@@ -1,6 +1,7 @@
 name: Feature Request
 description: Request a new feature in markview
 title: '✨ Feature: '
+labels: [ "enhancement" ]
 assignees:
   - OXY2DEV
 body:
