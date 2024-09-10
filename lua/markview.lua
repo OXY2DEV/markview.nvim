@@ -1686,6 +1686,8 @@ markview.configuration = {
 
 	tables = {
 		enable = true,
+		col_min_width = 10,
+
 		text = {
 			"╭", "─", "╮", "┬",
 			"├", "│", "┤", "┼",
