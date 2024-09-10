@@ -16,7 +16,7 @@ body:
           required: true
         - label: Ensure that there isn't an issue on this(either open or closed).
           required: true
-  - type: input
+  - type: textarea
     id: issue-desc
     attributes:
       label: 'Problem:'
@@ -26,9 +26,10 @@ body:
       placeholder: A description of the issue...
     validations:
       required: true
-  - type: markdown
+  - type: textarea
+    id: issue-repro
     attributes:
-      value: >-
+      label: >-
         ### Things to check before opening an issue:
 
         - Ensure that you don't have other `markdown` plugins enabled(unless
@@ -40,10 +41,6 @@ body:
 
         - Ensure that you have the correct `tree-sitter` parsers
         installed(markdown, markdown_inline & html).
-  - type: textarea
-    id: issue-repro
-    attributes:
-      label: 'Steps to reproduce:'
       description: 'Instructions to reproduce the issue:'
       placeholder: nvim
     validations:
