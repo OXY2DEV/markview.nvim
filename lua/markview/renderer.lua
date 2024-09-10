@@ -1073,6 +1073,8 @@ renderer.render_code_blocks = function (buffer, content, config_table)
 			},
 
 			hl_mode = "combine",
+			end_col = content.col_start + vim.fn.strchars(content.info_string),
+			conceal = "",
 		});
 
 		vim.api.nvim_buf_set_extmark(buffer, renderer.namespace, content.row_end - 1, content.col_start + 3, {
@@ -1136,11 +1138,6 @@ renderer.render_code_blocks = function (buffer, content, config_table)
 		local lang_width = vim.fn.strchars(icon_section .. languageName .. " ");
 
 		if config_table.language_direction == nil or config_table.language_direction == "left" then
-			vim.api.nvim_buf_set_extmark(buffer, renderer.namespace, content.row_start, content.col_start, {
-				end_col = content.col_start + vim.fn.strchars(content.info_string),
-				conceal = "",
-			});
-
 			local rendered_info = vim.fn.strcharpart(content.block_info or "", 0, block_length - lang_width + ((config_table.pad_amount or 1) * 2) - 4);
 
 			if content.block_info ~= "" and vim.fn.strchars(content.block_info) > (block_length - lang_width - ((content.pad_amount or 1) * 2)) then
@@ -1160,20 +1157,17 @@ renderer.render_code_blocks = function (buffer, content, config_table)
 				sign_hl_group = set_hl(config_table.sign_hl) or set_hl(hl),
 
 				hl_mode = "combine",
-			});
-		elseif config_table.language_direction == "right" then
-			vim.api.nvim_buf_set_extmark(buffer, renderer.namespace, content.row_start, content.col_start, {
 				end_col = content.col_start + vim.fn.strchars(content.info_string),
 				conceal = "",
 			});
-
+		elseif config_table.language_direction == "right" then
 			local rendered_info = vim.fn.strcharpart(content.block_info or "", 0, block_length - lang_width + ((config_table.pad_amount or 1) * 2) - 4);
 
 			if content.block_info ~= "" and vim.fn.strchars(content.block_info) > (block_length - lang_width - ((content.pad_amount or 1) * 2)) then
 				rendered_info = rendered_info .. "...";
 			end
 
-			vim.api.nvim_buf_set_extmark(buffer, renderer.namespace, content.row_start, content.col_start + 3, {
+			vim.api.nvim_buf_set_extmark(buffer, renderer.namespace, content.row_start, content.col_start + 3 + vim.fn.strlen(content.language), {
 				virt_text_pos = config_table.position or "inline",
 				virt_text = {
 					{ rendered_info, set_hl(config_table.info_hl or config_table.hl) },
@@ -1186,6 +1180,8 @@ renderer.render_code_blocks = function (buffer, content, config_table)
 				sign_hl_group = set_hl(config_table.sign_hl) or set_hl(hl),
 
 				hl_mode = "combine",
+				end_col = content.col_start + vim.fn.strchars(content.info_string),
+				conceal = "",
 			});
 		end
 
