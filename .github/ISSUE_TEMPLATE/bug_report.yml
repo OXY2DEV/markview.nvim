@@ -1,6 +1,6 @@
 name: Bug report
-description: File a bug with markview
-title: '[ 🐞 Bug ] '
+description: Report a bug in markview
+title: '🐞 Bug: '
 assignees:
   - OXY2DEV
 body:
@@ -8,9 +8,8 @@ body:
     id: issue-conditions
     attributes:
       label: 'Before reporting:'
-      description: >-
-        These are **requirements** and failing to fulfill them will result the
-        issue to be closed.
+      description: |
+        These are **requirements** and failing to fulfill them will result the issue to be closed.
       options:
         - label: Ensure that the issue is reproducable on the main branch.
           required: true
@@ -20,9 +19,8 @@ body:
     id: issue-desc
     attributes:
       label: 'Problem:'
-      description: >-
-        Describe the current behavior(images, gif, videos & logs) may be
-        attached.
+      description: |
+        Describe the current behavior(images, gif, videos & logs) may be attached.
       placeholder: A description of the issue...
     validations:
       required: true
@@ -31,15 +29,10 @@ body:
     attributes:
       label: 'Steps to reproduce the issue:'
       description: |
-        ### Things to check before opening an issue:
-
-        - Ensure that you don't have other `markdown` plugins enabled(unless
-        it's a comparability issue with that plugin).
-
+        *Things to check before opening an issue:*
+        - Ensure that you don't have other `markdown` plugins enabled(unless it's a comparability issue with that plugin).
         - Ensure that you are using the **latest version** of the plugin.
-
         - Ensure that your `Neovim` version is **>=0.10**.
-
         - Ensure that you have the correct `tree-sitter` parsers
         installed(markdown, markdown_inline & html).
       placeholder: nvim

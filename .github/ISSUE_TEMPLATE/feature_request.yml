@@ -1,0 +1,27 @@
+name: Feature Request
+description: Request a new feature in markview
+title: '✨ Feature: '
+assignees:
+  - OXY2DEV
+body:
+  - type: checkboxes
+    id: feat-type
+    attributes:
+      label: 'The nature of the feature:'
+      description: |
+        Select one or more options that describes this feature.
+      options:
+        - label: Parser(syntax, conceal etc. related)
+        - label: Renderer(style, options etc. related)
+        - label: Support(plugin support, language support etc. related)
+        - label: Other
+  - type: textarea
+    id: feat-desc
+    attributes:
+      label: 'Description:'
+      description: |
+        Describe the feature(images, videos, referances are welcome).
+      placeholder: A description of the feature...
+    validations:
+      required: true
+
