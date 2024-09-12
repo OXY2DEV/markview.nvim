@@ -41,5 +41,5 @@ vim.print(require("markview").state);
 
 
 <!--
-    vim:nospell
+    vim:nospell:tw=78:sidescrolloff=0
 -->

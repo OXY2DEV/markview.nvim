@@ -14,7 +14,7 @@
 ---@field split_conf? table
 ---
 --- List of custom highlight groups
----@field highlight_groups table[]?
+---@field highlight_groups (string | markview.hl[])?
 ---
 --- List of filetypes where the plugin will be active
 ---@field filetypes string[]
@@ -75,7 +75,7 @@
 ---@field split_conf? table
 ---
 --- List of custom highlight groups
----@field highlight_groups table[]?
+---@field highlight_groups (string | markview.hl[])?
 ---
 --- List of filetypes where the plugin will be active
 ---@field filetypes string[]
@@ -565,3 +565,15 @@
 ---
 --- List of highlight groups for text
 ---@field hl string[]
+
+
+
+
+---@class markview.hl
+---
+---@field output? fun(utils: table): { group_name: string, value: table } | { group_name: string, value: table }[]
+---
+---@field group_name? string
+---@field value? table
+
+
