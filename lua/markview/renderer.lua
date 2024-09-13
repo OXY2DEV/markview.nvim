@@ -1361,7 +1361,6 @@ renderer.render_block_quotes = function (buffer, content, config_table)
 			goto nowrap;
 		end
 
-		vim.print(content.lines[line + 1])
 		::nowrap::
 	end
 end
@@ -1434,7 +1433,6 @@ renderer.render_links = function (buffer, content, config_table)
 	lnk_conf = config_table.hyperlinks;
 
 	for _, conf in ipairs(config_table.hyperlinks.custom or {}) do
-		vim.print(conf.match)
 		if conf.match and string.match(content.address or "", conf.match) then
 			lnk_conf = vim.tbl_extend("force", lnk_conf or {}, conf);
 			break;

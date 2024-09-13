@@ -829,7 +829,6 @@ parser.html = function (buffer, TStree, from, to)
 				local _, ts_col_start, _, ts_col_end = start_tag:range();
 				local _, te_col_start, _, te_col_end = end_tag:range();
 
-				vim.print()
 				table.insert(parser.parsed_content, {
 					node = capture_node,
 					type = "html_inline",

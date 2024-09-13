@@ -6,7 +6,7 @@ markview.parser = require("markview.parser");
 markview.renderer = require("markview.renderer");
 markview.keymaps = require("markview.keymaps");
 
-markview.colors = require("markview.colors");
+-- markview.colors = require("markview.colors");
 
 markview.attached_buffers = {};
 markview.attached_windows = {};
