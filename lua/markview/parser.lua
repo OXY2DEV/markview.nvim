@@ -664,7 +664,7 @@ parser.md_inline = function (buffer, TStree, from, to)
 						table.insert(parser.parsed_content, {
 							node = capture_node,
 							type = "checkbox",
-							state = capture_text:match("%[(.)%]") == "-" and "pending" or capture_text:match("%[(.)%]"),
+							state = capture_text:match("%[(.)%]"),
 
 							row_start = row_start,
 							row_end = row_end,

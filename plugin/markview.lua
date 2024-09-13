@@ -24,6 +24,7 @@ end
 
 
 if type(markview.configuration.highlight_groups) == "string" or vim.islist(markview.configuration.highlight_groups) then
+	---@diagnostic disable-next-line
 	hls.create(markview.configuration.highlight_groups)
 end
 
