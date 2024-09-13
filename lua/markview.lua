@@ -479,7 +479,6 @@ markview.configuration = {
 	},
 	horizontal_rules = {
 		enable = true,
-		overwrite = { "parts" },
 
 		parts = {
 			{
