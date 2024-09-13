@@ -306,7 +306,8 @@ local display_width = function (text, config)
 		local start_tag = tmp_string:match("<([^>]+)>");
 		local s_tag_start, _ = tmp_string:find("<([^>]+)>");
 
-		local filtered_tag = start_tag:match("%a+");
+		--- Only allow, a-z, A-Z, - & _
+		local filtered_tag = start_tag:match("[%a%d%-%_]+");
 
 		-- No close tag
 		if not tmp_string:match("</" .. filtered_tag .. ">") then
@@ -1433,8 +1434,10 @@ renderer.render_links = function (buffer, content, config_table)
 	lnk_conf = config_table.hyperlinks;
 
 	for _, conf in ipairs(config_table.hyperlinks.custom or {}) do
+		vim.print(conf.match)
 		if conf.match and string.match(content.address or "", conf.match) then
 			lnk_conf = vim.tbl_extend("force", lnk_conf or {}, conf);
+			break;
 		end
 	end
 

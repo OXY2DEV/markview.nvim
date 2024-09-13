@@ -548,6 +548,41 @@ markview.configuration = {
 			hl = "MarkviewHyperlink",
 
 			custom = {
+				---+ ${conf, Stack*}
+				{
+					match = "stackoverflow.com",
+
+					icon = " ",
+				},
+				{
+					match = "stackexchange.com",
+
+					icon = " ",
+				},
+				---_
+
+				{
+					match = "dev.to",
+
+					icon = " ",
+				},
+				{
+					match = "github.com",
+
+					icon = " ",
+				},
+				{
+					match = "reddit.com",
+
+					icon = " ",
+				},
+				{
+					match = "freecodecamp.org",
+
+					icon = " ",
+				},
+
+
 				{
 					match = "https://(.+)$",
 
