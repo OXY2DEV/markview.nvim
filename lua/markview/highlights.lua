@@ -1,35 +1,9 @@
 local highlights = {};
+local utils = require("markview.utils");
 
---- Checks if a highlight group exists or not
----@param hl string
----@return boolean
-local exists = function (hl)
-	if not vim.tbl_isempty(vim.api.nvim_get_hl(0, { name = hl })) then
-		return true;
-	elseif not vim.tbl_isempty(vim.api.nvim_get_hl(0, { name = "Markview" .. hl })) then
-		return true;
-	end
-
-	return false;
-end
-
---- Linear interpolation
----@param x number
----@param y number
----@param t number
----@return number
-local lerp = function (x, y, t)
-	return x + ((y - x) * t);
-end
-
---- Clamping function
----@param value number
----@param min number
----@param max number
----@return number
-local clamp = function (value, min, max)
-	return math.max(math.min(value, max), min);
-end
+local exists = utils.hl_exists;
+local lerp = utils.lerp;
+local clamp = utils.clamp;
 
 --- Returns RGB value from the provided input
 ---@param input string | number[]
@@ -402,9 +376,9 @@ highlights.dynamic = {
 
 	---+ ${hl, Code blocks}
 	{
-		output = function (utils)
-			local bg = utils.hsl(utils.color("bg", { "Normal" }, "#CDD6F4", "#1E1E2E"));
-			local fg = utils.color("fg", { "Comment" }, "#9ca0b0", "#6c7086");
+		output = function (util)
+			local bg = util.hsl(util.color("bg", { "Normal" }, "#CDD6F4", "#1E1E2E"));
+			local fg = util.color("fg", { "Comment" }, "#9ca0b0", "#6c7086");
 
 			local inl = vim.deepcopy(bg)
 
@@ -421,22 +395,22 @@ highlights.dynamic = {
 					group_name = "Code",
 					value = {
 						default = true,
-						bg = utils.hex(utils.rgb(bg)),
+						bg = util.hex(util.rgb(bg)),
 					}
 				},
 				{
 					group_name = "CodeInfo",
 					value = {
 						default = true,
-						bg = utils.hex(utils.rgb(bg)),
-						fg = utils.hex(fg),
+						bg = util.hex(util.rgb(bg)),
+						fg = util.hex(fg),
 					}
 				},
 				{
 					group_name = "InlineCode",
 					value = {
 						default = true,
-						bg = utils.hex(utils.rgb(inl)),
+						bg = util.hex(util.rgb(inl)),
 					}
 				},
 			}
@@ -543,7 +517,7 @@ highlights.dynamic = {
 
 	---+ ${hl, Horizontal rule}
 	{
-		output = function (utils)
+		output = function (util)
 			local from = highlights.color("bg", { "Normal" }, "#1E1E2E", "#CDD6F4");
 			local to   = highlights.color("fg", { "Title" }, "#1e66f5", "#89b4fa");
 
@@ -570,7 +544,7 @@ highlights.dynamic = {
 
 	---+ ${hl, Links}
 	{
-		output = function (utils)
+		output = function (util)
 			if exists("Hyperlink") then return; end
 
 			return {
@@ -583,7 +557,7 @@ highlights.dynamic = {
 		end
 	},
 	{
-		output = function (utils)
+		output = function (util)
 			if exists("ImageLink") then return; end
 
 			return {
@@ -596,7 +570,7 @@ highlights.dynamic = {
 		end
 	},
 	{
-		output = function (utils)
+		output = function (util)
 			if exists("Email") then return; end
 
 			return {

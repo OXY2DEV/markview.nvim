@@ -1,28 +1,33 @@
 local keymaps = {};
 
+---@type table[] A list `parsed contents` containing different types of links
 keymaps.views = {};
 keymaps.on_bufs = {};
 
 keymaps.createKeymap = function (buffer)
 	vim.api.nvim_buf_set_keymap(buffer, "n", "gx", "", {
-		desc = "gx patch for Markview.nvim",
+		desc = "gx implamentation for Markview.nvim",
 		callback = function ()
-			local buf_links = keymaps.views[buffer];
+			local buf_links = keymaps.views[buffer] or {};
 			local cursor = vim.api.nvim_win_get_cursor(0);
 
+			--- Iterate over all the available links
 			for _, link in ipairs(buf_links) do
+				--- Cursor isn't on the line of the link
 				if link.row_start + 1 ~= cursor[1] then
 					goto continue;
 				end
 
+				--- Cursor isn't on the column range of the link
 				if cursor[2] < link.col_start or cursor[2] > link.col_end then
 					goto continue;
 				end
 
+				--- Modify the address and open it in `vim.ui.open()`
 				local cmd, err = vim.ui.open(vim.fn.fnamemodify(link.address, ":~"))
 
 				if err then
-					vim.print("[ Markview.nvim ] : Failed to open: " .. link.address)
+					vim.notify("[ Markview.nvim ] : Failed to open: " .. link.address, vim.diagnostic.severity.WARN)
 					break;
 				end
 
@@ -31,14 +36,13 @@ keymaps.createKeymap = function (buffer)
 					break;
 				end
 
-
 			    ::continue::
 			end
 
 			local def_cmd, def_err = vim.ui.open(vim.fn.expand("<cfile>"))
 
 			if def_err then
-				vim.print("[ Markview.nvim ] : Failed to open: " .. vim.fn.expand("<cfile>"))
+				vim.notify("[ Markview.nvim ] : Failed to open: " .. vim.fn.expand("<cfile>"), vim.diagnostic.severity.WARN)
 			end
 
 			if def_cmd then

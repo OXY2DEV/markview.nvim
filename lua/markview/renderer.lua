@@ -6,6 +6,11 @@ local entites = require("markview.entites");
 local languages = require("markview.languages");
 local latex_renderer = require("markview.latex_renderer");
 
+--- Gets the icon from the language
+---@param language string
+---@param config_table markview.conf.code_blocks
+---@return string Icon
+---@return string Highlight group
 renderer.get_icon = function (language, config_table)
 	if config_table.icons == false then
 		return "", "Normal";
@@ -18,6 +23,7 @@ renderer.get_icon = function (language, config_table)
 	return "󰡯", "Normal";
 end
 
+---@type table[] Stored views
 _G.__markview_views = {};
 
 --- Returns a value with the specified index from entry
@@ -1880,20 +1886,7 @@ renderer.render_footnotes = function (buffer, content, user_config)
 end
 
 renderer.render = function (buffer, parsed_content, config_table, conceal_start, conceal_stop)
-	if not _G.__markview_views then
-		_G.__markview_views = {};
-	end
-
-	if parsed_content ~= nil then
-		_G.__markview_views[buffer] = parsed_content;
-	end
-
-	-- Prevents errors caused by buffer ranges being nil
-	if _G.__markview_render_ranges and _G.__markview_render_ranges[buffer] then
-		_G.__markview_render_ranges[buffer] = {};
-	end
-
-	for _, content in ipairs(_G.__markview_views[buffer]) do
+	for _, content in ipairs(parsed_content) do
 		local type = content.type;
 		local fold_closed = vim.fn.foldclosed(content.row_start + 1);
 
@@ -1949,44 +1942,6 @@ end
 
 renderer.clear = function (buffer, from, to)
 	vim.api.nvim_buf_clear_namespace(buffer, renderer.namespace, from or 0, to or -1)
-end
-
-renderer.update_range = function (buffer, new_range)
-	if not _G.__markview_render_ranges then
-		_G.__markview_render_ranges = {};
-	end
-
-	if not _G.__markview_render_ranges[buffer] then
-		_G.__markview_render_ranges[buffer] = {};
-	end
-
-	if new_range and not vim.deep_equal(_G.__markview_render_ranges[buffer], new_range) then
-		_G.__markview_render_ranges[buffer] = new_range;
-	end
-end
-
-renderer.clear_content_range = function (buffer, parsed_content)
-	local max_range = { nil, nil };
-
-	for _, content in ipairs(parsed_content) do
-		if not max_range[1] or (content.row_start) < max_range[1] then
-			max_range[1] = content.row_start;
-		end
-
-		if not max_range[2] or (content.row_end) > max_range[2] then
-			max_range[2] = content.row_end;
-		end
-	end
-
-	if not max_range[1] or not max_range[2] then
-		return;
-	end
-
-	if max_range[1] == max_range[2] then
-		max_range[2] = max_range[2] + 1;
-	end
-
-	vim.api.nvim_buf_clear_namespace(buffer, renderer.namespace, max_range[1], max_range[2]);
 end
 
 renderer.get_content_range = function (parsed_content)
