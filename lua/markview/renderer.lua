@@ -866,8 +866,20 @@ renderer.render_headings = function (buffer, content, config)
 		return;
 	end
 
-	---@type markview.render_config.headings.h
-	local conf = config["heading_" .. content.level] or {};
+	local conf = {};
+	local heading_n = "heading_" .. content.level
+
+	if type(config[heading_n]) == "function" then
+		local success, result = pcall(config[heading_n], buffer, content)
+		if success then
+			conf = result
+		end
+	elseif type(config[heading_n]) == "table" then
+		conf = config[heading_n];
+	end
+
+	print(vim.inspect(conf))
+
 	local shift = config.shift_width or vim.bo[buffer].shiftwidth;
 
 	-- Do not proceed if config doesn't exist for a heading
