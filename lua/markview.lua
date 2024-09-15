@@ -26,6 +26,8 @@ markview.state = {
 
 ---@type markview.configuration
 markview.configuration = {
+	__inside_code_block = false,
+
 	block_quotes = {
 		---+ ${class, Block quote}
 		enable = true,
