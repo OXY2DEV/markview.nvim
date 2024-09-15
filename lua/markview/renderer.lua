@@ -850,20 +850,25 @@ renderer.render_headings = function (buffer, content, config)
 		return;
 	end
 
-	---@type markview.render_config.headings.h
-	local conf = config["heading_" .. content.level] or {};
+	local conf = {};
+	local heading_n = "heading_" .. content.level
+
+	if type(config[heading_n]) == "function" then
+		local success, result = pcall(config[heading_n], buffer, content)
+		if success then
+			conf = result
+		end
+	elseif type(config[heading_n]) == "table" then
+		conf = config[heading_n];
+	end
+
+	print(vim.inspect(conf))
+
 	local shift = config.shift_width or vim.bo[buffer].shiftwidth;
 
 	-- Do not proceed if config doesn't exist for a heading
 	if not conf then
 		return;
-	end
-
-	local corner_right = ""
-	if type(conf.corner_right) == "function" and pcall(conf.corner_right --[[@as function]], buffer, content) then
-		corner_right = conf.corner_right(buffer, content);
-	elseif type(conf.corner_right) == "string" then
-		corner_right = conf.corner_right --[[@as string]];
 	end
 
 	if conf.style == "simple" then
@@ -896,7 +901,7 @@ renderer.render_headings = function (buffer, content, config)
 					content.title,
 
 					conf.padding_right or "",
-					corner_right,
+					conf.corner_right or "",
 				}));
 
 				spaces = math.floor((w - t) / 2);
@@ -914,7 +919,7 @@ renderer.render_headings = function (buffer, content, config)
 					content.title,
 
 					conf.padding_right or "",
-					corner_right,
+					conf.corner_right or "",
 				}));
 
 				spaces = w - t;
@@ -947,7 +952,7 @@ renderer.render_headings = function (buffer, content, config)
 			virt_text_pos = "overlay",
 			virt_text = {
 				{ conf.padding_right or "", set_hl(conf.padding_right_hl) or set_hl(conf.hl) },
-				{ corner_right, set_hl(conf.corner_right_hl) or set_hl(conf.hl) }
+				{ conf.corner_right or "", set_hl(conf.corner_right_hl) or set_hl(conf.hl) }
 			},
 
 			hl_mode = "combine"
