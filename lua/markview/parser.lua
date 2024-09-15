@@ -38,37 +38,7 @@ parser.get_md_len = function (text)
 	local final_string = text;
 	local len = vim.fn.strdisplaywidth(text);
 
-	for inline_code in final_string:gmatch("`([^`]+)`") do
-		len = len - 2;
-
-		local escaped = inline_code:gsub("%p", "%%%1");
-		final_string = final_string:gsub("`" .. escaped .. "`", inline_code:gsub(".", "|"));
-	end
-
-	for link, address in final_string:gmatch("!%[([^%]]+)%]%(([^%)]+)%)") do
-		len = len - vim.fn.strdisplaywidth("![]()" .. address);
-
-		final_string = final_string:gsub("%!%[" .. link .. "%]%(" .. address .. "%)", link);
-	end
-
-	for link, address in final_string:gmatch("%[([^%]]+)%]%(([^%)]+)%)") do
-		len = len - vim.fn.strdisplaywidth("[]()" .. address);
-
-		final_string = final_string:gsub("%[" .. link .. "%]%(" .. address .. "%)", link);
-	end
-
-	for link, address in final_string:gmatch("[^!]%[([^%]]+)%]%[([^%]]+)%]") do
-		len = len - vim.fn.strdisplaywidth("[" .. "][" .. address .. "]");
-
-		final_string = final_string:gsub("%[" .. link .. "%]%[" .. address .. "%]", link);
-	end
-
-	for pattern in final_string:gmatch("%[([^%]]+)%]") do
-		len = len - 2;
-		final_string = final_string:gsub( "[" .. pattern .. "]", pattern);
-	end
-
-	for str_a, internal, str_b in final_string:gmatch("([*_]+)([^*]+)([*_]+)") do
+	for str_a, internal, str_b in final_string:gmatch("([*]+)([^*]+)([*]+)") do
 		local valid_signs = math.max(vim.fn.strdisplaywidth(str_a), vim.fn.strdisplaywidth(str_b));
 
 		for s = 1, valid_signs do
@@ -78,9 +48,64 @@ parser.get_md_len = function (text)
 			if a == b then
 				len = len - 2;
 
-				final_string = final_string:gsub(a .. internal .. b, internal);
+				final_string = final_string:gsub(a .. parser.escape_string(internal) .. b, internal);
 			end
 		end
+	end
+
+	for str_a, internal, str_b in final_string:gmatch("([_]+)([^_]+)([_]+)") do
+		local valid_signs = math.max(vim.fn.strdisplaywidth(str_a), vim.fn.strdisplaywidth(str_b));
+
+		for s = 1, valid_signs do
+			local a = str_a:sub(s, s);
+			local b = str_b:reverse():sub(s, s);
+
+			if a == b then
+				len = len - 2;
+
+				final_string = final_string:gsub(a .. parser.escape_string(internal) .. b, internal);
+			end
+		end
+	end
+
+	for inline_code in final_string:gmatch("`([^`]+)`") do
+		len = len - 2;
+
+		local _r = inline_code:gsub("[%[%]%(%)%*%_]", "X")
+		final_string = final_string:gsub("`" .. parser.escape_string(inline_code) .. "`", _r);
+	end
+
+	--- Image links: ![link](address)
+	for link, address in final_string:gmatch("%!%[(.-)%]%((.-)%)") do
+		len = len - vim.fn.strdisplaywidth("![]()" .. address);
+
+		final_string = final_string:gsub("%!%[" .. link .. "%]%(" .. address .. "%)", link);
+	end
+
+	--- Image links: ![link][address]
+	for link, address in final_string:gmatch("%!%[(.-)%]%[(.-)%]") do
+		len = len - vim.fn.strdisplaywidth("![]");
+
+		final_string = final_string:gsub("%!%[" .. link .. "%]%[" .. address .. "%]", link .. "|" .. address .. "|");
+	end
+
+	--- Links: [link](address)
+	for link, address in final_string:gmatch("%[(.-)%]%((.-)%)") do
+		len = len - vim.fn.strdisplaywidth("[]()" .. address);
+
+		final_string = final_string:gsub("%[" .. link .. "%]%(" .. address .. "%)", link);
+	end
+
+	--- Links: [link][address]
+	for link, address in final_string:gmatch("%[(.-)%]%[(.-)%]") do
+		len = len - vim.fn.strdisplaywidth("[][]" .. address);
+
+		final_string = final_string:gsub("%[" .. link .. "%]%[" .. address .. "%]", link);
+	end
+
+	for pattern in final_string:gmatch("%[([^%]]+)%]") do
+		len = len - 2;
+		final_string = final_string:gsub( "[" .. pattern .. "]", pattern);
 	end
 
 	return len, final_string;
@@ -225,7 +250,7 @@ parser.md = function (buffer, TStree, from, to)
 	--- "__inside_code_block" is still experimental
 	---@diagnostic disable
 	if not parser.cached_conf or
-	   not parser.cached_conf.__inside_code_block ~= true
+	   parser.cached_conf.__inside_code_block ~= true
 	then
 	---@diagnostic enable
 		local root = TStree:root();
@@ -615,7 +640,7 @@ parser.md_inline = function (buffer, TStree, from, to)
 	--- "__inside_code_block" is still experimental
 	---@diagnostic disable
 	if not parser.cached_conf or
-	   not parser.cached_conf.__inside_code_block ~= false
+	   parser.cached_conf.__inside_code_block ~= true
 	then
 	---@diagnostic enable
 		local root = TStree:root();

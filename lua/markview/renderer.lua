@@ -1140,6 +1140,7 @@ renderer.render_code_blocks = function (buffer, content, config_table)
 		for line, text in ipairs(content.lines) do
 			-- NOTE: Nested code blocks have a different start position
 			local length = content.line_lengths[line] - content.col_start;
+			local position = #text;
 
 			vim.api.nvim_buf_add_highlight(buffer, renderer.namespace, set_hl(config_table.hl), content.row_start + line, content.col_start, -1)
 
@@ -1151,12 +1152,10 @@ renderer.render_code_blocks = function (buffer, content, config_table)
 				}
 			})
 
-			local position, width = #text, vim.fn.strdisplaywidth(vim.fn.strcharpart(text, content.col_start) or "");
-
 			vim.api.nvim_buf_set_extmark(buffer, renderer.namespace, content.row_start + line, position, {
 				virt_text_pos = "inline",
 				virt_text = {
-					{ string.rep(config_table.pad_char or " ", block_length - width), set_hl(config_table.hl) },
+					{ string.rep(config_table.pad_char or " ", block_length - length), set_hl(config_table.hl) },
 					{ string.rep(config_table.pad_char or " ", config_table.pad_amount or 1), set_hl(config_table.hl) }
 				}
 			})
@@ -1260,6 +1259,7 @@ renderer.render_code_blocks = function (buffer, content, config_table)
 		for line, text in ipairs(content.lines) do
 			-- NOTE: Nested code blocks have a different start position
 			local length = content.line_lengths[line] - content.col_start;
+			local position = #text;
 
 			vim.api.nvim_buf_set_extmark(buffer, renderer.namespace, content.row_start + line, content.col_start, {
 				hl_group = set_hl(config_table.hl),
@@ -1276,12 +1276,11 @@ renderer.render_code_blocks = function (buffer, content, config_table)
 				}
 			})
 
-			local position, width = #text, vim.fn.strdisplaywidth(vim.fn.strcharpart(text, content.col_start) or "");
 
 			vim.api.nvim_buf_set_extmark(buffer, renderer.namespace, content.row_start + line, position, {
 				virt_text_pos = "inline",
 				virt_text = {
-					{ string.rep(config_table.pad_char or " ", block_length - width), set_hl(config_table.hl) },
+					{ string.rep(config_table.pad_char or " ", block_length - length), set_hl(config_table.hl) },
 					{ string.rep(config_table.pad_char or " ", config_table.pad_amount or 1), set_hl(config_table.hl) }
 				}
 			})

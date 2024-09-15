@@ -1,6 +1,9 @@
 local latex = {};
 local utils = require("markview.utils");
 
+--- Fixes a highlight group name
+---@param hl string?
+---@return string?
 local set_hl = function (hl)
 	if type(hl) ~= "string" then
 		return;
@@ -15,6 +18,7 @@ local set_hl = function (hl)
 	end
 end
 
+---@type table<string, string> Superscript text
 latex.superscripts = {
 	["0"] = "⁰",
 	["1"] = "¹",
@@ -91,6 +95,7 @@ latex.superscripts = {
 	["Z"] = "ᶻ",
 };
 
+---@type table<string, string> Latex symbols
 latex.symbols = {
 	["lim"] = "lim",
 	["alpha"] = "α",
@@ -193,12 +198,19 @@ latex.symbols = {
 	["daleth"] = "ℸ",
 };
 
+---@type integer? Namespace used to render stuff, initially nil
 latex.namespace = nil;
 
+--- Sets the namespace
+---@param ns string
 latex.set_namespace = function (ns)
-	latex.namespace = ns;
+	latex.namespace = ns --[[ @as integer ]];
 end
 
+--- Renders brackets
+---@param buffer integer
+---@param content table
+---@param user_config markview.latex.brackets
 latex.render_brackets = function (buffer, content, user_config)
 	if not user_config or user_config.enable == false then
 		return;
@@ -232,6 +244,10 @@ latex.render_brackets = function (buffer, content, user_config)
 	});
 end
 
+--- Renders fractional
+---@param buffer integer
+---@param content table
+---@param user_config markview.conf.latex
 latex.render_fractional = function (buffer, content, user_config)
 	if not user_config or user_config.enable == false then
 		return;
@@ -255,6 +271,10 @@ latex.render_fractional = function (buffer, content, user_config)
 	});
 end
 
+--- Renders superscript text
+---@param buffer integer
+---@param content table
+---@param user_config { enable: boolean }
 latex.render_superscript = function (buffer, content, user_config)
 	if not user_config or user_config.enable == false then
 		return;
@@ -308,6 +328,10 @@ latex.render_superscript = function (buffer, content, user_config)
 	end
 end
 
+--- Renders superscript text
+---@param buffer integer
+---@param content table
+---@param user_config { enable: boolean }
 latex.render_subscript = function (buffer, content, user_config)
 	if not user_config or user_config.enable == false then
 		return;
@@ -361,6 +385,10 @@ latex.render_subscript = function (buffer, content, user_config)
 	end
 end
 
+--- Renders fractional
+---@param buffer integer
+---@param content table
+---@param user_config markview.latex.symbols
 latex.render_symbol = function (buffer, content, user_config)
 	if not user_config or user_config.enable == false then
 		return;
@@ -368,13 +396,7 @@ latex.render_symbol = function (buffer, content, user_config)
 		return;
 	end
 
-	local _t = nil
-
-	if user_config.custom and user_config.custom[content.text] then
-		_t = user_config.custom[content.text]
-	elseif latex.symbols[content.text] then
-		_t = latex.symbols[content.text]
-	end
+	local _t = latex.symbols[content.text]
 
 	if not _t then
 		return;
@@ -391,6 +413,10 @@ latex.render_symbol = function (buffer, content, user_config)
 	});
 end
 
+--- Renders fractional
+---@param buffer integer
+---@param content table
+---@param user_config markview.conf.latex
 latex.render_root = function (buffer, content, user_config)
 	if not user_config or user_config.enable == false then
 		return;
@@ -407,6 +433,10 @@ latex.render_root = function (buffer, content, user_config)
 	});
 end
 
+--- Renders fractional
+---@param buffer integer
+---@param content table
+---@param user_config { enable: boolean }
 latex.render_inline = function (buffer, content, user_config)
 	if not user_config or user_config.enable == false then
 		return;
@@ -422,6 +452,10 @@ latex.render_inline = function (buffer, content, user_config)
 	});
 end
 
+--- Renders fractional
+---@param buffer integer
+---@param content table
+---@param user_config markview.latex.block
 latex.render_block = function (buffer, content, user_config)
 	if not user_config or user_config.enable == false then
 		return;
@@ -459,6 +493,11 @@ latex.render_block = function (buffer, content, user_config)
 	end
 end
 
+--- Renders latex
+---@param render_type string
+---@param buffer integer
+---@param content table
+---@param config_table markview.configuration
 latex.render = function (render_type, buffer, content, config_table)
 	if not config_table or not config_table.latex then
 		return;
@@ -466,6 +505,7 @@ latex.render = function (render_type, buffer, content, config_table)
 		return;
 	end
 
+	---@type markview.conf.latex
 	local conf = config_table.latex;
 
 	if conf.symbols and type(conf.symbols.overwrite) == "table" then
@@ -485,7 +525,7 @@ latex.render = function (render_type, buffer, content, config_table)
 	elseif render_type == "latex_superscript" then
 		pcall(latex.render_superscript, buffer, content, conf)
 	elseif render_type == "latex_subscript" then
-		pcall(latex.render_subscript, buffer, content, conf)
+		pcall(latex.render_subscript, buffer, content, conf.subscript)
 	elseif render_type == "latex_symbol" then
 		pcall(latex.render_symbol, buffer, content, conf.symbols)
 	elseif render_type == "latex_root" then

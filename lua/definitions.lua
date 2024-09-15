@@ -275,11 +275,12 @@
 ---
 ---@field pad_amount? integer
 ---@field text? [ string, string? ]
+---@field hl? string
 
 ---@class markview.latex.symbols
 ---
 ---@field enable boolean
----@field custom? table<string, string>
+---@field overwrite? table<string, string>
 ---@field hl? string
 
 --- Links
