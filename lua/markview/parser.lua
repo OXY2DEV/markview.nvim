@@ -304,7 +304,7 @@ parser.md = function (buffer, TStree, from, to)
 
 				col_start = col_start,
 				col_end = col_end
-			})
+			});
 		elseif capture_name == "code" then
 			local line_lens = {};
 			local lines = {};
@@ -678,6 +678,18 @@ parser.md_inline = function (buffer, TStree, from, to)
 
 					::invalid::
 				end
+			elseif capture_text:match("%[%^(.+)%]") then
+				table.insert(parser.parsed_content, {
+					node = capture_node,
+					type = "footnote",
+					text = capture_text:match("%[(.+)%]"),
+
+					row_start = row_start,
+					row_end = row_end,
+
+					col_start = col_start,
+					col_end = col_end
+				});
 			else
 				for _, extmark in ipairs(parser.parsed_content) do
 					if extmark.type == "block_quote" and extmark.row_start == row_start then

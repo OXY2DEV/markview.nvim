@@ -1,219 +1,41 @@
 local markview = {};
 local utils = require("markview.utils");
 local hls = require("markview.highlights");
+local ts = require("markview.treesitter");
 
 markview.parser = require("markview.parser");
 markview.renderer = require("markview.renderer");
 markview.keymaps = require("markview.keymaps");
 
--- markview.colors = require("markview.colors");
-
+---@type integer[] List of attached buffers
 markview.attached_buffers = {};
+
+---@type integer[] List of attached windows
 markview.attached_windows = {};
 
+---@class markview.state Stores the various states of the plugin
+---
+---@field enable boolean Plugin state
+---@field hybrid_mode boolean Hybrid mode state
+---@field buf_states { [integer]: boolean } Buffer local plugin state
 markview.state = {
 	enable = true,
 	hybrid_mode = true,
 	buf_states = {}
 };
 
-markview.global_options = {};
-
----@type markview.config
+---@type markview.configuration
 markview.configuration = {
-	split_conf = {
-		split = "right"
-	},
-	filetypes = { "markdown", "quarto", "rmd" },
-	callbacks = {
-		on_enable = function (_, window)
-			local _m = {};
-
-			if markview.state.hybrid_mode == true and vim.islist(markview.configuration.hybrid_modes) then
-				for _, mod in ipairs(markview.configuration.modes) do
-					if vim.list_contains({ "n", "i", "v", "c" }, mod) and
-						not vim.list_contains(markview.configuration.hybrid_modes, mod)
-					then
-						table.insert(_m, mod);
-					end
-				end
-			else
-				for _, mod in ipairs(markview.configuration.modes) do
-					if vim.list_contains({ "n", "i", "v", "c" }, mod) then
-						table.insert(_m, mod);
-					end
-				end
-			end
-
-			vim.wo[window].conceallevel = 2;
-			vim.wo[window].concealcursor = table.concat(_m);
-		end,
-		on_disable = function (_, window)
-			vim.wo[window].conceallevel = 0;
-			vim.wo[window].concealcursor = "";
-		end,
-
-		on_mode_change = function (_, window, mode)
-			if vim.list_contains(markview.configuration.modes, mode) then
-				local _m = {};
-
-				if markview.state.hybrid_mode == true and vim.islist(markview.configuration.hybrid_modes) then
-					for _, mod in ipairs(markview.configuration.modes) do
-						if vim.list_contains({ "n", "i", "v", "c" }, mod) and
-							not vim.list_contains(markview.configuration.hybrid_modes, mod)
-						then
-							table.insert(_m, mod);
-						end
-					end
-				else
-					for _, mod in ipairs(markview.configuration.modes) do
-						if vim.list_contains({ "n", "i", "v", "c" }, mod) then
-							table.insert(_m, mod);
-						end
-					end
-				end
-
-				vim.wo[window].concealcursor = table.concat(_m);
-				vim.wo[window].conceallevel = 2;
-			else
-				vim.wo[window].conceallevel = 0;
-				vim.wo[window].concealcursor = "";
-			end
-		end
-	},
-
-	highlight_groups = "dynamic",
-	buf_ignore = { "nofile" },
-
-	modes = { "n", "no" },
-	hybrid_modes = nil,
-
-	headings = {
-		enable = true,
-		shift_width = 3,
-
-		heading_1 = {
-			style = "icon",
-			sign = "󰌕 ", sign_hl = "MarkviewHeading1Sign",
-
-			icon = "󰼏  ", hl = "MarkviewHeading1",
-
-		},
-		heading_2 = {
-			style = "icon",
-			sign = "󰌖 ", sign_hl = "MarkviewHeading2Sign",
-
-			icon = "󰎨  ", hl = "MarkviewHeading2",
-		},
-		heading_3 = {
-			style = "icon",
-
-			icon = "󰼑  ", hl = "MarkviewHeading3",
-		},
-		heading_4 = {
-			style = "icon",
-
-			icon = "󰎲  ", hl = "MarkviewHeading4",
-		},
-		heading_5 = {
-			style = "icon",
-
-			icon = "󰼓  ", hl = "MarkviewHeading5",
-		},
-		heading_6 = {
-			style = "icon",
-
-			icon = "󰎴  ", hl = "MarkviewHeading6",
-		},
-
-		setext_1 = {
-			style = "github",
-
-			icon = "   ", hl = "MarkviewHeading1",
-			underline = "━"
-		},
-		setext_2 = {
-			style = "github",
-
-			icon = "   ", hl = "MarkviewHeading2",
-			underline = "─"
-		}
-	},
-
-	latex = {
-		enable = true,
-
-		brackets = {
-			enable = true,
-			opening = {
-				{ "(", "MarkviewHeading1Sign" },
-				{ "{", "MarkviewHeading2Sign" },
-				{ "[", "MarkviewHeading3Sign" },
-			},
-			closing = {
-				{ ")", "MarkviewHeading1Sign" },
-				{ "}", "MarkviewHeading2Sign" },
-				{ "]", "MarkviewHeading3" },
-			},
-
-			-- scope = {
-			-- 	"DiagnosticVirtualTextError",
-			-- 	"DiagnosticVirtualTextOk",
-			-- 	"DiagnosticVirtualTextWarn",
-			-- }
-		},
-
-		inline = {
-			enable = true
-		},
-		block = {
-			hl = "Code",
-			text = { " Latex ", "Special" }
-		},
-
-		symbols = {
-			enable = true,
-			overwrite = {}
-		},
-
-		subscript = {
-			enable = true
-		},
-		superscript = {
-			enable = true
-		},
-	},
-
-	code_blocks = {
-		enable = true,
-		icons = true,
-
-		style = "language",
-		hl = "MarkviewCode",
-		info_hl = "MarkviewCodeInfo",
-
-		min_width = 60,
-		pad_amount = 3,
-
-		language_names = {
-			{ "py", "python" },
-			{ "cpp", "C++" }
-		},
-		language_direction = "right",
-
-		sign = true, sign_hl = nil
-	},
-
 	block_quotes = {
+		---+ ${class, Block quote}
 		enable = true,
-		overwrite = { "callouts" },
 
 		default = {
 			border = "▋", border_hl = "MarkviewBlockQuoteDefault"
 		},
 
 		callouts = {
-			--- From `Obsidian`
+			---+ ${conf, From `Obsidian`}
 			{
 				match_string = "ABSTRACT",
 				callout_preview = "󱉫 Abstract",
@@ -428,8 +250,8 @@ markview.configuration = {
 
 				border = "▋", border_hl = "MarkviewBlockQuoteWarn"
 			},
-
-
+			---_
+			---+ ${conf, From Github}
 			{
 				match_string = "NOTE",
 				callout_preview = "󰋽 Note",
@@ -465,6 +287,9 @@ markview.configuration = {
 
 				border = "▋", border_hl = "MarkviewBlockQuoteError"
 			},
+			---_
+
+			---+ ${conf, Custom}
 			{
 				match_string = "CUSTOM",
 				callout_preview = "󰠳 Custom",
@@ -475,13 +300,205 @@ markview.configuration = {
 
 				border = "▋", border_hl = "MarkviewBlockQuoteWarn"
 			}
+			---_
 		}
+		---_
 	},
+
+	buf_ignore = { "nofile" },
+
+	callbacks = {
+		---+ ${class, Callbacks}
+		on_enable = function (_, window)
+			local _m = {};
+
+			if markview.state.hybrid_mode == true and vim.islist(markview.configuration.hybrid_modes) then
+				for _, mod in ipairs(markview.configuration.modes) do
+					if vim.list_contains({ "n", "i", "v", "c" }, mod) and
+						not vim.list_contains(markview.configuration.hybrid_modes, mod)
+					then
+						table.insert(_m, mod);
+					end
+				end
+			else
+				for _, mod in ipairs(markview.configuration.modes) do
+					if vim.list_contains({ "n", "i", "v", "c" }, mod) then
+						table.insert(_m, mod);
+					end
+				end
+			end
+
+			vim.wo[window].conceallevel = 2;
+			vim.wo[window].concealcursor = table.concat(_m);
+		end,
+		on_disable = function (_, window)
+			vim.wo[window].conceallevel = 0;
+			vim.wo[window].concealcursor = "";
+		end,
+
+		on_mode_change = function (_, window, mode)
+			if vim.list_contains(markview.configuration.modes, mode) then
+				local _m = {};
+
+				if markview.state.hybrid_mode == true and vim.islist(markview.configuration.hybrid_modes) then
+					for _, mod in ipairs(markview.configuration.modes) do
+						if vim.list_contains({ "n", "i", "v", "c" }, mod) and
+							not vim.list_contains(markview.configuration.hybrid_modes, mod)
+						then
+							table.insert(_m, mod);
+						end
+					end
+				else
+					for _, mod in ipairs(markview.configuration.modes) do
+						if vim.list_contains({ "n", "i", "v", "c" }, mod) then
+							table.insert(_m, mod);
+						end
+					end
+				end
+
+				vim.wo[window].concealcursor = table.concat(_m);
+				vim.wo[window].conceallevel = 2;
+			else
+				vim.wo[window].conceallevel = 0;
+				vim.wo[window].concealcursor = "";
+			end
+		end
+		---_
+	},
+
+	checkboxes = {
+		---+ ${class, Checkboxes}
+		enable = true,
+
+		checked = {
+			text = "✔", hl = "MarkviewCheckboxChecked"
+		},
+		unchecked = {
+			text = "✘", hl = "MarkviewCheckboxUnchecked"
+		},
+		custom = {
+			---+ ${conf, Custom cehckboxes}
+			{
+				match = "-",
+				text = "◯",
+				hl = "MarkviewCheckboxPending"
+			},
+			{
+				match = "~",
+				text = "◕",
+				hl = "MarkviewCheckboxProgress"
+			},
+			{
+				match = "o",
+				text = "󰩹",
+				hl = "MarkviewCheckboxCancelled"
+			}
+			---_
+		}
+		---_
+	},
+
+	code_blocks = {
+		---+ ${class, Code blocks}
+		enable = true,
+		icons = true,
+
+		style = "language",
+		hl = "MarkviewCode",
+		info_hl = "MarkviewCodeInfo",
+
+		min_width = 60,
+		pad_amount = 3,
+
+		language_names = nil,
+		language_direction = "right",
+
+		sign = true, sign_hl = nil
+		---_
+	},
+
+	escaped = { enable = true },
+
+	filetypes = { "markdown", "quarto", "rmd" },
+
+	headings = {
+		---+ ${class, Headings}
+		enable = true,
+		shift_width = 3,
+
+		heading_1 = {
+			---+ ${conf, Heading 1}
+			style = "icon",
+			sign = "󰌕 ", sign_hl = "MarkviewHeading1Sign",
+
+			icon = "󰼏  ", hl = "MarkviewHeading1",
+			---_
+		},
+		heading_2 = {
+			---+ ${conf, Heading 2}
+			style = "icon",
+			sign = "󰌖 ", sign_hl = "MarkviewHeading2Sign",
+
+			icon = "󰎨  ", hl = "MarkviewHeading2",
+			---_
+		},
+		heading_3 = {
+			---+ ${conf, Heading 3}
+			style = "icon",
+
+			icon = "󰼑  ", hl = "MarkviewHeading3",
+			---_
+		},
+		heading_4 = {
+			---+ ${conf, Heading 4}
+			style = "icon",
+
+			icon = "󰎲  ", hl = "MarkviewHeading4",
+			---_
+		},
+		heading_5 = {
+			---+ ${conf, Heading 5}
+			style = "icon",
+
+			icon = "󰼓  ", hl = "MarkviewHeading5",
+			---_
+		},
+		heading_6 = {
+			---+ ${conf, Heading 6}
+			style = "icon",
+
+			icon = "󰎴  ", hl = "MarkviewHeading6",
+			---_
+		},
+
+		setext_1 = {
+			---+ ${conf, Setext heading 1}
+			style = "github",
+
+			icon = "   ", hl = "MarkviewHeading1",
+			underline = "━"
+			---_
+		},
+		setext_2 = {
+			---+ ${conf, Setext heading 2}
+			style = "github",
+
+			icon = "   ", hl = "MarkviewHeading2",
+			underline = "─"
+			---_
+		}
+		---_
+	},
+
+	highlight_groups = "dynamic",
+
 	horizontal_rules = {
+		---+ ${class, Horizontal rules}
 		enable = true,
 
 		parts = {
 			{
+				---+ ${conf, Lsft portion}
 				type = "repeating",
 				repeat_amount = function () --[[@as function]]
 					local textoff = vim.fn.getwininfo(vim.api.nvim_get_current_win())[1].textoff;
@@ -493,12 +510,14 @@ markview.configuration = {
 				hl = {
 					"MarkviewGradient1", "MarkviewGradient2", "MarkviewGradient3", "MarkviewGradient4", "MarkviewGradient5", "MarkviewGradient6", "MarkviewGradient7", "MarkviewGradient8", "MarkviewGradient9", "MarkviewGradient10"
 				}
+				---_
 			},
 			{
 				type = "text",
 				text = "  ",
 			},
 			{
+				---+ ${conf, Right portion}
 				type = "repeating",
 				repeat_amount = function () --[[@as function]]
 					local textoff = vim.fn.getwininfo(vim.api.nvim_get_current_win())[1].textoff;
@@ -511,10 +530,16 @@ markview.configuration = {
 				hl = {
 					"MarkviewGradient1", "MarkviewGradient2", "MarkviewGradient3", "MarkviewGradient4", "MarkviewGradient5", "MarkviewGradient6", "MarkviewGradient7", "MarkviewGradient8", "MarkviewGradient9", "MarkviewGradient10"
 				}
+				---_
 			}
 		}
+		---_
 	},
+
 	html = {
+		---+ ${class, Html}
+		enable = true,
+
 		tags = {
 			enable = true,
 
@@ -535,90 +560,134 @@ markview.configuration = {
 			}
 		},
 
-		entites = {
+		entities = {
 			enable = true
 		}
+		---_
 	},
 
-	links = {
+	hybrid_modes = nil,
+
+	injections = {
+		---+ ${class, Query injections}
 		enable = true,
-
-		hyperlinks = {
-			icon = "󰌷 ",
-			hl = "MarkviewHyperlink",
-
-			custom = {
-				---+ ${conf, Stack*}
-				{
-					match = "stackoverflow.com",
-
-					icon = " ",
-				},
-				{
-					match = "stackexchange.com",
-
-					icon = " ",
-				},
-				---_
-
-				{
-					match = "dev.to",
-
-					icon = " ",
-				},
-				{
-					match = "github.com",
-
-					icon = " ",
-				},
-				{
-					match = "reddit.com",
-
-					icon = " ",
-				},
-				{
-					match = "freecodecamp.org",
-
-					icon = " ",
-				},
-
-
-				{
-					match = "https://(.+)$",
-
-					icon = "󰞉 ",
-				},
-				{
-					match = "http://(.+)$",
-
-					icon = "󰕑 ",
-				},
-				{
-					match = "[%.]md$",
-
-					icon = " ",
-				}
-			}
-		},
-		images = {
-			icon = "󰥶 ",
-			hl = "MarkviewImageLink",
-		},
-		emails = {
-			icon = " ",
-			hl = "MarkviewEmail"
-		}
+		-- languages = {
+		-- 	markdown = {
+		-- 		enable = true,
+		-- 		query = [[
+		-- 			(section
+		-- 				(atx_heading)
+		-- 				) @fold
+		-- 				(#set! @fold)
+		-- 		]]
+		-- 	}
+		-- }
+		---_
 	},
 
 	inline_codes = {
+		---+ ${class, Inline codes}
 		enable = true,
 		corner_left = " ",
 		corner_right = " ",
 
 		hl = "MarkviewInlineCode"
+		---_
+	},
+
+	latex = {
+		---+ ${class, Latex}
+		enable = true,
+
+		brackets = {
+			enable = true,
+			opening = {
+				{ "(", "MarkviewHeading1Sign" },
+				{ "{", "MarkviewHeading2Sign" },
+				{ "[", "MarkviewHeading3Sign" },
+			},
+			closing = {
+				{ ")", "MarkviewHeading1Sign" },
+				{ "}", "MarkviewHeading2Sign" },
+				{ "]", "MarkviewHeading3" },
+			},
+
+			-- scope = {
+			-- 	"DiagnosticVirtualTextError",
+			-- 	"DiagnosticVirtualTextOk",
+			-- 	"DiagnosticVirtualTextWarn",
+			-- }
+		},
+
+		inline = {
+			enable = true
+		},
+		block = {
+			enable = true,
+
+			hl = "Code",
+			text = { " Latex ", "Special" }
+		},
+
+		symbols = {
+			enable = true,
+			custom = {}
+		},
+
+		subscript = {
+			enable = true
+		},
+		superscript = {
+			enable = true
+		},
+		---_
+	},
+
+	links = {
+		---+ ${class, Links}
+		enable = true,
+
+		hyperlinks = {
+			enable = true,
+
+			icon = "󰌷 ",
+			hl = "MarkviewHyperlink",
+
+			custom = {
+				---+ ${conf, Stack*}
+				{ match = "stackoverflow.com", icon = " " },
+				{ match = "stackexchange.com", icon = " " },
+				---_
+
+				{ match_string = "dev.to", icon = " " },
+				{ match_string = "github.com", icon = " " },
+				{ match_string = "reddit.com", icon = " " },
+				{ match_string = "freecodecamp.org", icon = " " },
+
+				{ match_string = "https://(.+)$", icon = "󰞉 " },
+				{ match_string = "http://(.+)$", icon = "󰕑 " },
+				{ match_string = "[%.]md$", icon = " " }
+			}
+		},
+		images = {
+			enable = true,
+
+			icon = "󰥶 ",
+			hl = "MarkviewImageLink",
+		},
+		emails = {
+			enable = true,
+
+			icon = " ",
+			hl = "MarkviewEmail"
+		}
+		---_
 	},
 
 	list_items = {
+		---+ ${class, List items}
+		enable = true,
+
 		indent_size = 2,
 		shift_width = 4,
 
@@ -643,35 +712,17 @@ markview.configuration = {
 		marker_dot = {
 			add_padding = true
 		},
+		---_
 	},
 
-	checkboxes = {
-		enable = true,
+	modes = { "n", "no" },
 
-		checked = {
-			text = "✔", hl = "MarkviewCheckboxChecked"
-		},
-		pending = {
-			text = "◯", hl = "MarkviewCheckboxPending"
-		},
-		unchecked = {
-			text = "✘", hl = "MarkviewCheckboxUnchecked"
-		},
-		custom = {
-			{
-				match = "~",
-				text = "◕",
-				hl = "MarkviewCheckboxProgress"
-			},
-			{
-				match = "o",
-				text = "󰩹",
-				hl = "MarkviewCheckboxCancelled"
-			}
-		}
+	split_conf = {
+		split = "right"
 	},
 
 	tables = {
+		---+ ${class, Tablws}
 		enable = true,
 		text = {
 			--- ╭ ─ ╮ ┬
@@ -695,13 +746,19 @@ markview.configuration = {
 
 		block_decorator = true,
 		use_virt_lines = true
-	},
-
-	escaped = {
-		enable = true
+		---_
 	}
 };
 
+--- Split view related functions
+---@class markview.splitView
+---
+---@field attached_buffer integer? Buffer ID of the currently attached buffer, `nil` if no buffer is attached
+---@field augroup integer Autocmd group for scroll sync and closing the window
+---
+---@field close function Window closing function
+---@field open function Window opening function
+---@field init function Initializes the current buffer to be shown in a split
 markview.splitView = {
 	attached_buffer = nil,
 	augroup = vim.api.nvim_create_augroup("markview_splitview", { clear = true }),
@@ -1160,6 +1217,8 @@ markview.setup = function (user_config)
 		---@diagnostic disable-next-line
 		hls.create(markview.configuration.highlight_groups)
 	end
+
+	-- ts.inject(markview.configuration.injections)
 	markview.commands.enableAll();
 end
 

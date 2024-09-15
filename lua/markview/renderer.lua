@@ -39,11 +39,22 @@ local tbl_clamp = function (entry, index)
 	return entry[#entry];
 end
 
-local list_shift = function (tbl)
-	local tmp = table.remove(tbl, 1);
-	table.insert(tbl, tmp)
+local get_link_conf = function (conf, text)
+	if not conf.custom then
+		return conf;
+	end
 
-	return tbl;
+	local _t = conf;
+
+	for _, tbl in ipairs(conf.custom) do
+		if tbl.match and string.match(text, tbl.match) then
+			_t = vim.tbl_extend("force", _t, tbl);
+		elseif tbl.match_string and string.match(text, tbl.match_string) then
+			_t = vim.tbl_extend("force", _t, tbl);
+		end
+	end
+
+	return _t;
 end
 
 local set_hl = function (hl)
@@ -109,124 +120,134 @@ local display_width = function (text, config)
 	end
 
 	local lnk_conf = config.links ~= nil and config.links.hyperlinks or nil;
-	---@type markview.render_config.links.link?
+	---@type markview.links.config?
 	local img_conf = config.links ~= nil and config.links.images or nil;
 	local email_conf = config.links ~= nil and config.links.emails or nil;
 
 	--- Image link(normal)
 	for link, address in final_string:gmatch("!%[([^%]]+)%]%(([^%)]+)%)") do
-		if not img_conf then
-			break;
-		end
-
 		d_width = d_width - vim.fn.strdisplaywidth("![" .. "](" .. address .. ")");
 
+		if not img_conf or img_conf.enable == false then
+			final_string = final_string:gsub("!%[" .. link .. "%]%(" .. address .. "%)", link);
+			goto continue;
+		end
+
+		local _c = get_link_conf(img_conf, link);
+
 		d_width = d_width + vim.fn.strdisplaywidth(table.concat({
-			img_conf.corner_left or "",
-			img_conf.padding_left or "",
-			img_conf.icon or "",
-			img_conf.padding_right or "",
-			img_conf.corner_right or ""
+			_c.corner_left or "",
+			_c.padding_left or "",
+			_c.icon or "",
+			_c.padding_right or "",
+			_c.corner_right or ""
 		}));
 
 		final_string = final_string:gsub("!%[" .. link .. "%]%(" .. address .. "%)", table.concat({
-			img_conf.corner_left or "",
-			img_conf.padding_left or "",
-			img_conf.icon or "",
+			_c.corner_left or "",
+			_c.padding_left or "",
+			_c.icon or "",
 			link,
-			img_conf.padding_right or "",
-			img_conf.corner_right or ""
+			_c.padding_right or "",
+			_c.corner_right or ""
 		}));
+
+		::continue::
 	end
 
 	-- Image link: labels
 	for link, address in final_string:gmatch("!%[([^%]]+)%]%[([^%)]+)%]") do
-		if not img_conf then
-			break;
+		if not img_conf or img_conf.enable == false then
+			d_width = d_width - vim.fn.strdisplaywidth("![]");
+			final_string = final_string:gsub("!%[" .. link .. "%]%[" .. address .. "%]", link .. "|" .. address .. "|");
+
+			goto continue;
 		end
 
 		d_width = d_width - vim.fn.strdisplaywidth("![" .. "][" .. address .. "]");
 
+		local _c = get_link_conf(img_conf, link);
+
 		d_width = d_width + vim.fn.strdisplaywidth(table.concat({
-			img_conf.corner_left or "",
-			img_conf.padding_left or "",
-			img_conf.icon or "",
-			img_conf.padding_right or "",
-			img_conf.corner_right or ""
+			_c.corner_left or "",
+			_c.padding_left or "",
+			_c.icon or "",
+			_c.padding_right or "",
+			_c.corner_right or ""
 		}));
 
 		final_string = final_string:gsub("!%[" .. link .. "%]%[" .. address .. "%]", table.concat({
-			img_conf.corner_left or "",
-			img_conf.padding_left or "",
-			img_conf.icon or "",
+			_c.corner_left or "",
+			_c.padding_left or "",
+			_c.icon or "",
 			link,
-			img_conf.padding_right or "",
-			img_conf.corner_right or ""
+			_c.padding_right or "",
+			_c.corner_right or ""
 		}));
+
+		::continue::
 	end
 
 	-- Hyperlinks: normal
 	for link, address in final_string:gmatch("%[([^%]]+)%]%(([^%)]+)%)") do
-		local cnf = lnk_conf;
-
-		for _, conf in ipairs(config.links.hyperlinks.custom or {}) do
-			if conf.match and string.match(address or "", conf.match) then
-				cnf = conf
-			end
-		end
-
 		d_width = d_width - vim.fn.strdisplaywidth("[" .. "](" .. address .. ")");
 
-		if cnf and lnk_conf and lnk_conf.enable ~= false then
-			d_width = d_width + vim.fn.strdisplaywidth(table.concat({
-				cnf.corner_left or "",
-				cnf.padding_left or "",
-				cnf.icon or "",
-				cnf.padding_right or "",
-				cnf.corner_right or ""
-			}));
-
-			final_string = final_string:gsub("%[" .. link .. "%]%(" .. address .. "%)", table.concat({
-				cnf.corner_left or "",
-				cnf.padding_left or "",
-				cnf.icon or "",
-				link,
-				cnf.padding_right or "",
-				cnf.corner_right or ""
-			}));
+		if not lnk_conf or lnk_conf.enable == false then
+			final_string = final_string:gsub("%[" .. link .. "%]%(" .. address .. "%)", link);
+			goto continue;
 		end
+
+		local cnf = get_link_conf(lnk_conf, address);
+
+		d_width = d_width + vim.fn.strdisplaywidth(table.concat({
+			cnf.corner_left or "",
+			cnf.padding_left or "",
+			cnf.icon or "",
+			cnf.padding_right or "",
+			cnf.corner_right or ""
+		}));
+
+		final_string = final_string:gsub("%[" .. link .. "%]%(" .. address .. "%)", table.concat({
+			cnf.corner_left or "",
+			cnf.padding_left or "",
+			cnf.icon or "",
+			link,
+			cnf.padding_right or "",
+			cnf.corner_right or ""
+		}));
+
+		::continue::
 	end
 
 	-- Hyperlink: full_reference_link
 	for link, address in final_string:gmatch("[^!]%[([^%]]+)%]%[([^%]]+)%]") do
-		local cnf = lnk_conf;
-
-		for _, conf in ipairs(config.links.hyperlinks.custom or {}) do
-			if conf.match and string.match(address or "", conf.match) then
-				cnf = conf
-			end
-		end
-
 		d_width = d_width - vim.fn.strdisplaywidth("[" .. "][" .. address .. "]");
 
-		if cnf ~= nil and lnk_conf and lnk_conf.enable ~= false then
-			d_width = d_width + vim.fn.strdisplaywidth(table.concat({
-				cnf.corner_left or "",
-				cnf.padding_left or "",
-				cnf.icon or "",
-				cnf.padding_right or "",
-				cnf.corner_right or ""
-			}));
-
-			final_string = final_string:gsub("%[" .. link .. "%]%[" .. address .. "%]", table.concat({
-				cnf.corner_left or "",
-				cnf.padding_left or "",
-				cnf.icon or "",
-				link,
-				cnf.padding_right or "",
-				cnf.corner_right or ""
-			}));
+		if not lnk_conf or lnk_conf.enable == false then
+			final_string = final_string:gsub("%[" .. link .. "%]%[" .. address .. "%]", link);
+			goto continue;
 		end
+
+		local cnf = get_link_conf(lnk_conf, address);
+
+		d_width = d_width + vim.fn.strdisplaywidth(table.concat({
+			cnf.corner_left or "",
+			cnf.padding_left or "",
+			cnf.icon or "",
+			cnf.padding_right or "",
+			cnf.corner_right or ""
+		}));
+
+		final_string = final_string:gsub("%[" .. link .. "%]%[" .. address .. "%]", table.concat({
+			cnf.corner_left or "",
+			cnf.padding_left or "",
+			cnf.icon or "",
+			link,
+			cnf.padding_right or "",
+			cnf.corner_right or ""
+		}));
+
+		::continue::
 	end
 
 	for pattern in final_string:gmatch("%[([^%]]+)%]") do
@@ -262,28 +283,32 @@ local display_width = function (text, config)
 	end
 
 	for username, domain, tdl in final_string:gmatch("<([%w._%+-]+)@([%w.-]+)%.([%w.-]+)>") do
+		if not email_conf or email_conf.enable == false then
+			break;
+		end
+
 		d_width = d_width - vim.fn.strdisplaywidth("<" .. ">");
 
-		if email_conf ~= nil and email_conf.enable ~= false then
-			d_width = d_width + vim.fn.strdisplaywidth(table.concat({
-				email_conf.corner_left or "",
-				email_conf.padding_left or "",
-				email_conf.icon or "",
-				email_conf.padding_right or "",
-				email_conf.corner_right or ""
-			}));
+		local _e = get_link_conf(email_conf, username .. "@" .. domain .. "." .. tdl);
 
-			final_string = final_string:gsub("<" .. username .. "@" .. domain .. "." .. tdl .. ">", table.concat({
-				email_conf.corner_left or "",
-				email_conf.padding_left or "",
-				email_conf.icon or "",
+		d_width = d_width + vim.fn.strdisplaywidth(table.concat({
+			_e.corner_left or "",
+			_e.padding_left or "",
+			_e.icon or "",
+			_e.padding_right or "",
+			_e.corner_right or ""
+		}));
 
-				username, "@", domain, ".", tdl,
+		final_string = final_string:gsub("<" .. username .. "@" .. domain .. "." .. tdl .. ">", table.concat({
+			_e.corner_left or "",
+			_e.padding_left or "",
+			_e.icon or "",
 
-				email_conf.padding_right or "",
-				email_conf.corner_right or ""
-			}));
-		end
+			username, "@", domain, ".", tdl,
+
+			_e.padding_right or "",
+			_e.corner_right or ""
+		}));
 	end
 
 	local tmp_string = final_string;
@@ -871,13 +896,13 @@ renderer.views = {};
 --- Renderer for custom headings
 ---@param buffer number
 ---@param content any
----@param config markview.render_config.headings
+---@param config markview.conf.headings
 renderer.render_headings = function (buffer, content, config)
 	if not config or config.enable == false then
 		return;
 	end
 
-	---@type markview.render_config.headings.h
+	---@type (markview.headings.simple | markview.headings.label | markview.headings.icon)
 	local conf = config["heading_" .. content.level] or {};
 	local shift = config.shift_width or vim.bo[buffer].shiftwidth;
 
@@ -947,7 +972,7 @@ renderer.render_headings = function (buffer, content, config)
 		vim.api.nvim_buf_set_extmark(buffer, renderer.namespace, content.row_start, content.col_start, {
 			virt_text_pos = "inline",
 			virt_text = {
-				{ string.rep(conf.shift_char or " ", spaces), conf.shift_hl },
+				{ string.rep(" ", spaces) },
 
 				{ conf.corner_left or "", set_hl(conf.corner_left_hl) or set_hl(conf.hl) },
 				{ conf.padding_left or "", set_hl(conf.padding_left_hl) or set_hl(conf.hl) },
@@ -1062,7 +1087,7 @@ end
 --- Renderer for custom code blocks
 ---@param buffer number
 ---@param content any
----@param config_table markview.render_config.code_blocks
+---@param config_table markview.conf.code_blocks
 renderer.render_code_blocks = function (buffer, content, config_table)
 	if not config_table or config_table.enable == false then
 		return;
@@ -1088,7 +1113,7 @@ renderer.render_code_blocks = function (buffer, content, config_table)
 		});
 
 		vim.api.nvim_buf_set_extmark(buffer, renderer.namespace, content.row_start, content.col_start + vim.fn.strchars(content.info_string), {
-			virt_text_pos = config_table.position or "inline",
+			virt_text_pos = "inline",
 			virt_text = {
 				{ string.rep(config_table.pad_char or " ", block_length + ((config_table.pad_amount or 1) * 2)), set_hl(config_table.hl) },
 			},
@@ -1097,7 +1122,7 @@ renderer.render_code_blocks = function (buffer, content, config_table)
 		});
 
 		vim.api.nvim_buf_set_extmark(buffer, renderer.namespace, content.row_end - 1, content.col_start + 3, {
-			virt_text_pos = config_table.position or "inline",
+			virt_text_pos = "inline",
 			virt_text = {
 				{ string.rep(config_table.pad_char or " ", block_length + ((config_table.pad_amount or 1) * 2)), set_hl(config_table.hl) },
 			},
@@ -1139,9 +1164,9 @@ renderer.render_code_blocks = function (buffer, content, config_table)
 		local icon_section = icon ~= "" and " " .. icon .. " " or " ";
 
 		if config_table.language_names ~= nil then
-			for _, lang in ipairs(config_table.language_names) do
-				if language == lang[1] then
-					languageName = lang[2];
+			for match, replace in pairs(config_table.language_names) do
+				if language == match then
+					languageName = replace;
 					goto nameFound;
 				end
 			end
@@ -1164,7 +1189,7 @@ renderer.render_code_blocks = function (buffer, content, config_table)
 			end
 
 			vim.api.nvim_buf_set_extmark(buffer, renderer.namespace, content.row_start, content.col_start + 3 + vim.fn.strlen(content.language), {
-				virt_text_pos = config_table.position or "inline",
+				virt_text_pos = "inline",
 				virt_text = {
 					{ icon_section, set_hl(hl) },
 					{ languageName .. " ", set_hl(config_table.name_hl) or set_hl(hl) },
@@ -1192,7 +1217,7 @@ renderer.render_code_blocks = function (buffer, content, config_table)
 			});
 
 			vim.api.nvim_buf_set_extmark(buffer, renderer.namespace, content.row_start, content.col_start + vim.fn.strchars(content.info_string), {
-				virt_text_pos = config_table.position or "inline",
+				virt_text_pos = "inline",
 				virt_text = {
 					{ rendered_info, set_hl(config_table.info_hl or config_table.hl) },
 					{ string.rep(config_table.pad_char or " ", block_length - lang_width - vim.fn.strchars(rendered_info) + ((config_table.pad_amount or 1) * 2)), set_hl(config_table.hl) },
@@ -1217,7 +1242,7 @@ renderer.render_code_blocks = function (buffer, content, config_table)
 		end
 
 		vim.api.nvim_buf_set_extmark(buffer, renderer.namespace, content.row_end - 1, vim.fn.strchars(block_end_line or ""), {
-			virt_text_pos = config_table.position or "inline",
+			virt_text_pos = "inline",
 			virt_text = {
 				{ string.rep(config_table.pad_char or " ", (block_length - vim.fn.strchars(tail_section)) + ((config_table.pad_amount or 1) * 2)), set_hl(config_table.hl) },
 			},
@@ -1368,7 +1393,7 @@ end
 --- Renders custom horizontal rules
 ---@param buffer number
 ---@param content any
----@param config_table markview.render_config.hrs
+---@param config_table markview.conf.hrs
 renderer.render_horizontal_rules = function (buffer, content, config_table)
 	local virt_text = {};
 
@@ -1424,13 +1449,13 @@ end
 ---@param content any
 ---@param config_table markview.render_config.links
 renderer.render_links = function (buffer, content, config_table)
-	local lnk_conf;
-
 	if not config_table or config_table.enable == false then
+		return;
+	elseif config_table and config_table.hyperlinks and config_table.hyperlinks.enable == false then
 		return;
 	end
 
-	lnk_conf = config_table.hyperlinks;
+	local lnk_conf = config_table.hyperlinks;
 
 	for _, conf in ipairs(config_table.hyperlinks.custom or {}) do
 		if conf.match and string.match(content.address or "", conf.match) then
@@ -1477,9 +1502,21 @@ end
 renderer.render_email_links = function (buffer, content, config_table)
 	if not config_table or config_table.enable == false then
 		return;
+	elseif config_table and config_table.emails and config_table.emails.enable == false then
+		return;
 	end
 
 	local email_conf = config_table.emails;
+
+	for _, conf in ipairs(config_table.emails.custom or {}) do
+		if conf.match and string.match(content.address or "", conf.match) then
+			email_conf = vim.tbl_extend("force", email_conf or {}, conf);
+			break;
+		elseif conf.match_string and string.match(content.address or "", conf.match_string) then
+			email_conf = vim.tbl_extend("force", email_conf or {}, conf);
+			break;
+		end
+	end
 
 	if not email_conf then
 		return;
@@ -1518,9 +1555,22 @@ end
 renderer.render_img_links = function (buffer, content, config_table)
 	if not config_table or config_table.enable == false then
 		return;
+	elseif config_table and config_table.images and config_table.images.enable == false then
+		return;
 	end
 
 	local img_conf = config_table.images;
+
+	for _, conf in ipairs(config_table.images.custom or {}) do
+		if conf.match and string.match(content.address or "", conf.match) then
+			img_conf = vim.tbl_extend("force", img_conf or {}, conf);
+			break;
+		elseif conf.match_string and string.match(content.address or "", conf.match_string) then
+			img_conf = vim.tbl_extend("force", img_conf or {}, conf);
+			break;
+		end
+	end
+
 
 	if not img_conf then
 		return;
@@ -1768,7 +1818,7 @@ renderer.render_html_entities = function (buffer, content, user_config)
 		return;
 	end
 
-	if not user_config.entites or user_config.entites.enable == false then
+	if not user_config.entities or user_config.entities.enable == false then
 		return;
 	end
 
@@ -1782,7 +1832,7 @@ renderer.render_html_entities = function (buffer, content, user_config)
 	vim.api.nvim_buf_set_extmark(buffer, renderer.namespace, content.row_start, content.col_start, {
 		virt_text_pos = "inline",
 		virt_text = {
-			{ entity, set_hl(user_config.entites.hl) }
+			{ entity, set_hl(user_config.entities.hl) }
 		},
 
 		end_col = content.col_end,
@@ -1801,6 +1851,33 @@ renderer.render_escaped = function (buffer, content, user_config)
 	});
 end
 
+renderer.render_footnotes = function (buffer, content, user_config)
+	if not user_config or user_config.enable == false then
+		return;
+	end
+
+	local _o = content.text:match("%^(.+)$");
+
+	if user_config.use_unicode ~= false and _o:match("^([%s%a%d%(%)%+%-%=]+)$") then
+		local tmp = "";
+
+		for letter in _o:gmatch(".") do
+			tmp = tmp .. latex_renderer.superscripts[letter];
+		end
+
+		_o = tmp;
+	end
+
+	vim.api.nvim_buf_set_extmark(buffer, renderer.namespace, content.row_start, content.col_start, {
+		virt_text_pos = "inline",
+		virt_text = {
+			{ _o, "Special" }
+		},
+
+		end_col = content.col_end,
+		conceal = ""
+	});
+end
 
 renderer.render = function (buffer, parsed_content, config_table, conceal_start, conceal_stop)
 	if not _G.__markview_views then
@@ -1860,6 +1937,8 @@ renderer.render = function (buffer, parsed_content, config_table, conceal_start,
 			pcall(renderer.render_tables, buffer, content, config_table);
 		elseif type == "escaped" then
 			pcall(renderer.render_escaped, buffer, content, config_table.escaped);
+		elseif type == "footnote" then
+			pcall(renderer.render_footnotes, buffer, content, config_table.escaped);
 		elseif type:match("^(latex_)") then
 			pcall(latex_renderer.render, type, buffer, content, config_table)
 		end

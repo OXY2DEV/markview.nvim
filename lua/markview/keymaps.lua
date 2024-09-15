@@ -48,12 +48,16 @@ keymaps.createKeymap = function (buffer)
 	})
 end
 
+--- Initializes the keymaps
+---@param buffer integer
+---@param parsed_content table
+---@param config_table table?
 keymaps.init = function (buffer, parsed_content, config_table)
 	if parsed_content ~= nil then
 		keymaps.views[buffer] = {};
 	end
 
-	for _, content in ipairs(parsed_content) do
+	for _, content in ipairs(parsed_content --[[@as table]]) do
 		if content.type == "link" then
 			table.insert(keymaps.views[buffer], content);
 		elseif content.type == "image" then

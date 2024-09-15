@@ -15,6 +15,82 @@ local set_hl = function (hl)
 	end
 end
 
+latex.superscripts = {
+	["0"] = "⁰",
+	["1"] = "¹",
+	["2"] = "²",
+	["3"] = "³",
+	["4"] = "⁴",
+	["5"] = "⁵",
+	["6"] = "⁶",
+	["7"] = "⁷",
+	["8"] = "⁸",
+	["9"] = "⁹",
+
+	["+"] = "⁺",
+	["-"] = "⁻",
+	["="] = "⁼",
+	["("] = "⁽",
+	[")"] = "⁾",
+
+	[" "] = " ",
+	["	"] = "	",
+
+	["a"] = "ᵃ",
+	["b"] = "ᵇ",
+	["c"] = "ᶜ",
+	["d"] = "ᵈ",
+	["e"] = "ᵉ",
+	["f"] = "ᶠ",
+	["g"] = "ᵍ",
+	["h"] = "ʰ",
+	["i"] = "ⁱ",
+	["j"] = "ʲ",
+	["k"] = "ᵏ",
+	["l"] = "ˡ",
+	["m"] = "ᵐ",
+	["n"] = "ⁿ",
+	["o"] = "ᵒ",
+	["p"] = "ᵖ",
+	["q"] = "ᶣ",
+	["r"] = "ʳ",
+	["s"] = "ˢ",
+	["t"] = "ᵗ",
+	["u"] = "ᵘ",
+	["v"] = "ᵛ",
+	["w"] = "ʷ",
+	["x"] = "ˣ",
+	["y"] = "ʸ",
+	["z"] = "ᶻ",
+
+	["A"] = "ᵃ",
+	["B"] = "ᵇ",
+	["C"] = "ᶜ",
+	["D"] = "ᵈ",
+	["E"] = "ᵉ",
+	["F"] = "ᶠ",
+	["G"] = "ᵍ",
+	["H"] = "ʰ",
+	["I"] = "ⁱ",
+	["J"] = "ʲ",
+	["K"] = "ᵏ",
+	["L"] = "ˡ",
+	["M"] = "ᵐ",
+	["N"] = "ⁿ",
+	["O"] = "ᵒ",
+	["P"] = "ᵖ",
+	["Q"] = "ᶿ",
+	["R"] = "ʳ",
+	["S"] = "ˢ",
+	["T"] = "ᵗ",
+	["U"] = "ᵘ",
+	["V"] = "ᵛ",
+	["W"] = "ʷ",
+	["X"] = "ˣ",
+	["Y"] = "ʸ",
+	["Z"] = "ᶻ",
+};
+
 latex.symbols = {
 	["lim"] = "lim",
 	["alpha"] = "α",
@@ -296,14 +372,26 @@ end
 latex.render_symbol = function (buffer, content, user_config)
 	if not user_config or user_config.enable == false then
 		return;
-	elseif not content.text or not latex.symbols[content.text] then
+	elseif not content.text then
+		return;
+	end
+
+	local _t = nil
+
+	if user_config.custom and user_config.custom[content.text] then
+		_t = user_config.custom[content.text]
+	elseif latex.symbols[content.text] then
+		_t = latex.symbols[content.text]
+	end
+
+	if not _t then
 		return;
 	end
 
 	vim.api.nvim_buf_set_extmark(buffer, latex.namespace, content.row_start, content.col_start, {
 		virt_text_pos = "inline",
 		virt_text = {
-			{ latex.symbols[content.text], "Special" }
+			{ _t, set_hl(user_config.hl) }
 		},
 
 		end_col = content.col_end,
@@ -312,22 +400,6 @@ latex.render_symbol = function (buffer, content, user_config)
 end
 
 latex.render_root = function (buffer, content, user_config)
-	if not user_config or user_config.enable == false then
-		return;
-	end
-
-	vim.api.nvim_buf_set_extmark(buffer, latex.namespace, content.row_start, content.col_start, {
-		virt_text_pos = "inline",
-		virt_text = {
-			{ latex.symbols.sqrt, "Special" }
-		},
-
-		end_col = content.col_start + 5,
-		conceal = ""
-	});
-end
-
-latex.render_sum = function (buffer, content, user_config)
 	if not user_config or user_config.enable == false then
 		return;
 	end
@@ -386,7 +458,7 @@ latex.render_block = function (buffer, content, user_config)
 		vim.api.nvim_buf_set_extmark(buffer, latex.namespace, l, content.col_start, {
 			virt_text_pos = "inline",
 			virt_text = {
-				{ string.rep(" ", user_config.indent_size or 3) }
+				{ string.rep(" ", user_config.pad_amount or 3) }
 			},
 
 			line_hl_group = set_hl(user_config.hl),
