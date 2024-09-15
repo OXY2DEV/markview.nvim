@@ -27,7 +27,7 @@
 ---@field list_items markview.conf.list_items
 ---@field max_file_length? integer Maximum number of lines a file can have for it to be rendered entirely
 ---@field modes string[] Modes where the plugin will show preview
----@field render_distance integer Amount of lines() around the cursor) to render on large files
+---@field render_distance integer Amount of lines(from the cursor) to render on large files
 ---@field split_conf table Window options for splitView
 ---@field tables markview.conf.tables
 
