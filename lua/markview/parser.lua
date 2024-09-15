@@ -2,10 +2,15 @@ local parser = {};
 local lang = require("markview.languages")
 
 local ts_available, treesitter_parsers = pcall(require, "nvim-treesitter.parsers");
+
+--- Checks if a parser is available or not
+---@param parser_name string
+---@return boolean
 local function parser_installed(parser_name)
 	return (ts_available and treesitter_parsers.has_parser(parser_name)) or pcall(vim.treesitter.query.get, parser_name, "highlights")
 end
 
+---@type markview.configuration | {}
 parser.cached_conf = {};
 parser.avoid_ranges = {};
 
@@ -217,10 +222,12 @@ parser.parsed_content = {};
 ---@param buffer number
 ---@param TStree any
 parser.md = function (buffer, TStree, from, to)
+	--- "__inside_code_block" is still experimental
+	---@diagnostic disable
 	if not parser.cached_conf or
-	   not parser.cached_conf.on_injected or
-	   parser.cached_conf.on_injected == false
+	   not parser.cached_conf.__inside_code_block ~= true
 	then
+	---@diagnostic enable
 		local root = TStree:root();
 		local root_r_start, _, root_r_end, _ = root:range();
 		local buf_lines = vim.api.nvim_buf_line_count(buffer);
@@ -509,7 +516,7 @@ parser.md = function (buffer, TStree, from, to)
 			--
 			-- Don't worry, the renderer will use the __r ones in that
 			-- case
-			if parser.cached_conf and parser.cached_conf.tables and parser.cached_conf.block_decorator ~= false and parser.cached_conf.tables.use_virt_lines == false then
+			if parser.cached_conf and parser.cached_conf.tables and parser.cached_conf.tables.block_decorator ~= false and parser.cached_conf.tables.use_virt_lines == false then
 				s_start = row_start;
 				s_end = row_end;
 
@@ -605,10 +612,12 @@ end
 ---@param buffer number
 ---@param TStree any
 parser.md_inline = function (buffer, TStree, from, to)
+	--- "__inside_code_block" is still experimental
+	---@diagnostic disable
 	if not parser.cached_conf or
-	   not parser.cached_conf.on_injected or
-	   parser.cached_conf.on_injected == false
+	   not parser.cached_conf.__inside_code_block ~= false
 	then
+	---@diagnostic enable
 		local root = TStree:root();
 		local root_r_start, _, root_r_end, _ = root:range();
 
@@ -808,10 +817,12 @@ parser.md_inline = function (buffer, TStree, from, to)
 end
 
 parser.html = function (buffer, TStree, from, to)
+	--- "__inside_code_block" is still experimental
+	---@diagnostic disable
 	if not parser.cached_conf or
-	   not parser.cached_conf.on_injected or
-	   parser.cached_conf.on_injected == false
+	   parser.cached_conf.__inside_code_block ~= true
 	then
+	---@diagnostic enable
 		local root = TStree:root();
 		local root_r_start, _, root_r_end, _ = root:range();
 

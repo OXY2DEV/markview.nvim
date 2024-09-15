@@ -6,11 +6,13 @@
 
 ---@class markview.configuration configuration table for markview
 ---
+---@field __inside_code_block boolean Experimental settings that stops rendering inside code blocks
 ---@field block_quotes markview.conf.block_quotes Block quote configuration
 ---@field buf_ignore? string[] Buffer types to ignore
 ---@field callbacks markview.conf.callbacks
 ---@field checkboxes markview.conf.checkboxes
 ---@field code_blocks markview.conf.code_blocks
+---@field debounce number Time in miliseconds to wait before redrawing after an event
 ---@field escaped { enable: boolean } Configuration table for escaped characters
 ---@field filetypes string[] File types where the plugin is active
 ---@field headings markview.conf.headings
@@ -23,7 +25,9 @@
 ---@field latex markview.conf.latex
 ---@field links markview.conf.links
 ---@field list_items markview.conf.list_items
+---@field max_file_length? integer Maximum number of lines a file can have for it to be rendered entirely
 ---@field modes string[] Modes where the plugin will show preview
+---@field render_distance integer Amount of lines() around the cursor) to render on large files
 ---@field split_conf table Window options for splitView
 ---@field tables markview.conf.tables
 

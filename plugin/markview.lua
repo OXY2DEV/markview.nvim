@@ -23,9 +23,10 @@ elseif not parser_installed("html") then
 	return;
 end
 
-
+---@diagnostic disable
 ts.inject(markview.configuration.injections)
 hls.create(markview.configuration.highlight_groups)
+---@diagnostic enable
 
 local buf_render = function (buffer)
 	local lines = vim.api.nvim_buf_line_count(buffer);
@@ -33,7 +34,7 @@ local buf_render = function (buffer)
 
 	local mode = vim.api.nvim_get_mode().mode;
 
-	if lines < (markview.configuration.max_length or 1000) then
+	if lines < (markview.configuration.max_file_length or 1000) then
 		-- Buffer isn't too big. Render everything
 		parsed_content = markview.parser.init(buffer, markview.configuration);
 
@@ -41,8 +42,8 @@ local buf_render = function (buffer)
 	else
 		-- Buffer is too big, render only parts of it
 		local cursor = vim.api.nvim_win_get_cursor(0);
-		local start = math.max(0, cursor[1] - (markview.configuration.render_range or 100));
-		local stop = math.min(lines, cursor[1] + (markview.configuration.render_range or 100));
+		local start = math.max(0, cursor[1] - markview.configuration.render_distance);
+		local stop = math.min(lines, cursor[1] + markview.configuration.render_distance);
 
 		parsed_content = markview.parser.parse_range(buffer, markview.configuration, start, stop);
 
@@ -105,7 +106,7 @@ local redraw_autocmd = function (augroup, buffer)
 		group = augroup,
 		callback = function (event)
 			local windows = utils.find_attached_wins(buffer);
-			local debounce = markview.configuration.debounce or 50;
+			local debounce = markview.configuration.debounce;
 
 			-- Current mode
 			local mode = vim.api.nvim_get_mode().mode;

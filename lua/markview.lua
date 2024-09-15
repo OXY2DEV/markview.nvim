@@ -417,6 +417,7 @@ markview.configuration = {
 		---_
 	},
 
+	debounce = 50,
 	escaped = { enable = true },
 
 	filetypes = { "markdown", "quarto", "rmd" },
@@ -715,7 +716,9 @@ markview.configuration = {
 		---_
 	},
 
+	max_file_length = 1000,
 	modes = { "n", "no" },
+	render_distance = 100,
 
 	split_conf = {
 		split = "right"
@@ -829,15 +832,15 @@ markview.splitView = {
 
 		local parsed_content;
 
-		if #content < (markview.configuration.max_length or 1000) then
+		if #content < markview.configuration.max_file_length then
 			-- Buffer isn't too big. Render everything
 			parsed_content = markview.parser.init(self.buffer, markview.configuration);
 
 			markview.renderer.render(self.buffer, parsed_content, markview.configuration)
 		else
 			-- Buffer is too big, render only parts of it
-			local start = math.max(0, cursor[1] - (markview.configuration.render_range or 100));
-			local stop = math.min(lines, cursor[1] + (markview.configuration.render_range or 100));
+			local start = math.max(0, cursor[1] - markview.configuration.render_distance);
+			local stop = math.min(lines, cursor[1] + markview.configuration.render_distance);
 
 			parsed_content = markview.parser.parse_range(self.buffer, markview.configuration, start, stop);
 
@@ -893,15 +896,15 @@ markview.splitView = {
 					vim.api.nvim_buf_set_lines(self.buffer, 0, -1, false, content);
 					vim.bo[self.buffer].modifiable = false;
 
-					if #content < (markview.configuration.max_length or 1000) then
+					if #content < markview.configuration.max_file_length then
 						-- Buffer isn't too big. Render everything
 						parsed_content = markview.parser.init(self.buffer, markview.configuration);
 
 						markview.renderer.render(self.buffer, parsed_content, markview.configuration)
 					else
 						-- Buffer is too big, render only parts of it
-						local start = math.max(0, cursor[1] - (markview.configuration.render_range or 100));
-						local stop = math.min(lines, cursor[1] + (markview.configuration.render_range or 100));
+						local start = math.max(0, cursor[1] - markview.configuration.render_distance);
+						local stop = math.min(lines, cursor[1] + markview.configuration.render_distance);
 
 						parsed_content = markview.parser.parse_range(self.buffer, markview.configuration, start, stop);
 
@@ -1014,7 +1017,7 @@ markview.commands = {
 		local lines = vim.api.nvim_buf_line_count(buffer);
 		local parsed_content;
 
-		if lines < (markview.configuration.max_length or 1000) then
+		if lines < markview.configuration.max_file_length then
 			-- Buffer isn't too big. Render everything
 			parsed_content = markview.parser.init(buffer, markview.configuration);
 
@@ -1022,8 +1025,8 @@ markview.commands = {
 		else
 			-- Buffer is too big, render only parts of it
 			local cursor = vim.api.nvim_win_get_cursor(0);
-			local start = math.max(0, cursor[1] - (markview.configuration.render_range or 100));
-			local stop = math.min(lines, cursor[1] + (markview.configuration.render_range or 100));
+			local start = math.max(0, cursor[1] - markview.configuration.render_distance);
+			local stop = math.min(lines, cursor[1] + (markview.configuration.render_distance));
 
 			parsed_content = markview.parser.parse_range(buffer, markview.configuration, start, stop);
 
