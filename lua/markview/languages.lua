@@ -1,5 +1,6 @@
 local languages = {};
 
+---@type table<string, string> Language name to filetype mapping
 languages.reverse_map = {
     ["c"] = "c",
     ["c_plus_plus"] = "cpp",
@@ -128,6 +129,7 @@ languages.reverse_map = {
     ["z"] = "z"
 };
 
+---@type table<string, string> Filetype to language name mapping
 languages.patterns = {
     ["c"] = "C",
     ["cpp"] = "C++",
@@ -256,6 +258,9 @@ languages.patterns = {
     ["z"] = "Z",
 };
 
+--- Gets the language name from a string
+---@param name string
+---@return string
 languages.get_name = function (name)
 	if not name or name == "" then
 		return "Unknown";
@@ -263,9 +268,13 @@ languages.get_name = function (name)
 		return languages.patterns[name];
 	end
 
-	return string.gsub(name, "^%l", string.upper);
+	local _u = string.gsub(name, "^%l", string.upper);
+	return _u;
 end
 
+--- Gets the filetype from a string
+---@param name string
+---@return string
 languages.get_ft = function (name)
 	if not name or name == "" then
 		return "Unknown";

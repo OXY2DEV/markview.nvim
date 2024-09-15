@@ -433,7 +433,7 @@ latex.render_block = function (buffer, content, user_config)
 		line_hl_group = set_hl(user_config.hl),
 		conceal = ""
 	});
-	vim.api.nvim_buf_set_extmark(buffer, latex.namespace, content.row_end, content.col_end - 2, {
+	vim.api.nvim_buf_set_extmark(buffer, latex.namespace, content.row_end - 1, content.col_end - 2, {
 		virt_text_pos = "right_align",
 		virt_text = {
 			user_config.text or { " Latex ", "Comment" }
@@ -446,7 +446,7 @@ latex.render_block = function (buffer, content, user_config)
 		hl_mode = "combine"
 	});
 
-	for l = content.row_start + 1, content.row_end - 1, 1 do
+	for l = content.row_start + 1, (content.row_end - 1) - 1, 1 do
 		vim.api.nvim_buf_set_extmark(buffer, latex.namespace, l, content.col_start, {
 			virt_text_pos = "inline",
 			virt_text = {

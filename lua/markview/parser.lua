@@ -929,12 +929,14 @@ parser.latex = function (buffer, TStree, from, to)
 				col_end = col_end
 			});
 		elseif capture_name == "block" then
+			--- row_end is increased by 1 so that this works similar to
+			--- "fenced_code_block"
 			table.insert(parser.parsed_content, {
 				node = capture_node,
 				type = "latex_block",
 
 				row_start = row_start,
-				row_end = row_end,
+				row_end = row_end + 1,
 
 				col_start = col_start,
 				col_end = col_end
