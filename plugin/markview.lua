@@ -1,6 +1,7 @@
 local markview = require("markview");
 local utils = require("markview.utils");
 local hls = require("markview.highlights");
+local ts = require("markview.treesitter");
 
 local ts_available, treesitter_parsers = pcall(require, "nvim-treesitter.parsers");
 local function parser_installed(parser)
@@ -23,10 +24,8 @@ elseif not parser_installed("html") then
 end
 
 
-if type(markview.configuration.highlight_groups) == "string" or vim.islist(markview.configuration.highlight_groups) then
-	---@diagnostic disable-next-line
-	hls.create(markview.configuration.highlight_groups)
-end
+ts.inject(markview.configuration.injections)
+hls.create(markview.configuration.highlight_groups)
 
 local buf_render = function (buffer)
 	local lines = vim.api.nvim_buf_line_count(buffer);

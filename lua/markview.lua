@@ -1218,7 +1218,7 @@ markview.setup = function (user_config)
 		hls.create(markview.configuration.highlight_groups)
 	end
 
-	-- ts.inject(markview.configuration.injections)
+	ts.inject(markview.configuration.injections)
 	markview.commands.enableAll();
 end
 
