@@ -296,10 +296,6 @@ latex.render_superscript = function (buffer, content, user_config)
 			end_col = content.col_start + 1,
 			conceal = ""
 		});
-		vim.api.nvim_buf_set_extmark(buffer, latex.namespace, content.row_end, content.col_end - 1, {
-			end_col = content.col_end,
-			conceal = ""
-		});
 
 		vim.api.nvim_buf_set_extmark(buffer, latex.namespace, content.row_start, content.col_start + 1, {
 			virt_text_pos = "overlay",
@@ -351,10 +347,6 @@ latex.render_subscript = function (buffer, content, user_config)
 	else
 		vim.api.nvim_buf_set_extmark(buffer, latex.namespace, content.row_start, content.col_start, {
 			end_col = content.col_start + 1,
-			conceal = ""
-		});
-		vim.api.nvim_buf_set_extmark(buffer, latex.namespace, content.row_end, content.col_end - 1, {
-			end_col = content.col_end,
 			conceal = ""
 		});
 
@@ -421,10 +413,10 @@ latex.render_inline = function (buffer, content, user_config)
 	end
 
 	vim.api.nvim_buf_set_extmark(buffer, latex.namespace, content.row_start, content.col_start, {
-		end_col = content.col_start + 1,
+		end_col = content.col_start + #"$",
 		conceal = ""
 	});
-	vim.api.nvim_buf_set_extmark(buffer, latex.namespace, content.row_end, content.col_end - 1, {
+	vim.api.nvim_buf_set_extmark(buffer, latex.namespace, content.row_end, content.col_end - #"$", {
 		end_col = content.col_end,
 		conceal = ""
 	});
