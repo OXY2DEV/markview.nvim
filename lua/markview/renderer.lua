@@ -23,9 +23,6 @@ renderer.get_icon = function (language, config_table)
 	return "󰡯", "Normal";
 end
 
----@type table[] Stored views
-_G.__markview_views = {};
-
 --- Returns a value with the specified index from entry
 --- If index is nil then return the last value
 --- If entry isn't a table then return it
@@ -45,6 +42,10 @@ local tbl_clamp = function (entry, index)
 	return entry[#entry];
 end
 
+--- Gets the configuration of a link
+---@param conf markview.links.config
+---@param text string
+---@return any
 local get_link_conf = function (conf, text)
 	if not conf.custom then
 		return conf;
@@ -53,6 +54,8 @@ local get_link_conf = function (conf, text)
 	local _t = conf;
 
 	for _, tbl in ipairs(conf.custom) do
+		--- This will be removed in the next update
+		---@diagnostic disable-next-line
 		if tbl.match and string.match(text, tbl.match) then
 			_t = vim.tbl_extend("force", _t, tbl);
 		elseif tbl.match_string and string.match(text, tbl.match_string) then
@@ -1035,7 +1038,7 @@ renderer.render_headings_s = function (buffer, content, config)
 	---@type markview.render_config.headings.h
 	local conf = content.marker:match("=") and config["setext_1"] or config["setext_2"];
 
-	-- Do not proceed if setext headings don't have configuraton
+	-- Do not proceed if setext headings don't have configuration
 	if not conf then
 		return;
 	end
@@ -1289,9 +1292,9 @@ renderer.render_code_blocks = function (buffer, content, config_table)
 end
 
 --- Renderer for the custom block quotes
----@param buffer number
----@param content any
----@param config_table markview.render_config.block_quotes
+---@param buffer integer
+---@param content table
+---@param config_table markview.conf.block_quotes
 renderer.render_block_quotes = function (buffer, content, config_table)
 	local qt_config;
 
@@ -1386,18 +1389,12 @@ renderer.render_block_quotes = function (buffer, content, config_table)
 
 			hl_mode = "combine"
 		});
-
-		if config_table.wrap ~= true then
-			goto nowrap;
-		end
-
-		::nowrap::
 	end
 end
 
 --- Renders custom horizontal rules
----@param buffer number
----@param content any
+---@param buffer integer
+---@param content table
 ---@param config_table markview.conf.hrs
 renderer.render_horizontal_rules = function (buffer, content, config_table)
 	local virt_text = {};
@@ -1450,9 +1447,9 @@ renderer.render_horizontal_rules = function (buffer, content, config_table)
 end
 
 --- Renderer for custom links
----@param buffer number
----@param content any
----@param config_table markview.render_config.links
+---@param buffer integer
+---@param content table
+---@param config_table markview.conf.links
 renderer.render_links = function (buffer, content, config_table)
 	if not config_table or config_table.enable == false then
 		return;
@@ -1463,7 +1460,12 @@ renderer.render_links = function (buffer, content, config_table)
 	local lnk_conf = config_table.hyperlinks;
 
 	for _, conf in ipairs(config_table.hyperlinks.custom or {}) do
+		--- TODO, Remove this in the next update
+		---@diagnostic disable-next-line
 		if conf.match and string.match(content.address or "", conf.match) then
+			lnk_conf = vim.tbl_extend("force", lnk_conf or {}, conf);
+			break;
+		elseif conf.match_string and string.match(content.address or "", conf.match_string) then
 			lnk_conf = vim.tbl_extend("force", lnk_conf or {}, conf);
 			break;
 		end
@@ -1501,9 +1503,9 @@ renderer.render_links = function (buffer, content, config_table)
 end
 
 --- Renderer for custom emails
----@param buffer number
----@param content any
----@param config_table markview.render_config.links
+---@param buffer integer
+---@param content table
+---@param config_table markview.conf.links
 renderer.render_email_links = function (buffer, content, config_table)
 	if not config_table or config_table.enable == false then
 		return;
@@ -1514,6 +1516,8 @@ renderer.render_email_links = function (buffer, content, config_table)
 	local email_conf = config_table.emails;
 
 	for _, conf in ipairs(config_table.emails.custom or {}) do
+		--- TODO, Remove this in the next update
+		---@diagnostic disable-next-line
 		if conf.match and string.match(content.address or "", conf.match) then
 			email_conf = vim.tbl_extend("force", email_conf or {}, conf);
 			break;
@@ -1556,7 +1560,7 @@ end
 --- Renderer for custom image links
 ---@param buffer number
 ---@param content any
----@param config_table markview.render_config.links
+---@param config_table markview.conf.links
 renderer.render_img_links = function (buffer, content, config_table)
 	if not config_table or config_table.enable == false then
 		return;
@@ -1567,6 +1571,8 @@ renderer.render_img_links = function (buffer, content, config_table)
 	local img_conf = config_table.images;
 
 	for _, conf in ipairs(config_table.images.custom or {}) do
+		--- TODO, Remove this in the next update
+		---@diagnostic disable-next-line
 		if conf.match and string.match(content.address or "", conf.match) then
 			img_conf = vim.tbl_extend("force", img_conf or {}, conf);
 			break;
@@ -1608,9 +1614,9 @@ renderer.render_img_links = function (buffer, content, config_table)
 end
 
 --- Renderer for custom inline codes
----@param buffer number
----@param content any
----@param config_table markview.render_config.inline_codes
+---@param buffer integer
+---@param content table
+---@param config_table markview.conf.inline_codes
 renderer.render_inline_codes = function (buffer, content, config_table)
 	if not config_table or config_table.enable == false then
 		return;
@@ -1637,9 +1643,9 @@ renderer.render_inline_codes = function (buffer, content, config_table)
 end
 
 --- Renderer for custom image links
----@param buffer number
----@param content any
----@param config_table markview.render_config.list_items
+---@param buffer integer
+---@param content table
+---@param config_table markview.conf.list_items
 renderer.render_lists = function (buffer, content, config_table)
 	if not config_table or config_table.enable == false then
 		return;
@@ -1726,7 +1732,7 @@ end
 --- Renderer for custom checkbox
 ---@param buffer number
 ---@param content any
----@param config_table markview.render_config.checkboxes
+---@param config_table markview.conf.checkboxes
 renderer.render_checkboxes = function (buffer, content, config_table)
 	if not config_table or config_table.enable == false then
 		return;
@@ -1738,8 +1744,6 @@ renderer.render_checkboxes = function (buffer, content, config_table)
 		chk_config = config_table.checked;
 	elseif content.state == "incomplete" then
 		chk_config = config_table.unchecked;
-	elseif content.state == "pending" then
-		chk_config = config_table.pending;
 	elseif vim.islist(config_table.custom) then
 		for _, config in ipairs(config_table.custom) do
 			if content.state == config.match then
@@ -1768,7 +1772,7 @@ end
 --- Renderer for custom table
 ---@param buffer number
 ---@param content any
----@param user_config markview.config
+---@param user_config markview.configuration
 renderer.render_tables = function (buffer, content, user_config)
 	if not user_config.tables or user_config.tables.enable == false then
 		return;
@@ -1776,17 +1780,21 @@ renderer.render_tables = function (buffer, content, user_config)
 
 	for row_number, _ in ipairs(content.rows) do
 		if content.row_type[row_number] == "header" then
-			table_header(buffer, content, user_config);
+			pcall(table_header, buffer, content, user_config);
 		elseif content.row_type[row_number] == "separator" then
-			table_seperator(buffer, content, user_config, row_number)
+			pcall(table_seperator, buffer, content, user_config, row_number)
 		elseif content.row_type[row_number] == "content" and row_number == #content.rows then
-			table_footer(buffer, content, user_config)
+			pcall(table_footer, buffer, content, user_config)
 		else
-			table_content(buffer, content, user_config, row_number)
+			pcall(table_content, buffer, content, user_config, row_number)
 		end
 	end
 end
 
+--- Renders HTML tags
+---@param buffer integer
+---@param content table
+---@param user_config markview.conf.html
 renderer.render_html_inline = function (buffer, content, user_config)
 	if not user_config or user_config.enable == false then
 		return;
@@ -1818,6 +1826,10 @@ renderer.render_html_inline = function (buffer, content, user_config)
 	end
 end
 
+--- Renders HTML entities
+---@param buffer integer
+---@param content table
+---@param user_config markview.conf.html
 renderer.render_html_entities = function (buffer, content, user_config)
 	if not user_config or user_config.enable == false then
 		return;
@@ -1845,6 +1857,10 @@ renderer.render_html_entities = function (buffer, content, user_config)
 	});
 end
 
+--- Renders escaped characters
+---@param buffer integer
+---@param content table
+---@param user_config { enable: boolean }
 renderer.render_escaped = function (buffer, content, user_config)
 	if not user_config or user_config.enable == false then
 		return;
@@ -1856,6 +1872,10 @@ renderer.render_escaped = function (buffer, content, user_config)
 	});
 end
 
+--- Footnote renderer
+---@param buffer integer
+---@param content table 
+---@param user_config markview.conf.footnotes
 renderer.render_footnotes = function (buffer, content, user_config)
 	if not user_config or user_config.enable == false then
 		return;
@@ -1876,7 +1896,7 @@ renderer.render_footnotes = function (buffer, content, user_config)
 	vim.api.nvim_buf_set_extmark(buffer, renderer.namespace, content.row_start, content.col_start, {
 		virt_text_pos = "inline",
 		virt_text = {
-			{ _o, "Special" }
+			{ _o, set_hl(user_config.hl) }
 		},
 
 		end_col = content.col_end,
@@ -1884,6 +1904,12 @@ renderer.render_footnotes = function (buffer, content, user_config)
 	});
 end
 
+--- Renders things
+---@param buffer integer
+---@param parsed_content table[]
+---@param config_table markview.configuration
+---@param conceal_start? integer
+---@param conceal_stop? integer
 renderer.render = function (buffer, parsed_content, config_table, conceal_start, conceal_stop)
 	for _, content in ipairs(parsed_content) do
 		local type = content.type;
@@ -1939,6 +1965,10 @@ renderer.render = function (buffer, parsed_content, config_table, conceal_start,
 	end
 end
 
+--- Clears a namespace within the range in a buffer
+---@param buffer integer
+---@param from? integer
+---@param to? integer
 renderer.clear = function (buffer, from, to)
 	vim.api.nvim_buf_clear_namespace(buffer, renderer.namespace, from or 0, to or -1)
 end

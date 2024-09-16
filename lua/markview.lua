@@ -424,6 +424,11 @@ markview.configuration = {
 
 	filetypes = { "markdown", "quarto", "rmd" },
 
+	footnotes = {
+		enable = true,
+		use_unicode = true
+	},
+
 	headings = {
 		---+ ${class, Headings}
 		enable = true,

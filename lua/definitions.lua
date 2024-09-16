@@ -15,6 +15,7 @@
 ---@field debounce number Time in miliseconds to wait before redrawing after an event
 ---@field escaped { enable: boolean } Configuration table for escaped characters
 ---@field filetypes string[] File types where the plugin is active
+---@field footnotes markview.conf.footnotes
 ---@field headings markview.conf.headings
 ---@field highlight_groups? string | table[] List of highlight groups
 ---@field horizontal_rules markview.conf.hrs
@@ -106,6 +107,16 @@
 ---@field language_names? table<string, string>
 ---@field sign boolean When true, signs are shown
 ---@field sign_hl? string Highlight group for the sign
+
+--- Footnotes
+---------------------------------------------------------------
+
+--- Configuration table for footnotes
+---@class markview.conf.footnotes
+---
+---@field enable boolean
+---@field use_unicode? boolean
+---@field hl? string
 
 --- Headings
 ---------------------------------------------------------------
@@ -297,10 +308,40 @@
 ---@class markview.links.config
 ---
 ---@field enable boolean
----@field icon string
+---
 ---@field hl? string
 ---
----@field custom? { match_string: string, icon: string, hl: string? }[]
+---@field icon string
+---@field icon_hl? string
+---
+---@field corner_left? string
+---@field padding_left? string
+---@field padding_right? string
+---@field corner_right? string
+---
+---@field corner_left_hl? string
+---@field padding_left_hl? string
+---@field padding_right_hl? string
+---@field corner_right_hl? string
+---
+---@field custom? markview.links.parts[]
+
+---@class markview.links.parts
+---
+---@field match_string string
+---
+---@field icon? string
+---@field hl? string
+---
+---@field corner_left? string
+---@field padding_left? string
+---@field padding_right? string
+---@field corner_right? string
+---
+---@field corner_left_hl? string
+---@field padding_left_hl? string
+---@field padding_right_hl? string
+---@field corner_right_hl? string
 
 --- List items
 ---------------------------------------------------------------
