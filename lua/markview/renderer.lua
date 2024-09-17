@@ -409,9 +409,9 @@ end
 
 
 --- Renderer for table headers
----@param buffer number
----@param content any
----@param config_table markview.config
+---@param buffer integer
+---@param content table
+---@param config_table markview.configuration
 local table_header = function (buffer, content, config_table)
 	local tbl_conf = config_table.tables;
 	--- Border structure
@@ -546,10 +546,10 @@ local table_header = function (buffer, content, config_table)
 end
 
 --- Renderer for table separator
----@param buffer number
----@param content any
----@param user_config markview.config
----@param r_num number
+---@param buffer integer
+---@param content table
+---@param user_config markview.configuration
+---@param r_num integer
 local table_seperator = function (buffer, content, user_config, r_num)
 	local tbl_conf = user_config.tables;
 	--- Border structure
@@ -660,9 +660,9 @@ local table_seperator = function (buffer, content, user_config, r_num)
 end
 
 --- Renderer for table footers
----@param buffer number
----@param content any
----@param config_table markview.config
+---@param buffer integer
+---@param content table
+---@param config_table markview.configuration
 local table_footer = function (buffer, content, config_table)
 	local tbl_conf = config_table.tables;
 	--- Border structure
@@ -790,10 +790,10 @@ local table_footer = function (buffer, content, config_table)
 end
 
 --- Renderer for table contents
----@param buffer number
----@param content any
----@param config_table markview.config
----@param r_num number
+---@param buffer integer
+---@param content table
+---@param config_table markview.configuration
+---@param r_num integer
 local table_content = function (buffer, content, config_table, r_num)
 	local tbl_conf = config_table.tables;
 	--- Border structure
@@ -911,7 +911,7 @@ renderer.render_headings = function (buffer, content, config)
 		return;
 	end
 
-	---@type (markview.headings.simple | markview.headings.label | markview.headings.icon)
+	---@type (markview.h.simple | markview.h.label | markview.h.icon)
 	local conf = config["heading_" .. content.level] or {};
 	local shift = config.shift_width or vim.bo[buffer].shiftwidth;
 
@@ -1030,12 +1030,16 @@ renderer.render_headings = function (buffer, content, config)
 	end
 end
 
+--- Renders setext headings
+---@param buffer integer
+---@param content table
+---@param config markview.conf.headings
 renderer.render_headings_s = function (buffer, content, config)
 	if not config or config.enable == false then
 		return;
 	end
 
-	---@type markview.render_config.headings.h
+	---@type markview.h.github | markview.h.simple
 	local conf = content.marker:match("=") and config["setext_1"] or config["setext_2"];
 
 	-- Do not proceed if setext headings don't have configuration
@@ -1063,6 +1067,7 @@ renderer.render_headings_s = function (buffer, content, config)
 						{ conf.icon or "", set_hl(conf.icon_hl or conf.hl) }
 					},
 
+					sign_text = conf.sign, sign_hl_group = set_hl(conf.sign_hl),
 					line_hl_group = set_hl(conf.hl),
 					hl_mode = "combine",
 				});
@@ -1200,7 +1205,7 @@ renderer.render_code_blocks = function (buffer, content, config_table)
 				virt_text_pos = "inline",
 				virt_text = {
 					{ icon_section, set_hl(hl) },
-					{ languageName .. " ", set_hl(config_table.name_hl) or set_hl(hl) },
+					{ languageName .. " ", set_hl(config_table.language_hl) or set_hl(hl) },
 					{ string.rep(config_table.pad_char or " ", block_length - lang_width - vim.fn.strchars(rendered_info) + ((config_table.pad_amount or 1) * 2)), set_hl(config_table.hl) },
 					{ rendered_info, set_hl(config_table.info_hl or config_table.hl) },
 				},
@@ -1230,7 +1235,7 @@ renderer.render_code_blocks = function (buffer, content, config_table)
 					{ rendered_info, set_hl(config_table.info_hl or config_table.hl) },
 					{ string.rep(config_table.pad_char or " ", block_length - lang_width - vim.fn.strchars(rendered_info) + ((config_table.pad_amount or 1) * 2)), set_hl(config_table.hl) },
 					{ icon_section, set_hl(hl) },
-					{ languageName .. " ", set_hl(config_table.name_hl) or set_hl(hl) },
+					{ languageName .. " ", set_hl(config_table.language_hl) or set_hl(hl) },
 				},
 
 				sign_text = config_table.sign == true and icon or nil,
@@ -1746,7 +1751,10 @@ renderer.render_checkboxes = function (buffer, content, config_table)
 		chk_config = config_table.unchecked;
 	elseif vim.islist(config_table.custom) then
 		for _, config in ipairs(config_table.custom) do
+			---@diagnostic disable-next-line
 			if content.state == config.match then
+				chk_config = config;
+			elseif content.state == config.match_string then
 				chk_config = config;
 			end
 		end
