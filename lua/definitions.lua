@@ -72,7 +72,7 @@
 --- Configuration for custom checkboxes
 ---@class markview.checkboxes.conf
 ---
----@field match string Text inside [] to match for this checkbox style
+---@field match_string string | string[] Text inside [] to match for this checkbox style
 ---@field text string Text to show
 ---@field hl? string Highlight group for the text
 
@@ -97,7 +97,7 @@
 ---@field style "simple" | "minimal" | "language" Render style
 ---@field hl? string Highlight group for the code block
 ---@field info_hl? string Highlight group for the info string
----@field name_hl? string Highlight group for the language name
+---@field language_hl? string Highlight group for the language name
 ---
 ---@field min_width integer Minimum width of the code block
 ---@field pad_amount integer Width of left & right padding
@@ -171,6 +171,20 @@
 ---@field icon? string
 ---@field icon_hl? string
 
+---@class markview.h.github
+---
+---@field style "github" Render style
+---@field hl? string Primary highlight group for the heading
+---
+---@field sign? string
+---@field sign_hl? string
+---
+---@field icon? string
+---@field icon_hl? string
+---
+---@field line string
+---@field line_hl? string
+
 ---@class markview.conf.headings
 ---
 ---@field enable boolean
@@ -184,8 +198,8 @@
 ---@field heading_5 (markview.h.simple | markview.h.label | markview.h.icon)
 ---@field heading_6 (markview.h.simple | markview.h.label | markview.h.icon)
 ---
----@field setext_1 (markview.h.simple | markview.h.label | markview.h.icon)
----@field setext_2 (markview.h.simple | markview.h.label | markview.h.icon)
+---@field setext_1 (markview.h.simple | markview.h.github)
+---@field setext_2 (markview.h.simple | markview.h.github)
 
 --- Horizontal rules
 ---------------------------------------------------------------
@@ -232,6 +246,7 @@
 ---@class markview.html.entities
 ---
 ---@field enable boolean
+---@field hl? string
 
 --- Injections
 ---------------------------------------------------------------
@@ -324,9 +339,9 @@
 ---@field padding_right_hl? string
 ---@field corner_right_hl? string
 ---
----@field custom? markview.links.parts[]
+---@field custom? markview.links.custom[]
 
----@class markview.links.parts
+---@class markview.links.custom
 ---
 ---@field match_string string
 ---
