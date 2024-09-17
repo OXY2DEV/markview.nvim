@@ -381,17 +381,22 @@ markview.configuration = {
 		custom = {
 			---+ ${conf, Custom cehckboxes}
 			{
-				match = "-",
+				match_string = "-",
 				text = "◯",
 				hl = "MarkviewCheckboxPending"
 			},
 			{
-				match = "~",
+				match_string = "~",
 				text = "◕",
 				hl = "MarkviewCheckboxProgress"
 			},
 			{
-				match = "o",
+				match_string = "o",
+				text = "󰩹",
+				hl = "MarkviewCheckboxCancelled"
+			},
+			{
+				match_string = "p",
 				text = "󰩹",
 				hl = "MarkviewCheckboxCancelled"
 			}
@@ -432,7 +437,7 @@ markview.configuration = {
 	headings = {
 		---+ ${class, Headings}
 		enable = true,
-		shift_width = 3,
+		shift_width = 1,
 
 		heading_1 = {
 			---+ ${conf, Heading 1}
@@ -617,7 +622,7 @@ markview.configuration = {
 			closing = {
 				{ ")", "MarkviewHeading1Sign" },
 				{ "}", "MarkviewHeading2Sign" },
-				{ "]", "MarkviewHeading3" },
+				{ "]", "MarkviewHeading3Sign" },
 			},
 
 			-- scope = {
@@ -639,7 +644,7 @@ markview.configuration = {
 
 		symbols = {
 			enable = true,
-			custom = {}
+			overwrite = {}
 		},
 
 		subscript = {
@@ -715,7 +720,7 @@ markview.configuration = {
 			add_padding = true,
 
 			text = "",
-			text_hl = "MarkviewListItemStar"
+			hl = "MarkviewListItemStar"
 		},
 		marker_dot = {
 			add_padding = true
@@ -749,7 +754,7 @@ markview.configuration = {
 		hl = {
 			"TableHeader", "TableHeader", "TableHeader",    "TableHeader",
 			"TableHeader", "TableHeader", "TableHeader",                     "TableAlignLeft",
-			"TableHeader", "TableHeader", "TableHeader",    "TableHeader",    "TableAlignCenter", "TableAlignCenter",
+			"TableHeader", "TableHeader", "TableHeader",    "TableHeader",   "TableAlignCenter", "TableAlignCenter",
 			"TableBorder", "TableBorder", "TableBorder",                     "TableAlignRight",
 			"TableBorder", "TableBorder", "TableBorder",    "TableBorder"
 		},
@@ -1215,11 +1220,14 @@ end
 
 markview.setup = function (user_config)
 	if user_config and user_config.highlight_groups then
-		markview.configuration.highlight_groups = vim.list_extend(markview.configuration.highlight_groups, user_config.highlight_groups);
-		user_config.highlight_groups = nil;
+		if vim.islist(user_config.highlight_groups) then
+			markview.configuration.highlight_groups = user_config.highlight_groups;
+		else
+			markview.configuration.highlight_groups = vim.list_extend(markview.configuration.highlight_groups, user_config.highlight_groups);
+		end
 	end
 
-	---@type markview.config
+	---@type markview.configuration
 	-- Merged configuration tables
 	markview.configuration = vim.tbl_deep_extend("force", markview.configuration, user_config or {});
 
