@@ -570,6 +570,31 @@ parser.md = function (buffer, TStree, from, to)
 				col_end = col_end,
 			})
 		elseif capture_name == "list_item" then
+			local is_checkbox = function (text)
+				if not text then
+					return false;
+				elseif not parser.cached_conf or not parser.cached_conf.checkboxes or not parser.cached_conf.checkboxes.custom then
+					return false;
+				end
+
+				text = text:gsub("[%[%]]", "");
+
+				for _, state in ipairs(parser.cached_conf.checkboxes.custom) do
+					---@diagnostic disable-next-line
+					if state.match == text then
+						return true;
+					elseif state.match_string == text then
+						return true;
+					end
+				end
+
+				if text == " " or text == "X" or text == "x" then
+					return true;
+				else
+					return false;
+				end
+			end
+
 			local marker = capture_node:named_child(0);
 			local marker_text = vim.treesitter.get_node_text(marker, buffer);
 
@@ -588,7 +613,7 @@ parser.md = function (buffer, TStree, from, to)
 				node = capture_node,
 				type = "list_item",
 				marker_symbol = vim.treesitter.get_node_text(marker, buffer),
-				is_checkbox = checkbox and true or false,
+				is_checkbox = is_checkbox(checkbox),
 
 				list_candidates = lines,
 				list_lines = list_lines,
@@ -687,9 +712,9 @@ parser.md_inline = function (buffer, TStree, from, to)
 						local marker = capture_text:match("%[(.)%]");
 
 						local start_line = extmark.list_lines[1] or "";
-						local atStart = start_line:match("[+%-*]%s+(%[%" .. marker .. "%])%s+");
+						local atStart = start_line:match("[+%-*]%s+%[(" .. marker .. ")%]%s+");
 
-						local chk_start, _ = start_line:find("%[%" .. marker .. "%]");
+						local chk_start, _ = start_line:find("%[(" .. marker .. ")%]");
 
 						if not atStart or not chk_start or chk_start - 1 ~= col_start then
 							goto invalid;
