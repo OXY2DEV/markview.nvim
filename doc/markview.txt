@@ -1,786 +1,1227 @@
 *markview.nvim*                  An experimental markdown previewer for Neovim
-							 
-					   ┏──────────────────────────────┓
-					   │ ✨ Markview.nvim             │
-					   │━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━│
-					   │ An experimental markdown     │
-					   │ previewer for neovim.        │
-					   │                              │
-					   │    ◈ ✔ Close to full render. │
-					   │    ◈ ✔ Hybrid mode.          │
-					   │    ◈ ✔ Fast. even on large   │
-					   │        files.                │
-					   ┗──────────────────────────────┛
 
-								 By `OXY2DEV`
-
-==============================================================================
-Table of contents                                        *markview.nvim-toc*
-
-Features ............................................ |markview.nvim-features|
-Requirements .................................... |markview.nvim-requirements|
-Installation .................................... |markview.nvim-installation|
-	💤 Lazy.nvim ...................................... |markview.nvim-i-lazy|
-	🦠 Mini.deps .................................. |markview.nvim-i-minideps|
-	🌒 Rocks.nvim .................................... |markview.nvim-i-rocks|
-Highlight groups ......................................... |markview.nvim-hls|
-Commands ............................................ |markview.nvim-commands|
-Plugin configuration .................................. |markview.nvim-config|
-Helper functions ..................................... |markview.nvim-helpers|
+ ╭─╼ Nvim - .../markview.nvim/README.md ╾──────────────────────────────────╮
+ │                              ◈ markview.nvim                            │
+ │                                                                         │
+ │ Highly customisable & feature rich markdown previewer for Neovim.       │
+ │                                                                         │
+ │                                ◈ Features                               │
+ │                                                                         │
+ │     ✔ Basic markdown support.                                           │
+ │     ✔ Extended markdown support.                                        │
+ │         ✔ Github alerts                                                 │
+ │         ✔ Obsidian callouts                                             │
+ │         ✔ Obsidian checkboxes                                           │
+ │         ✔ LaTeX support(basic)                                          │
+ │     ✔ Html tags & entities support.                                     │
+ │     ✔ Can work on files other than markdown.                            │
+ │     ✔ Works like normal even on large files.                            │
+ │     ✔ Hybrid mode & split view.                                         │
+ │     ✔ Tree-sitter injection support.                                    │
+ │     ✔ Dynamic highlighlight groups.                                     │
+ │                                                                         │
+ │ And so much more!                                                       │
+ ╰─────────────────────────────────────────────────────────────────────────╯
 
 ==============================================================================
-Features                                            *markview.nvim-features*
+Table of contents
 
-- Fully stylized preview of `markdown` documents! Currently supported elements
-  are,
-    * atx_headings(uses `#`) & setext_headings(uses `---` or `===`)
-	* inline codes
-	* code blocks
-	* block quotes & callouts/alerts!
-	* list items(both ordered & unordered).
-	* tables(supports elements within the tables)
-	* hyperlinks, image links & email urls(supports content bases
-	  customisation).
-	* horizontal rules.
-	* checkboxes(supports custom states too!)
-	* html elements(basic).
-	* html entities.
-
-- Fully customisable elements. From icons, highlight groups to concealments,
-  padding almost everything can be customised.
-- `Dynamically` generated highlight groups. Useful for colorschemes that don't
-  support various highlight groups.
-  Note: The plugin will respect highlight groups set by the colorschemes
-  when available.
-- `Hybrid-mode` for editing and previewing at the same time.
-- Commands to quickly toggle the plugin(globally or per buffer).
-
-And so much more!
 
 ==============================================================================
-Requirements                                    *markview.nvim-requirements*
+Setup                                                   *markview.nvim-setup*
 
-- Neovim version `0.10.0` or higher.
-- `Tree-sitter` parser for `markdown`, `markdown_inline` & `html`.
-- `nvim-web-devicons`
-- Optionally, a `tree-sitter` compatible colorscheme.
-
-==============================================================================
-Installation                                    *markview.nvim-installation*
-
-`markview.nvim` can be installed via your favourite package manager.
-
-------------------------------------------------------------------------------
-💤 Lazy.nvim                                          *markview.nvim-i-lazy*
-
-For `lazy.lua` users.
+This is the simplified version of the available options. You can find all the
+options in their own sections.
 >lua
 	{
-		"OXY2DEV/markview.nvim",
-		lazy = false,
+		--- Experimental setting, disables rendering html & markdown
+		--- inside of code blocks
+		__inside_code_block = false,
 
-		dependencies = {
-			-- You may not need this if you don't lazy load
-			-- Or if the parsers are in your $RUNTIMEPATH
-			"nvim-treesitter/nvim-treesitter",
+		--- Buffer types to ignore
+		buf_ignore = { "nofile" },
 
-			"nvim-tree/nvim-web-devicons"
+		--- Callback functions to run on specific events
+		callbacks = {
+			on_enable = function (buf, win) end,
+			on_disable = function (buf, win) end,
+
+			on_mode_change = function (buf, win, mode) end
 		},
-	}
-<
-For `plugins/markview.lua` users.
->lua
-	return {
-		"OXY2DEV/markview.nvim",
-		lazy = false,
 
-		dependencies = {
-			-- You may not need this if you don't lazy load
-			-- Or if the parsers are in your $RUNTIMEPATH
-			"nvim-treesitter/nvim-treesitter",
+		--- Time in milliseconds to wait after an event to redraw
+		debounce = 50,
 
-			"nvim-tree/nvim-web-devicons"
+		--- File types where the plugin should be active
+		filetypes = { "markdown", "quarto", "rmd" },
+
+		--- Highlight groups,
+		--- see, `markview.nvim-hls`
+		highlight_groups = "dynamic",
+
+		--- Modes where hybrid mode should be enabled
+		hybrid_modes = nil,
+
+		--- Maximum lines a file can have for it to be completely
+		--- rendered
+		max_file_length = 1000,
+
+		--- Modes where the plugin is enabled
+		modes = { "n", "no" },
+
+		--- Lines from the cursor that should be rendered on large files
+		render_distance = 100,
+
+		split_conf = { split = "right" },
+
+		--- Block quote configuration
+		--- see, `markview.nvim-c-block_quotes`
+		block_quotes = {
+			enable = true,
+
+			default = {},
+			callouts = {}
 		},
-	}
-<
 
-Note:
-It is NOT recommended to lazy load this plugin as it already does that.
+		--- Checkbox configuration
+		--- see, `markview.nvim-c-checkboxes`
+		checkboxes = {
+			enable = true,
 
-Warning:
-You will not be able to access help files without opening a markdown file
-if you choose to lazy load.
+			checked = {},
+			unchecked = {},
+			custom = {}
+		},
 
-------------------------------------------------------------------------------
-🦠 Mini.deps                                      *markview.nvim-i-minideps*
->lua
-	local MiniDeps = require("mini.deps");
+		--- Fenced code block configuration
+		--- see, `markview.nvim-c-code_blocks`
+		code_blocks = {
+			enable = true,
+			icons = true,
 
-	MiniDeps.add({
-		source = "OXY2DEV/markview.nvim",
+			style = "language",
+			hl = "MarkviewCode",
+			info_hl = "MarkviewCodeInfo",
 
-		depends = {
-			-- You may not need this if you don't lazy load
-			-- Or if the parsers are in your $RUNTIMEPATH
-			"nvim-treesitter/nvim-treesitter",
+			min_width = 60,
+			pad_amount = 3,
+ 
+			language_names = nil,
+			language_direction = "right",
 
-			"nvim-tree/nvim-web-devicons"
+			sign = true, sign_hl = nil
+		},
+
+		--- Escaped characters(e.g. \$) configuration
+		--- see, `markview.nvim-c-escaped`
+		escaped = { enable = true },
+
+		--- Footnotes configuration
+		--- see, `markview.nvim-c-footnotes`
+		footnotes = {
+			enable = true,
+			use_unicode = true
+		},
+
+		--- Heading configuration
+		--- see, `markview.nvim-c-headings`
+		headings = {
+			enable = true,
+			shift_width = 1,
+
+			heading_1 = {},
+			heading_2 = {},
+			heading_3 = {},
+			heading_4 = {},
+			heading_5 = {},
+			heading_6 = {},
+
+			setext_1 = {},
+			setext_2 = {}
+		},
+
+		--- Horizontal rules configuration
+		--- see, `markview.nvim-c-hrs`
+		horizontal_rules = {
+			enable = true,
+			parts = {}
+		},
+	
+		--- HTML configuration
+		--- see, `markview.nvim-c-html`
+		html = {
+			enable = true,
+
+			tags = {
+				enable = true,
+
+				default = { conceal = false },
+				configs = {}
+			},
+
+			entities = {
+				enable = true
+			}
+		},
+
+		--- Tree-sitter query injections configuration
+		--- see, `markview.nvim-c-injections`
+		injections = {
+			enable = true,
+			languages = {}
+		},
+
+		--- Inline code configuration
+		--- see, `markview.nvim-c-inline_codes`
+		inline_codes = {
+			enable = true,
+			corner_left = " ",
+			corner_right = " ",
+
+			hl = "MarkviewInlineCode"
+		},
+
+		--- LaTeX configuration
+		--- see, `markview.nvim-c-latex`
+		latex = {
+			enable = true,
+
+			brackets = {
+				enable = true,
+				opening = {
+					{ "(", "MarkviewHeading1Sign" },
+					{ "{", "MarkviewHeading2Sign" },
+					{ "[", "MarkviewHeading3Sign" },
+				},
+				closing = {
+					{ ")", "MarkviewHeading1Sign" },
+					{ "}", "MarkviewHeading2Sign" },
+					{ "]", "MarkviewHeading3Sign" },
+				},
+
+				scope = {}
+			},
+
+			inline = { enable = true },
+			block = {
+				enable = true,
+
+				hl = "Code",
+				text = { " Latex ", "Special" }
+			},
+
+			symbols = {
+				enable = true,
+				custom = {}
+			},
+
+			subscript = { enable = true },
+			superscript = { enable = true }
+		},
+
+		--- Links configuration
+		--- see, `markview.nvim-c-links`
+		links = {
+			enable = true,
+
+			hyperlinks = {
+				enable = true,
+
+				icon = "󰌷 ",
+				hl = "MarkviewHyperlink",
+
+				custom = {}
+			},
+			images = {
+				enable = true,
+
+				icon = "󰥶 ",
+				hl = "MarkviewImageLink",
+
+				custom = {}
+			},
+			emails = {
+				enable = true,
+
+				icon = " ",
+				hl = "MarkviewEmail"
+
+				custom = {}
+			}
+		},
+
+		--- List items configuration
+		--- see, `markview.nvim-c-list_items`
+		list_items = {
+			enable = true,
+
+			indent_size = 2,
+			shift_width = 4,
+
+			marker_minus = {
+				add_padding = true,
+
+				text = "",
+				hl = "MarkviewListItemMinus"
+			},
+			marker_plus = {
+				add_padding = true,
+
+				text = "",
+				hl = "MarkviewListItemPlus"
+			},
+			marker_star = {
+				add_padding = true,
+
+				text = "",
+				hl = "MarkviewListItemStar"
+			},
+			marker_dot = {
+				add_padding = true
+			},
+		},
+
+		--- Tables configuration
+		--- see, `markview.nvim-c-tables`
+		tables = {
+			enable = true,
+			text = {
+				"╭", "─", "╮", "┬",
+				"│", "│", "│",      "╼",
+				"├", "┼", "┤", "─", "╴", "╶",
+				"│", "│", "│",      "╾",
+				"╰", "─", "╯", "┴",
+			},
+			hl = {
+				"TableHeader", "TableHeader", "TableHeader",    "TableHeader",
+				"TableHeader", "TableHeader", "TableHeader",                     "TableAlignLeft",
+				"TableHeader", "TableHeader", "TableHeader",    "TableHeader",    "TableAlignCenter", "TableAlignCenter",
+				"TableBorder", "TableBorder", "TableBorder",                     "TableAlignRight",
+				"TableBorder", "TableBorder", "TableBorder",    "TableBorder"
+			},
+
+			block_decorator = true,
+			use_virt_lines = true
 		}
-	});
-<
-------------------------------------------------------------------------------
-🌒 Rocks.nvim                                        *markview.nvim-i-rocks*
-
-`markview.nvim` can be installed using the following command.
->vim
-	:Rocks install markview.nvim
-<
-------------------------------------------------------------------------------
-Others
-
-Installation process for other plugin managers are similar.
->vim
-	Plug "nvim-treesitter/nvim-treesitter"
-	Plug "nvim-tree/nvim-web-devicons"
-
-	Plug "OXY2DEV/markview.nvim"
-<
-==============================================================================
-Highlight groups                                         *markview.nvim-hls*
-
-Note:
- The `$` are NOT part of the name.
-
-- $MarkviewHeading1$     $MarkviewHeading1Sign$
-  $MarkviewHeading2$     $MarkviewHeading2Sign$
-  $MarkviewHeading3$     $MarkviewHeading3Sign$
-  $MarkviewHeading4$     $MarkviewHeading4Sign$
-  $MarkviewHeading5$     $MarkviewHeading5Sign$
-  $MarkviewHeading6$     $MarkviewHeading6Sign$
-
-  Highlight groups for different heading levels. `atx_headings` &
-  `setext_headings` both uses them
-
-- $MarkviewBlockQuoteDefault$
-  $MarkviewBlockQuoteOk$
-  $MarkviewBlockQuoteWarn$
-  $MarkviewBlockQuoteError$
-  $MarkviewBlockQuoteNote$
-  $MarkviewBlockQuoteSpecial$
-
-  Highlight groups responsible for various block quotes, `callouts` &
-  `alerts`.
-
-- $MarkviewCode$
-  $MarkviewInlineCode$
-
-  Highlight group for showing `code blocks` and `inline codes`.
-
-- $MarkviewCheckboxChecked$
-  $MarkviewCheckboxUnchecked$
-  $MarkviewCheckboxPending$
-  $MarkviewCheckboxProgress$
-  $MarkviewCheckboxCancelled$
-
-  Highlight group for the different `checkbox` states.
-
-- $MarkviewListItemPlus$
-  $MarkviewListItemMinus$
-  $MarkviewListItemStar$
-
-  Highlight groups for `unordered lists`. The plugin doesn't add decorations
-  to ordered lists.
-
-- $MarkviewTableBorder$
-
-  Highlight group for the borders of `tables`.
-
-  $MarkviewTableAlignLeft$
-  $MarkviewTableAlignRight$
-  $MarkviewTableAlignCenter$
-
-  Highlight groups for the various `alignment indicators` on rows.
-
-- $MarkviewGradient1$
-  $MarkviewGradient2$
-  $MarkviewGradient2$
-  $MarkviewGradient3$
-  $MarkviewGradient4$
-  $MarkviewGradient5$
-  $MarkviewGradient6$
-  $MarkviewGradient7$
-  $MarkviewGradient8$
-  $MarkviewGradient9$
-  $MarkviewGradient10$
-
-  Highlight groups used by the `horizontal rules`.
-
-- $MarkviewHyperlink$
-  $MarkviewImageLink$
-  $MarkviewEmail$
-
-  Highlight groups use by various `links`.
-
-==============================================================================
-Commands                                            *markview.nvim-commands*
-
-Markview comes with the following command,
->vim
-	:Markview
-<
-When used without any arguments it `toggles` the plugin state.
-
-It comes with the following sub-commands,
-
-- toggleAll
-
-  Toggles the plugin state. This will set ALL attached buffers to the same
-  state.
-
-- enableAll
-
-  Enables the plugin in all attached buffers. If the plugin is already enabled
-  then it will redraw everything.
-
-- disableAll
-
-  Disables the plugin in all attached buffers. If the plugin is already
-  diaable it will clear any remaining decorations.
-
-Note:
-When the {buffer} isn't provided these commands will run on the current
-buffer.
-
-- toggle {buffer}
-
-  Toggles the state of a buffer. Used for disabling the plugin on a specific
-  buffer.
-
-- enable {buffer}
-
-  Enables the plugin on a buffer. Redraws decorations if it's already enabled
-  in that buffer.
-
-- disable {buffer}
-
-  Disables the plugin on a specific buffer. Removes decorations if it's
-  already disabled in that buffer.
-
-------------------------------------------------------------------------------
-
-==============================================================================
-Plugin configuration                                  *markview.nvim-config*
-
-The plugin can be configured via the `setup()` function.
->lua
-	local presets = require("markview.presets");
-
-	require("markview").setup({
-		headings = presets.headings.glow_labels
-	});
-<
-The setup function comes with the following options,
-
-- modes `string[]`
-
-  A list of |vim-modes| where the preview will be shown. Default is,
->lua
-	modes = { "n", "no" }
-<
-- hybrid_modes `string[] or nil`
-
-  A list of |vim-modes| where the text under the cursor is shown as raw text
-  without any decorations.
-
-  Default is nil.
->lua
-	hybrid_modes = nil
-<
-- filetypes `string[]`
-
-  List of filetyoes where the plugin will be enabled.
->luw
-	filetypes = { "markdown", "quarto", "rmd" }
-<
-- buf_ignore `string[] or nil`
-
-  A list of |'buftype'|s where the plugin will be disabled. Default is,
->lua
-	buf_ignore = { "nofile" }
-<
-- callbacks
-
-    {
-      on_enable `function or nil`,
-	  on_disable: `function or nil`,
-
-	  on_mode_change: `function or nil`
-    }
-
-  A table containing `callbacks` that will be run by the plugin on specific
-  events. See |markview.nvim-callbacks| for more info.
-
-  Example usage,
->lua
-	callbacks = {
-		on_enable = function (_, win)
-			vim.wo[win].cursorline = false;
-		end
 	}
 <
-- headings `table or nil`
 
-  A table containing configuration for various `headings`.
+==============================================================================
+Configuration: Block quotes                    *markview.nvim-c-block_quotes*
 
-  Example usage,
+>lua
+	block_quotes = {
+		enable = true,
+
+		--- Default configuration
+		default = {
+			border = "▋", border_hl = "MarkviewBlockQuoteDefault"
+		},
+
+		callouts = {
+			{
+				--- Text inside [!...], case insensitive
+				match_string = "CUSTOM",
+
+				--- Text to show
+				callout_preview = "󰠳 Custom",
+				--- Highlight group for `callout_preview`
+				callout_preview_hl = "MarkviewBlockQuoteWarn",
+
+				--- If true, Text after [!...] is shown
+				custom_title = true,
+				--- Icon shown before the title
+				custom_icon = " 󰠳 ",
+
+				border = "▋", border_hl = "MarkviewBlockQuoteWarn"
+			}
+			--- ... Other callouts
+		}
+	},
+<
+
+`markview.nvim` comes with the following block quote types by default.
+
+From `Github`,
+
+	- Note
+	- Tip
+	- Important
+	- Warning
+	- Caution
+
+From `Obsidian`,
+
+	- Abstract, Summary, Tldr
+	- Todo, Info
+	- Success, Check, Done
+	- Question, Help, Faq
+	- Failure, Fail, Missing
+	- Danger, Error
+	- Bug
+	- Example
+	- Quote, Cite
+	- Hint
+	- Attention
+
+Usage example
+>md
+	>[!Custom] A custom title
+	> Some text
+<
+Results in, 
+>txt
+	▋ 󰠳 A custom title
+	▋ Some text
+<
+------------------------------------------------------------------------------
+Creating a new callout
+
+Creating a new callout is pretty simple.
+
+Just set the match string to the text to use as the identifier for the
+callout. It is `case-insensitive` so keep that in mind.
+
+Now you set the `border`, this is required.
+
+If you want to support titles(like in `Obsidian`) then set the `custom_title`
+to true.
+
+Note: You will also need to set the `custom_icon` option to show the
+correct icon.
+>lua
+	callouts = {
+		{
+			--- Text inside [!...], case insensitive
+			match_string = "CUSTOM",
+
+			--- Text to show
+			callout_preview = "󰠳 Custom",
+			--- Highlight group for `callout_preview`
+			callout_preview_hl = "MarkviewBlockQuoteWarn",
+
+			--- If true, Text after [!...] is shown
+			custom_title = true,
+			--- Icon shown before the title
+			custom_icon = " 󰠳 ",
+
+			border = "▋", border_hl = "MarkviewBlockQuoteWarn"
+		}
+	}
+<
+------------------------------------------------------------------------------
+Creating aliases for a callout
+
+You can also set aliases for a callout.
+>lua
+	callouts = {
+		{
+			--- A list of aliases
+			match_string = { "Abstract", "tldr", "Summary" },
+
+			callout_preview = " Abstract",
+			callout_preview_hl = "MarkviewBlockQuoteWarn",
+			border = "▋", border_hl = "MarkviewBlockQuoteWarn"
+		}
+	}
+<
+
+Now for either `Abstract`, `tldr` or `Summary` the plugin will show
+` Abstract`.
+
+------------------------------------------------------------------------------
+Gradient borders
+
+The plugin also supports multi-colored/gradient borders for block quotes.
+>lua
+	callouts = {
+		{
+			--- ... Other options
+			border = "▋",
+			border_hl = {
+				"Gradient1", "Gradient2", "Gradient3", "Gradient4",
+				"Gradient5", "Gradient6", "Gradient7", "Gradient8",
+				"Gradient9", "Gradient10"
+			}
+		}
+	}
+<
+This also works with the `border`!
+>lua
+	callouts = {
+		{
+			--- ... Other options
+			border = { "▋", "▌", "▍", "▎", "▏" }
+		}
+	}
+<
+==============================================================================
+checkboxes                                       *markview.nvim-c-checkboxes*
+
+`markview.nvim` supports the default checkboxes along with the option to
+create your own checkboxes!
+>lua
+	checkboxes = {
+		enable = true,
+
+		checked = {
+			text = "✔", hl = "CheckboxChecked"
+		},
+		unchecked = {
+			text = "✖", hl = "CheckboxUnchecked"
+		},
+
+		custom = {}
+	}
+<
+
+------------------------------------------------------------------------------
+Creating a new checkbox state
+
+The plugin supports custom checkbox states that can be made via the `custom`
+option.
+>lua
+	custom = {
+		{
+			--- Text inside of []
+			match_string = "p"
+			text = "",
+			hl = "CheckboxChecked"
+		}
+	}
+<
+==============================================================================
+Code blocks                                     *markview.nvim-c-code_blocks*
+
+`markview.nvim` provides 3 different ways to render fenced code blocks.
+
+Here's the default configuration.
+>lua
+	code_blocks = {
+		enable = true,
+		icons = true, -- When true, icons are shown
+
+		style = "language", -- Render style
+		hl = "MarkviewCode", -- Background highlight group
+
+		-- Highlight group for the extra info string
+		info_hl = "MarkviewCodeInfo",
+
+		min_width = 60, -- Minimum block width
+		pad_amount = 3, -- Padding size
+ 
+		-- Direction where the language name & icons are shown
+		language_direction = "right",
+
+		sign = true, -- When true, signs are shown where the block starts
+		sign_hl = nil -- Highlight group for the sign
+	}
+<
+------------------------------------------------------------------------------
+Style: simple
+
+Adds a background to the lines within the code block.
+>lua
+	code_blocks = {
+		enable = true,
+		style = "simple",
+
+		hl = "Code" -- Highlight group to use for the background
+	}
+<
+------------------------------------------------------------------------------
+Style: minimal
+
+Creates a box around the code and hides all the info strings. Useful if you
+only care about the seeing the code.
+>lua
+	code_blocks = {
+		enable = true,
+		style = "minimal",
+
+		hl = "Code", -- Highlight group to use for the background
+
+		min_width = 70, -- Minimum width of the code block
+		pad_char = " ", -- Character used for paddings and empty cells
+		pad_amount = 3, -- Number of `pad_char` to add before & after the code
+	}
+<
+------------------------------------------------------------------------------
+Style: language
+
+Creates a box around the code and shows the language(with icons) & the info
+string(wrapped).
+>lua
+	code_blocks = {
+		enable = true,
+		style = "language",
+		icons = true, -- Used for disable the icons
+
+		hl = "Code", -- Highlight group to use for the background
+		-- Highlight group for the info string
+		--
+		-- ```lua This is an info string
+		-- ````
+		info_hl = "CodeInfo",
+		-- Highlight group for the language name
+		language_hl = nil,
+		-- A table whose keys are the text in the code block and the value
+		-- is the text to show
+		language_names = {
+			["cpp"] = "C++"
+		}
+
+		min_width = 70, -- Minimum width of the code block
+		pad_char = " ", -- Character used for paddings and empty cells
+		pad_amount = 3, -- Number of `pad_char` to add before & after the code
+
+		-- Direction of the language string
+		-- Possible values: "left" | "right"
+		language_direction = "left",
+
+		-- When true, the icon of that language is shown on the signcolumn
+		-- where the code block starts
+		sign = true,
+		-- Highlight group for the signs, when nil the icon's highlight
+		-- group is used
+		sign_hl = nil
+	}
+<
+==============================================================================
+Escaped characters                                  *markview.nvim-c-escaped*
+
+`markview.nvim` can hide the `\` in escaped characters. Here's a simple
+example to show what it does.
+>md
+	\& → &
+<
+Currently it only has one option.
+>lua
+	escaped = {
+		enable = true
+	}
+<
+==============================================================================
+Footnotes                                         *markview.nvim-c-footnotes*
+
+`markview.nvim` comes with footnote support. Here's an example,
+>md
+	This is a [^footnote].
+	        ↓
+	This is a ᶠᵒᵒᵗⁿᵒᵗᵉ.
+<
+Here's the configuration table for it,
+>lua
+	footnotes = {
+		enable = true,
+
+		-- When true, uses various Unicode characters to mimic superscript
+		-- text
+		use_unicode = true
+	}
+<
+==============================================================================
+Headings                                           *markview.nvim-c-headings*
+
+`markview.nvim` comes with various customisation options for the headings.
 >lua
 	headings = {
-		enable = false,
-
-		textoff = 0,
+		enable = true,
+		-- Amount of spaces to add per level of heading,
+		-- Only affects atx headings,
+		-- Has no effect if `align = "center`` or `align = "right"
 		shift_width = 1,
 
-		heading_1 = {
-			style = "simple",
-
-			shift_char = " ",
-			hl = "DiagnosticOk"
-		},
+		heading_1 = {},
 		heading_2 = {},
 		heading_3 = {},
 		heading_4 = {},
 		heading_5 = {},
 		heading_6 = {},
 
-		setext_1 = {
-			style = "github",
-
-			icon = "🔗",
-			hl = "DiagnosticOk"
-		},
+		setext_1 = {},
 		setext_2 = {}
 	}
 <
-- code_blocks `table or nil`
+------------------------------------------------------------------------------
 
-  A table containing configuration for the `fenced code blocks`.
+Each heading type can be configured individually. There are 2 types of
+headings in markdown
+>md
+	# ATX heading
+	
+	Setext heading
+	--------------
+<
+------------------------------------------------------------------------------
+ATX Headings
 
-  Example usage,
+These are headings that start with one or more `#`. Their configuration can
+vary dependinh on what style is used.
+
+Currently available styles for atx headings are,
+
+	- simple
+	- label
+	- icon
+
+Style: simple ~
+
+Highlights the line containing the heading.
 >lua
-	code_blocks = {
-		enable = false,
-		style = "minimal",
-	    position = nil,
-	    min_width = 70,
-    
-		pad_amount = 3,
-	    pad_char = " ",
-
-	    hl = "CursorLine"
+	heading_1 = {
+		style = "simple",
+		hl = "Heading1"
 	}
 <
-- inline_codes `table or nil`
+Style: label ~
 
-  A table containing configuration for the `inline codes`.
-
-  Example usage,
+Shows the heading like a label. Also hides the `#`. Can also shift the label
+based on the heading level if `shift_width` is set.
 >lua
-	inline_codes = {
-		enable = false,
-		enable = true,
-	    hl = "DiagnosticOk",
+	heading_2 = {
+		style = "label",
+		-- Alignment of the label
+		-- Possible values: "left" | "center" | "right"
+		align = "left",
 
-	    corner_left = nil,
-	    corner_left_hl = nil,
+		-- Default highlight group
+		-- Used for options that end with "_hl"
+		hl = "Heading2",
 
-	    padding_left = " ",
+		-- Sign to show on the sigmcolumn
+		sign = nil,
+		-- Highlight group for the sign
+		sign_hl = nil,
+
+		-- Various parts to use for the label
+		corner_left = nil,
+		padding_left = nil,
+
+		-- Icon is added before the text itself
+		icon = nil,
+
+		padding_right = nil,
+		corner_right = nil,
+
+		-- Highlight groups for the various parts
+		-- Fallback to "hl" if the value is nil
+		corner_left_hl = nil,
 		padding_left_hl = nil,
 
-	    padding_right = " ",
-		padding_right_hl = nil,
+		icon_hl = nil,
 
-	    corner_right = nil,
+		padding_right_hl = nil,
 		corner_right_hl = nil
 	}
 <
-- block_quotes `table or nil`
+You can see here how various options are rendered.
+>txt
+					padding_left ─┐      ┌── padding_right
+					corner_left ─┐│      │┌─ corner_right
+							     █ ◉ Text █
+							       └─ icon
+<
+Style: icon ~
 
-  A table containing configuration for the `block quotes`, `alerts` and
-  `callouts`.
-
-  Example usage,
+Indents the heading text, hides the `#` and shows an icon. Can also shift the
+text if `shift_width` is set.
 >lua
-	block_quotes = {
-		enable = false,
-		enable = true,
+	heading_3 = {
+		style = "icon",
 
-	    default = {
-			border = "▋",
-	    },
-		callouts = nil
+		-- Character used for shifting the text
+		shift_char = " ",
+		-- Highlight group for the shift_char
+		shift_hl = nil,
+
+		-- Sign to show on the sigmcolumn
+		sign = nil,
+		-- Highlight group for the sign
+		sign_hl = nil,
+
+		-- Icon is added before the text itself
+		icon = nil,
+		icon_hl = nil,
 	}
 <
-- horizontal_rules `table or nil`
+------------------------------------------------------------------------------
+Setext Headings
 
-  A table containing configuration for the `horizontal rules`.
+These are headings that use `-` or `=` under the heading text.
 
-  Example usage,
+They currently have 2 styles,
+
+	- simple
+	- github
+
+Style: simple ~
+
+Adds a background to the lines of heading.
+>lua
+	setext_1 = {
+		style = "simple",
+		hl = "Heading1"
+	}
+<
+
+Style: github ~
+
+Adds icons to the headings(like in github) and adds a decorated line below the
+heading text.
+
+This also supports signs!
+>lua
+	{
+		style = "github",
+
+		-- Highlight group used by the icon & line
+		-- when "icon_hl" or "line_hl" isn't set
+		hl = nil,
+
+		sign = nil,
+		sign_hl = nil,
+
+		icon = " ",
+		icon_hl = nil,
+
+		line = "━",
+		line_hl = nil
+	}
+<
+==============================================================================
+Horizontal rules                                        *markview.nvim-c-hrs*
+
+`markview.nvim` allows creating your own custom horizontal rules with parts.
 >lua
 	horizontal_rules = {
-		enable = false,
+		enable = true,
+		parts = {}
+	}
+<
+Currently available parts are
 
-	    parts = {
-	        {
-		        type = "repeating",
+	- repeating
+	- text
 
-	            repeat_amount = 10,
-		        text = "-",
-			    hl = "Special"
-	        }
+------------------------------------------------------------------------------
+Part: repeating
+
+Repeats the provided text by the specified number. Also supports `gradients`.
+>lua
+	parts = {
+		{
+			type = "repeating",
+
+			-- The number of times to repeat text
+			-- Can also be a integer value
+			-- ```lua
+			-- repeat_amount = 10,
+			-- ```
+			repeat_amount = function (buf)
+				return 10;
+			end,
+
+			-- Text to repeat
+			text = "-",
+
+			-- Highlight groups to use on the final string
+			-- When the value is a string it is used as a solid color
+			hl = { "Gradient1", "Gradient2", "Gradient3", "Gradient4" },
+
+			-- Direction from where the gradient is applied for
+			direction = "left"
 		}
 	}
 <
-- links `table or nil`
-
-  A table containing configuration for various `links`.
-
-  Example usage,
->lua
-	links = {
-		enable = false
-	}
+Here's a simple diagram to show how the gradient is applied to a text.
+>txt
+	            Gradient4 ┐
+	           Gradient3 ┐│
+	          Gradient2 ┐││                direction = "left"
+	         Gradient1 ┐│││
+	                  │││││
+	╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌Some text with a 😑!╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌
+	                                  │││││
+	                                  ││││└ Gradient1
+	direction = "right"               ││└┴ Gradient2
+				                      │└─ Gradient3
+				                      └─Gradient4
 <
-- list_items `table or nil`
+------------------------------------------------------------------------------
+Part: text
 
-  A table containing configuration for various `list items`.
-
-  Example usage,
+Shows the provided text with the specified highlight group.
 >lua
-	list_items = {
-		enable = false,
+	parts = {
+		{
+			type = "text",
 
-	    hyperlinks = {},
-	    images = {},
-		emails = {}
-	}
-<
-- checkboxes `table or nil`
-
-  A table containing configuration for various `checkboxes`.
-
-  Example usage,
->lua
-	checkboxes = {
-		enable = false,
-
-	    checked = {
-		    text = "✔", hl = "TabLineSel"
-	    },
-		unchecked = {},
-	    pending = {},
-
-		custom = {
-			{
-	            match = "~",
-		        text = "◕",
-			    hl = "CheckboxProgress"
-	        }
+			text = "Some text",
+			hl = "Special"
 		}
 	}
 <
-- tables `table or nil`
+==============================================================================
+HTML                                                   *markview.nvim-c-html*
 
-  A table containing configuration for the `tables`.
+`markview.nvim` comes with basic HTML support. It is limited by design as it's
+much easier to implament and it makes more sense to use them inside of text
+rather then writing large chunks of HTML between lines.
+>md
+	✔ This works
+	<b>hi</b>
 
-  Example usage,
->lua
-	tables = {
-		enable = false,
-		use_virt_lines = false,
-
-	    text = {},
-		hl = {}
-	}
+	✖ This doesn't work
+	<b>
+		hi
+	</b>
 <
-- html, `table or nil`
-
-  A tablw containing configuration for html elements & entities.
+`markview.nvim` also supports `HTML entities`!
+>md
+	&ang; → ∠
+<
+Configuration table,
 >lua
 	html = {
-	    enable = true,
+		enable = true,
 
-	    tags = { enable = true },
-		entities = { enable = true }
+		tags = {
+			enable = true,
+
+			default = {
+				conceal = false, -- If true, the tags are hidden
+				hl = nil -- Highlight group for the text
+			},
+
+			-- The key is the tag
+			-- The value is a table with 2 properties
+			--   conceal, If true the tag is hidden
+			--   hl, Highlight group for the text within the tag
+			configs = {
+				b = { conceal = true, hl = "Bold" }
+			}
+		},
+
+		entities = {
+			enable = true,
+			-- Highlight group for the entity
+			hl = nil
+		}
 	}
 <
+==============================================================================
+Inline codes                                   *markview.nvim-c-inline_codes*
+
+You can add paddings & other similar decorations to inline code via this
+plugin.
+>lua
+	inline_codes = {
+		enable = true,
+
+		hl = "InlineCode",
+
+		corner_left = " ",
+		padding_left = nil,
+
+		padding_right = nil,
+		corner_right = " ",
+
+		-- Highlight groups for the various parts
+		-- Fallback to "hl" if the value is nil
+		corner_left_hl = nil,
+		padding_left_hl = nil,
+
+		padding_right_hl = nil,
+		corner_right_hl = nil
+	}
+<
+==============================================================================
+LaTeX                                                 *markview.nvim-c-latex*
+
+`markview.nvim` comes with basic LaTeX support.
+>lua
+	latex = {
+		enable = true,
+
+		-- Renders {} as (), {}, []
+		brackets = {
+			enable = true,
+			opening = {
+				{ "(", "MarkviewHeading1Sign" },
+				{ "{", "MarkviewHeading2Sign" },
+				{ "[", "MarkviewHeading3Sign" },
+			},
+			closing = {
+				{ ")", "MarkviewHeading1Sign" },
+				{ "}", "MarkviewHeading2Sign" },
+				{ "]", "MarkviewHeading3Sign" },
+			},
+
+			scope = {}
+		},
+
+		-- Hides $ in $...$(inline LaTeX)
+		inline = { enable = true },
+
+		-- Highlights LaTeX blocks
+		block = {
+			enable = true,
+
+			hl = "Code",
+			text = { " Latex ", "Special" }
+		},
+
+		-- Shows \symbols
+		symbols = {
+			enable = true,
+			custom = {}
+		},
+
+		-- Superscript & subscript text
+		subscript = { enable = true },
+		superscript = { enable = true }
+	}
+<
+------------------------------------------------------------------------------
+LaTeX: brackets
+
+Render LaTeX brackets(`{}`) as math brackets(`()`, `{}`, `[]`). You can also
+use this to highlight the scope of a bracket.
+>lua
+	brackets = {
+		enable = true,
+
+		-- A list of tables containing the text to show
+		-- and the highlight group(optional) for the opening
+		-- brackets
+		opening = {
+			{ "(", "MarkviewHeading1Sign" },
+			{ "{", "MarkviewHeading2Sign" },
+			{ "[", "MarkviewHeading3Sign" },
+		},
+		-- A list of tables containing the text to show
+		-- and the highlight group(optional) for the closing
+		-- brackets
+		closing = {
+			{ ")", "MarkviewHeading1Sign" },
+			{ "}", "MarkviewHeading2Sign" },
+			{ "]", "MarkviewHeading3Sign" },
+		},
+
+		-- A list of highlight groups for highlighting the text
+		-- inside of brackets
+		scope = {
+			"MarkviewHeading1", "MarkviewHeading2", "MarkviewHeading3"
+		}
+	},
+<
+------------------------------------------------------------------------------
+LaTeX: block
+
+`markview.nvim` allows highlighting blocks of LaTeX(text inside "$$...$$").
+>lua
+	block = {
+		enable = true,
+
+		-- Number of spaces to add before the lines
+		pad_amount = 3,
+
+		-- Highlight group for the background
+		hl = "Code",
+		-- { text, highlight group } that is shown on the bottom right
+		-- of the block
+		text = { " Latex ", "Special" }
+	},
+<
+Note: Due to the nature of LaTeX blocks it is currently not possible to
+make them work like fenced code blocks in markdown.
 
 ------------------------------------------------------------------------------
-Helper functions                                       *markview.nvim-helpers*
-
-The plugin comes with a few helper functions to easily create Dynamic
-|highlight-groups|.
-
-Color related helper functions can be used either through `markview.colors` or
-by requiring the file Directly.
+ LaTeX: symbols
 >lua
-	local markview = require("markview");
-	vim.print(markview.colors.get_hl_value(0, "Special", "fg"));
+	symbols = {
+		enable = true,
+
+		-- A table whose keys are the text after \
+		-- and the values are the symbol to show
+		custom = {
+			equiv = "≡"
+		}
+	}
+<
+Usage,
+>md
+	$a \equiv b$ → a ≡ b
+<
+==============================================================================
+Links                                                 *markview.nvim-c-links*
+
+`markview.nvim` supports hyperlinks, images & emails.
+>lua
+	links = {
+		enable = true,
+
+		hyperlinks = {
+			enable = true,
+
+			icon = "󰌷 ",
+			hl = "MarkviewHyperlink",
+
+			custom = {}
+		},
+		images = {
+			enable = true,
+
+			icon = "󰥶 ",
+			hl = "MarkviewImageLink",
+
+			custom = {}
+		},
+		emails = {
+			enable = true,
+
+			icon = " ",
+			hl = "MarkviewEmail"
+
+			custom = {}
+		}
+	}
+<
+------------------------------------------------------------------------------
+Link options
+
+Each link type has the following options.
+>lua
+	hyperlinks = {
+		enable = true,
+
+		hl = "MarkviewHyperlink",
+
+		icon = "󰌷 ",
+		icon_hl = nil,
+
+		corner_left = nil,
+		padding_left = nil,
+
+		padding_right = nil,
+		corner_right = nil,
+
+		corner_left_hl = nil,
+		padding_left_hl = nil,
+
+		padding_right_hl = nil,
+		corner_right_hl = nil
+
+		custom = {}
+	}
+<
+------------------------------------------------------------------------------
+Links: custom
+
+You can customise how links look based on their address.
+>lua
+	hyperlinks = {
+		custom = {
+			{
+				match_string = "^https:",
+
+				hl = "Hyperlink",
+
+				icon = " ",
+				icon_hl = nil,
+
+				corner_left = nil,
+				padding_left = nil,
+
+				padding_right = nil,
+				corner_right = nil,
+
+				corner_left_hl = nil,
+				padding_left_hl = nil,
+
+				padding_right_hl = nil,
+				corner_right_hl = nil
+			}
+		}
+	}
+<
+==============================================================================
+List items                                       *markview.nvim-c-list_items*
+
+`markview.nvim` supports links with custom markers with indentations!
+>lua
+	list_items = {
+		enable = true,
+
+		-- The number of spaces per level of list items
+		indent_size = 2,
+
+		-- The number of spaces added per list level
+		shift_width = 4,
+
+		marker_minus = {
+			-- When true, paddings are added to list items
+			add_padding = true,
+
+			text = "",
+			hl = "MarkviewListItemMinus"
+		},
+		marker_plus = {
+			add_padding = true,
+
+			text = "",
+			hl = "MarkviewListItemPlus"
+		},
+		marker_star = {
+			add_padding = true,
+
+			text = "",
+			hl = "MarkviewListItemStar"
+		},
+		marker_dot = {
+			-- 1) or 1. type list items
+			-- These don't support text & hl
+			add_padding = true
+		},
+	}
+<
+==============================================================================
+Tables                                               *markview.nvim-c-tables*
+
+`markview.nvim` supports rendering of tables. Tables support markdown
+syntax, html elements & entities, escaped characters etc.
+>lua
+	tables = {
+		enable = true,
+		text = {
+			"╭", "─", "╮", "┬",
+			"│", "│", "│",      "╼",
+			"├", "┼", "┤", "─", "╴", "╶",
+			"│", "│", "│",      "╾",
+			"╰", "─", "╯", "┴",
+		},
+		hl = {
+			"TableHeader", "TableHeader", "TableHeader",    "TableHeader",
+			"TableHeader", "TableHeader", "TableHeader",                     "TableAlignLeft",
+			"TableHeader", "TableHeader", "TableHeader",    "TableHeader",   "TableAlignCenter", "TableAlignCenter",
+			"TableBorder", "TableBorder", "TableBorder",                     "TableAlignRight",
+			"TableBorder", "TableBorder", "TableBorder",    "TableBorder"
+		},
+
+		-- When true, top and bottom borders are added to the table
+		block_decorator = true,
+		-- When true, virtual line are used for the top and bottom border
+        -- otherwise virtual text is used
+		use_virt_lines = true
+	}
+	
 <
 ------------------------------------------------------------------------------
 
-                                                        *markview.nvim-h-lerp*
-colors.lerp({x}: number, {y}: number, {t}: number) -> number
+If you find an issue in the help file(s), feel free to open a new issue in
+the Github repository.
 
-	The mising `math.lerp()` function. Does `linear interpolation` between
-	x & y.
-
-	Parameters: ~
-
-		• {x}   The start value.
-		• {y}   The stop/end value.
-		• {t}   A float between 0.00 & 1.00 to interpolate to.
-
-	Result: ~
-
-		• {number} The interpolated value.
-
-                                                       *markview.nvim-h-clamp*
-colors.clamp({value}: number, {min}: number, {max}: number) -> number
-
-	The mising `math.clamp()` function. Clamps a value between min & max.
-
-	Parameters: ~
-
-		• {value}   The value to clamp.
-		• {min}     Minimum value.
-		• {max}     Maximum value.
-           
-	Result: ~
-
-		• {number} The clamped value.
-
-                                                 *markview.nvim-h-name_to_hex*
-colors.name_to_hex({name}: string) -> string
-
-	Turns |gui-colors| into heaxadecimal values.
-
-	Used for converting |'guifg'|, |'guibg'| & |'guisp'| values provided
-	by |nvim_get_hl()| into human readable colors.
-
-	Parameters: ~
-
-		• {name}    Name of the color.
-
-	Result: ~
-
-		• {string}  The converted hexadecimal color.
-
-												 *markview.nvim-h-name_to_rgb*
-colors.name_to_rgb({name}: string) -> { r: number, g: number, b: number }
-
-	Turns |gui-colors| into tables containing r, g, b values.
-
-	Used for converting |'guifg'|, |'guibg'| & |'guisp'| values provided
-	by |nvim_get_hl()| into human readable colors.
-
-	Parameters: ~
-
-		• {name}   Name of the color.
-
-	Result: ~
-
-		• {table}  A table containing the r, g, b values.
-
-                                                  *markview.nvim-h-num_to_hex*
-colors.num_to_hex({num}: number) -> string
-
-	Converts numbers into hexadecimal string. A `#` is added before the
-	output string.
-
-	Used for converting |'guifg'|, |'guibg'| & |'guisp'| values provided
-	by |nvim_get_hl()| into human readable colors.
-
-	Parameters: ~
-
-		• {num}    Number to convert.
-
-	Result: ~
-
-		• {string} The converted hexadecimal color.
-
-												  *markview.nvim-h-num_to_rgb*
-colors.num_to_rgb({num}: number) -> { r: number, g: number, b: number }
-
-	Sperates color numbers into r, g, b values.
-
-	Rarely used for translating outputs of |nvim_get_hl()|.
-
-	Parameters: ~
-
-		• {num}   Number to seperate.
-
-	Result: ~
-
-		• {table} Table containing r, g, b values.
-
-                                                  *markview.nvim-h-hex_to_rgb*
-colors.hex_to_rgb({str}: string) -> { r: number, g: number, b: number }
-
-	Seperates hex color codes to r, g, b colors.
-
-	Supports codes with or without `#` in front of them. Also supports 
-	`3-digit` & `6-digit` hex color codes.
-
-	Parameters: ~
-
-		• {str}   Hexadecimal string to seperate.
-
-	Result: ~
-
-		• {table} Table containing r, g, b values.
-
-                                                  *markview.nvim-h-rgb_to_hex*
-colors.rgb_to_hex({ {r}: number, {g}: number, {b}: number }) -> string
-
-	Turns table containing r, g, b values into valid hex color codes.
-
-	Used internally for transforming color values.
-
-	Parameters: ~
-
-		• {tbl}   A table containing r, g, b values.
-
-	Result: ~
-
-		• {table} 6-digit hex color code.
-
-                                                *markview.nvim-h-get_hl_value*
-colors.get_hl_value({ns_id}: number, {hl_group}: string, {value}: string)
-	-> any
-
-	A wrapper function for |nvim_get_hl()|.
-
-	Gets {value} of {hl_group} in the provided {ns_id}. If {value} is `fg`,
-	`bg` or `sp` the returned value will be a table containing the r, g, b
-	values. Otherwise the value is directly returned.
-
-	Parameters: ~
-
-		• {ns_id}      Namespace ID. See |namespace| for more information.
-		• {hl_group}   Highlight group name.
-		• {value}      The value to return.
-	
-	Result: ~
-
-		• {any}        Any of the value returned by |nvim_get_hl()|.
-
-                                             *markview.nvim-h-create_gradient*
-colors.create_gradient(
-	{name_prefix}: string,
-
-	{from}: color,
-	{to}: color,
-
-	{steps}: number,
-	{mode}: string
-) -> { {group_name}: string, {value}: table }
-
-	Creates a list of `highlight groups` for the {highlight_groups} option.
-
-	A 2-stop gradient is generated between {from} & {to}. The value of
-	{from} & {to} can either be a number, string or a table with r, g, b
-	values.
-
-	The {mode} can be used to make the gradient into the background color or
-	the foreground color or both.
-
-	Parameters: ~
-
-		• {name_prefix}   The prefix to add before each of the {group_name}.
-
-						  E.g. setting the {name_prefix} to "Gradient" will
-						  result in group names being "Gradient<n>" where
-						  "<n>" is the step number.
-
-		• {from}          The start color of the gradient. Can be a number,
-						  a string or a table. It will be converted to a
-						  table containing r, g, b values.
-		• {to}            The stop color of the gradient. Works like {from}.
-
-		• {steps}         Number of steps in the gradient(including the start
-						  and stop colors).
-		• {mode}          The color mode of the gradient. Possible values are,
-							  • bg: Applies the color to the background.
-							  • fg: Applies the color to the foreground.
-							  • both: Does all of the above.
-
-	Result: ~
-
-		• {table}         A list of tables containing a {group_name} and a
-						  {value}. Mainly for use in {highlight_groups}.
-
-														 *markview.nvim-h-mix*
-colors.mix(
-	{color_1}: color, {color_2}: color,
-	{per_1}: number, {per_2}: number
-) -> string
-
-	Mixes {color_1}, {color_2} to create a new color.
-
-	The value of {color_1} & {color_2} can either be a number, string
-	or a table with r, g, b values.
-
-	The {per_1} & {per_2} are floats between 0 & 1. They are used as % values
-	of the r, g, b values of the corresponding color. They are then added
-	together to make the new color.
-
-	Parameters: ~
-
-		• {color_1}       The first color to mix. Can be a number,
-						  a string or a table. It will be converted to a
-						  table containing r, g, b values.
-		• {color_2}       The stop color of the gradient. Works like
-						  {color_1}.
-
-		• {per_1}         The % of {color_1} to mix.
-		• {per_2}         The % of {color_2} to mix.
-
-	Result: ~
-
-		• {string}        The hex color code of the resulting color.
-
-											  *markview.nvim-h-get_brightness*
-colors.get_brightness({color}: color) -> number
-
-	Gets the `luminosity` value of the color. Supports hexadecimal numbers,
-	color names, tables containing r, g, b values.
-
-	Parameters: ~
-
-		• {color}       The first color to mix. Can be a number,
-						a string or a table. It will be converted to a
-						table containing r, g, b values.
-	
-	Result: ~
-
-		• {number}      Luminosity value between 0 & 1.
-
-												   *markview.nvim-h-brightest*
-colors.brightest({list}: color[]) -> string
-
-	Gets the brightest color from the provided list of colors.
-
-	Parameters: ~
-		• {list}    A list of colors. Can contain hexadecimal numbers, numbers,
-					color names & tables with r, g, b values.
-
-	Result: ~
-
-		• {string}  The brightest color's hex color code. 
-
-														 *markview.nvim-h-get*
-colors.get({list}: any[]) -> any
-
-	Gets the first `non-nil` value from a list(with empty holes) of values.
+Huge thanks to everyone who downloaded & starred this plugin!
 
 vim:ft=help:bt=help:textwidth=78:ts=4:spell:
