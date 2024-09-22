@@ -23,6 +23,53 @@ renderer.get_icon = function (language, config_table)
 	return "󰡯", "Normal";
 end
 
+local tbl_map = function (value)
+	if #value == 22 then
+		return value;
+	end
+
+	local _o = {};
+
+	-- / - \ v
+	-- > | < +
+	-- \ _ / ^
+	-- ' ' l r
+
+	for p, part in ipairs(value) do
+		if vim.list_contains({ 1, 2, 3, 4 }, p) then
+			_o[p] = part;
+
+			if p == 2 then
+				_o[12] = part;
+			end
+		elseif p == 5 then
+			_o[9] = part;
+		elseif p == 6 then
+			_o[5] = part;
+			_o[6] = part;
+			_o[7] = part;
+
+			_o[15] = part;
+			_o[16] = part;
+			_o[17] = part;
+		elseif p == 7 then
+			_o[11] = part;
+		elseif p == 8 then
+			_o[10] = part;
+		elseif vim.list_contains({ 9, 10, 11, 12 }, p) then
+			_o[p + 10] = part;
+		elseif vim.list_contains({ 13, 14 }, p) then
+			_o[p] = part;
+		elseif p == 15 then
+			_o[8] = part;
+		else
+			_o[18] = part;
+		end
+	end
+
+	return _o;
+end
+
 --- Returns a value with the specified index from entry
 --- If index is nil then return the last value
 --- If entry isn't a table then return it
@@ -78,6 +125,26 @@ local set_hl = function (hl)
 	else
 		return hl;
 	end
+end
+
+local isTableBorder = function (extmark, config)
+	if not extmark or (not config or config.enable == false) then
+		return false;
+	end
+
+	local hl = config.hl;
+
+	for i, v in ipairs(hl) do
+		hl[i] = set_hl(v);
+	end
+
+	for _, item in ipairs(extmark[4].virt_text) do
+		if vim.list_contains(hl, item[2]) then
+			return true;
+		end
+	end
+
+	return false;
 end
 
 -- NOTE: Table cells with list chars in a link or image are overindented
@@ -427,7 +494,6 @@ local table_header = function (buffer, content, config_table)
 	local virt_txt = {};
 
 	if content.content_positions and content.content_positions[1] then
-		table.insert(virt_txt, { string.rep(" ", content.content_positions[1].col_start) })
 		col_start = content.content_positions[1].col_start;
 	end
 
@@ -459,6 +525,11 @@ local table_header = function (buffer, content, config_table)
 			table.insert(virt_txt, { tbl_conf.text[3], set_hl(tbl_conf.hl[3]) })
 
 			if tbl_conf.block_decorator ~= false and config_table.tables.use_virt_lines == true then
+				-- Add extra spaces to match the tables position
+				if content.content_positions and content.content_positions[1] then
+					table.insert(virt_txt, 1, { string.rep(" ", content.content_positions[1].col_start) })
+				end
+
 				vim.api.nvim_buf_set_extmark(buffer, renderer.namespace, row_start, 0, {
 					virt_lines_above = true,
 					virt_lines = {
@@ -466,13 +537,35 @@ local table_header = function (buffer, content, config_table)
 					}
 				});
 			elseif tbl_conf.block_decorator ~= false and row_start > 0 then
-				-- BUG: Nearby tables can cause text to overlap
-				vim.api.nvim_buf_clear_namespace(buffer, renderer.namespace, row_start - 1, row_start);
+				local above_line = vim.api.nvim_buf_get_lines(buffer, row_start - 1, row_start, false);
 
-				vim.api.nvim_buf_set_extmark(buffer, renderer.namespace, row_start - 1, 0, {
+				if not above_line[1] then
+					goto noAboveLine;
+				end
+
+				local prev = vim.api.nvim_buf_get_extmarks(buffer,
+					renderer.namespace,
+					{ row_start - 1, math.min(col_start, #above_line[1]) },
+					{ row_start - 1, math.min(col_start, #above_line[1]) - 1 },
+					{ details = true }
+				)[1];
+
+				-- If there's a table border already on the line
+				-- delete it
+				if isTableBorder(prev, tbl_conf) then
+					vim.api.nvim_buf_del_extmark(buffer, renderer.namespace, prev[1])
+				end
+
+				if vim.fn.strchars(above_line[1]) < col_start then
+					table.insert(virt_txt, 1, { string.rep(" ", col_start - vim.fn.strchars(above_line[1])) })
+				end
+
+				vim.api.nvim_buf_set_extmark(buffer, renderer.namespace, row_start - 1, math.min(col_start, #above_line[1]), {
 					virt_text_pos = "inline",
 					virt_text = virt_txt
 				});
+
+				::noAboveLine::
 			end
 
 			curr_col = curr_col + 1
@@ -494,7 +587,7 @@ local table_header = function (buffer, content, config_table)
 			local align = content.content_alignments[curr_tbl_col];
 
 			-- Extracted width of separator
-			local tbl_col_width = content.col_widths[curr_tbl_col];
+			local tbl_col_width = math.max(content.col_widths[curr_tbl_col], tbl_conf.col_min_width or 0);
 
 			-- The column number of headers must match the 
 			-- column number of separators
@@ -604,6 +697,7 @@ local table_seperator = function (buffer, content, user_config, r_num)
 			curr_col = curr_col + 1;
 		else
 			local align = content.content_alignments[curr_tbl_col];
+			local tbl_col_width = math.max(content.col_widths[curr_tbl_col], tbl_conf.col_min_width or 0);
 
 			if col:match(":") then
 				if align == "left" then
@@ -611,7 +705,7 @@ local table_seperator = function (buffer, content, user_config, r_num)
 						virt_text_pos = "inline",
 						virt_text = {
 							{ tbl_conf.text[8], set_hl(tbl_conf.hl[8]) },
-							{ string.rep(tbl_conf.text[12], vim.fn.strchars(col) - 1), set_hl(tbl_conf.hl[12]) }
+							{ string.rep(tbl_conf.text[12], tbl_col_width - 1), set_hl(tbl_conf.hl[12]) }
 						},
 
 						end_col = col_start + curr_col + vim.fn.strchars(col) + 1,
@@ -621,7 +715,7 @@ local table_seperator = function (buffer, content, user_config, r_num)
 					vim.api.nvim_buf_set_extmark(buffer, renderer.namespace, row_start + (r_num - 1), col_start + curr_col, {
 						virt_text_pos = "inline",
 						virt_text = {
-							{ string.rep(tbl_conf.text[12], vim.fn.strchars(col) - 1), set_hl(tbl_conf.hl[12]) },
+							{ string.rep(tbl_conf.text[12], tbl_col_width - 1), set_hl(tbl_conf.hl[12]) },
 							{ tbl_conf.text[18], set_hl(tbl_conf.hl[18]) }
 						},
 
@@ -633,7 +727,7 @@ local table_seperator = function (buffer, content, user_config, r_num)
 						virt_text_pos = "inline",
 						virt_text = {
 							{ tbl_conf.text[13], set_hl(tbl_conf.hl[13]) },
-							{ string.rep(tbl_conf.text[12], vim.fn.strchars(col) - 2), set_hl(tbl_conf.hl[12]) },
+							{ string.rep(tbl_conf.text[12], tbl_col_width - 2), set_hl(tbl_conf.hl[12]) },
 							{ tbl_conf.text[14], set_hl(tbl_conf.hl[14]) }
 						},
 
@@ -645,7 +739,7 @@ local table_seperator = function (buffer, content, user_config, r_num)
 				vim.api.nvim_buf_set_extmark(buffer, renderer.namespace, row_start + (r_num - 1), col_start + curr_col, {
 					virt_text_pos = "inline",
 					virt_text = {
-						{ string.rep(tbl_conf.text[12], vim.fn.strchars(col)), set_hl(tbl_conf.hl[12]) }
+						{ string.rep(tbl_conf.text[12], tbl_col_width), set_hl(tbl_conf.hl[12]) }
 					},
 
 					end_col = col_start + curr_col + vim.fn.strchars(col) + 1,
@@ -678,7 +772,6 @@ local table_footer = function (buffer, content, config_table)
 	local virt_txt = {};
 
 	if content.content_positions and content.content_positions[#content.content_positions] then
-		table.insert(virt_txt, { string.rep(" ", content.content_positions[#content.content_positions].col_start) })
 		col_start = content.content_positions[#content.content_positions].col_start;
 	end
 
@@ -710,6 +803,10 @@ local table_footer = function (buffer, content, config_table)
 			table.insert(virt_txt, { tbl_conf.text[21], set_hl(tbl_conf.hl[21]) })
 
 			if tbl_conf.block_decorator ~= false and config_table.tables.use_virt_lines == true then
+				if content.content_positions and content.content_positions[#content.content_positions] then
+					table.insert(virt_txt, 1, { string.rep(" ", content.content_positions[#content.content_positions].col_start) })
+				end
+
 				vim.api.nvim_buf_set_extmark(buffer, renderer.namespace, row_end - 1, 0, {
 					virt_lines_above = false,
 					virt_lines = {
@@ -717,10 +814,22 @@ local table_footer = function (buffer, content, config_table)
 					}
 				});
 			elseif tbl_conf.block_decorator ~= false and content.row_start < vim.api.nvim_buf_line_count(buffer) then
-				vim.api.nvim_buf_set_extmark(buffer, renderer.namespace, row_end, 0, {
+				local below_line = vim.api.nvim_buf_get_lines(buffer, row_end, row_end + 1, false);
+
+				if not below_line[1] then
+					goto noBelowLine;
+				end
+
+				if vim.fn.strchars(below_line[1]) < col_start then
+					table.insert(virt_txt, 1, { string.rep(" ", col_start - vim.fn.strchars(below_line[1])) })
+				end
+
+				vim.api.nvim_buf_set_extmark(buffer, renderer.namespace, row_end, math.min(col_start, #below_line[1]), {
 					virt_text_pos = "inline",
 					virt_text = virt_txt
 				});
+
+				::noBelowLine::
 			end
 
 			curr_col = curr_col + 1
@@ -742,7 +851,7 @@ local table_footer = function (buffer, content, config_table)
 			local align = content.content_alignments[curr_tbl_col];
 
 			-- Extracted width of separator
-			local tbl_col_width = content.col_widths[curr_tbl_col];
+			local tbl_col_width = math.max(content.col_widths[curr_tbl_col], tbl_conf.col_min_width or 0);
 
 			if #content.rows[#content.rows] == #content.rows[2] and tbl_col_width then
 				actual_width = math.min(math.max(actual_width, tbl_col_width), tbl_col_width);
@@ -851,7 +960,7 @@ local table_content = function (buffer, content, config_table, r_num)
 			local align = content.content_alignments[curr_tbl_col];
 
 			-- Extracted width of separator
-			local tbl_col_width = content.col_widths[curr_tbl_col];
+			local tbl_col_width = math.max(content.col_widths[curr_tbl_col], tbl_conf.col_min_width or 0);
 
 			if #content.rows[r_num] == #content.rows[2] and tbl_col_width then
 				actual_width = math.min(math.max(actual_width, tbl_col_width), tbl_col_width);
@@ -1347,7 +1456,7 @@ renderer.render_block_quotes = function (buffer, content, config_table)
 
 		vim.api.nvim_buf_set_extmark(buffer, renderer.namespace, content.row_start, content.col_start, {
 			hl_group = set_hl(qt_config.callout_preview_hl),
-			end_col = content.col_start + #content.lines[1],
+			end_col = #content.lines[1],
 		});
 	elseif qt_config.callout_preview ~= nil then
 		vim.api.nvim_buf_set_extmark(buffer, renderer.namespace, content.row_start, content.col_start, {
@@ -1785,6 +1894,9 @@ renderer.render_tables = function (buffer, content, user_config)
 	if not user_config.tables or user_config.tables.enable == false then
 		return;
 	end
+
+	user_config.tables.text = tbl_map(user_config.tables.text);
+	user_config.tables.hl = tbl_map(user_config.tables.hl);
 
 	for row_number, _ in ipairs(content.rows) do
 		if content.row_type[row_number] == "header" then
