@@ -1,6 +1,271 @@
 *markview.nvim-recipes*                           Recipes for `markview.nvim`
 
+==============================================================================
+Presets                                             *markview.nvim-r-presets*
 
+Presets are configuration recipes that you can use without the hassle of
+writing large configuration tables.
 
+`markview.nvim` comes with the following presets,
 
+	- Checkboxes, `presets.checkboxes`
+		- nerd
+		- nerd_alt
+	- Headings, `presets.headings`
+		- glow
+		- glow_center
+		- slanted
+		- arrow
+		- simple
+		- marker
+	- Horizontal rules, `presets.horizontal_rules`
+		- thin
+		- thick
+		- double
+		- dashed
+		- dotted
+		- solid
+		- arrowed
+
+Using presets is very simple, just `require()` the presets file and use it
+like so,
+>lua
+	local presets = require("markview.presets");
+
+	require("markview").setup({
+		checkboxes = presets.checkboxes.nerd
+	});
+<
+==============================================================================
+Recipes
+
+Here you can find various ways to use the plugin.
+
+------------------------------------------------------------------------------
+Recipe: Disabling automatic previews
+
+When this is used the plugin will not automatically preview the files.
+Instead, you can use the `:Markview toggle` command to toggle the preview ON
+and OFF when you need to.
+>lua
+	require("markview").setup({
+		-- This will disable the automatic preview
+		initial_state = false,
+
+		-- OPTIONAL: Specify the mode where you want the preview
+		-- to be in,
+		-- I use this in normal mode so I added "n" to the table
+		modes = { "n" }
+	});
+<
+If you only want to see the preview of the file but don't want the text under
+the cursor to also be previewed you can also do that.
+>lua
+	require("markview").setup({
+		initial_state = false,
+		modes = { "n" },
+
+		-- The tree-sitter node under the cursor will not be previewed
+		hybrid_modes = { "n" }
+	});
+<
+NOTE: This is done via `tree-sitter` so if you are inside the a list,
+block quote, code block, table, setext heading etc. it will not preview the
+entire range of the node.
+
+------------------------------------------------------------------------------
+Recipe: Using like an inspect tool
+
+If you just want to preview and inspect the syntax then you can make use of
+the `hybrid mode`.
+>lua
+	require("markview").setup({
+		modes = { "n" },
+		hybrid_modes = { "n" }
+	});
+<
+------------------------------------------------------------------------------
+Recipe: Preview as you type
+
+You can also make the plugin show preview as you type. It has next to no
+performance impact(compared to not using it) even on large files.
+>lua
+	require("markview").setup({
+		modes = { "i" },
+		hybrid_modes = { "i" }
+	});
+<
+You can also set `hybrid mode` to only run on specific modes.
+>lua
+	require("markview").setup({
+		modes = { "n", "i" },
+		hybrid_modes = { "i" }
+	});
+<
+This will show the preview of the file except for wlanuthing under the
+cursor. But you can always go back into `normal mode` whete it will also show
+preview of things under the cursor.
+
+==============================================================================
+Recipe: Preview in a seperate window
+
+If you want to see the preview but don't want it to be shown on the main
+window, this is for you.
+
+At any moment running the `:Markview splitToggle` will open a split window
+where the preview will be shown. It also has synchronized scroll so you can
+just navigate like normal.
+>lua
+	require("markview").setup({
+		--- Check all the available options in the
+		--- `nvim_open_win()`'s opts part
+		split_conf = {
+			split = "above"
+		}
+	});
+<
+------------------------------------------------------------------------------
+
+These recipes focus more on customisation rather then functionality.
+
+==============================================================================
+Recipe: Gradient block quotes
+
+Ever wanted gradients in block quotes? Well, you can! Just set the `border_hl`
+options value to a `list` and you are good to go.
+>lua
+	require("markview").setup({
+		block_quotes = {
+			default = {
+				border_hl = { "Gradient1", "Gradient2", "Gradient3" }
+			}
+		}
+	});
+<
+==============================================================================
+Recipe: HTML heading highlighting
+
+By default the plugin doesn't add decorations to tags such as `<h1>` as it
+does to regular headings. This is due to the nature of how HTML is written
+which makes it hard to work with in certain scenarios.
+
+But you can have something similar, although limited via the `html` option.
+>lua
+	require("markview").setup({
+		html = {
+			tags = {
+				configs = {
+					h1 = { conceal = true, hl = "Heading1" },
+					h2 = { conceal = true, hl = "Heading2" },
+					h3 = { conceal = true, hl = "Heading3" },
+					h4 = { conceal = true, hl = "Heading4" },
+					h5 = { conceal = true, hl = "Heading5" },
+					h6 = { conceal = true, hl = "Heading6" }
+				}
+			}
+		}
+	});
+<
+NOTE: This only works if the start tag & end tag are on the same line.
+For example, this works,
+>html
+	<h1>Heading 1</h1>
+<
+This does not,
+>html
+	<h1>
+		Heading 1
+	</h1>
+<
+==============================================================================
+Recipe: Foldable headings
+
+WARNING: This makes use of an external plugin.
+
+First inject a new query using the `injections` option.
+>lua
+	require("markview").setup({
+		injections = {
+			languages = {
+				markdown = {
+					query = [[
+						(section
+							(atx_headng) @injections.mkv.fold
+							(#set! @fold))
+					]]
+				}
+			}
+		}
+	});
+
+<
+Let's explain what `query` does.
+>query
+	(section (atx_headng) @injections.mkv.fold)
+<
+This creates a new query named `injections.mkv.fold` that matched if a
+section of the file starts with a heading.
+
+Now, we add a fold where this occurred.
+>query
+	(section (atx_headng)
+		@injections.mkv.fold
+		(#set! @fold))
+<
+To make the folds use tree-sitter we can set an option.
+>lua
+	vim.o.foldmethod = "expr";
+	vim.o.foldexpr = "nvim_treesitter#foldexpr()";
+<
+NOTE: You should set this using the `on_enable` callback of the plugin,
+if you don't want this in other filetypes.
+
+We will be using `OXY2DEV/foldtext.nvim` for the fold text. You can also
+create your own fold text function if you like.
+>lua
+	local def = require("foldtext").configuration;
+	local handler = function (_, buf)
+		local ln = table.concat(vim.fn.getbufline(buf, vim.v.foldstart));
+		local markers = ln:match("^%s*([#]+)");
+		local heading_txt = ln:match("^%s*[#]+(.+)$");
+
+		local icons = {
+			"󰎤", "󰎩", "󰎪", "󰎮", "󰎱", "󰎵"
+		}
+
+		return {
+			icons[vim.fn.strchars(markers or "")] .. heading_txt,
+			"MarkviewHeading" .. vim.fn.strchars(markers or "");
+		}
+	end
+	local spaces = function (_, buf)
+		local ln = table.concat(vim.fn.getbufline(buf, vim.v.foldstart));
+		local markers = ln:match("^%s*([#]+)");
+		local heading_txt = ln:match("^%s*[#]+(.+)$");
+
+		return {
+			string.rep(" ", vim.o.columns - vim.fn.strchars(heading_txt) - 1),
+			"MarkviewHeading" .. vim.fn.strchars(markers or "");
+		}
+	end
+
+	require("foldtext").setup({
+		custom = vim.list_extend(def, {
+			{
+				ft = { "markdown" },
+				config = {
+					{ type = "indent" },
+					{
+						type = "custom",
+						handler = handler
+					},
+					{
+						type = "custom",
+						handler = spaces
+					}
+				}
+			}
+		});
+	});
+<
 vim:ft=help:bt=help:tw=78:
