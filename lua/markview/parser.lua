@@ -240,6 +240,23 @@ parser.get_list_end_range = function (buffer, from, to, marker)
 	return width, height == from - 1 and from or height;
 end
 
+parser.has_parent = function (node, matches, limit)
+	local iteration = 0;
+
+	while node:parent() do
+		if limit and iteration > limit then
+			return;
+		end
+
+		if vim.list_contains(matches, node:type()) then
+			return node:type();
+		end
+
+		iteration = iteration + 1;
+		node = node:parent();
+	end
+end
+
 parser.parsed_content = {};
 
 --- Function to parse the markdown document
@@ -949,6 +966,24 @@ parser.latex = function (buffer, TStree, from, to)
 			.
 			) @root)
 
+		;; Various fonts
+		((generic_command
+			.
+			command: ((command_name) @c (#eq? @c "\\mathbf"))
+			arg: (curly_group)
+			.
+			) @mathbf)
+
+		((generic_command . command: ((command_name) @c (#eq? @c "\\mathbfit")) arg: (curly_group) .) @mathbfit)
+		((generic_command . command: ((command_name) @c (#eq? @c "\\mathcal")) arg: (curly_group) .) @mathcal)
+		((generic_command . command: ((command_name) @c (#eq? @c "\\mathfrak")) arg: (curly_group) .) @mathfrak)
+		((generic_command . command: ((command_name) @c (#eq? @c "\\mathbb")) arg: (curly_group) .) @mathbb)
+		((generic_command . command: ((command_name) @c (#eq? @c "\\mathsfbf")) arg: (curly_group) .) @mathsfbf)
+		((generic_command . command: ((command_name) @c (#eq? @c "\\mathsfit")) arg: (curly_group) .) @mathsfit)
+		((generic_command . command: ((command_name) @c (#eq? @c "\\mathsfbfit")) arg: (curly_group) .) @mathsfbfit)
+		((generic_command . command: ((command_name) @c (#eq? @c "\\mathtt")) arg: (curly_group) .) @mathtt)
+
+
 		((generic_command
 			.
 			command: (command_name)
@@ -995,10 +1030,10 @@ parser.latex = function (buffer, TStree, from, to)
 			local text = vim.api.nvim_buf_get_lines(buffer, row_start, row_start + 1, false)[1];
 			text = string.sub(text, 1, col_start);
 
-			if text:match("%^$") and capture_text:match("^%{(%d+)%}$") then
+			if text:match("%^$") and capture_text:match("^%{(.+)%}$") then
 				-- Superscript
 				goto invalidBracket;
-			elseif text:match("%_$") and capture_text:match("^%{(%d+)%}$") then
+			elseif text:match("%_$") and capture_text:match("^%{(.+)%}$") then
 				-- Subscript
 				goto invalidBracket;
 			end
@@ -1081,11 +1116,27 @@ parser.latex = function (buffer, TStree, from, to)
 				col_start = col_start,
 				col_end = col_end
 			})
+		elseif vim.list_contains({ "mathbf", "mathbfit", "mathcal", "mathfrak", "mathbb", "mathsfbf", "mathsfit", "mathsfbfit", "mathtt" }, capture_name) then
+			table.insert(parser.parsed_content, {
+				node = capture_node,
+				type = "latex_font",
+				font = capture_name,
+
+				text = capture_text:match("%\\" .. capture_name .. "%{(.+)%}$"),
+
+				row_start = row_start,
+				row_end = row_end,
+
+				col_start = col_start,
+				col_end = col_end
+			});
 		elseif capture_name == "symbol" then
+			vim.print()
 			table.insert(parser.parsed_content, {
 				node = capture_node,
 				type = "latex_symbol",
 
+				inside = parser.has_parent(capture_node, { "subscript", "superscript" }),
 				text = capture_text:match("%\\(.-)%{?$"),
 
 				row_start = row_start,
@@ -1108,71 +1159,31 @@ parser.latex = function (buffer, TStree, from, to)
 				col_end = col_end
 			});
 		elseif capture_name == "superscript" then
-			local isNumOnly = capture_text:match("^%^(%d+)$");
-			local isBracketed = capture_text:match("^%^%{(%d+)%}$");
+			table.insert(parser.parsed_content, {
+				node = capture_node,
+				type = "latex_superscript",
 
-			if isNumOnly then
-				table.insert(parser.parsed_content, {
-					node = capture_node,
-					type = "latex_superscript",
+				text = capture_text,
 
-					isBracketed = false,
-					text = isNumOnly,
+				row_start = row_start,
+				row_end = row_end,
 
-					row_start = row_start,
-					row_end = row_end,
-
-					col_start = col_start,
-					col_end = col_end
-				});
-			elseif isBracketed then
-				table.insert(parser.parsed_content, {
-					node = capture_node,
-					type = "latex_superscript",
-
-					isBracketed = true,
-					text = isBracketed,
-
-					row_start = row_start,
-					row_end = row_end,
-
-					col_start = col_start,
-					col_end = col_end
-				});
-			end
+				col_start = col_start,
+				col_end = col_end
+			});
 		elseif capture_name == "subscript" then
-			local isNumOnly = capture_text:match("^%_(%d+)$");
-			local isBracketed = capture_text:match("^%_%{(%d+)%}$");
+			table.insert(parser.parsed_content, {
+				node = capture_node,
+				type = "latex_subscript",
 
-			if isNumOnly then
-				table.insert(parser.parsed_content, {
-					node = capture_node,
-					type = "latex_subscript",
+				text = capture_text,
 
-					isBracketed = false,
-					text = isNumOnly,
+				row_start = row_start,
+				row_end = row_end,
 
-					row_start = row_start,
-					row_end = row_end,
-
-					col_start = col_start,
-					col_end = col_end
-				});
-			elseif isBracketed then
-				table.insert(parser.parsed_content, {
-					node = capture_node,
-					type = "latex_subscript",
-
-					isBracketed = true,
-					text = isBracketed,
-
-					row_start = row_start,
-					row_end = row_end,
-
-					col_start = col_start,
-					col_end = col_end
-				});
-			end
+				col_start = col_start,
+				col_end = col_end
+			});
 		end
 	end
 end
