@@ -13,6 +13,9 @@ markview.attached_buffers = {};
 ---@type integer[] List of attached windows
 markview.attached_windows = {};
 
+---@type { was_detached: boolean, id: integer }[]
+markview.autocmds = {};
+
 ---@class markview.state Stores the various states of the plugin
 ---
 ---@field enable boolean Plugin state
@@ -488,16 +491,16 @@ markview.configuration = {
 			---+ ${conf, Setext heading 1}
 			style = "github",
 
-			icon = "   ", hl = "MarkviewHeading1",
-			underline = "━"
+			icon = "  ", hl = "MarkviewHeading1",
+			line = "▂"
 			---_
 		},
 		setext_2 = {
 			---+ ${conf, Setext heading 2}
 			style = "github",
 
-			icon = "   ", hl = "MarkviewHeading2",
-			underline = "─"
+			icon = "  ", hl = "MarkviewHeading2",
+			line = "▁"
 			---_
 		}
 		---_
@@ -644,14 +647,23 @@ markview.configuration = {
 
 		symbols = {
 			enable = true,
-			overwrite = {}
+			hl = "@operator.latex",
+			overwrite = {},
+			groups = {
+				{
+					match = { "lim", "today" },
+					hl = "Special"
+				}
+			}
 		},
 
 		subscript = {
-			enable = true
+			enable = true,
+			hl = "MarkviewLatexSubscript",
 		},
 		superscript = {
-			enable = true
+			enable = true,
+			hl = "MarkviewLatexSuperscript",
 		},
 		---_
 	},
@@ -728,6 +740,7 @@ markview.configuration = {
 		---_
 	},
 
+	initial_state = true,
 	max_file_length = 1000,
 	modes = { "n", "no" },
 	render_distance = 100,
@@ -759,6 +772,7 @@ markview.configuration = {
 			"TableBorder", "TableBorder", "TableBorder",    "TableBorder"
 		},
 
+		col_min_width = 5,
 		block_decorator = true,
 		use_virt_lines = true
 		---_
@@ -905,6 +919,7 @@ markview.splitView = {
 
 					-- Write text to the split buffer
 					vim.bo[self.buffer].modifiable = true;
+					vim.api.nvim_buf_clear_namespace(self.buffer, markview.renderer.namespace, 0, -1);
 					vim.api.nvim_buf_set_lines(self.buffer, 0, -1, false, content);
 					vim.bo[self.buffer].modifiable = false;
 
@@ -931,6 +946,13 @@ markview.splitView = {
 };
 
 markview.commands = {
+	attach = function (buf)
+		vim.api.nvim_exec_autocmds("User", { pattern = "MarkviewEnter", buffer = buf })
+	end,
+	detach = function (buf)
+		vim.api.nvim_exec_autocmds("User", { pattern = "MarkviewLeave", buffer = buf })
+	end,
+
 	toggleAll = function ()
 		if markview.state.enable == true then
 			markview.commands.disableAll();
