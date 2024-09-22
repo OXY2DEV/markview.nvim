@@ -62,7 +62,7 @@ presets.checkboxes = {
 	}
 };
 
-presets.headinges = {
+presets.headings = {
 	glow = {
 		---+ ${conf, Glow-like headings}
 		enable = true,
