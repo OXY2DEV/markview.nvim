@@ -974,14 +974,14 @@ parser.latex = function (buffer, TStree, from, to)
 			.
 			) @mathbf)
 
-		((generic_command . command: ((command_name) @c (#eq? @c "\\mathbfit")) arg: (curly_group) .) @mathbfit)
-		((generic_command . command: ((command_name) @c (#eq? @c "\\mathcal")) arg: (curly_group) .) @mathcal)
-		((generic_command . command: ((command_name) @c (#eq? @c "\\mathfrak")) arg: (curly_group) .) @mathfrak)
-		((generic_command . command: ((command_name) @c (#eq? @c "\\mathbb")) arg: (curly_group) .) @mathbb)
-		((generic_command . command: ((command_name) @c (#eq? @c "\\mathsfbf")) arg: (curly_group) .) @mathsfbf)
-		((generic_command . command: ((command_name) @c (#eq? @c "\\mathsfit")) arg: (curly_group) .) @mathsfit)
-		((generic_command . command: ((command_name) @c (#eq? @c "\\mathsfbfit")) arg: (curly_group) .) @mathsfbfit)
-		((generic_command . command: ((command_name) @c (#eq? @c "\\mathtt")) arg: (curly_group) .) @mathtt)
+		((generic_command . command: ((command_name) @c (#eq? @c "\\mathbfit")) arg: (curly_group) .) @font_mathbfit)
+		((generic_command . command: ((command_name) @c (#eq? @c "\\mathcal")) arg: (curly_group) .) @font_mathcal)
+		((generic_command . command: ((command_name) @c (#eq? @c "\\mathfrak")) arg: (curly_group) .) @font_mathfrak)
+		((generic_command . command: ((command_name) @c (#eq? @c "\\mathbb")) arg: (curly_group) .) @font_mathbb)
+		((generic_command . command: ((command_name) @c (#eq? @c "\\mathsfbf")) arg: (curly_group) .) @font_mathsfbf)
+		((generic_command . command: ((command_name) @c (#eq? @c "\\mathsfit")) arg: (curly_group) .) @font_mathsfit)
+		((generic_command . command: ((command_name) @c (#eq? @c "\\mathsfbfit")) arg: (curly_group) .) @font_mathsfbfit)
+		((generic_command . command: ((command_name) @c (#eq? @c "\\mathtt")) arg: (curly_group) .) @font_mathtt)
 
 
 		((generic_command
@@ -1116,7 +1116,9 @@ parser.latex = function (buffer, TStree, from, to)
 				col_start = col_start,
 				col_end = col_end
 			})
-		elseif vim.list_contains({ "mathbf", "mathbfit", "mathcal", "mathfrak", "mathbb", "mathsfbf", "mathsfit", "mathsfbfit", "mathtt" }, capture_name) then
+		elseif capture_name:match("^font%_(.-)") then
+			capture_name = capture_name:gsub("^font%_", "");
+
 			table.insert(parser.parsed_content, {
 				node = capture_node,
 				type = "latex_font",
