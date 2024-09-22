@@ -117,6 +117,10 @@ local redraw_autocmd = function (augroup, buffer)
 
 			timer:stop();
 			timer:start(debounce, 0, vim.schedule_wrap(function ()
+				if markview.autocmds[buffer] and markview.autocmds[buffer].was_detached == true then
+					return;
+				end
+
 				if markview.state.enable == false or markview.state.buf_states[buffer] == false then
 					return;
 				end
@@ -157,6 +161,9 @@ local redraw_autocmd = function (augroup, buffer)
 				if vim.list_contains(markview.configuration.modes, mode) then
 					markview.renderer.clear(buffer);
 					buf_render(buffer);
+				elseif vim.tbl_isempty(markview.configuration.modes) then
+					markview.renderer.clear(buffer);
+					buf_render(buffer);
 				else
 					markview.renderer.clear(buffer);
 					vim.cmd("redraw!");
@@ -166,6 +173,10 @@ local redraw_autocmd = function (augroup, buffer)
 	});
 
 	r_autocmd = tmp;
+	markview.autocmds[buffer] = {
+		was_detached = false,
+		id = tmp
+	}
 end
 
 vim.api.nvim_create_autocmd({ "BufWinEnter" }, {
@@ -187,6 +198,7 @@ vim.api.nvim_create_autocmd({ "BufWinEnter" }, {
 		end
 
 		local windows = utils.find_attached_wins(buffer);
+		local mode = vim.api.nvim_get_mode().mode;
 
 		-- If not attached then attach
 		if not vim.list_contains(markview.attached_buffers, buffer) then
@@ -209,23 +221,121 @@ vim.api.nvim_create_autocmd({ "BufWinEnter" }, {
 		end
 
 		-- Set state to true and call the callback
-		markview.state.buf_states[buffer] = true;
+		markview.state.buf_states[buffer] = markview.configuration.initial_state;
 
-		for _, window in ipairs(windows) do
-			if markview.configuration.callbacks and markview.configuration.callbacks.on_enable then
-				pcall(markview.configuration.callbacks.on_enable, buffer, window);
+		if markview.state.buf_states[buffer] == false or not vim.list_contains(markview.configuration.modes, mode) then
+			for _, window in ipairs(windows) do
+				if markview.configuration.callbacks and markview.configuration.callbacks.on_disable then
+					pcall(markview.configuration.callbacks.on_disable, buffer, window);
+				end
 			end
-		end
+		else
+			for _, window in ipairs(windows) do
+				if markview.configuration.callbacks and markview.configuration.callbacks.on_enable then
+					pcall(markview.configuration.callbacks.on_enable, buffer, window);
+				end
+			end
 
-		-- Clear the buffer before rendering things
-		markview.renderer.clear(buffer);
-		buf_render(buffer);
+			-- Clear the buffer before rendering things
+			markview.renderer.clear(buffer);
+			buf_render(buffer);
+		end
 
 		-- Augroup for the special autocmds
 		local markview_augroup = vim.api.nvim_create_augroup("markview_buf_" .. buffer, { clear = true });
-
 		redraw_autocmd(markview_augroup, buffer);
 	end
 })
+
+vim.api.nvim_create_autocmd({ "User" }, {
+	desc = "Attaches markview to the buffers",
+	pattern = "MarkviewEnter",
+	callback = function (event)
+		local buffer = event.buf;
+
+		if vim.list_contains(markview.attached_buffers, buffer) then
+			return;
+		end
+
+		local ft = vim.bo[buffer].filetype;
+		local bt = vim.bo[buffer].buftype;
+
+		--- Incorrect file type
+		if not vim.list_contains(markview.configuration.filetypes or { "markdown" }, ft) then
+			return;
+		end
+
+		-- Incorrect buffer type
+		if vim.islist(markview.configuration.buf_ignore) and vim.list_contains(markview.configuration.buf_ignore, bt) then
+			return
+		end
+
+		local windows = utils.find_attached_wins(buffer);
+		local mode = vim.api.nvim_get_mode().mode;
+
+		-- If not attached then attach
+		if not vim.list_contains(markview.attached_buffers, buffer) then
+			table.insert(markview.attached_buffers, buffer);
+			markview.attached_windows = vim.list_extend(markview.attached_windows, windows);
+		end
+
+		-- Plugin is disabled
+		if markview.state.enable == false or markview.state.buf_states[buffer] == false then
+			-- Call the on_disable callback before exiting
+			if not markview.configuration.callbacks or not markview.configuration.callbacks.on_disable then
+				return;
+			end
+
+			for _, window in ipairs(windows) do
+				pcall(markview.configuration.callbacks.on_disable, buffer, window);
+			end
+
+			return;
+		end
+
+		-- Set state to true and call the callback
+		markview.state.buf_states[buffer] = markview.configuration.initial_state;
+
+		if markview.state.buf_states[buffer] == false or not vim.list_contains(markview.configuration.modes, mode) then
+			for _, window in ipairs(windows) do
+				if markview.configuration.callbacks and markview.configuration.callbacks.on_disable then
+					pcall(markview.configuration.callbacks.on_disable, buffer, window);
+				end
+			end
+		else
+			for _, window in ipairs(windows) do
+				if markview.configuration.callbacks and markview.configuration.callbacks.on_enable then
+					pcall(markview.configuration.callbacks.on_enable, buffer, window);
+				end
+			end
+
+			-- Clear the buffer before rendering things
+			markview.renderer.clear(buffer);
+			buf_render(buffer);
+		end
+
+		-- Augroup for the special autocmds
+		local markview_augroup = vim.api.nvim_create_augroup("markview_buf_" .. buffer, { clear = true });
+		redraw_autocmd(markview_augroup, buffer);
+	end
+})
+
+vim.api.nvim_create_autocmd("User", {
+	pattern = "MarkviewLeave",
+	callback = function (event)
+		if not markview.autocmds[event.buf] then
+			return;
+		elseif markview.autocmds[event.buf].was_detached == true then
+			return;
+		end
+
+		local data = markview.autocmds[event.buf];
+		markview.renderer.clear(event.buf);
+		data.was_detached = true;
+
+		vim.api.nvim_del_autocmd(data.id);
+		markview.unload();
+	end
+});
 
 
