@@ -17,10 +17,11 @@
 ---@field filetypes string[] File types where the plugin is active
 ---@field footnotes markview.conf.footnotes
 ---@field headings markview.conf.headings
----@field highlight_groups? string | table[] List of highlight groups
+---@field highlight_groups? string | markview.conf.hl[] List of highlight groups
 ---@field horizontal_rules markview.conf.hrs
 ---@field html markview.conf.html
 ---@field hybrid_modes? string[] Modes where hybrid mode should be enabled
+---@field initial_state boolean Whether to show the preview at start or not
 ---@field injections markview.conf.injections
 ---@field inline_codes markview.conf.inline_codes
 ---@field latex markview.conf.latex
@@ -201,6 +202,16 @@
 ---@field setext_1 (markview.h.simple | markview.h.github)
 ---@field setext_2 (markview.h.simple | markview.h.github)
 
+--- Highlight groups
+---------------------------------------------------------------
+
+---@class markview.conf.hl
+---
+---@field group_name? string
+---@field value? table
+---
+---@field output? fun(util: table): ({ group_name: string, value: table } | { group_name: string, value: table}[] | nil)
+
 --- Horizontal rules
 ---------------------------------------------------------------
 
@@ -226,7 +237,7 @@
 ---@field hl? string | string[] Highlight group for the text
 ---@field direction? "left" | "right" Direction from where to start adding hl
 
---- Html
+--- HTML
 ---------------------------------------------------------------
 
 ---@class markview.conf.html
@@ -274,7 +285,7 @@
 ---@field padding_right_hl? string
 ---@field corner_right_hl? string
 
---- Latex
+--- LaTeX
 ---------------------------------------------------------------
 
 ---@class markview.conf.latex
@@ -284,8 +295,8 @@
 ---@field inline? { enable: boolean } Hides $...$ in inline latex
 ---@field block? markview.latex.block
 ---@field symbols? markview.latex.symbols
----@field subscript? { enable: boolean }
----@field superscript? { enable: boolean }
+---@field subscript? markview.latex.subscript
+---@field superscript? markview.latex.superscript
 
 ---@class markview.latex.brackets
 ---
@@ -307,7 +318,20 @@
 ---
 ---@field enable boolean
 ---@field overwrite? table<string, string>
+---@field groups? { match: (string[] | fun(txt: string): boolean), hl: string? }[]
 ---@field hl? string
+
+---@class markview.latex.superscript
+---
+---@field enable boolean
+---@field hl? string
+---@field conceal_brackets? boolean
+
+---@class markview.latex.subscript
+---
+---@field enable boolean
+---@field hl? string
+---@field conceal_brackets? boolean
 
 --- Links
 ---------------------------------------------------------------
@@ -388,6 +412,7 @@
 ---@field enable boolean
 ---@field block_decorator boolean
 ---@field use_virt_lines boolean
+---@field col_min_width? integer
 ---
 ---@field text string[]
 ---@field hl? string[]
