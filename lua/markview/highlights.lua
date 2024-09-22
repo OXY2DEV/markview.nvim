@@ -195,13 +195,13 @@ local isDark = function (light, dark)
 end
 
 --- Creates highlight groups from an array of tables
----@param array markview.hl[]
+---@param array markview.conf.hl[]
 highlights.create = function (array)
 	local _c = {};
 
 	if type(array) == "string" then
 		if highlights[array] then
-			array = highlights[array] --[=[@as markview.hl[]]=];
+			array = highlights[array];
 		else
 			return;
 		end
@@ -250,8 +250,8 @@ highlights.remove = function ()
 	end
 end
 
-highlights.color = function (property, list, dark, light)
-	return highlights.rgb(highlights.get(property, list) or isDark() and dark or light);
+highlights.color = function (property, list, light, dark)
+	return highlights.rgb(highlights.get(property, list) or isDark(light, dark));
 end
 
 local headingGenerator = function (checks, light, dark, group_name, suffix)
@@ -302,6 +302,7 @@ local hlGenerator = function (checks, light, dark, group_name)
 	};
 end
 
+---@type markview.conf.hl[]
 highlights.dynamic = {
 	---+ ${hl, Block quotes}
 	{
@@ -320,7 +321,7 @@ highlights.dynamic = {
 
 			return {
 				{
-					group_name = "MarkviewBlockQuoteNote",
+					group_name = "BlockQuoteNote",
 					value = {
 						default = true,
 						fg = highlights.hex(fg),
@@ -518,8 +519,8 @@ highlights.dynamic = {
 	---+ ${hl, Horizontal rule}
 	{
 		output = function (util)
-			local from = highlights.color("bg", { "Normal" }, "#1E1E2E", "#CDD6F4");
-			local to   = highlights.color("fg", { "Title" }, "#1e66f5", "#89b4fa");
+			local from = util.color("bg", { "Normal" }, "#1E1E2E", "#CDD6F4");
+			local to   = util.color("fg", { "Title" }, "#1e66f5", "#89b4fa");
 
 			local _o = {};
 
@@ -532,7 +533,7 @@ highlights.dynamic = {
 					group_name = "Gradient" .. (l + 1),
 					value = {
 						default = true,
-						fg = highlights.hex({ _r, _g, _b })
+						fg = util.hex({ _r, _g, _b })
 					}
 				});
 			end
@@ -584,6 +585,36 @@ highlights.dynamic = {
 	},
 	---_
 
+	---+ ${hl, Latex}
+	{
+		output = function (util)
+			local sub = util.color("bg", { "DiagnosticWarn" }, "#DF8E1D", "#F9E3AF");
+			local sup = util.color("bg", { "DiagnosticOk" }, "#40a02b", "#a6e3a1");
+
+			local bg = util.color("bg", { "Normal" }, "#CDD6F4", "#1E1E2E");
+
+			return {
+				{
+					group_name = "LatexSubscript",
+					value = {
+						default = true,
+						fg = util.hex(util.opacify(sub, bg, 0.6)),
+						italic = true
+					}
+				},
+				{
+					group_name = "LatexSuperscript",
+					value = {
+						default = true,
+						fg = util.hex(util.opacify(sup, bg, 0.6)),
+						italic = true
+					}
+				}
+			}
+		end
+	},
+	---_
+
 	---+ ${hl, List items}
 	{
 		output = function ()
@@ -620,35 +651,35 @@ highlights.dynamic = {
 
 			return {
 				{
-					group_name = "MarkviewTableHeader",
+					group_name = "TableHeader",
 					value = {
 						default = true,
 						fg = highlights.hex(headerFg),
 					}
 				},
 				{
-					group_name = "MarkviewTableBorder",
+					group_name = "TableBorder",
 					value = {
 						default = true,
 						fg = highlights.hex(fg),
 					}
 				},
 				{
-					group_name = "MarkviewTableAlignCenter",
+					group_name = "TableAlignCenter",
 					value = {
 						default = true,
 						fg = highlights.hex(headerFg),
 					}
 				},
 				{
-					group_name = "MarkviewTableAlignLeft",
+					group_name = "TableAlignLeft",
 					value = {
 						default = true,
 						fg = highlights.hex(headerFg),
 					}
 				},
 				{
-					group_name = "MarkviewTableAlignRight",
+					group_name = "TableAlignRight",
 					value = {
 						default = true,
 						fg = highlights.hex(headerFg),
@@ -660,6 +691,7 @@ highlights.dynamic = {
 	---_
 };
 
+---@type markview.conf.hl[]
 highlights.dark = {
 	---+ ${hl, Tables}
 	{
@@ -1032,6 +1064,7 @@ highlights.dark = {
 	---_
 };
 
+---@type markview.conf.hl[]
 highlights.light = {
 	---+ ${hl, Tables}
 	{
