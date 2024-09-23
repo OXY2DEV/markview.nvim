@@ -1487,24 +1487,77 @@ latex.render_superscript = function (buffer, content, user_config)
 	local skip = 1;
 
 	if content.text:match("^%^[^{]$") then
-		vim.api.nvim_buf_set_extmark(buffer, latex.namespace, content.row_start, content.col_start, {
-			end_col = content.col_start + 1,
-			conceal = ""
-		});
-
 		internal = content.text:match("^%^(.+)$")
+
+		if internal:match("^([%s%d]+)$") then
+			vim.api.nvim_buf_set_extmark(buffer, latex.namespace, content.row_start, content.col_start, {
+				end_col = content.col_start + 1,
+				conceal = ""
+			});
+		else
+			vim.api.nvim_buf_set_extmark(buffer, latex.namespace, content.row_start, content.col_start, {
+				virt_text_pos = "inline",
+				virt_text = { { "^(", set_hl(user_config.hl) } },
+
+				end_col = content.col_start + 1,
+				conceal = "",
+
+				hl_mode = "combine"
+			});
+			vim.api.nvim_buf_set_extmark(buffer, latex.namespace, content.row_end, content.col_end, {
+				virt_text_pos = "inline",
+				virt_text = { { ")", set_hl(user_config.hl) } },
+
+				hl_mode = "combine"
+			});
+		end
 	elseif content.text:match("^%^%{(.+)%}$") and user_config.conceal_brackets ~= false then
 		skip = 2;
 		internal = content.text:match("^%^%{(.+)%}$")
 
-		vim.api.nvim_buf_set_extmark(buffer, latex.namespace, content.row_start, content.col_start, {
-			end_col = content.col_start + 2,
-			conceal = internal:match("^([%d%s]+)$") and "" or " "
-		});
-		vim.api.nvim_buf_set_extmark(buffer, latex.namespace, content.row_end, content.col_end - 1, {
-			end_col = content.col_end,
-			conceal = ""
-		});
+		if internal:match("^([%s%d]+)$") then
+			vim.api.nvim_buf_set_extmark(buffer, latex.namespace, content.row_start, content.col_start, {
+				end_col = content.col_start + 2,
+				conceal = ""
+			});
+			vim.api.nvim_buf_set_extmark(buffer, latex.namespace, content.row_end, content.col_end - 1, {
+				end_col = content.col_end,
+				conceal = ""
+			});
+		elseif content.special_syntax then
+			vim.api.nvim_buf_set_extmark(buffer, latex.namespace, content.row_start, content.col_start, {
+				virt_text_pos = "inline",
+				virt_text = { { " " } },
+
+				end_col = content.col_start + 2,
+				conceal = "",
+
+				hl_mode = "combine"
+			});
+			vim.api.nvim_buf_set_extmark(buffer, latex.namespace, content.row_end, content.col_end - 1, {
+				end_col = content.col_end,
+				conceal = ""
+			});
+		else
+			vim.api.nvim_buf_set_extmark(buffer, latex.namespace, content.row_start, content.col_start, {
+				virt_text_pos = "inline",
+				virt_text = { { "^(", set_hl(user_config.hl) } },
+
+				end_col = content.col_start + 2,
+				conceal = "",
+
+				hl_mode = "combine"
+			});
+			vim.api.nvim_buf_set_extmark(buffer, latex.namespace, content.row_end, content.col_end - 1, {
+				virt_text_pos = "inline",
+				virt_text = { { ")", set_hl(user_config.hl) } },
+
+				end_col = content.col_end,
+				conceal = "",
+
+				hl_mode = "combine"
+			});
+		end
 	end
 
 	if internal:match("^([%d%s]+)$") then
@@ -1512,7 +1565,8 @@ latex.render_superscript = function (buffer, content, user_config)
 
 		for num in internal:gmatch(".") do
 			table.insert(_v, {
-				numbers[num] or num
+				numbers[num] or num,
+				set_hl(user_config.hl)
 			});
 		end
 
@@ -1552,24 +1606,77 @@ latex.render_subscript = function (buffer, content, user_config)
 	local skip = 1;
 
 	if content.text:match("^%_[^{]$") then
-		vim.api.nvim_buf_set_extmark(buffer, latex.namespace, content.row_start, content.col_start, {
-			end_col = content.col_start + 1,
-			conceal = ""
-		});
-
 		internal = content.text:match("^%_(.+)$")
+
+		if internal:match("^([%s%d]+)$") then
+			vim.api.nvim_buf_set_extmark(buffer, latex.namespace, content.row_start, content.col_start, {
+				end_col = content.col_start + 1,
+				conceal = ""
+			});
+		else
+			vim.api.nvim_buf_set_extmark(buffer, latex.namespace, content.row_start, content.col_start, {
+				virt_text_pos = "inline",
+				virt_text = { { "_(", set_hl(user_config.hl) } },
+
+				end_col = content.col_start + 1,
+				conceal = "",
+
+				hl_mode = "combine"
+			});
+			vim.api.nvim_buf_set_extmark(buffer, latex.namespace, content.row_end, content.col_end, {
+				virt_text_pos = "inline",
+				virt_text = { { ")", set_hl(user_config.hl) } },
+
+				hl_mode = "combine"
+			});
+		end
 	elseif content.text:match("^%_%{(.+)%}$") and user_config.conceal_brackets ~= false then
 		skip = 2;
 		internal = content.text:match("^%_%{(.+)%}$")
 
-		vim.api.nvim_buf_set_extmark(buffer, latex.namespace, content.row_start, content.col_start, {
-			end_col = content.col_start + 2,
-			conceal = internal:match("^([%d%s]+)$") and "" or " "
-		});
-		vim.api.nvim_buf_set_extmark(buffer, latex.namespace, content.row_end, content.col_end - 1, {
-			end_col = content.col_end,
-			conceal = ""
-		});
+		if internal:match("^([%s%d]+)$") then
+			vim.api.nvim_buf_set_extmark(buffer, latex.namespace, content.row_start, content.col_start, {
+				end_col = content.col_start + 2,
+				conceal = ""
+			});
+			vim.api.nvim_buf_set_extmark(buffer, latex.namespace, content.row_end, content.col_end - 1, {
+				end_col = content.col_end,
+				conceal = ""
+			});
+		elseif content.special_syntax then
+			vim.api.nvim_buf_set_extmark(buffer, latex.namespace, content.row_start, content.col_start, {
+				virt_text_pos = "inline",
+				virt_text = { { " " } },
+
+				end_col = content.col_start + 2,
+				conceal = "",
+
+				hl_mode = "combine"
+			});
+			vim.api.nvim_buf_set_extmark(buffer, latex.namespace, content.row_end, content.col_end - 1, {
+				end_col = content.col_end,
+				conceal = ""
+			});
+		else
+			vim.api.nvim_buf_set_extmark(buffer, latex.namespace, content.row_start, content.col_start, {
+				virt_text_pos = "inline",
+				virt_text = { { "_(", set_hl(user_config.hl) } },
+
+				end_col = content.col_start + 2,
+				conceal = "",
+
+				hl_mode = "combine"
+			});
+			vim.api.nvim_buf_set_extmark(buffer, latex.namespace, content.row_end, content.col_end - 1, {
+				virt_text_pos = "inline",
+				virt_text = { { ")", set_hl(user_config.hl) } },
+
+				end_col = content.col_end,
+				conceal = "",
+
+				hl_mode = "combine"
+			});
+		end
 	end
 
 	if internal:match("^([%d%s]+)$") then
@@ -1577,7 +1684,8 @@ latex.render_subscript = function (buffer, content, user_config)
 
 		for num in internal:gmatch(".") do
 			table.insert(_v, {
-				numbers[num] or num
+				numbers[num] or num,
+				set_hl(user_config.hl)
 			});
 		end
 

@@ -1161,10 +1161,26 @@ parser.latex = function (buffer, TStree, from, to)
 				col_end = col_end
 			});
 		elseif capture_name == "superscript" then
+			local text = vim.api.nvim_buf_get_lines(buffer, row_start, row_start + 1, false)[1];
+			text = string.sub(text, 1, col_start);
+
+			local special_syntax = false;
+
+			if text:match("\\sum%_%{(.-)%}$") then
+				special_syntax = true;
+			elseif text:match("\\prod%_%{(.-)%}$") then
+				special_syntax = true;
+			elseif text:match("\\int%_%{(.-)%}$") then
+				special_syntax = true;
+			elseif text:match("\\oint%_%{(.-)%}$") then
+				special_syntax = true;
+			end
+
 			table.insert(parser.parsed_content, {
 				node = capture_node,
 				type = "latex_superscript",
 
+				special_syntax = special_syntax,
 				text = capture_text,
 
 				row_start = row_start,
@@ -1174,10 +1190,28 @@ parser.latex = function (buffer, TStree, from, to)
 				col_end = col_end
 			});
 		elseif capture_name == "subscript" then
+			local text = vim.api.nvim_buf_get_lines(buffer, row_start, row_start + 1, false)[1];
+			text = string.sub(text, 1, col_start);
+
+			local special_syntax = false;
+
+			if text:match("\\lim$") then
+				special_syntax = true;
+			elseif text:match("\\sum$") then
+				special_syntax = true;
+			elseif text:match("\\prod$") then
+				special_syntax = true;
+			elseif text:match("\\int$") then
+				special_syntax = true;
+			elseif text:match("\\oint$") then
+				special_syntax = true;
+			end
+
 			table.insert(parser.parsed_content, {
 				node = capture_node,
 				type = "latex_subscript",
 
+				special_syntax = special_syntax,
 				text = capture_text,
 
 				row_start = row_start,
