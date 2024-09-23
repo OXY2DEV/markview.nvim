@@ -2076,7 +2076,7 @@ renderer.render = function (buffer, parsed_content, config_table, conceal_start,
 		elseif type == "escaped" then
 			pcall(renderer.render_escaped, buffer, content, config_table.escaped);
 		elseif type == "footnote" then
-			pcall(renderer.render_footnotes, buffer, content, config_table.escaped);
+			pcall(renderer.render_footnotes, buffer, content, config_table.footnotes);
 		elseif type:match("^(latex_)") then
 			pcall(latex_renderer.render, type, buffer, content, config_table)
 		end
