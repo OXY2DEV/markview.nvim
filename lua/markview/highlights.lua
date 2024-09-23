@@ -196,7 +196,8 @@ end
 
 --- Creates highlight groups from an array of tables
 ---@param array markview.conf.hl[]
-highlights.create = function (array)
+---@param list? "text" | "tables"
+highlights.create = function (array, list)
 	local _c = {};
 
 	if type(array) == "string" then
@@ -228,6 +229,16 @@ highlights.create = function (array)
 		::ignore::
 	end
 
+	local log_file;
+
+	if list then
+		log_file = io.open("mkvhl.txt", "w");
+
+		if log_file and list == "table" then
+			log_file:write("{", "\n");
+		end
+	end
+
 	-- Apply the new highlight groups
 	for _, color in ipairs(_c) do
 		if type(color.group_name) == "string" and type(color.value) == "table" then
@@ -238,7 +249,34 @@ highlights.create = function (array)
 
 			vim.api.nvim_set_hl(0, color.group_name, color.value);
 			table.insert(highlights.created, color.group_name)
+
+			if log_file and list == "text" then
+				log_file:write(color.group_name, "\n");
+			elseif log_file and list == "table" then
+				log_file:write("	{\n");
+				log_file:write("		group_name = ", '"', color.group_name, '"', "\n");
+				log_file:write("		value = {", "\n");
+
+				for opt, value in pairs(color.value) do
+					if type(value) == "string" then
+						log_file:write("			", opt, " = ", '"', value, '"', ",", "\n");
+					else
+						log_file:write("			", opt, " = ", tostring(value), ",", "\n");
+					end
+				end
+
+				log_file:write("		}", "\n");
+				log_file:write("	},", "\n");
+			end
 		end
+	end
+
+	if log_file then
+		if log_file and list == "table" then
+			log_file:write("}");
+		end
+
+		log_file:close();
 	end
 end
 
