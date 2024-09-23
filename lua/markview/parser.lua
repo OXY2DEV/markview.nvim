@@ -1038,33 +1038,9 @@ parser.latex = function (buffer, TStree, from, to)
 				goto invalidBracket;
 			end
 
-			local node = capture_node;
-			local level = 1;
-
-			-- Need more efficiency
-			while node do
-				local foundSubNode = false;
-
-				for sub_node in node:iter_children() do
-					if sub_node:type() == "curly_group" then
-						level = level + 1;
-						node = sub_node;
-
-						foundSubNode = true;
-						break;
-					end
-				end
-
-				if foundSubNode == false then
-					break;
-				end
-			end
-
 			table.insert(parser.parsed_content, {
 				node = capture_node,
 				type = "latex_bracket",
-
-				level = level,
 
 				row_start = row_start,
 				row_end = row_end,

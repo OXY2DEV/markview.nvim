@@ -1413,30 +1413,12 @@ latex.render_brackets = function (buffer, content, user_config)
 	end
 
 	vim.api.nvim_buf_set_extmark(buffer, latex.namespace, content.row_start, content.col_start, {
-		virt_text_pos = "overlay",
-		virt_text = {
-			user_config.opening[utils.clamp(content.level, 1, #user_config.opening)]
-		},
-
-		hl_mode = "combine"
+		end_col = content.col_start + 1,
+		conceal = ""
 	});
 	vim.api.nvim_buf_set_extmark(buffer, latex.namespace, content.row_end, content.col_end - 1, {
-		virt_text_pos = "overlay",
-		virt_text = {
-			user_config.closing[utils.clamp(content.level, 1, #user_config.closing)]
-		},
-
-		hl_mode = "combine"
-	});
-
-	if not user_config.scope or #user_config.scope == 0 then
-		return;
-	end
-
-	vim.api.nvim_buf_set_extmark(buffer, latex.namespace, content.row_start, content.col_start, {
-		hl_group = set_hl(user_config.scope[utils.clamp(content.level, 1, #user_config.scope)]),
-		end_row = content.row_end,
-		end_col = content.col_end
+		end_col = content.col_end,
+		conceal = ""
 	});
 end
 
