@@ -616,7 +616,7 @@ markview.configuration = {
 		enable = true,
 
 		brackets = {
-			enable = true,
+			enable = false,
 			opening = {
 				{ "(", "MarkviewHeading1Sign" },
 				{ "{", "MarkviewHeading2Sign" },
@@ -742,7 +742,7 @@ markview.configuration = {
 
 	initial_state = true,
 	max_file_length = 1000,
-	modes = { "n", "no" },
+	modes = { "n", "no", "c" },
 	render_distance = 100,
 
 	split_conf = {
@@ -1153,7 +1153,13 @@ markview.commands = {
 		else
 			markview.state.hybrid_mode = false;
 		end
-	end
+	end,
+	hybridEnable = function ()
+		markview.state.hybrid_mode = true;
+	end,
+	hybridDisable = function ()
+		markview.state.hybrid_mode = false;
+	end,
 }
 
 
