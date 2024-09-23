@@ -434,7 +434,8 @@ markview.configuration = {
 
 	footnotes = {
 		enable = true,
-		use_unicode = true
+		use_unicode = true,
+		hl = "Special"
 	},
 
 	headings = {
@@ -616,7 +617,7 @@ markview.configuration = {
 		enable = true,
 
 		brackets = {
-			enable = false,
+			enable = true,
 			opening = {
 				{ "(", "MarkviewHeading1Sign" },
 				{ "{", "MarkviewHeading2Sign" },
@@ -1232,15 +1233,19 @@ end, {
 	end
 });
 
-markview.unload = function ()
+markview.unload = function (buffer)
 	for index, buf in ipairs(markview.attached_buffers) do
-		if vim.api.nvim_buf_is_valid(buf) == false then
+		if buffer and buf == buffer then
+			table.remove(markview.attached_buffers, index);
+		elseif vim.api.nvim_buf_is_valid(buf) == false then
 			table.remove(markview.attached_buffers, index);
 		end
 	end
 
 	for index, win in ipairs(markview.attached_windows) do
-		if vim.api.nvim_win_is_valid(win) == false then
+		if buffer and vim.api.nvim_win_is_valid(win) and vim.api.nvim_win_get_buf(win) == buffer then
+			table.remove(markview.attached_windows, index);
+		elseif vim.api.nvim_win_is_valid(win) == false then
 			table.remove(markview.attached_windows, index);
 		end
 	end

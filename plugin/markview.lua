@@ -82,7 +82,7 @@ end
 
 
 
-local redraw_autocmd = function (augroup, buffer)
+local redraw_autocmd = function (augroup, buffer, validate)
 	local update_events = { "BufEnter", "ModeChanged", "TextChanged" };
 
 	if vim.list_contains(markview.configuration.modes, "n") or vim.list_contains(markview.configuration.modes, "v") then
@@ -125,6 +125,10 @@ local redraw_autocmd = function (augroup, buffer)
 					return;
 				end
 
+				if validate == false then
+					goto noValidation;
+				end
+
 				--- Incorrect file type
 				if not vim.list_contains(markview.configuration.filetypes or { "markdown" }, vim.bo[buffer].filetype) then
 					markview.unload();
@@ -140,6 +144,8 @@ local redraw_autocmd = function (augroup, buffer)
 
 					return
 				end
+
+				::noValidation::
 
 
 				-- Only on mode change or if the mode changed due to text changed
@@ -257,19 +263,6 @@ vim.api.nvim_create_autocmd({ "User" }, {
 			return;
 		end
 
-		local ft = vim.bo[buffer].filetype;
-		local bt = vim.bo[buffer].buftype;
-
-		--- Incorrect file type
-		if not vim.list_contains(markview.configuration.filetypes or { "markdown" }, ft) then
-			return;
-		end
-
-		-- Incorrect buffer type
-		if vim.islist(markview.configuration.buf_ignore) and vim.list_contains(markview.configuration.buf_ignore, bt) then
-			return
-		end
-
 		local windows = utils.find_attached_wins(buffer);
 		local mode = vim.api.nvim_get_mode().mode;
 
@@ -316,7 +309,7 @@ vim.api.nvim_create_autocmd({ "User" }, {
 
 		-- Augroup for the special autocmds
 		local markview_augroup = vim.api.nvim_create_augroup("markview_buf_" .. buffer, { clear = true });
-		redraw_autocmd(markview_augroup, buffer);
+		redraw_autocmd(markview_augroup, buffer, false);
 	end
 })
 
@@ -334,7 +327,7 @@ vim.api.nvim_create_autocmd("User", {
 		data.was_detached = true;
 
 		vim.api.nvim_del_autocmd(data.id);
-		markview.unload();
+		markview.unload(event.buf);
 	end
 });
 
