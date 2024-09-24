@@ -131,13 +131,28 @@ parser.filter_lines = function (buffer, from, to)
 	local start = 0;
 
 	for l, line in ipairs(captured_lines) do
-		-- TODO: Find better conditions
-		if l == 1 and line:match(">%s-([+%-*])") then
-			local before = line:match("(.*>%s-)[+%-*]");
-			start = vim.fn.strchars(before);
+		if l == 1 then
+			if line:match(">%s-([+%-*])") then
+				local sp = vim.fn.strchars(line:match(">(%s-)[+%-*]"));
+				local before = sp % 2 ~= 0 and line:match("(.*>%s)") or line:match("(.*>)");
 
-			line = line:gsub(before, "");
-			table.insert(start_pos, start)
+				start = #before;
+				line = line:gsub(before, "");
+				table.insert(start_pos, start)
+			elseif line:match(">%s-(%d+)[)%.]") then
+				local sp = vim.fn.strchars(line:match(">(%s-)%d+[)%.]"));
+				local before = sp % 2 ~= 0 and line:match("(.*>%s)") or line:match("(.*>)");
+
+				start = #before;
+				line = line:gsub(before, "");
+				table.insert(start_pos, start)
+			end
+		elseif l ~=	1 then
+			if line:match(">%s-([+%-*])") then
+				break;
+			elseif line:match(">%s-(%d+)[)%.]") then
+				break;
+			end
 		else
 			line = line:sub(start, #line);
 			table.insert(start_pos, start);
@@ -729,11 +744,12 @@ parser.md_inline = function (buffer, TStree, from, to)
 						local marker = capture_text:match("%[(.)%]");
 
 						local start_line = extmark.list_lines[1] or "";
+						local list_start = extmark.starts[1] or 0;
 						local atStart = start_line:match("[+%-*]%s+%[(" .. marker .. ")%]%s+");
 
-						local chk_start, _ = start_line:find("%[(" .. marker .. ")%]");
+						local chk_start, _ = start_line:find("%[(%" .. marker .. ")%]");
 
-						if not atStart or not chk_start or chk_start - 1 ~= col_start then
+						if not atStart or not chk_start or (list_start + chk_start) - 1 ~= col_start then
 							goto invalid;
 						end
 
