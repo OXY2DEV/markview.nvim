@@ -655,8 +655,15 @@ parser.md_inline = function (buffer, TStree, from, to)
 						local start_line = extmark.list_lines[1] or "";
 						local atStart = start_line:match("[+%-*]%s+(%[%" .. marker .. "%])%s+");
 
-						local chk_start, _ = start_line:find("%[%" .. marker .. "%]");
+						local success, result = pcall(function()
+							return start_line:find("%[%" .. marker .. "%]")
+						end)
 
+						if not success then
+							print("Error: The content inside [ ] brackets contains an unsupported marker: '" .. marker .. "'. This is not supported in checkboxes.")
+						else
+							chk_start = result
+						end
 						if not atStart or not chk_start or chk_start - 1 ~= col_start then
 							goto invalid;
 						end
