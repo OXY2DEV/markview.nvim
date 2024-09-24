@@ -1,7 +1,7 @@
-local entites = {};
+local entities = {};
 
 ---@type table<string, string> HTML entities lookup table
-entites.lookup = {
+entities.lookup = {
     Aacute = "Á",
     aacute = "á",
     Acirc = "Â",
@@ -254,8 +254,8 @@ entites.lookup = {
 ---@param string string
 ---@return string
 ---@return number
-entites.get = function (string)
-	return entites.lookup[string], vim.fn.strdisplaywidth(entites.lookup[string]);
+entities.get = function (string)
+	return entities.lookup[string], vim.fn.strdisplaywidth(entities.lookup[string]);
 end
 
-return entites;
+return entities;

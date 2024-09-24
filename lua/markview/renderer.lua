@@ -2,7 +2,7 @@ local renderer = {};
 local devicons_loaded, devicons = pcall(require, "nvim-web-devicons");
 
 local utils = require("markview.utils");
-local entites = require("markview.entites");
+local entities = require("markview.entities");
 local languages = require("markview.languages");
 local latex_renderer = require("markview.latex_renderer");
 
@@ -445,11 +445,11 @@ local display_width = function (text, config)
 	for entity_name, semicolon in final_string:gmatch("&([%a%d]+)(;?)") do
 		if not html_conf or html_conf.enable == false then
 			break;
-		elseif not html_conf.entites or html_conf.entites.enable == false then
+		elseif not html_conf.entities or html_conf.entities.enable == false then
 			break;
 		end
 
-		local entity = entites.get(entity_name);
+		local entity = entities.get(entity_name);
 
 		if not entity then
 			goto invalid;
@@ -1959,7 +1959,7 @@ renderer.render_html_entities = function (buffer, content, user_config)
 	end
 
 	local filtered_entity = content.text:gsub("[&;]", "");
-	local entity = entites.get(filtered_entity);
+	local entity = entities.get(filtered_entity);
 
 	if not entity then
 		return;
