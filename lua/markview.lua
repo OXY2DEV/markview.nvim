@@ -2,6 +2,7 @@ local markview = {};
 local utils = require("markview.utils");
 local hls = require("markview.highlights");
 local ts = require("markview.treesitter");
+local latex = require("markview.latex_renderer");
 
 markview.parser = require("markview.parser");
 markview.renderer = require("markview.renderer");
@@ -616,25 +617,16 @@ markview.configuration = {
 		---+ ${class, Latex}
 		enable = true,
 
+		---@diagnostic disable
 		brackets = {
 			enable = true,
-			opening = {
-				{ "(", "MarkviewHeading1Sign" },
-				{ "{", "MarkviewHeading2Sign" },
-				{ "[", "MarkviewHeading3Sign" },
-			},
-			closing = {
-				{ ")", "MarkviewHeading1Sign" },
-				{ "}", "MarkviewHeading2Sign" },
-				{ "]", "MarkviewHeading3Sign" },
-			},
-
-			-- scope = {
-			-- 	"DiagnosticVirtualTextError",
-			-- 	"DiagnosticVirtualTextOk",
-			-- 	"DiagnosticVirtualTextWarn",
-			-- }
+			hl = "@punctuation.brackets"
 		},
+		operators = {
+			enable = true,
+			configs = latex.operator_conf
+		},
+		---@diagnostic enable
 
 		inline = {
 			enable = true
@@ -643,7 +635,7 @@ markview.configuration = {
 			enable = true,
 
 			hl = "Code",
-			text = { " Latex ", "Special" }
+			text = { " LaTeX ", "Special" }
 		},
 
 		symbols = {
