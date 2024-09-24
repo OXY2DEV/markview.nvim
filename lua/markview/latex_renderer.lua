@@ -95,6 +95,47 @@ latex.superscripts = {
 	["Z"] = "ᶻ",
 };
 
+latex.operators = {
+	---+ ${class, Operator names}
+	["arccos"] = "𝚊𝚛𝚌𝚌𝚘𝚜",
+	["arcsin"] = "𝚊𝚛𝚌𝚜𝚒𝚗",
+	["arctan"] = "𝚊𝚛𝚌𝚝𝚊𝚗",
+	["arg"] = "𝚊𝚛𝚐",
+	["cos"] = "𝚌𝚘𝚜",
+	["csc"] = "𝚌𝚜𝚌",
+	["cosh"] = "𝚌𝚘𝚜𝚑",
+	["cot"] = "𝚌𝚘𝚝",
+	["coth"] = "𝚌𝚘𝚝𝚑",
+	["deg"] = "𝚍𝚎𝚐",
+	["det"] = "𝚍𝚎𝚝",
+	["dim"] = "𝚍𝚒𝚖",
+	["exp"] = "𝚎𝚡𝚙",
+	["gcd"] = "𝚐𝚌𝚍",
+	["hom"] = "𝚑𝚘𝚖",
+	["inf"] = "𝚒𝚗𝚏",
+	["ker"] = "𝚔𝚎𝚛",
+	["lg"] = "𝚕𝚐",
+	["lim"] = "𝚕𝚒𝚖",
+	["liminf"] = "𝚕𝚒𝚖 𝚒𝚗𝚏",
+	["limsup"] = "𝚕𝚒𝚖 𝚜𝚞𝚋",
+	["ln"] = "𝚕𝚗",
+	["log"] = "𝚕𝚘𝚐",
+	["max"] = "𝚖𝚊𝚡",
+	["min"] = "𝚖𝚒𝚗",
+	["Pr"] = "𝙿𝚛",
+	["sec"] = "𝚜𝚎𝚌",
+	["sin"] = "𝚜𝚒𝚗",
+	["sinh"] = "𝚜𝚒𝚗𝚑",
+	["sup"] = "𝚜𝚞𝚙",
+	["tan"] = "𝚝𝚊𝚗",
+	["tanh"] = "𝚝𝚊𝚗𝚑",
+
+	["lvert"] = "|",
+	["lVert"] = "‖",
+	["sqrt"] = "√",
+	---_
+}
+
 ---@type table<string, string | fun(buf: integer): string> Latex symbols
 latex.symbols = {
 	---+
@@ -152,6 +193,11 @@ latex.symbols = {
 	["sphat"] = "^",
 	["lbrace"] = "{",
 	["vert"] = "|",
+	["lvert"] = "|",
+	["rvert"] = "|",
+	["Vert"] = "‖",
+	["lVert"] = "‖",
+	["rVert"] = "‖",
 	["rbrace"] = "}",
 	["sptilde"] = "~",
 
@@ -1394,6 +1440,133 @@ latex.symbols = {
 	---_
 };
 
+latex.operator_conf = {
+	---+ ${class, Trigonometric functions}
+	sin = {
+		operator = {
+			conceal = "",
+
+			virt_text_pos = "inline",
+			virt_text = { { latex.operators.sin, "Special" } }
+		},
+		args = {
+			{
+				before = {
+					virt_text_pos = "inline",
+					virt_text = { { " " } }
+				}
+			}
+		}
+	},
+	cos = {
+		operator = {
+			conceal = "", virt_text_pos = "inline", virt_text = { { latex.operators.cos, "Special" } }
+		},
+		args = {
+			{
+				before = { virt_text_pos = "inline", virt_text = { { " " } } }
+			}
+		}
+	},
+	tan = {
+		operator = {
+			conceal = "", virt_text_pos = "inline", virt_text = { { latex.operators.tan, "Special" } }
+		},
+		args = {
+			{
+				before = { virt_text_pos = "inline", virt_text = { { " " } } }
+			}
+		}
+	},
+
+	csc = {
+		operator = { conceal = "", virt_text_pos = "inline", virt_text = { { latex.operators.csc, "Special" } } },
+		args = { { before = { virt_text_pos = "inline", virt_text = { { " " } } } } }
+	},
+	sec = {
+		operator = { conceal = "", virt_text_pos = "inline", virt_text = { { latex.operators.sec, "Special" } } },
+		args = { { before = { virt_text_pos = "inline", virt_text = { { " " } } } } }
+	},
+	cot = {
+		operator = { conceal = "", virt_text_pos = "inline", virt_text = { { latex.operators.cot, "Special" } } },
+		args = { { before = { virt_text_pos = "inline", virt_text = { { " " } } } } }
+	},
+
+	sinh = {
+		operator = { conceal = "", virt_text_pos = "inline", virt_text = { { latex.operators.sinh, "Special" } } },
+		args = { { before = { virt_text_pos = "inline", virt_text = { { " " } } } } }
+	},
+	cosh = {
+		operator = { conceal = "", virt_text_pos = "inline", virt_text = { { latex.operators.cosh, "Special" } } },
+		args = { { before = { virt_text_pos = "inline", virt_text = { { " " } } } } }
+	},
+	tanh = {
+		operator = { conceal = "", virt_text_pos = "inline", virt_text = { { latex.operators.tanh, "Special" } } },
+		args = { { before = { virt_text_pos = "inline", virt_text = { { " " } } } } }
+	},
+	coth = {
+		operator = { conceal = "", virt_text_pos = "inline", virt_text = { { latex.operators.coth, "Special" } } },
+		args = { { before = { virt_text_pos = "inline", virt_text = { { " " } } } } }
+	},
+
+	arcsin = {
+		operator = { conceal = "", virt_text_pos = "inline", virt_text = { { latex.operators.arcsin, "Special" } } },
+		args = { { before = { virt_text_pos = "inline", virt_text = { { " " } } } } }
+	},
+	arccos = {
+		operator = { conceal = "", virt_text_pos = "inline", virt_text = { { latex.operators.arccos, "Special" } } },
+		args = { { before = { virt_text_pos = "inline", virt_text = { { " " } } } } }
+	},
+	arctan = {
+		operator = { conceal = "", virt_text_pos = "inline", virt_text = { { latex.operators.arctan, "Special" } } },
+		args = { { before = { virt_text_pos = "inline", virt_text = { { " " } } } } }
+	},
+	---_
+
+	---+ ${class, Logarithmic functions}
+	ln = {
+		operator = { conceal = "", virt_text_pos = "inline", virt_text = { { latex.operators.ln, "Special" } } },
+		args = { { before = { virt_text_pos = "inline", virt_text = { { " " } } } } }
+	},
+	log = {
+		operator = { conceal = "", virt_text_pos = "inline", virt_text = { { latex.operators.log, "Special" } } },
+		args = { { before = { virt_text_pos = "inline", virt_text = { { " " } } } } }
+	},
+	exp = {
+		operator = { conceal = "", virt_text_pos = "inline", virt_text = { { latex.operators.exp, "Special" } } },
+		args = { { before = { virt_text_pos = "inline", virt_text = { { " " } } } } }
+	},
+	---_
+
+	lvert = {
+		operator = { conceal = "", virt_text_pos = "inline", virt_text = { { latex.operators.lvert, "@operator.latex" } } }
+	},
+	lVert = {
+		operator = { conceal = "", virt_text_pos = "inline", virt_text = { { latex.operators.lVert, "@operator.latex" } } }
+	},
+
+	sqrt = {
+		operator = { conceal = "", virt_text_pos = "inline", virt_text = { { latex.operators.sqrt, "@operator.latex" } } }
+	},
+
+	frac = {
+		operator = {
+			conceal = ""
+		},
+		args = {
+			{
+				after = function (_, content)
+					if content.inside then
+						return { virt_text_pos = "inline", virt_text = { { latex.symbols.div } } }
+					end
+
+					return { virt_text_pos = "inline", virt_text = { { latex.symbols.div, "@operator.latex" } } }
+				end
+			}
+		}
+	},
+}
+
 ---@type integer? Namespace used to render stuff, initially nil
 latex.namespace = nil;
 
@@ -1413,39 +1586,20 @@ latex.render_brackets = function (buffer, content, user_config)
 	end
 
 	vim.api.nvim_buf_set_extmark(buffer, latex.namespace, content.row_start, content.col_start, {
+		virt_text_pos = "inline",
+		virt_text = content.has_operator and { { "(", set_hl(user_config.hl) } } or nil,
+
+		hl_mode = "combine",
 		end_col = content.col_start + 1,
 		conceal = ""
 	});
 	vim.api.nvim_buf_set_extmark(buffer, latex.namespace, content.row_end, content.col_end - 1, {
+		virt_text_pos = "inline",
+		virt_text = content.has_operator and { { ")", set_hl(user_config.hl) } } or nil,
+
+		hl_mode = "combine",
 		end_col = content.col_end,
 		conceal = ""
-	});
-end
-
---- Renders fractional
----@param buffer integer
----@param content table
----@param user_config markview.conf.latex
-latex.render_fractional = function (buffer, content, user_config)
-	if not user_config or user_config.enable == false then
-		return;
-	end
-
-	local cmd = content.command;
-	local arg_1 = content.argument_1;
-
-	vim.api.nvim_buf_set_extmark(buffer, latex.namespace, cmd.row_start, cmd.col_start, {
-		end_col = cmd.col_end,
-		conceal = ""
-	});
-
-	vim.api.nvim_buf_set_extmark(buffer, latex.namespace, arg_1.row_end, arg_1.col_end, {
-		virt_text_pos = "inline",
-		virt_text = {
-			{ latex.symbols.div, "Special" }
-		},
-
-		hl_mode = "combine"
 	});
 end
 
@@ -1752,6 +1906,92 @@ latex.render_symbol = function (buffer, content, user_config)
 	});
 end
 
+latex.render_operator = function (buffer, content, user_config)
+	if not user_config or user_config.enable == false then
+		return;
+	elseif not content.text then
+		return;
+	end
+
+	local get = function (val, ...)
+		if pcall(val, buffer, ...) then
+			return val(buffer, ...);
+		end
+
+		return val;
+	end
+
+	local operator_conf = user_config.configs[content.name];
+
+	if operator_conf.operator then
+		vim.api.nvim_buf_set_extmark(
+			buffer,
+			latex.namespace,
+			content.row_start,
+			content.col_start,
+			vim.tbl_extend("force", operator_conf.operator, {
+				end_col = content.col_start + 1 + #content.name,
+				hl_mode = "combine"
+			})
+		)
+	end
+
+	if vim.islist(operator_conf.args) then
+		for a, arg in ipairs(content.args) do
+			if not operator_conf.args[a] then
+				goto noConf;
+			end
+
+			local arg_conf = vim.deepcopy(operator_conf.args[a] or {});
+
+			if arg_conf.before then
+				arg_conf.before = get(arg_conf.before, arg);
+
+				vim.api.nvim_buf_set_extmark(
+					buffer,
+					latex.namespace,
+					arg.row_start,
+					arg.col_start,
+					vim.tbl_extend("force", arg_conf.before, {
+						hl_mode = "combine"
+					})
+				)
+			end
+
+			if arg_conf.scope then
+				arg_conf.scope = get(arg_conf.scope, arg);
+
+				vim.api.nvim_buf_set_extmark(
+					buffer,
+					latex.namespace,
+					arg.row_start,
+					arg.col_start,
+					vim.tbl_extend("force", arg_conf.scope, {
+						hl_mode = "combine",
+						end_col = arg.col_end
+					})
+				)
+			end
+
+			if arg_conf.after then
+				arg_conf.after = get(arg_conf.after, arg);
+
+				vim.api.nvim_buf_set_extmark(
+					buffer,
+					latex.namespace,
+					arg.row_end,
+					arg.col_end,
+					vim.tbl_extend("force", arg_conf.after, {
+						hl_mode = "combine"
+					})
+				)
+			end
+
+			::noConf::
+		end
+	end
+end
+
 --- Renders mathbb symbols
 ---@param buffer integer
 ---@param content table
@@ -1795,26 +2035,6 @@ latex.render_font = function (buffer, content, user_config)
 
 		col = col + 1;
 	end
-end
-
---- Renders fractional
----@param buffer integer
----@param content table
----@param user_config markview.conf.latex
-latex.render_root = function (buffer, content, user_config)
-	if not user_config or user_config.enable == false then
-		return;
-	end
-
-	vim.api.nvim_buf_set_extmark(buffer, latex.namespace, content.row_start, content.col_start, {
-		virt_text_pos = "inline",
-		virt_text = {
-			{ latex.symbols.sqrt, "Special" }
-		},
-
-		end_col = content.col_start + 5,
-		conceal = ""
-	});
 end
 
 --- Renders fractional
@@ -1904,8 +2124,6 @@ latex.render = function (render_type, buffer, content, config_table)
 		pcall(latex.render_block, buffer, content, conf.block)
 	elseif render_type == "latex_bracket" then
 		pcall(latex.render_brackets, buffer, content, conf.brackets)
-	elseif render_type == "latex_fractional" then
-		pcall(latex.render_fractional, buffer, content, conf)
 	elseif render_type == "latex_superscript" then
 		pcall(latex.render_superscript, buffer, content, conf.superscript)
 	elseif render_type == "latex_subscript" then
@@ -1914,8 +2132,8 @@ latex.render = function (render_type, buffer, content, config_table)
 		pcall(latex.render_font, buffer, content, conf.symbols)
 	elseif render_type == "latex_symbol" then
 		pcall(latex.render_symbol, buffer, content, conf)
-	elseif render_type == "latex_root" then
-		pcall(latex.render_root, buffer, content, conf)
+	elseif render_type == "latex_operator" then
+		pcall(latex.render_operator, buffer, content, conf.operators)
 	end
 end
 
