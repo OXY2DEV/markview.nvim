@@ -5,6 +5,15 @@ A highly-customisable & feature rich markdown previewer inside Neovim.
 [Recipes]()
 [Wiki]()
 
+<p align="center">
+    <img alt="Headings" src="https://github.com/OXY2DEV/markview.nvim/blob/images/Dev/Headings.jpg" width="50%">
+    &nbsp; &nbsp; &npsb; &nbsp;
+    <img alt="Inline" src="https://github.com/OXY2DEV/markview.nvim/blob/images/Dev/Inline_elements.jpg" width="50%">
+    <img alt="Block" src="https://github.com/OXY2DEV/markview.nvim/blob/images/Dev/Block_elements.jpg" width="50%">
+    &nbsp; &nbsp; &npsb; &nbsp;
+    <img alt="Tables" src="https://github.com/OXY2DEV/markview.nvim/blob/images/Dev/Tables.jpg" width="50%">
+</p>
+
 ## 🪷 Features
 
 Markdown renderer,
