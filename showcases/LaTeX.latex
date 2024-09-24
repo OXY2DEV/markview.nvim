@@ -1,4 +1,4 @@
-Inline math: $\oint_{5}^{6} x^3dx$
+markview.nvim
 
 Displayed math:
 \[
@@ -9,7 +9,7 @@ E = mc^2
 
 Fractions: 
 \[
-\frac{a}{b} = \frac{c}{d}
+\frac{a + 1}{b + 5} = \frac{c}{d}
 \]
 
 Square root: 
@@ -19,7 +19,7 @@ Square root:
 
 Nth root:
 \[
-\sqrt[n]{x}
+\sqrt[n]{x^2}
 \]
 
 Summation:

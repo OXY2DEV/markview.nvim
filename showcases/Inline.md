@@ -11,7 +11,7 @@ From this plugin:
 [r/neovim](reddit.com)
 
 ![Screenshot](image.png)
-[^footnote]
+A [^footnote]
 
 <example@email.com>
 
@@ -20,7 +20,7 @@ $\frac{tan^{2} a + tan^{2} b}{1 + 2tan a \times tan b}$
 $\sum_{1}^{2} 5$
 $\alpha \times \Psi$
 
-Latex: $\mathbb{\delta}$
+Inline math: $\oint_{5}^{6} x^3dx$
 
 <!--
     vim:nospell
