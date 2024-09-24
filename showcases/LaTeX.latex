@@ -1,6 +1,4 @@
-Inline math: $a^2 + b^2 = c^2$
-
-\oint_{5}^{6}
+Inline math: $\oint_{5}^{6} x^3dx$
 
 Displayed math:
 \[
@@ -8,8 +6,6 @@ E = mc^2
 \lim_{x \to \infty}
 \prod_{5}^{6}
 \]
-
-\subsection*{Fractions and Roots}
 
 Fractions: 
 \[
@@ -26,8 +22,6 @@ Nth root:
 \sqrt[n]{x}
 \]
 
-\subsection*{Summations and Integrals}
-
 Summation:
 \[
 \sum_{n=1}^{\infty} \frac{1}{n^2} = \frac{\pi^2}{6}
@@ -37,8 +31,6 @@ Integral:
 \[
 \int_{0}^{\infty} e^{-x^2} \, dx = \frac{\sqrt{\pi}}{2}
 \]
-
-\subsection*{Font Styles}
 
 Calligraphic:
 \[

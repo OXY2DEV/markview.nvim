@@ -20,7 +20,7 @@ $\frac{tan^{2} a + tan^{2} b}{1 + 2tan a \times tan b}$
 $\sum_{1}^{2} 5$
 $\alpha \times \Psi$
 
-$\mathbb{\delta}$
+Latex: $\mathbb{\delta}$
 
 <!--
     vim:nospell
