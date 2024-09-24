@@ -968,21 +968,6 @@ parser.latex = function (buffer, TStree, from, to)
 	local scanned_queies = vim.treesitter.query.parse("latex", [[
 		((curly_group) @bracket)
 
-		((generic_command
-			.
-			command: ((command_name) @c (#eq? @c "\\frac"))
-			arg: (curly_group)
-			arg: (curly_group)
-			.
-			) @fractional)
-		
-		((generic_command
-			.
-			command: ((command_name) @c (#eq? @c "\\sqrt"))
-			arg: (curly_group)
-			.
-			) @root)
-
 		;; Various fonts
 		((generic_command
 			.
@@ -1006,6 +991,12 @@ parser.latex = function (buffer, TStree, from, to)
 			command: (command_name)
 			.
 			) @symbol)
+
+		((generic_command
+			.
+			command: (command_name)
+			(curly_group)+
+			) @operator_block)
 
 		((superscript) @superscript)
 		((subscript) @subscript)
@@ -1047,17 +1038,26 @@ parser.latex = function (buffer, TStree, from, to)
 			local text = vim.api.nvim_buf_get_lines(buffer, row_start, row_start + 1, false)[1];
 			text = string.sub(text, 1, col_start);
 
+			local has_operator = false;
+
 			if text:match("%^$") and capture_text:match("^%{(.+)%}$") then
 				-- Superscript
 				goto invalidBracket;
 			elseif text:match("%_$") and capture_text:match("^%{(.+)%}$") then
 				-- Subscript
 				goto invalidBracket;
+			elseif text:match("\\(%a-)$") and vim.fn.strchars(capture_text) > 3 then
+				has_operator = true;
+			elseif text:match("%}$") and vim.fn.strchars(capture_text) > 3 then
+				has_operator = true;
 			end
 
 			table.insert(parser.parsed_content, {
 				node = capture_node,
 				type = "latex_bracket",
+
+				inside = parser.has_parent(capture_node, { "subscript", "superscript" }),
+				has_operator = has_operator,
 
 				row_start = row_start,
 				row_end = row_end,
@@ -1067,48 +1067,6 @@ parser.latex = function (buffer, TStree, from, to)
 			});
 
 			::invalidBracket::
-		elseif capture_name == "fractional" then
-			local command = capture_node:field("command");
-			local arguments = capture_node:field("arg");
-
-			local c_r_start, c_c_start, c_r_end, c_c_end = command[1]:range();
-
-			local arg_1_r_start, arg_1_c_start, arg_1_r_end, arg_1_c_end = arguments[1]:range();
-			local arg_2_r_start, arg_2_c_start, arg_2_r_end, arg_2_c_end = arguments[2]:range();
-
-			table.insert(parser.parsed_content, {
-				node = capture_node,
-				type = "latex_fractional",
-
-				command = {
-					row_start = c_r_start,
-					row_end = c_r_end,
-
-					col_start = c_c_start,
-					col_end = c_c_end
-				},
-
-				argument_1 = {
-					row_start = arg_1_r_start,
-					row_end = arg_1_r_end,
-
-					col_start = arg_1_c_start,
-					col_end = arg_1_c_end
-				},
-				argument_2 = {
-					row_start = arg_2_r_start,
-					row_end = arg_2_r_end,
-
-					col_start = arg_2_c_start,
-					col_end = arg_2_c_end
-				},
-
-				row_start = row_start,
-				row_end = row_end,
-
-				col_start = col_start,
-				col_end = col_end
-			})
 		elseif capture_name:match("^font%_(.-)") then
 			capture_name = capture_name:gsub("^font%_", "");
 
@@ -1125,14 +1083,36 @@ parser.latex = function (buffer, TStree, from, to)
 				col_start = col_start,
 				col_end = col_end
 			});
-		elseif capture_name == "symbol" then
-			vim.print()
+		elseif capture_name == "operator_block" then
+			local operator = capture_node:named_child(0);
+			local operator_name = vim.treesitter.get_node_text(operator, buffer):gsub("^\\", "");
+
+			local args = {};
+
+			for n = 1, capture_node:named_child_count() - 1, 1 do
+				local arg = capture_node:named_child(n);
+				local r_start, c_start, r_end, c_end = arg:range();
+
+				table.insert(args, {
+					node = arg,
+					text = vim.treesitter.get_node_text(arg, buffer),
+
+					inside = parser.has_parent(capture_node, { "subscript", "superscript" }),
+					row_start = r_start,
+					row_end = r_end,
+
+					col_start = c_start,
+					col_end = c_end
+				})
+			end
+
 			table.insert(parser.parsed_content, {
 				node = capture_node,
-				type = "latex_symbol",
+				type = "latex_operator",
 
-				inside = parser.has_parent(capture_node, { "subscript", "superscript" }),
-				text = capture_text:match("%\\(.-)%{?$"),
+				name = operator_name,
+				text = capture_text,
+				args = args,
 
 				row_start = row_start,
 				row_end = row_end,
@@ -1140,12 +1120,13 @@ parser.latex = function (buffer, TStree, from, to)
 				col_start = col_start,
 				col_end = col_end
 			});
-		elseif capture_name == "root" then
+		elseif capture_name == "symbol" then
 			table.insert(parser.parsed_content, {
 				node = capture_node,
-				type = "latex_root",
+				type = "latex_symbol",
 
-				text = capture_text,
+				inside = parser.has_parent(capture_node, { "subscript", "superscript" }),
+				text = capture_text:match("%\\(.-)%{?$"),
 
 				row_start = row_start,
 				row_end = row_end,
