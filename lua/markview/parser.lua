@@ -742,12 +742,13 @@ parser.md_inline = function (buffer, TStree, from, to)
 				for _, extmark in ipairs(parser.parsed_content) do
 					if extmark.type == "list_item" and extmark.row_start == row_start then
 						local marker = capture_text:match("%[(.)%]");
+						marker = parser.escape_string(marker)
 
 						local start_line = extmark.list_lines[1] or "";
 						local list_start = extmark.starts[1] or 0;
 						local atStart = start_line:match("[+%-*]%s+%[(" .. marker .. ")%]%s+");
 
-						local chk_start, _ = start_line:find("%[(%" .. marker .. ")%]");
+						local chk_start, _ = start_line:find("%[(" .. marker .. ")%]");
 
 						if not atStart or not chk_start or (list_start + chk_start) - 1 ~= col_start then
 							goto invalid;
