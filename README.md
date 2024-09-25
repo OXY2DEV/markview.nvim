@@ -6,15 +6,17 @@ A highly-customisable & feature rich markdown previewer inside Neovim.
 [Wiki]()
 
 <p align="center">
-    <img alt="Headings" src="https://github.com/OXY2DEV/markview.nvim/blob/images/Dev/Headings.jpg" width="50%">
+    <img alt="Headings" src="https://github.com/OXY2DEV/markview.nvim/blob/images/Dev/Headings.jpg" width="75%">
 &nbsp; &nbsp;
-&npsb; &nbsp;
-    <img alt="Inline" src="https://github.com/OXY2DEV/markview.nvim/blob/images/Dev/Inline.jpg" width="50%">
-    <img alt="Block" src="https://github.com/OXY2DEV/markview.nvim/blob/images/Dev/Blocks.jpg" width="50%">
 &nbsp; &nbsp;
-&npsb; &nbsp;
-    <img alt="Tables" src="https://github.com/OXY2DEV/markview.nvim/blob/images/Dev/Tables.jpg" width="50%">
-    <img alt="Headings" src="https://github.com/OXY2DEV/markview.nvim/blob/images/Dev/LaTeX.jpg" width="50%">
+    <img alt="Inline" src="https://github.com/OXY2DEV/markview.nvim/blob/images/Dev/Inline.jpg" width="75%">
+    <img alt="Block" src="https://github.com/OXY2DEV/markview.nvim/blob/images/Dev/Blocks.jpg" width="75%">
+&nbsp; &nbsp;
+&nbsp; &nbsp;
+    <img alt="Tables" src="https://github.com/OXY2DEV/markview.nvim/blob/images/Dev/Tables.jpg" width="75%">
+    <img alt="LaTeX" src="https://github.com/OXY2DEV/markview.nvim/blob/images/Dev/LaTeX.jpg" width="75%">
+&nbsp; &nbsp;
+&nbsp; &nbsp;
 </p>
 
 ## 🪷 Features
