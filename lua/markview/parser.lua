@@ -716,7 +716,7 @@ parser.md_inline = function (buffer, TStree, from, to)
 		([
 			(inline_link)
 			(full_reference_link)
-		] @link)
+		] @hyperlink)
 			
 		((email_autolink) @email)
 		((image) @image)
@@ -735,8 +735,8 @@ parser.md_inline = function (buffer, TStree, from, to)
 		local row_start, col_start, row_end, col_end = capture_node:range();
 
 		if capture_name == "callout" then
-			local line = vim.api.nvim_buf_get_lines(buffer, row_start, row_start + 1, false);
-			local title = string.match(line ~= nil and line[1] or "", "%b[]%s*(.*)$")
+			local line = vim.api.nvim_buf_get_lines(buffer, row_start, row_start + 1, false)[1];
+			local before, after = line:sub(1, col_start), line:sub(col_end + 1);
 
 			if capture_text:match("%[(.)%]") then
 				for _, extmark in ipairs(parser.parsed_content) do
@@ -774,7 +774,7 @@ parser.md_inline = function (buffer, TStree, from, to)
 			elseif capture_text:match("%[%^(.+)%]") then
 				table.insert(parser.parsed_content, {
 					node = capture_node,
-					type = "footnote",
+					type = "link_footnote",
 					text = capture_text:match("%[(.+)%]"),
 
 					row_start = row_start,
@@ -783,19 +783,44 @@ parser.md_inline = function (buffer, TStree, from, to)
 					col_start = col_start,
 					col_end = col_end
 				});
-			else
+			elseif before:match("%[$") and after:match("^%]") then
+				capture_text = capture_text:gsub("^%[", ""):gsub("%]$", "")
+				local alias;
+
+				if capture_text:match("^.-|(.+)$") then
+					alias = capture_text:match("^.-|(.+)$");
+				end
+
+				table.insert(parser.parsed_content, {
+					node = capture_node,
+					type = "link_internal",
+
+					text = capture_text,
+					alias = alias,
+
+					row_start = row_start,
+					row_end = row_end,
+
+					col_start = col_start,
+					col_end = col_end,
+				});
+			elseif before:match("%>$") then
+				local title = string.match(line or "", "%b[]%s*(.*)$")
 				for _, extmark in ipairs(parser.parsed_content) do
-					if extmark.type == "block_quote" and extmark.row_start == row_start then
+					if extmark.type == "block_quote"
+						and extmark.row_start == row_start
+						and extmark.col_start == col_start - 1
+					then
 						extmark.callout = string.match(capture_text, "%[!([^%]]+)%]");
 						extmark.title = title;
 
-						extmark.line_width = vim.fn.strchars(line[1]);
+						extmark.line_width = vim.fn.strchars(line);
 
 						break;
 					end
 				end
 			end
-		elseif capture_name == "link" then
+		elseif capture_name == "hyperlink" then
 			local link_text = "";
 			local link_address;
 
@@ -809,7 +834,7 @@ parser.md_inline = function (buffer, TStree, from, to)
 
 			table.insert(parser.parsed_content, {
 				node = capture_node,
-				type = "link",
+				type = "link_hyperlink",
 
 				text = link_text,
 				address = link_address,
@@ -823,7 +848,7 @@ parser.md_inline = function (buffer, TStree, from, to)
 		elseif capture_name == "email" then
 			table.insert(parser.parsed_content, {
 				node = capture_node,
-				type = "email",
+				type = "link_email",
 
 				text = capture_text:gsub("^([<])", ""):gsub("([>])$", ""),
 
@@ -833,7 +858,7 @@ parser.md_inline = function (buffer, TStree, from, to)
 				col_start = col_start,
 				col_end = col_end,
 			})
-		elseif capture_name == "image" then
+		elseif capture_name == "link_image" then
 			local desc = capture_node:named_child(0);
 			local sibl = capture_node:named_child(1);
 

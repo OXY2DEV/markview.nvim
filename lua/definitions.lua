@@ -338,6 +338,7 @@
 ---@field enable boolean
 ---
 ---@field hyperlinks markview.links.config
+---@field internal_links markview.links.config
 ---@field images markview.links.config
 ---@field emails markview.links.config
 

@@ -698,6 +698,13 @@ markview.configuration = {
 
 			icon = " ",
 			hl = "MarkviewEmail"
+		},
+
+		internal_links = {
+			enable = true,
+
+			icon = " ",
+			hl = "MarkviewHyperlink"
 		}
 		---_
 	},

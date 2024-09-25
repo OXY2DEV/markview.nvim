@@ -195,9 +195,13 @@ local display_width = function (text, config)
 		end
 	end
 
+	---@type markview.links.config?
 	local lnk_conf = config.links ~= nil and config.links.hyperlinks or nil;
 	---@type markview.links.config?
+	local int_lnk_conf = config.links ~= nil and config.links.internal_links or nil;
+	---@type markview.links.config?
 	local img_conf = config.links ~= nil and config.links.images or nil;
+	---@type markview.links.config?
 	local email_conf = config.links ~= nil and config.links.emails or nil;
 
 	--- Image link(normal)
@@ -259,6 +263,40 @@ local display_width = function (text, config)
 			link,
 			_c.padding_right or "",
 			_c.corner_right or ""
+		}));
+
+		::continue::
+	end
+
+	--- Internal links
+	--- Alias isn't supported by the parser!
+	for link in final_string:gmatch("%[%[(.-)%]%]") do
+		d_width = d_width - vim.fn.strdisplaywidth("[[" .. "]]");
+
+		local alias = link:match("^.-|(.+)$")
+
+		if not int_lnk_conf or int_lnk_conf.enable == false then
+			final_string = final_string:gsub("%[" .. link .. "%]", "");
+			goto continue;
+		end
+
+		local cnf = alias and get_link_conf(int_lnk_conf, alias) or int_lnk_conf;
+
+		d_width = d_width + vim.fn.strdisplaywidth(table.concat({
+			cnf.corner_left or "",
+			cnf.padding_left or "",
+			cnf.icon or "",
+			cnf.padding_right or "",
+			cnf.corner_right or ""
+		}));
+
+		final_string = final_string:gsub("%[%[" .. link .. "%]%]", table.concat({
+			cnf.corner_left or "",
+			cnf.padding_left or "",
+			cnf.icon or "",
+			alias or link,
+			cnf.padding_right or "",
+			cnf.corner_right or ""
 		}));
 
 		::continue::
@@ -1615,6 +1653,61 @@ renderer.render_links = function (buffer, content, config_table)
 	});
 end
 
+--- Renderer for custom links
+---@param buffer integer
+---@param content table
+---@param config_table markview.conf.links
+renderer.render_internal_links = function (buffer, content, config_table)
+	if not config_table or config_table.enable == false then
+		return;
+	elseif config_table and config_table.internal_links and config_table.internal_links.enable == false then
+		return;
+	end
+
+	local lnk_conf = config_table.internal_links;
+
+	for _, conf in ipairs(config_table.internal_links.custom or {}) do
+		--- TODO, Remove this in the next update
+		---@diagnostic disable-next-line
+		if conf.match and string.match(content.alias or "", conf.match) then
+			lnk_conf = vim.tbl_extend("force", lnk_conf or {}, conf);
+			break;
+		elseif conf.match_string and string.match(content.alias or "", conf.match_string) then
+			lnk_conf = vim.tbl_extend("force", lnk_conf or {}, conf);
+			break;
+		end
+	end
+
+	-- Do not render links with no config
+	if not lnk_conf then
+		return;
+	end
+
+	vim.api.nvim_buf_set_extmark(buffer, renderer.namespace, content.row_start, content.col_start - 1, {
+		virt_text_pos = "inline",
+		virt_text = {
+			{ lnk_conf.corner_left or "", set_hl(lnk_conf.corner_left_hl) or set_hl(lnk_conf.hl) },
+			{ lnk_conf.padding_left or "", set_hl(lnk_conf.padding_left_hl) or set_hl(lnk_conf.hl) },
+			{ lnk_conf.icon or "", set_hl(lnk_conf.icon_hl) or set_hl(lnk_conf.hl) },
+		},
+
+		end_col = content.alias and (content.col_end - (#content.alias + 1)) or (content.col_start + 1),
+		conceal = ""
+	});
+
+	vim.api.nvim_buf_add_highlight(buffer, renderer.namespace, set_hl(lnk_conf.hl) or "", content.row_start, content.col_start, content.col_end);
+
+	vim.api.nvim_buf_set_extmark(buffer, renderer.namespace, content.row_end, content.col_end - 1, {
+		virt_text_pos = "inline",
+		virt_text = {
+			{ lnk_conf.padding_right or "", set_hl(lnk_conf.padding_right_hl) or set_hl(lnk_conf.hl) },
+			{ lnk_conf.corner_right or "", set_hl(lnk_conf.corner_right_hl) or set_hl(lnk_conf.hl) },
+		},
+
+		end_col = content.col_end + 1,
+		conceal = ""
+	});
+end
 --- Renderer for custom emails
 ---@param buffer integer
 ---@param content table
@@ -2054,12 +2147,6 @@ renderer.render = function (buffer, parsed_content, config_table, conceal_start,
 			pcall(renderer.render_block_quotes, buffer, content, config_table.block_quotes);
 		elseif type == "horizontal_rule" then
 			pcall(renderer.render_horizontal_rules, buffer, content, config_table.horizontal_rules);
-		elseif type == "link" then
-			pcall(renderer.render_links, buffer, content, config_table.links);
-		elseif type == "email" then
-			pcall(renderer.render_email_links, buffer, content, config_table.links);
-		elseif type == "image" then
-			pcall(renderer.render_img_links, buffer, content, config_table.links);
 		elseif type == "inline_code" then
 			pcall(renderer.render_inline_codes, buffer, content, config_table.inline_codes)
 		elseif type == "list_item" then
@@ -2074,8 +2161,20 @@ renderer.render = function (buffer, parsed_content, config_table, conceal_start,
 			pcall(renderer.render_tables, buffer, content, config_table);
 		elseif type == "escaped" then
 			pcall(renderer.render_escaped, buffer, content, config_table.escaped);
-		elseif type == "footnote" then
-			pcall(renderer.render_footnotes, buffer, content, config_table.footnotes);
+		elseif type:match("^link_") then
+			local link_type = type:gsub("^link_", "");
+
+			if link_type == "hyperlink" then
+				pcall(renderer.render_links, buffer, content, config_table.links);
+			elseif link_type == "internal" then
+				pcall(renderer.render_internal_links, buffer, content, config_table.links);
+			elseif link_type == "image" then
+				pcall(renderer.render_img_links, buffer, content, config_table.links);
+			elseif link_type == "email" then
+				pcall(renderer.render_email_links, buffer, content, config_table.links);
+			elseif link_type == "footnote" then
+				pcall(renderer.render_footnotes, buffer, content, config_table.footnotes);
+			end
 		elseif type:match("^(latex_)") then
 			pcall(latex_renderer.render, type, buffer, content, config_table)
 		end
