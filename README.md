@@ -218,6 +218,13 @@ Available subcommands,
 
 ## 🎨 Highlight groups
 
+<p align="center">
+    <img alt="Light" src="https://github.com/OXY2DEV/markview.nvim/blob/images/Dev/Light.gif" width="75%">
+&nbsp; &nbsp;
+&nbsp; &nbsp;
+    <img alt="Dark" src="https://github.com/OXY2DEV/markview.nvim/blob/images/Dev/Dark.gif" width="75%">
+</p>
+
 Highlight groups defined by the plugin are given below.
 
 + Block quotes
