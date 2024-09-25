@@ -1,5 +1,14 @@
+--- A simple latex renderer for `markview.nvim`.
 local latex = {};
-local utils = require("markview.utils");
+
+---@type integer? Namespace used to render stuff, initially nil
+latex.namespace = nil;
+
+--- Sets the namespace
+---@param ns integer
+latex.set_namespace = function (ns)
+	latex.namespace = ns;
+end
 
 --- Fixes a highlight group name
 ---@param hl string?
@@ -18,8 +27,10 @@ local set_hl = function (hl)
 	end
 end
 
----@type table<string, string> Superscript text
+---@type { [string]: string } Unicode superscript symbols reference table
 latex.superscripts = {
+	---+ ${class, Superscript symbols}
+	---+ ${class, Numbers}
 	["0"] = "⁰",
 	["1"] = "¹",
 	["2"] = "²",
@@ -30,16 +41,22 @@ latex.superscripts = {
 	["7"] = "⁷",
 	["8"] = "⁸",
 	["9"] = "⁹",
+	---_
 
+	---+ ${class, Symbols}
 	["+"] = "⁺",
 	["-"] = "⁻",
 	["="] = "⁼",
 	["("] = "⁽",
 	[")"] = "⁾",
+	---_
 
+	---+ ${class, Whitespaces}
 	[" "] = " ",
 	["	"] = "	",
+	---_
 
+	---+ ${class, Small letters}
 	["a"] = "ᵃ",
 	["b"] = "ᵇ",
 	["c"] = "ᶜ",
@@ -66,7 +83,9 @@ latex.superscripts = {
 	["x"] = "ˣ",
 	["y"] = "ʸ",
 	["z"] = "ᶻ",
+	---_
 
+	---+ ${class, Capital letters}
 	["A"] = "ᵃ",
 	["B"] = "ᵇ",
 	["C"] = "ᶜ",
@@ -93,8 +112,11 @@ latex.superscripts = {
 	["X"] = "ˣ",
 	["Y"] = "ʸ",
 	["Z"] = "ᶻ",
+	---_
+	---_
 };
 
+---@type { [string]: string } Latex operators
 latex.operators = {
 	---+ ${class, Operator names}
 	["arccos"] = "𝚊𝚛𝚌𝚌𝚘𝚜",
@@ -136,9 +158,9 @@ latex.operators = {
 	---_
 }
 
----@type table<string, string | fun(buf: integer): string> Latex symbols
+---@type { [string]: string | fun(buf: integer): string } Latex symbols reference table
 latex.symbols = {
-	---+
+	---+ ${class, Various symbols & fonts}
 	["year"] = function () return tostring(os.date("*t").year); end,
 	["day"] = function () return tostring(os.date("*t").day); end,
 	["today"] = function () return os.date("%d %B, %Y") --[[ @as string ]]; end,
@@ -1440,6 +1462,7 @@ latex.symbols = {
 	---_
 };
 
+---@type { [string]: markview.operators.config } Configuration table for latex operators
 latex.operator_conf = {
 	---+ ${class, Trigonometric functions}
 	sin = {
@@ -1566,15 +1589,6 @@ latex.operator_conf = {
 		}
 	},
 }
-
----@type integer? Namespace used to render stuff, initially nil
-latex.namespace = nil;
-
---- Sets the namespace
----@param ns string
-latex.set_namespace = function (ns)
-	latex.namespace = ns --[[ @as integer ]];
-end
 
 --- Renders brackets
 ---@param buffer integer
@@ -1906,6 +1920,10 @@ latex.render_symbol = function (buffer, content, user_config)
 	});
 end
 
+--- Renders operators
+---@param buffer integer
+---@param content table
+---@param user_config markview.latex.operators
 latex.render_operator = function (buffer, content, user_config)
 	if not user_config or user_config.enable == false then
 		return;
@@ -1922,6 +1940,12 @@ latex.render_operator = function (buffer, content, user_config)
 	end
 
 	local operator_conf = user_config.configs[content.name];
+
+	-- Operator doesn't have a config
+	-- skip it
+	if not operator_conf then
+		return;
+	end
 
 	if operator_conf.operator then
 		vim.api.nvim_buf_set_extmark(
@@ -1992,7 +2016,7 @@ latex.render_operator = function (buffer, content, user_config)
 	end
 end
 
---- Renders mathbb symbols
+--- Renders fonts
 ---@param buffer integer
 ---@param content table
 ---@param user_config markview.latex.symbols
@@ -2018,7 +2042,8 @@ latex.render_font = function (buffer, content, user_config)
 		conceal = ""
 	});
 
-	content.text = content.text:gsub("[{}]", "|");
+	content.text = content.text:gsub("[%{%}]", "|");
+
 	for m in content.text:gmatch("\\(%a+)") do
 		content.text = content.text:gsub("\\(%a+)", string.rep("|", vim.fn.strchars(m) + 1))
 	end
@@ -2037,7 +2062,7 @@ latex.render_font = function (buffer, content, user_config)
 	end
 end
 
---- Renders fractional
+--- Renders inline math
 ---@param buffer integer
 ---@param content table
 ---@param user_config { enable: boolean }
@@ -2056,7 +2081,7 @@ latex.render_inline = function (buffer, content, user_config)
 	});
 end
 
---- Renders fractional
+--- Renders LaTeX blocks
 ---@param buffer integer
 ---@param content table
 ---@param user_config markview.latex.block

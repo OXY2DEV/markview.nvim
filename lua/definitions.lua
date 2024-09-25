@@ -295,6 +295,7 @@
 ---@field inline? { enable: boolean } Hides $...$ in inline latex
 ---@field block? markview.latex.block
 ---@field symbols? markview.latex.symbols
+---@field operators? markview.latex.operators
 ---@field subscript? markview.latex.subscript
 ---@field superscript? markview.latex.superscript
 
@@ -317,6 +318,16 @@
 ---@field overwrite? table<string, string>
 ---@field groups? { match: (string[] | fun(txt: string): boolean), hl: string? }[]
 ---@field hl? string
+
+---@class markview.latex.operators
+---
+---@field enable boolean
+---@field configs table<string, markview.operators.config>
+
+---@class markview.operators.config
+---
+---@field operator? table
+---@field args? (table | nil)[]
 
 ---@class markview.latex.superscript
 ---

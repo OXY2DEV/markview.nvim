@@ -858,7 +858,7 @@ parser.md_inline = function (buffer, TStree, from, to)
 				col_start = col_start,
 				col_end = col_end,
 			})
-		elseif capture_name == "link_image" then
+		elseif capture_name == "image" then
 			local desc = capture_node:named_child(0);
 			local sibl = capture_node:named_child(1);
 
@@ -871,7 +871,7 @@ parser.md_inline = function (buffer, TStree, from, to)
 
 			table.insert(parser.parsed_content, {
 				node = capture_node,
-				type = "image",
+				type = "link_image",
 
 				text = link_text,
 				address = link_address,

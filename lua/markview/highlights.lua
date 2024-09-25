@@ -1,3 +1,4 @@
+--- Highlight group related helpers
 local highlights = {};
 local utils = require("markview.utils");
 
@@ -10,6 +11,7 @@ local clamp = utils.clamp;
 ---@return number[]?
 highlights.rgb = function (input)
 	local lookup = {
+		---+ ${class, Color name lookup table}
 		["red"] = "#FF0000",        ["lightred"] = "#FFBBBB",      ["darkred"] = "#8B0000",
 		["green"] = "#00FF00",      ["lightgreen"] = "#90EE90",    ["darkgreen"] = "#006400",    ["seagreen"] = "#2E8B57",
 		["blue"] = "#0000FF",       ["lightblue"] = "#ADD8E6",     ["darkblue"] = "#00008B",     ["slateblue"] = "#6A5ACD",
@@ -20,9 +22,11 @@ highlights.rgb = function (input)
 		["gray"] = "#808080",       ["lightgray"] = "#D3D3D3",     ["darkgray"] = "#A9A9A9",
 		["black"] = "#000000",      ["white"] = "#FFFFFF",
 		["orange"] = "#FFA500",     ["purple"] = "#800080",        ["violet"] = "#EE82EE"
+		---_
 	};
 
 	local lookup_nvim = {
+		---+ ${class, Neovim's color lookup table}
 		["nvimdarkblue"] = "#004C73",    ["nvimlightblue"] = "#A6DBFF",
 		["nvimdarkcyan"] = "#007373",    ["nvimlightcyan"] = "#8CF8F7",
 		["nvimdarkgray1"] = "#07080D",   ["nvimlightgray1"] = "#EEF1F8",
@@ -37,6 +41,7 @@ highlights.rgb = function (input)
 		["nvimdarkmagenta"] = "#470045", ["nvimlightmagenta"] = "#FFCAFF",
 		["nvimdarkred"] = "#590008",     ["nvimlightred"] = "#FFC0B9",
 		["nvimdarkyellow"] = "#6B5300",  ["nvimlightyellow"] = "#FCE094",
+		---_
 	};
 
 	if type(input) == "string" then
