@@ -301,10 +301,7 @@
 ---@class markview.latex.brackets
 ---
 ---@field enable boolean
----@field opening [string, string?][]
----@field closing [string, string?][]
----
----@field scope? string[]
+---@field hl? string
 
 ---@class markview.latex.block
 ---
