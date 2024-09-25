@@ -9,6 +9,7 @@ From this plugin:
 [OXY2DEV/markview.nvim](github.com)
 [www.neovim.org](https://www.neovim.org)
 [r/neovim](reddit.com)
+[[Internal links]]
 
 ![Screenshot](image.png)
 A [^footnote]
@@ -21,6 +22,7 @@ $\sum_{1}^{2} 5$
 $\alpha \times \Psi$
 
 Inline math: $\oint_{5}^{6} x^3dx$
+
 
 <!--
     vim:nospell

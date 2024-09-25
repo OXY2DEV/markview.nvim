@@ -13,12 +13,6 @@ markview.nvim
 > vim.print("Hello, vim!");
 > ```
 >
->
-> | A column | Another column | Final column |
-> |:---------|:--------------:|-------------:|
-> |1|2|3|
->
->
 > + Tasks to do,
 >   - [~] Fix bugs
 >   - [ ] Release new version

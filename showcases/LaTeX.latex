@@ -3,7 +3,6 @@ markview.nvim
 Displayed math:
 \[
 E = mc^2
-\lim_{x \to \infty}
 \prod_{5}^{6}
 \]
 
@@ -17,14 +16,9 @@ Square root:
 \sqrt{a^2 + b^2}
 \]
 
-Nth root:
+Summation with limits:
 \[
-\sqrt[n]{x^2}
-\]
-
-Summation:
-\[
-\sum_{n=1}^{\infty} \frac{1}{n^2} = \frac{\pi^2}{6}
+\sum_{i=1}^{n} i = \frac{n(n+1)}{2}
 \]
 
 Integral:
@@ -47,18 +41,9 @@ Italic:
 \mathsfit{l} = l_1 + l_2 + \ldots + l_n
 \]
 
-\subsection*{Greek Letters}
-
 Greek letters:
 \[
 \alpha, \beta, \gamma, \delta, \epsilon, \zeta, \eta, \theta, \iota, \kappa, \lambda, \mu, \nu, \xi, \pi, \rho, \sigma, \tau, \upsilon, \phi, \chi, \psi, \omega
-\]
-
-\subsection*{Special Symbols}
-
-Infinity:
-\[
-\infty
 \]
 
 Partial derivative:
@@ -66,8 +51,4 @@ Partial derivative:
 \frac{\partial f}{\partial x}
 \]
 
-Summation with limits:
-\[
-\sum_{i=1}^{n} i = \frac{n(n+1)}{2}
-\]
-
+% vim:nospell
