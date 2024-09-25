@@ -214,15 +214,16 @@ Available subcommands,
 - splitDisable {n}
 
 >[!NOTE]
-> Subcommands that end with `{n}` can also take a buffer id. Completion for buffer id is also provided by the plugin.
+> Subcommands that end with `{n}` can also take a buffer id. If a buffer id isn't provided then the current buffer's id is used.
+> Completion for buffer id is also provided by the plugin.
 
 ## 🎨 Highlight groups
 
 <p align="center">
-    <img alt="Light" src="https://github.com/OXY2DEV/markview.nvim/blob/images/Dev/Light.gif" width="75%">
+    <img alt="Light" src="https://github.com/OXY2DEV/markview.nvim/blob/images/Dev/light.gif" width="75%">
 &nbsp; &nbsp;
 &nbsp; &nbsp;
-    <img alt="Dark" src="https://github.com/OXY2DEV/markview.nvim/blob/images/Dev/Dark.gif" width="75%">
+    <img alt="Dark" src="https://github.com/OXY2DEV/markview.nvim/blob/images/Dev/dark.gif" width="75%">
 </p>
 
 Highlight groups defined by the plugin are given below.
