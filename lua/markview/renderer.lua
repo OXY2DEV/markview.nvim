@@ -70,6 +70,17 @@ local tbl_map = function (value)
 	return _o;
 end
 
+renderer.get_link_icon = function (config, text, icon)
+	--- Pattern to detect emojis
+	local emoji_pattern = "[\227\128\128-\227\128\191\226\128\147-\226\128\154\240\159\152\128-\240\159\152\191\240\160\128\128-\240\191\191\194\128-\244\143\191\191]";
+
+	if config.__emoji_link_compatability ~= false and text:match("^" .. emoji_pattern) then
+		return "";
+	else
+		return icon;
+	end
+end
+
 --- Returns a value with the specified index from entry
 --- If index is nil then return the last value
 --- If entry isn't a table then return it
@@ -218,7 +229,7 @@ local display_width = function (text, config)
 		d_width = d_width + vim.fn.strdisplaywidth(table.concat({
 			_c.corner_left or "",
 			_c.padding_left or "",
-			_c.icon or "",
+			renderer.get_link_icon(img_conf, link, _c.icon or ""),
 			_c.padding_right or "",
 			_c.corner_right or ""
 		}));
@@ -226,7 +237,7 @@ local display_width = function (text, config)
 		final_string = final_string:gsub("!%[" .. link .. "%]%(" .. address .. "%)", table.concat({
 			_c.corner_left or "",
 			_c.padding_left or "",
-			_c.icon or "",
+			renderer.get_link_icon(img_conf, link, _c.icon or ""),
 			link,
 			_c.padding_right or "",
 			_c.corner_right or ""
@@ -251,7 +262,7 @@ local display_width = function (text, config)
 		d_width = d_width + vim.fn.strdisplaywidth(table.concat({
 			_c.corner_left or "",
 			_c.padding_left or "",
-			_c.icon or "",
+			renderer.get_link_icon(img_conf, link, _c.icon or ""),
 			_c.padding_right or "",
 			_c.corner_right or ""
 		}));
@@ -259,7 +270,7 @@ local display_width = function (text, config)
 		final_string = final_string:gsub("!%[" .. link .. "%]%[" .. address .. "%]", table.concat({
 			_c.corner_left or "",
 			_c.padding_left or "",
-			_c.icon or "",
+			renderer.get_link_icon(img_conf, link, _c.icon or ""),
 			link,
 			_c.padding_right or "",
 			_c.corner_right or ""
@@ -285,7 +296,7 @@ local display_width = function (text, config)
 		d_width = d_width + vim.fn.strdisplaywidth(table.concat({
 			cnf.corner_left or "",
 			cnf.padding_left or "",
-			cnf.icon or "",
+			renderer.get_link_icon(int_lnk_conf, link, cnf.icon or ""),
 			cnf.padding_right or "",
 			cnf.corner_right or ""
 		}));
@@ -293,7 +304,7 @@ local display_width = function (text, config)
 		final_string = final_string:gsub("%[%[" .. link .. "%]%]", table.concat({
 			cnf.corner_left or "",
 			cnf.padding_left or "",
-			cnf.icon or "",
+			renderer.get_link_icon(int_lnk_conf, link, cnf.icon or ""),
 			alias or link,
 			cnf.padding_right or "",
 			cnf.corner_right or ""
@@ -316,7 +327,7 @@ local display_width = function (text, config)
 		d_width = d_width + vim.fn.strdisplaywidth(table.concat({
 			cnf.corner_left or "",
 			cnf.padding_left or "",
-			cnf.icon or "",
+			renderer.get_link_icon(lnk_conf, link, cnf.icon or ""),
 			cnf.padding_right or "",
 			cnf.corner_right or ""
 		}));
@@ -324,7 +335,7 @@ local display_width = function (text, config)
 		final_string = final_string:gsub("%[" .. link .. "%]%(" .. address .. "%)", table.concat({
 			cnf.corner_left or "",
 			cnf.padding_left or "",
-			cnf.icon or "",
+			renderer.get_link_icon(lnk_conf, link, cnf.icon or ""),
 			link,
 			cnf.padding_right or "",
 			cnf.corner_right or ""
@@ -334,7 +345,7 @@ local display_width = function (text, config)
 	end
 
 	-- Hyperlink: full_reference_link
-	for link, address in final_string:gmatch("[^!]%[([^%]]+)%]%[([^%]]+)%]") do
+	for link, address in final_string:gmatch("%[(.-)%]%[(.-)%]") do
 		d_width = d_width - vim.fn.strdisplaywidth("[" .. "][" .. address .. "]");
 
 		if not lnk_conf or lnk_conf.enable == false then
@@ -347,7 +358,7 @@ local display_width = function (text, config)
 		d_width = d_width + vim.fn.strdisplaywidth(table.concat({
 			cnf.corner_left or "",
 			cnf.padding_left or "",
-			cnf.icon or "",
+			renderer.get_link_icon(lnk_conf, link, cnf.icon or ""),
 			cnf.padding_right or "",
 			cnf.corner_right or ""
 		}));
@@ -355,7 +366,7 @@ local display_width = function (text, config)
 		final_string = final_string:gsub("%[" .. link .. "%]%[" .. address .. "%]", table.concat({
 			cnf.corner_left or "",
 			cnf.padding_left or "",
-			cnf.icon or "",
+			renderer.get_link_icon(lnk_conf, link, cnf.icon or ""),
 			link,
 			cnf.padding_right or "",
 			cnf.corner_right or ""
@@ -1632,7 +1643,7 @@ renderer.render_links = function (buffer, content, config_table)
 		virt_text = {
 			{ lnk_conf.corner_left or "", set_hl(lnk_conf.corner_left_hl) or set_hl(lnk_conf.hl) },
 			{ lnk_conf.padding_left or "", set_hl(lnk_conf.padding_left_hl) or set_hl(lnk_conf.hl) },
-			{ lnk_conf.icon or "", set_hl(lnk_conf.icon_hl) or set_hl(lnk_conf.hl) },
+			{ renderer.get_link_icon(lnk_conf, content.text, lnk_conf.icon or ""), set_hl(lnk_conf.icon_hl) or set_hl(lnk_conf.hl) },
 		},
 
 		end_col = content.col_start,
@@ -1688,7 +1699,7 @@ renderer.render_internal_links = function (buffer, content, config_table)
 		virt_text = {
 			{ lnk_conf.corner_left or "", set_hl(lnk_conf.corner_left_hl) or set_hl(lnk_conf.hl) },
 			{ lnk_conf.padding_left or "", set_hl(lnk_conf.padding_left_hl) or set_hl(lnk_conf.hl) },
-			{ lnk_conf.icon or "", set_hl(lnk_conf.icon_hl) or set_hl(lnk_conf.hl) },
+			{ renderer.get_link_icon(lnk_conf, content.text, lnk_conf.icon or ""), set_hl(lnk_conf.icon_hl) or set_hl(lnk_conf.hl) },
 		},
 
 		end_col = content.alias and (content.col_end - (#content.alias + 1)) or (content.col_start + 1),
@@ -1798,7 +1809,7 @@ renderer.render_img_links = function (buffer, content, config_table)
 		virt_text = {
 			{ img_conf.corner_left or "", set_hl(img_conf.corner_left_hl) or set_hl(img_conf.hl) },
 			{ img_conf.padding_left or "", set_hl(img_conf.padding_left_hl) or set_hl(img_conf.hl) },
-			{ img_conf.icon or "", set_hl(img_conf.icon_hl) or set_hl(img_conf.hl) },
+			{ renderer.get_link_icon(img_conf, content.text, img_conf.icon or ""), set_hl(img_conf.icon_hl) or set_hl(img_conf.hl) },
 		},
 
 		end_col = content.col_start,

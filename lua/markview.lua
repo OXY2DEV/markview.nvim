@@ -671,6 +671,7 @@ markview.configuration = {
 
 		hyperlinks = {
 			enable = true,
+			__emoji_link_compatability = true,
 
 			icon = "󰌷 ",
 			hl = "MarkviewHyperlink",
@@ -695,6 +696,7 @@ markview.configuration = {
 		},
 		images = {
 			enable = true,
+			__emoji_link_compatability = true,
 
 			icon = "󰥶 ",
 			hl = "MarkviewImageLink",
@@ -705,6 +707,7 @@ markview.configuration = {
 		},
 		emails = {
 			enable = true,
+			__emoji_link_compatability = true,
 
 			icon = " ",
 			hl = "MarkviewEmail"
@@ -712,6 +715,7 @@ markview.configuration = {
 
 		internal_links = {
 			enable = true,
+			__emoji_link_compatability = true,
 
 			icon = " ",
 			hl = "MarkviewHyperlink"
