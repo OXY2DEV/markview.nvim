@@ -805,7 +805,8 @@ parser.md_inline = function (buffer, TStree, from, to)
 					col_end = col_end,
 				});
 			elseif before:match("%>$") then
-				local title = string.match(line or "", "%b[]%s*(.*)$")
+				local title = string.match(line or "", "%b[](.*)$")
+
 				for _, extmark in ipairs(parser.parsed_content) do
 					if extmark.type == "block_quote"
 						and extmark.row_start == row_start
@@ -999,7 +1000,7 @@ parser.latex = function (buffer, TStree, from, to)
 			command: ((command_name) @c (#eq? @c "\\mathbf"))
 			arg: (curly_group)
 			.
-			) @mathbf)
+			) @font_mathbf)
 
 		((generic_command . command: ((command_name) @c (#eq? @c "\\mathbfit")) arg: (curly_group) .) @font_mathbfit)
 		((generic_command . command: ((command_name) @c (#eq? @c "\\mathcal")) arg: (curly_group) .) @font_mathcal)

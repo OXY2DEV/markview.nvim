@@ -1487,7 +1487,7 @@ renderer.render_block_quotes = function (buffer, content, config_table)
 				{ qt_config.custom_icon, set_hl(qt_config.callout_preview_hl) },
 			},
 
-			end_col = content.col_start + vim.fn.strdisplaywidth(">[!" .. content.callout .. "]"),
+			end_col = content.col_start + vim.fn.strdisplaywidth(">[!" .. content.callout .. "]" .. (content.title:match("^(%s)") or "")),
 			conceal = ""
 		});
 
@@ -1837,7 +1837,11 @@ renderer.render_inline_codes = function (buffer, content, config_table)
 		},
 	});
 
-	vim.api.nvim_buf_add_highlight(buffer, renderer.namespace, set_hl(config_table.hl), content.row_start, content.col_start, content.col_end);
+	vim.api.nvim_buf_set_extmark(buffer, renderer.namespace, content.row_start, content.col_start, {
+		hl_group = set_hl(config_table.hl),
+		end_col = content.col_end
+	});
+
 
 	vim.api.nvim_buf_set_extmark(buffer, renderer.namespace, content.row_start, content.col_end - 1, {
 		virt_text_pos = "inline",
@@ -1885,10 +1889,13 @@ renderer.render_lists = function (buffer, content, config_table)
 
 			if vim.list_contains(content.list_candidates, l) and l == 1 then
 				local conceal_end = content.col_start + vim.fn.strchars(content.marker_symbol) - 1;
+				local offset = 0;
 
 				if content.marker_symbol:match("^%d+") then
 					conceal_end = vim.fn.strchars(content.list_lines[1]:match("^%s*"));
 					use_text = "";
+
+					offset = 2;
 				end
 
 				if content.is_checkbox == true then
@@ -1901,7 +1908,7 @@ renderer.render_lists = function (buffer, content, config_table)
 				vim.api.nvim_buf_set_extmark(buffer, renderer.namespace, line_num, content.starts[l] or 0, {
 					virt_text_pos = "inline",
 					virt_text = {
-						{ string.rep(" ", level * shift) },
+						{ string.rep(" ", (level * shift) - offset) },
 						{ vim.trim(use_text), set_hl(ls_conf.hl) or "Special" }
 					},
 

@@ -368,7 +368,9 @@ markview.configuration = {
 				vim.wo[window].conceallevel = 0;
 				vim.wo[window].concealcursor = "";
 			end
-		end
+		end,
+
+		split_enter = nil
 		---_
 	},
 
@@ -493,6 +495,7 @@ markview.configuration = {
 			---+ ${conf, Setext heading 1}
 			style = "github",
 
+			sign = "󰌕 ", sign_hl = "MarkviewHeading1Sign",
 			icon = "  ", hl = "MarkviewHeading1",
 			line = "▂"
 			---_
@@ -501,6 +504,7 @@ markview.configuration = {
 			---+ ${conf, Setext heading 2}
 			style = "github",
 
+			sign = "󰌖 ", sign_hl = "MarkviewHeading2Sign",
 			icon = "  ", hl = "MarkviewHeading2",
 			line = "▁"
 			---_
@@ -673,14 +677,16 @@ markview.configuration = {
 
 			custom = {
 				---+ ${conf, Stack*}
-				{ match = "stackoverflow.com", icon = " " },
-				{ match = "stackexchange.com", icon = " " },
+				{ match_string = "stackoverflow%.com", icon = " " },
+				{ match_string = "stackexchange%.com", icon = " " },
 				---_
 
-				{ match_string = "dev.to", icon = " " },
-				{ match_string = "github.com", icon = " " },
-				{ match_string = "reddit.com", icon = " " },
-				{ match_string = "freecodecamp.org", icon = " " },
+				{ match_string = "neovim%.org", icon = " " },
+
+				{ match_string = "dev%.to", icon = " " },
+				{ match_string = "github%.com", icon = " " },
+				{ match_string = "reddit%.com", icon = " " },
+				{ match_string = "freecodecamp%.org", icon = " " },
 
 				{ match_string = "https://(.+)$", icon = "󰞉 " },
 				{ match_string = "http://(.+)$", icon = "󰕑 " },
@@ -692,6 +698,10 @@ markview.configuration = {
 
 			icon = "󰥶 ",
 			hl = "MarkviewImageLink",
+
+			custom = {
+				{ match_string = "%.svg$", icon = "󰜡 " },
+			}
 		},
 		emails = {
 			enable = true,
@@ -828,6 +838,8 @@ markview.splitView = {
 				win = windows[1],
 				split = "right"
 			}, markview.configuration.split_conf or {}));
+
+			pcall(markview.configuration.callbacks.split_enter, self.buffer, self.window);
 		else
 			vim.api.nvim_win_set_config(self.window, vim.tbl_deep_extend("force", {
 				win = windows[1],
