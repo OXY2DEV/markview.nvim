@@ -1,6 +1,7 @@
 # ✨ markview.nvim
 
-https://github.com/OXY2DEV/markview.nvim/blob/images/Dev/markview.mp4
+https://github.com/user-attachments/assets/ae3d2912-65d4-4dd7-a8bb-614c4406c4e3
+<!-- It is not possible to use GitHub links for videos, so we have to manually upload this -->
 
 A highly-customisable & feature rich markdown previewer inside Neovim.
 
