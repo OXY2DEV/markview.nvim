@@ -1,5 +1,7 @@
 # ✨ markview.nvim
 
+https://github.com/OXY2DEV/markview.nvim/blob/images/Dev/markview.mp4
+
 A highly-customisable & feature rich markdown previewer inside Neovim.
 
 [Recipes]()
