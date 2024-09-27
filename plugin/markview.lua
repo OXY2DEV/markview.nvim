@@ -120,6 +120,14 @@ local redraw_autocmd = function (augroup, buffer)
 				end
 
 				--- Incorrect file type
+				if not vim.api.nvim_buf_is_valid(buffer) then
+					markview.unload();
+					vim.api.nvim_del_autocmd(r_autocmd);
+
+					return;
+				end
+
+				--- Incorrect file type
 				if not vim.list_contains(markview.configuration.filetypes or { "markdown" }, vim.bo[buffer].filetype) then
 					markview.unload();
 					vim.api.nvim_del_autocmd(r_autocmd);
