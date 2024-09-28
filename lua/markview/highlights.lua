@@ -424,7 +424,27 @@ highlights.dynamic = {
 			local bg = util.hsl(util.color("bg", { "Normal" }, "#CDD6F4", "#1E1E2E"));
 			local fg = util.color("fg", { "Comment" }, "#9ca0b0", "#6c7086");
 
-			local inl = vim.deepcopy(bg)
+			local nr = util.get("bg", { "LineNr" });
+			local inl = vim.deepcopy(bg);
+
+			local c1 = highlights.color("fg", {
+				"markdownH1", "@markup.heading.1.markdown", "@markup.heading"
+			}, "#F38BA8", "#D20F39")
+			local c2 = highlights.color("fg", {
+				"markdownH2", "@markup.heading.2.markdown", "@markup.heading"
+			}, "#FAB387", "#FE640B")
+			local c3 = highlights.color("fg", {
+				"markdownH3", "@markup.heading.3.markdown", "@markup.heading"
+			}, "#F9E2AF", "#DF8E1D")
+			local c4 = highlights.color("fg", {
+				"markdownH4", "@markup.heading.4.markdown", "@markup.heading"
+			}, "#A6E3A1", "#40A02B")
+			local c5 = highlights.color("fg", {
+				"markdownH5", "@markup.heading.5.markdown", "@markup.heading"
+			}, "#74C7EC", "#209FB5")
+			local c6 = highlights.color("fg", {
+				"markdownH6", "@markup.heading.6.markdown", "@markup.heading"
+			}, "#B4BEFE", "#7287FD")
 
 			if bg[3] > 0.5 then
 				bg[3] = clamp(bg[3] - 0.05, 0.1, 0.9);
@@ -434,22 +454,25 @@ highlights.dynamic = {
 				inl[3] = clamp(inl[3] + 0.10, 0.1, 0.9);
 			end
 
+			bg = util.hex(util.rgb(bg));
+
 			return {
 				{
 					group_name = "Code",
 					value = {
 						default = true,
-						bg = util.hex(util.rgb(bg)),
+						bg = bg,
 					}
 				},
 				{
 					group_name = "CodeInfo",
 					value = {
 						default = true,
-						bg = util.hex(util.rgb(bg)),
+						bg = bg,
 						fg = util.hex(fg),
 					}
 				},
+
 				{
 					group_name = "InlineCode",
 					value = {
@@ -457,6 +480,25 @@ highlights.dynamic = {
 						bg = util.hex(util.rgb(inl)),
 					}
 				},
+
+				{
+					group_name = "Icon1",
+					value = { default = true, bg = bg, fg = util.hex(c1) }
+				},
+				{
+					group_name = "Icon1Sign",
+					value = { default = true, bg = nr, fg = util.hex(c1) }
+				},
+				{ group_name = "Icon2", value = { default = true, bg = bg, fg = util.hex(c2) } },
+				{ group_name = "Icon2Sign", value = { default = true, bg = nr, fg = util.hex(c2) } },
+				{ group_name = "Icon3", value = { default = true, bg = bg, fg = util.hex(c3) } },
+				{ group_name = "Icon3Sign", value = { default = true, bg = nr, fg = util.hex(c3) } },
+				{ group_name = "Icon4", value = { default = true, bg = bg, fg = util.hex(c4) } },
+				{ group_name = "Icon4Sign", value = { default = true, bg = nr, fg = util.hex(c4) } },
+				{ group_name = "Icon5", value = { default = true, bg = bg, fg = util.hex(c5) } },
+				{ group_name = "Icon5Sign", value = { default = true, bg = nr, fg = util.hex(c5) } },
+				{ group_name = "Icon6", value = { default = true, bg = bg, fg = util.hex(c6) } },
+				{ group_name = "Icon6Sign", value = { default = true, bg = nr, fg = util.hex(c6) } },
 			}
 		end
 	},
