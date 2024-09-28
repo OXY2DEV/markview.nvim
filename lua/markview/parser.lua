@@ -279,6 +279,10 @@ parser.parsed_content = {};
 ---@param buffer number
 ---@param TStree any
 parser.md = function (buffer, TStree, from, to)
+	if not parser_installed("markdown") then
+		return;
+	end
+
 	--- "__inside_code_block" is still experimental
 	---@diagnostic disable
 	if not parser.cached_conf or
@@ -459,6 +463,7 @@ parser.md = function (buffer, TStree, from, to)
 				-- The node ends on the next line after the block quote
 				-- We will not count it
 
+				line_width = col_start + 1,
 				col_start = col_start,
 				col_end = largest_len
 			})
@@ -662,10 +667,21 @@ parser.md = function (buffer, TStree, from, to)
 				col_end = c_end
 			})
 		elseif capture_name == "checkbox_off" then
+			local list_item;
+
+			for _, extmark in ipairs(parser.parsed_content) do
+				if extmark.type == "list_item" and extmark.row_start == row_start then
+					list_item = extmark;
+					break;
+				end
+			end
+
 			table.insert(parser.parsed_content, {
 				node = capture_node,
 				type = "checkbox",
 				state = "incomplete",
+
+				list_item = list_item,
 
 				row_start = row_start,
 				row_end = row_end,
@@ -674,10 +690,21 @@ parser.md = function (buffer, TStree, from, to)
 				col_end = col_end
 			})
 		elseif capture_name == "checkbox_on" then
+			local list_item;
+
+			for _, extmark in ipairs(parser.parsed_content) do
+				if extmark.type == "list_item" and extmark.row_start == row_start then
+					list_item = extmark;
+					break;
+				end
+			end
+
 			table.insert(parser.parsed_content, {
 				node = capture_node,
 				type = "checkbox",
 				state = "complete",
+
+				list_item = list_item,
 
 				row_start = row_start,
 				row_end = row_end,
@@ -694,6 +721,10 @@ end
 ---@param buffer number
 ---@param TStree any
 parser.md_inline = function (buffer, TStree, from, to)
+	if not parser_installed("markdown_inline") then
+		return;
+	end
+
 	--- "__inside_code_block" is still experimental
 	---@diagnostic disable
 	if not parser.cached_conf or
@@ -758,6 +789,8 @@ parser.md_inline = function (buffer, TStree, from, to)
 							node = capture_node,
 							type = "checkbox",
 							state = capture_text:match("%[(.)%]"),
+
+							list_item = extmark,
 
 							row_start = row_start,
 							row_end = row_end,
@@ -927,19 +960,29 @@ parser.md_inline = function (buffer, TStree, from, to)
 end
 
 parser.html = function (buffer, TStree, from, to)
+	if not parser_installed("html") then
+		return;
+	end
+
 	--- "__inside_code_block" is still experimental
 	---@diagnostic disable
 	if not parser.cached_conf or
 	   parser.cached_conf.__inside_code_block ~= true
 	then
 	---@diagnostic enable
-		local root = TStree:root();
-		local root_r_start, _, root_r_end, _ = root:range();
+		for _, tbl in ipairs(parser.parsed_content) do
+			if not tbl.type == "code_block" then
+				goto skip;
+			end
 
-		for _, range in ipairs(parser.avoid_ranges) do
-			if root_r_start >= range[1] and root_r_end <= range[2] then
+			local root = TStree:root();
+			local root_r_start, _, _, _ = root:range();
+
+			if root_r_start >= tbl.row_start and root_r_start <= tbl.row_end then	
 				return;
 			end
+
+			::skip::
 		end
 	end
 
@@ -989,6 +1032,28 @@ end
 parser.latex = function (buffer, TStree, from, to)
 	if not parser_installed("latex") then
 		return;
+	end
+
+	--- "__inside_code_block" is still experimental
+	---@diagnostic disable
+	if not parser.cached_conf or
+	   parser.cached_conf.__inside_code_block ~= true
+	then
+	---@diagnostic enable
+		for _, tbl in ipairs(parser.parsed_content) do
+			if not tbl.type == "code_block" then
+				goto skip;
+			end
+
+			local root = TStree:root();
+			local root_r_start, _, _, _ = root:range();
+
+			if root_r_start >= tbl.row_start and root_r_start <= tbl.row_end then	
+				return;
+			end
+
+			::skip::
+		end
 	end
 
 	local scanned_queies = vim.treesitter.query.parse("latex", [[
@@ -1228,7 +1293,10 @@ end
 --- Parsed data is stored as a "view" in renderer.lua
 ---
 ---@param buffer number
-parser.init = function (buffer, config_table)
+---@param config_table markview.configuration
+---@param from integer?
+---@param to integer?
+parser.init = function (buffer, config_table, from, to)
 	local root_parser = vim.treesitter.get_parser(buffer);
 	root_parser:parse(true);
 
@@ -1243,39 +1311,7 @@ parser.init = function (buffer, config_table)
 		local tree_language = language_tree:lang();
 
 		if tree_language == "markdown" then
-			parser.md(buffer, TStree)
-		elseif tree_language == "markdown_inline" then
-			parser.md_inline(buffer, TStree);
-		elseif tree_language == "html" then
-			parser.html(buffer, TStree);
-		elseif tree_language == "latex" then
-			parser.latex(buffer, TStree);
-		end
-	end)
-
-	return parser.parsed_content;
-end
-
-parser.parse_range = function (buffer, config_table, from, to)
-	if not from or not to then
-		return {};
-	end
-
-	local root_parser = vim.treesitter.get_parser(buffer);
-	root_parser:parse(true);
-
-	if config_table then
-		parser.cached_conf = config_table;
-	end
-
-	-- Clear the previous contents
-	parser.parsed_content = {};
-
-	root_parser:for_each_tree(function (TStree, language_tree)
-		local tree_language = language_tree:lang();
-
-		if tree_language == "markdown" then
-			parser.md(buffer, TStree, from, to);
+			parser.md(buffer, TStree, from, to)
 		elseif tree_language == "markdown_inline" then
 			parser.md_inline(buffer, TStree, from, to);
 		elseif tree_language == "html" then
