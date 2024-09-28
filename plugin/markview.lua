@@ -3,26 +3,6 @@ local utils = require("markview.utils");
 local hls = require("markview.highlights");
 local ts = require("markview.treesitter");
 
-local ts_available, treesitter_parsers = pcall(require, "nvim-treesitter.parsers");
-local function parser_installed(parser)
-	return (ts_available and treesitter_parsers.has_parser(parser)) or pcall(vim.treesitter.query.get, parser, "highlights")
-end
-
--- Check for requirements
-if vim.fn.has("nvim-0.10") == 0 then
-	vim.notify("[ markview.nvim ] : This plugin is only available on version 0.10.0 and higher!", vim.log.levels.WARN);
-	return;
-elseif not parser_installed("markdown") then
-	vim.notify("[ markview.nvim ] : Treesitter parser for 'markdown' wasn't found!", vim.log.levels.WARN);
-	return;
-elseif not parser_installed("markdown_inline") then
-	vim.notify("[ markview.nvim ] : Treesitter parser for 'markdown_inline' wasn't found!", vim.log.levels.WARN);
-	return;
-elseif not parser_installed("html") then
-	vim.notify("[ markview.nvim ] : Treesitter parser for 'html' wasn't found! It is required for basic html tag support.", vim.log.levels.WARN);
-	return;
-end
-
 ---@diagnostic disable
 ts.inject(markview.configuration.injections)
 hls.create(markview.configuration.highlight_groups)
@@ -45,7 +25,7 @@ local buf_render = function (buffer)
 		local start = math.max(0, cursor[1] - markview.configuration.render_distance);
 		local stop = math.min(lines, cursor[1] + markview.configuration.render_distance);
 
-		parsed_content = markview.parser.parse_range(buffer, markview.configuration, start, stop);
+		parsed_content = markview.parser.init(buffer, markview.configuration, start, stop);
 
 		markview.renderer.render(buffer, parsed_content, markview.configuration)
 	end
@@ -69,7 +49,7 @@ local buf_render = function (buffer)
 	local stop = math.min(lines, cursor[1]);
 
 	-- Get the contents range to clear
-	local under_cursor = markview.parser.parse_range(buffer, markview.configuration, start, stop);
+	local under_cursor = markview.parser.init(buffer, markview.configuration, start, stop);
 	local clear_range = markview.renderer.get_content_range(under_cursor);
 
 	-- Content range was invalid, nothing to clear
@@ -223,7 +203,7 @@ vim.api.nvim_create_autocmd({ "BufWinEnter" }, {
 				pcall(markview.configuration.callbacks.on_disable, buffer, window);
 			end
 
-			return;
+			goto addAutocmd;
 		end
 
 		-- Set state to true and call the callback
@@ -247,6 +227,7 @@ vim.api.nvim_create_autocmd({ "BufWinEnter" }, {
 			buf_render(buffer);
 		end
 
+		::addAutocmd::
 		-- Augroup for the special autocmds
 		local markview_augroup = vim.api.nvim_create_augroup("markview_buf_" .. buffer, { clear = true });
 		redraw_autocmd(markview_augroup, buffer);
@@ -330,5 +311,4 @@ vim.api.nvim_create_autocmd("User", {
 		markview.unload(event.buf);
 	end
 });
-
 
