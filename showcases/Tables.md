@@ -11,7 +11,7 @@ markview.nvim
 | Left alignmemt | Center alignment | Right alignment |
 |:---------------|:----------------:|----------------:|
 | *ialic*| **bold** |***bold italic*** |
-| <i>italic</i>| <b>bold</b> |<u>Underlined</u> |
+| <i>italic</i>| <b>bold</b> |<u>Underlined</u>|
 | `inline code`| [link](reddit.com) |![image](new.png) |
 | [^footnote]|[[Internal link]]|&beta; |
 
