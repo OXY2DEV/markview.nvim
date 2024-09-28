@@ -53,10 +53,11 @@
 ---@class markview.block_quotes.callouts
 ---
 ---@field match_string string | string[] Patterns for this callout
----@field callout_preview string String to show instead of [!text]
----@field callout_preview_hl? string Highlight group for callout_preview & custom_title
----@field custom_title? boolean? When true, callouts can have titles
----@field custom_icon? string? Icon for the title
+---@field hl? string Primary highlight group
+---@field preview string String to show instead of [!text]
+---@field preview_hl? string Highlight group for callout_preview & custom_title
+---@field title? boolean? When true, callouts can have titles
+---@field icon? string? Icon for the title
 ---@field border string | string[] Text to use for the border
 ---@field border_hl? string | string[] Highlight group(s) for the border
 
@@ -76,6 +77,7 @@
 ---@field match_string string | string[] Text inside [] to match for this checkbox style
 ---@field text string Text to show
 ---@field hl? string Highlight group for the text
+---@field scope_hl? string Highlight group to add to the scope of a checkbox
 
 --- Configuration table for checkboxes
 ---@class markview.conf.checkboxes
@@ -94,7 +96,7 @@
 ---@class markview.conf.code_blocks
 ---
 ---@field enable boolean
----@field icons boolean When true, shows icons
+---@field icons string Icon provider
 ---@field style "simple" | "minimal" | "language" Render style
 ---@field hl? string Highlight group for the code block
 ---@field info_hl? string Highlight group for the info string

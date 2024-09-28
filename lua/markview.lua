@@ -37,274 +37,280 @@ markview.configuration = {
 		enable = true,
 
 		default = {
-			border = "▋", border_hl = "MarkviewBlockQuoteDefault"
+			border = "▋", hl = "MarkviewBlockQuoteDefault"
 		},
 
 		callouts = {
 			---+ ${conf, From `Obsidian`}
 			{
 				match_string = "ABSTRACT",
-				callout_preview = "󱉫 Abstract",
-				callout_preview_hl = "MarkviewBlockQuoteNote",
+				preview = "󱉫 Abstract",
+				hl = "MarkviewBlockQuoteNote",
 
-				custom_title = true,
-				custom_icon = "󱉫 ",
+				title = true,
+				icon = "󱉫 ",
 
-				border = "▋", border_hl = "MarkviewBlockQuoteNote"
+				border = "▋"
 			},
 			{
 				match_string = "SUMMARY",
-				callout_preview = "󱉫 Summary",
-				callout_preview_hl = "MarkviewBlockQuoteNote",
+				hl = "MarkviewBlockQuoteNote",
+				preview = "󱉫 Summary",
 
-				custom_title = true,
-				custom_icon = "󱉫 ",
+				title = true,
+				icon = "󱉫 ",
 
-				border = "▋", border_hl = "MarkviewBlockQuoteNote"
+				border = "▋"
 			},
 			{
 				match_string = "TLDR",
-				callout_preview = "󱉫 Tldr",
-				callout_preview_hl = "MarkviewBlockQuoteNote",
+				hl = "MarkviewBlockQuoteNote",
+				preview = "󱉫 Tldr",
 
-				custom_title = true,
-				custom_icon = "󱉫 ",
+				title = true,
+				icon = "󱉫 ",
 
-				border = "▋", border_hl = "MarkviewBlockQuoteNote"
+				border = "▋"
 			},
 			{
 				match_string = "TODO",
-				callout_preview = " Todo",
-				callout_preview_hl = "MarkviewBlockQuoteNote",
+				hl = "MarkviewBlockQuoteNote",
+				preview = " Todo",
 
-				custom_title = true,
-				custom_icon = " ",
+				title = true,
+				icon = " ",
 
-				border = "▋", border_hl = "MarkviewBlockQuoteNote"
+				border = "▋"
 			},
 			{
 				match_string = "INFO",
-				callout_preview = " Info",
-				callout_preview_hl = "MarkviewBlockQuoteNote",
+				hl = "MarkviewBlockQuoteNote",
+				preview = " Info",
 
 				custom_title = true,
-				custom_icon = " ",
+				icon = " ",
 
-				border = "▋", border_hl = "MarkviewBlockQuoteNote"
+				border = "▋"
 			},
 			{
 				match_string = "SUCCESS",
-				callout_preview = "󰗠 Success",
-				callout_preview_hl = "MarkviewBlockQuoteOk",
+				hl = "MarkviewBlockQuoteOk",
+				preview = "󰗠 Success",
 
-				custom_title = true,
-				custom_icon = "󰗠 ",
+				title = true,
+				icon = "󰗠 ",
 
-				border = "▋", border_hl = "MarkviewBlockQuoteOk"
+				border = "▋"
 			},
 			{
 				match_string = "CHECK",
-				callout_preview = "󰗠 Check",
-				callout_preview_hl = "MarkviewBlockQuoteOk",
+				hl = "MarkviewBlockQuoteOk",
+				preview = "󰗠 Check",
 
-				custom_title = true,
-				custom_icon = "󰗠 ",
+				title = true,
+				icon = "󰗠 ",
 
-				border = "▋", border_hl = "MarkviewBlockQuoteOk"
+				border = "▋"
 			},
 			{
 				match_string = "DONE",
-				callout_preview = "󰗠 Done",
-				callout_preview_hl = "MarkviewBlockQuoteOk",
+				hl = "MarkviewBlockQuoteOk",
+				preview = "󰗠 Done",
 
-				custom_title = true,
-				custom_icon = "󰗠 ",
+				title = true,
+				icon = "󰗠 ",
 
-				border = "▋", border_hl = "MarkviewBlockQuoteOk"
+				border = "▋"
 			},
 			{
 				match_string = "QUESTION",
-				callout_preview = "󰋗 Question",
-				callout_preview_hl = "MarkviewBlockQuoteWarn",
+				hl = "MarkviewBlockQuoteWarn",
+				preview = "󰋗 Question",
 
-				custom_title = true,
-				custom_icon = "󰋗 ",
+				title = true,
+				icon = "󰋗 ",
 
-				border = "▋", border_hl = "MarkviewBlockQuoteWarn"
+				border = "▋"
 			},
 			{
 				match_string = "HELP",
-				callout_preview = "󰋗 Help",
-				callout_preview_hl = "MarkviewBlockQuoteWarn",
+				hl = "MarkviewBlockQuoteWarn",
+				preview = "󰋗 Help",
 
-				custom_title = true,
-				custom_icon = "󰋗 ",
+				title = true,
+				icon = "󰋗 ",
 
-				border = "▋", border_hl = "MarkviewBlockQuoteWarn"
+				border = "▋"
 			},
 			{
 				match_string = "FAQ",
-				callout_preview = "󰋗 Faq",
-				callout_preview_hl = "MarkviewBlockQuoteWarn",
+				hl = "MarkviewBlockQuoteWarn",
+				preview = "󰋗 Faq",
 
 				custom_title = true,
 				custom_icon = "󰋗 ",
 
-				border = "▋", border_hl = "MarkviewBlockQuoteWarn"
+				border = "▋"
 			},
 			{
 				match_string = "FAILURE",
-				callout_preview = "󰅙 Failure",
-				callout_preview_hl = "MarkviewBlockQuoteError",
+				hl = "MarkviewBlockQuoteError",
+				preview = "󰅙 Failure",
 
-				custom_title = true,
-				custom_icon = "󰅙 ",
+				title = true,
+				icon = "󰅙 ",
 
-				border = "▋", border_hl = "MarkviewBlockQuoteError"
+				border = "▋"
 			},
 			{
 				match_string = "FAIL",
-				callout_preview = "󰅙 Fail",
-				callout_preview_hl = "MarkviewBlockQuoteError",
+				hl = "MarkviewBlockQuoteError",
+				preview = "󰅙 Fail",
 
-				custom_title = true,
-				custom_icon = "󰅙 ",
+				title = true,
+				icon = "󰅙 ",
 
-				border = "▋", border_hl = "MarkviewBlockQuoteError"
+				border = "▋"
 			},
 			{
 				match_string = "MISSING",
-				callout_preview = "󰅙 Missing",
-				callout_preview_hl = "MarkviewBlockQuoteError",
+				hl = "MarkviewBlockQuoteError",
+				preview = "󰅙 Missing",
 
-				custom_title = true,
-				custom_icon = "󰅙 ",
+				title = true,
+				icon = "󰅙 ",
 
-				border = "▋", border_hl = "MarkviewBlockQuoteError"
+				border = "▋"
 			},
 			{
 				match_string = "DANGER",
-				callout_preview = " Danger",
-				callout_preview_hl = "MarkviewBlockQuoteError",
+				hl = "MarkviewBlockQuoteError",
+				preview = " Danger",
 
-				custom_title = true,
-				custom_icon = "  ",
+				title = true,
+				icon = "  ",
 
-				border = "▋", border_hl = "MarkviewBlockQuoteError"
+				border = "▋"
 			},
 			{
 				match_string = "ERROR",
-				callout_preview = " Error",
-				callout_preview_hl = "MarkviewBlockQuoteError",
+				hl = "MarkviewBlockQuoteError",
+				preview = " Error",
 
-				custom_title = true,
-				custom_icon = "  ",
+				title = true,
+				icon = "  ",
 
-				border = "▋", border_hl = "MarkviewBlockQuoteError"
+				border = "▋"
 			},
 			{
 				match_string = "BUG",
-				callout_preview = " Bug",
-				callout_preview_hl = "MarkviewBlockQuoteError",
+				hl = "MarkviewBlockQuoteError",
+				preview = " Bug",
 
-				custom_title = true,
-				custom_icon = "  ",
+				title = true,
+				icon = "  ",
 
-				border = "▋", border_hl = "MarkviewBlockQuoteError"
+				border = "▋"
 			},
 			{
 				match_string = "EXAMPLE",
-				callout_preview = "󱖫 Example",
-				callout_preview_hl = "MarkviewBlockQuoteSpecial",
+				hl = "MarkviewBlockQuoteSpecial",
+				preview = "󱖫 Example",
 
-				custom_title = true,
-				custom_icon = " 󱖫 ",
+				title = true,
+				icon = " 󱖫 ",
 
-				border = "▋", border_hl = "MarkviewBlockQuoteSpecial"
+				border = "▋"
 			},
 			{
 				match_string = "QUOTE",
-				callout_preview = " Quote",
-				callout_preview_hl = "MarkviewBlockQuoteDefault",
+				hl = "MarkviewBlockQuoteDefault",
+				preview = " Quote",
 
-				custom_title = true,
-				custom_icon = "  ",
+				title = true,
+				icon = "  ",
 
-				border = "▋", border_hl = "MarkviewBlockQuoteDefault"
+				border = "▋"
 			},
 			{
 				match_string = "CITE",
-				callout_preview = " Cite",
-				callout_preview_hl = "MarkviewBlockQuoteDefault",
+				hl = "MarkviewBlockQuoteDefault",
+				preview = " Cite",
 
-				custom_title = true,
-				custom_icon = "  ",
+				title = true,
+				icon = "  ",
 
-				border = "▋", border_hl = "MarkviewBlockQuoteDefault"
+				border = "▋"
 			},
 			{
 				match_string = "HINT",
-				callout_preview = " Hint",
-				callout_preview_hl = "MarkviewBlockQuoteOk",
+				hl = "MarkviewBlockQuoteOk",
+				preview = " Hint",
 
-				border = "▋", border_hl = "MarkviewBlockQuoteOk"
+				title = true,
+				icon = "  ",
+
+				border = "▋"
 			},
 			{
 				match_string = "ATTENTION",
-				callout_preview = " Attention",
-				callout_preview_hl = "MarkviewBlockQuoteWarn",
+				hl = "MarkviewBlockQuoteWarn",
+				preview = " Attention",
 
-				border = "▋", border_hl = "MarkviewBlockQuoteWarn"
+				title = true,
+				icon = "  ",
+
+				border = "▋"
 			},
 			---_
 			---+ ${conf, From Github}
 			{
 				match_string = "NOTE",
-				callout_preview = "󰋽 Note",
-				callout_preview_hl = "MarkviewBlockQuoteNote",
+				hl = "MarkviewBlockQuoteNote",
+				preview = "󰋽 Note",
 
-				border = "▋", border_hl = "MarkviewBlockQuoteNote"
+				border = "▋"
 			},
 			{
 				match_string = "TIP",
-				callout_preview = " Tip",
-				callout_preview_hl = "MarkviewBlockQuoteOk",
+				hl = "MarkviewBlockQuoteOk",
+				preview = " Tip",
 
-				border = "▋", border_hl = "MarkviewBlockQuoteOk"
+				border = "▋"
 			},
 			{
 				match_string = "IMPORTANT",
-				callout_preview = " Important",
-				callout_preview_hl = "MarkviewBlockQuoteSpecial",
+				hl = "MarkviewBlockQuoteSpecial",
+				preview = " Important",
 
-				border = "▋", border_hl = "MarkviewBlockQuoteSpecial"
+				border = "▋"
 			},
 			{
 				match_string = "WARNING",
-				callout_preview = " Warning",
-				callout_preview_hl = "MarkviewBlockQuoteWarn",
+				hl = "MarkviewBlockQuoteWarn",
+				preview = " Warning",
 
-				border = "▋", border_hl = "MarkviewBlockQuoteWarn"
+				border = "▋"
 			},
 			{
 				match_string = "CAUTION",
-				callout_preview = "󰳦 Caution",
-				callout_preview_hl = "MarkviewBlockQuoteError",
+				hl = "MarkviewBlockQuoteError",
+				preview = "󰳦 Caution",
 
-				border = "▋", border_hl = "MarkviewBlockQuoteError"
+				border = "▋"
 			},
 			---_
 
 			---+ ${conf, Custom}
 			{
 				match_string = "CUSTOM",
-				callout_preview = "󰠳 Custom",
-				callout_preview_hl = "MarkviewBlockQuoteWarn",
+				hl = "MarkviewBlockQuoteWarn",
+				preview = "󰠳 Custom",
 
 				custom_title = true,
 				custom_icon = " 󰠳 ",
 
-				border = "▋", border_hl = "MarkviewBlockQuoteWarn"
+				border = "▋"
 			}
 			---_
 		}
@@ -389,7 +395,7 @@ markview.configuration = {
 			{
 				match_string = "-",
 				text = "◯",
-				hl = "MarkviewCheckboxPending"
+				hl = "MarkviewCheckboxPending",
 			},
 			{
 				match_string = "~",
@@ -414,7 +420,7 @@ markview.configuration = {
 	code_blocks = {
 		---+ ${class, Code blocks}
 		enable = true,
-		icons = true,
+		icons = "internal",
 
 		style = "language",
 		hl = "MarkviewCode",
@@ -621,25 +627,25 @@ markview.configuration = {
 		---+ ${class, Latex}
 		enable = true,
 
-		---@diagnostic disable
 		brackets = {
 			enable = true,
 			hl = "@punctuation.brackets"
 		},
-		operators = {
-			enable = true,
-			configs = latex.operator_conf
-		},
-		---@diagnostic enable
 
-		inline = {
-			enable = true
-		},
 		block = {
 			enable = true,
 
 			hl = "Code",
 			text = { " LaTeX ", "Special" }
+		},
+
+		inline = {
+			enable = true
+		},
+
+		operators = {
+			enable = true,
+			configs = latex.operator_conf
 		},
 
 		symbols = {
@@ -884,7 +890,7 @@ markview.splitView = {
 			local start = math.max(0, cursor[1] - markview.configuration.render_distance);
 			local stop = math.min(lines, cursor[1] + markview.configuration.render_distance);
 
-			parsed_content = markview.parser.parse_range(self.buffer, markview.configuration, start, stop);
+			parsed_content = markview.parser.init(self.buffer, markview.configuration, start, stop);
 
 			markview.renderer.render(self.buffer, parsed_content, markview.configuration)
 		end
@@ -949,7 +955,7 @@ markview.splitView = {
 						local start = math.max(0, cursor[1] - markview.configuration.render_distance);
 						local stop = math.min(lines, cursor[1] + markview.configuration.render_distance);
 
-						parsed_content = markview.parser.parse_range(self.buffer, markview.configuration, start, stop);
+						parsed_content = markview.parser.init(self.buffer, markview.configuration, start, stop);
 
 						markview.renderer.render(self.buffer, parsed_content, markview.configuration)
 					end
@@ -1078,7 +1084,7 @@ markview.commands = {
 			local start = math.max(0, cursor[1] - markview.configuration.render_distance);
 			local stop = math.min(lines, cursor[1] + (markview.configuration.render_distance));
 
-			parsed_content = markview.parser.parse_range(buffer, markview.configuration, start, stop);
+			parsed_content = markview.parser.init(buffer, markview.configuration, start, stop);
 
 			markview.renderer.render(buffer, parsed_content, markview.configuration)
 		end
@@ -1284,7 +1290,12 @@ markview.setup = function (user_config)
 		hls.create(markview.configuration.highlight_groups)
 	end
 
-	ts.inject(markview.configuration.injections)
+	markview.state.enable = markview.configuration.initial_state;
+	ts.inject(markview.configuration.injections);
+
+	if markview.state.enable ~= true then
+		return;
+	end
 	markview.commands.enableAll();
 end
 
