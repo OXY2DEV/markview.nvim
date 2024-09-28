@@ -118,7 +118,7 @@
 ---@class markview.conf.footnotes
 ---
 ---@field enable boolean
----@field use_unicode? boolean
+---@field superscript? boolean
 ---@field hl? string
 
 --- Headings
@@ -174,9 +174,9 @@
 ---@field icon? string
 ---@field icon_hl? string
 
----@class markview.h.github
+---@class markview.h.decorated
 ---
----@field style "github" Render style
+---@field style "decorated" Render style
 ---@field hl? string Primary highlight group for the heading
 ---
 ---@field sign? string
@@ -201,8 +201,8 @@
 ---@field heading_5 (markview.h.simple | markview.h.label | markview.h.icon)
 ---@field heading_6 (markview.h.simple | markview.h.label | markview.h.icon)
 ---
----@field setext_1 (markview.h.simple | markview.h.github)
----@field setext_2 (markview.h.simple | markview.h.github)
+---@field setext_1 (markview.h.simple | markview.h.decorated)
+---@field setext_2 (markview.h.simple | markview.h.decorated)
 
 --- Highlight groups
 ---------------------------------------------------------------

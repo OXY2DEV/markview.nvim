@@ -1169,7 +1169,7 @@ renderer.render_headings_s = function (buffer, content, config)
 		return;
 	end
 
-	---@type markview.h.github | markview.h.simple
+	---@type markview.h.decorated | markview.h.simple
 	local conf = content.marker:match("=") and config["setext_1"] or config["setext_2"];
 
 	-- Do not proceed if setext headings don't have configuration
@@ -1186,7 +1186,7 @@ renderer.render_headings_s = function (buffer, content, config)
 			hl_mode = "combine",
 			end_row = content.row_end - 1
 		});
-	elseif conf.style == "github" then
+	elseif conf.style == "decorated" or conf.style == "github" then
 		local mid = math.floor((content.row_end - content.row_start - 2) / 2);
 
 		for i = 0, (content.row_end - content.row_start) - 1 do
@@ -2135,7 +2135,7 @@ renderer.render_footnotes = function (buffer, content, user_config)
 
 	local _o = content.text:match("%^(.+)$");
 
-	if user_config.use_unicode ~= false and _o:match("^([%s%a%d%(%)%+%-%=]+)$") then
+	if user_config.superscript ~= false and _o:match("^([%s%a%d%(%)%+%-%=]+)$") then
 		local tmp = "";
 
 		for letter in _o:gmatch(".") do

@@ -499,7 +499,7 @@ markview.configuration = {
 
 		setext_1 = {
 			---+ ${conf, Setext heading 1}
-			style = "github",
+			style = "decorated",
 
 			sign = "󰌕 ", sign_hl = "MarkviewHeading1Sign",
 			icon = "  ", hl = "MarkviewHeading1",
@@ -508,7 +508,7 @@ markview.configuration = {
 		},
 		setext_2 = {
 			---+ ${conf, Setext heading 2}
-			style = "github",
+			style = "decorated",
 
 			sign = "󰌖 ", sign_hl = "MarkviewHeading2Sign",
 			icon = "  ", hl = "MarkviewHeading2",
