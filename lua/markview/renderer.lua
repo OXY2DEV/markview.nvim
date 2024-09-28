@@ -1,5 +1,13 @@
 local renderer = {};
 local devicons_loaded, devicons = pcall(require, "nvim-web-devicons");
+local mini_loaded, MiniIcons = pcall(require, "mini.icons");
+
+--- Checks if a parser is available or not
+---@param parser_name string
+---@return boolean
+local function parser_installed(parser_name)
+	return (ts_available and treesitter_parsers.has_parser(parser_name)) or pcall(vim.treesitter.query.get, parser_name, "highlights")
+end
 
 local utils = require("markview.utils");
 local entities = require("markview.entities");
@@ -10,14 +18,20 @@ local latex_renderer = require("markview.latex_renderer");
 ---@param language string
 ---@param config_table markview.conf.code_blocks
 ---@return string Icon
----@return string Highlight group
+---@return string? Highlight group
+---@return string? Sign Highlight group
 renderer.get_icon = function (language, config_table)
-	if config_table.icons == false then
+	if type(config_table.icons) ~= "string" or config_table.icons == "" then
 		return "", "Normal";
 	end
 
-	if devicons_loaded then
+	if config_table.icons == "devicons" and devicons_loaded then
 		return devicons.get_icon(nil, language, { default = true })
+	elseif config_table.icons == "mini" and mini_loaded then
+		local icon, hl = MiniIcons.get("extension", language);
+		return icon, hl;
+	elseif config_table.icons == "internal" then
+		return languages.get_icon(language);
 	end
 
 	return "󰡯", "Normal";
@@ -169,6 +183,23 @@ local display_width = function (text, config)
 
 	local final_string = sub_indent_chars(text);
 
+	---@type markview.links.config?
+	local lnk_conf = config.links ~= nil and config.links.hyperlinks or nil;
+	---@type markview.links.config?
+	local int_lnk_conf = config.links ~= nil and config.links.internal_links or nil;
+	---@type markview.links.config?
+	local img_conf = config.links ~= nil and config.links.images or nil;
+	---@type markview.links.config?
+	local email_conf = config.links ~= nil and config.links.emails or nil;
+
+
+	local html_conf = config.html;
+
+	--- Without inline parser inline these syntaxes shouldn't occur
+	if not parser_installed("markdown_inline") then
+		goto noMdInline;
+	end
+
 	for escaped_char in final_string:gmatch("\\([\\%.%*%_%{%}%[%]%<%>%(%)%#%+%-%`%!%|%$])") do
 		if config.escaped ~= nil and config.escaped.enable ~= false then
 			final_string = final_string:gsub("\\" .. escaped_char, " ");
@@ -205,15 +236,6 @@ local display_width = function (text, config)
 			}));
 		end
 	end
-
-	---@type markview.links.config?
-	local lnk_conf = config.links ~= nil and config.links.hyperlinks or nil;
-	---@type markview.links.config?
-	local int_lnk_conf = config.links ~= nil and config.links.internal_links or nil;
-	---@type markview.links.config?
-	local img_conf = config.links ~= nil and config.links.images or nil;
-	---@type markview.links.config?
-	local email_conf = config.links ~= nil and config.links.emails or nil;
 
 	--- Image link(normal)
 	for link, address in final_string:gmatch("!%[([^%]]+)%]%(([^%)]+)%)") do
@@ -435,60 +457,11 @@ local display_width = function (text, config)
 		}));
 	end
 
-	local tmp_string = final_string;
-	local iterations = 1;
+	::noMdInline::
 
-	local html_conf = config.html;
-
-	while tmp_string:match("<([^>]+)>") do
-		-- This shouldn't run so many times
-		if not html_conf or html_conf.enable == false then
-			break;
-		elseif not html_conf.tags or html_conf.tags.enable == false then
-			break;
-		elseif iterations > 10 then
-			break;
-		else
-			iterations = iterations + 1;
-		end
-
-		local start_tag = tmp_string:match("<([^>]+)>");
-		local s_tag_start, _ = tmp_string:find("<([^>]+)>");
-
-		--- Only allow, a-z, A-Z, - & _
-		local filtered_tag = start_tag:match("[%a%d%-%_]+");
-
-		-- No close tag
-		if not tmp_string:match("</" .. filtered_tag .. ">") then
-			goto invalid;
-		end
-
-		local end_tag = tmp_string:match("</(" .. filtered_tag .. ")>");
-		local e_tag_start, _ = tmp_string:find("</" .. filtered_tag .. ">");
-
-		-- Close tag before opening tag
-		if e_tag_start < s_tag_start then
-			goto invalid;
-		end
-
-		local tag_conf = html_conf.tags;
-		local conf = tag_conf.default or {};
-
-		if tag_conf.configs and tag_conf.configs[string.lower(filtered_tag)] then
-			conf = tag_conf.configs[string.lower(filtered_tag)]
-		end
-
-		local internal_text = tmp_string:match("<" .. start_tag .. ">(.-)</" .. end_tag .. ">") or "";
-
-		-- Tag isn't concealed
-		if conf.conceal ~= false then
-			final_string = final_string:gsub("<" .. start_tag .. ">" .. internal_text .. "</" .. end_tag .. ">", internal_text)
-			d_width = d_width - vim.fn.strdisplaywidth("<" .. start_tag .. ">" .. "</" .. end_tag .. ">", internal_text);
-		end
-
-		tmp_string = tmp_string:gsub("<" .. start_tag .. ">" .. internal_text .. "</" .. end_tag .. ">", internal_text)
-
-		::invalid::
+	--- Without HTML parser these syntaxes shouldn't occur
+	if not parser_installed("html") then
+		return d_width, vim.fn.strdisplaywidth(text), final_string;
 	end
 
 	for entity_name, semicolon in final_string:gmatch("&([%a%d]+)(;?)") do
@@ -1327,11 +1300,20 @@ renderer.render_code_blocks = function (buffer, content, config_table)
 		end
 	elseif config_table.style == "language" then
 		local language = languages.get_ft(content.language);
-		local icon, hl = renderer.get_icon(language, config_table);
+		local icon, hl, sign_hl = renderer.get_icon(language, config_table);
+		local sign = icon;
+
+		icon = icon or "";
+
+		if icon ~= "" and not icon:match("(%s)$") then
+			icon = icon .. " ";
+		end
+
+		icon = " " .. icon;
+
 		local block_length = content.largest_line;
 
 		local languageName;
-		local icon_section = icon ~= "" and " " .. icon .. " " or " ";
 
 		if config_table.language_names ~= nil then
 			for match, replace in pairs(config_table.language_names) do
@@ -1349,7 +1331,7 @@ renderer.render_code_blocks = function (buffer, content, config_table)
 			block_length = config_table.min_width
 		end
 
-		local lang_width = vim.fn.strchars(icon_section .. languageName .. " ");
+		local lang_width = vim.fn.strchars(icon .. languageName .. " ");
 
 		if config_table.language_direction == nil or config_table.language_direction == "left" then
 			local rendered_info = vim.fn.strcharpart(content.block_info or "", 0, block_length - lang_width + ((config_table.pad_amount or 1) * 2) - 4);
@@ -1359,16 +1341,18 @@ renderer.render_code_blocks = function (buffer, content, config_table)
 			end
 
 			vim.api.nvim_buf_set_extmark(buffer, renderer.namespace, content.row_start, content.col_start + 3 + vim.fn.strlen(content.language), {
+				undo_restore = false, invalidate = true,
+
 				virt_text_pos = "inline",
 				virt_text = {
-					{ icon_section, set_hl(hl) },
-					{ languageName .. " ", set_hl(config_table.language_hl) or set_hl(hl) },
+					{ icon, set_hl(hl or config_table.hl) },
+					{ languageName .. " ", set_hl(config_table.language_hl or hl or config_table.hl) },
 					{ string.rep(config_table.pad_char or " ", block_length - lang_width - vim.fn.strchars(rendered_info) + ((config_table.pad_amount or 1) * 2)), set_hl(config_table.hl) },
 					{ rendered_info, set_hl(config_table.info_hl or config_table.hl) },
 				},
 
-				sign_text = config_table.sign == true and icon or nil,
-				sign_hl_group = set_hl(config_table.sign_hl) or set_hl(hl),
+				sign_text = config_table.sign == true and sign or nil,
+				sign_hl_group = set_hl(config_table.sign_hl or sign_hl or hl),
 
 				hl_mode = "combine",
 				end_col = content.col_start + vim.fn.strchars(content.info_string),
@@ -1382,21 +1366,25 @@ renderer.render_code_blocks = function (buffer, content, config_table)
 			end
 
 			vim.api.nvim_buf_set_extmark(buffer, renderer.namespace, content.row_start, content.col_start + 3 + vim.fn.strlen(content.language), {
+				undo_restore = false, invalidate = true,
+
 				end_col = content.col_start + vim.fn.strchars(content.info_string),
 				conceal = ""
 			});
 
 			vim.api.nvim_buf_set_extmark(buffer, renderer.namespace, content.row_start, content.col_start + vim.fn.strchars(content.info_string), {
+				undo_restore = false, invalidate = true,
+
 				virt_text_pos = "inline",
 				virt_text = {
 					{ rendered_info, set_hl(config_table.info_hl or config_table.hl) },
 					{ string.rep(config_table.pad_char or " ", block_length - lang_width - vim.fn.strchars(rendered_info) + ((config_table.pad_amount or 1) * 2)), set_hl(config_table.hl) },
-					{ icon_section, set_hl(hl) },
-					{ languageName .. " ", set_hl(config_table.language_hl) or set_hl(hl) },
+					{ icon, set_hl(hl or config_table.hl) },
+					{ languageName .. " ", set_hl(config_table.language_hl or hl or config_table.hl) },
 				},
 
-				sign_text = config_table.sign == true and icon or nil,
-				sign_hl_group = set_hl(config_table.sign_hl) or set_hl(hl),
+				sign_text = config_table.sign == true and sign or nil,
+				sign_hl_group = set_hl(config_table.sign_hl or sign_hl or hl),
 
 				hl_mode = "combine"
 			});
@@ -1412,6 +1400,8 @@ renderer.render_code_blocks = function (buffer, content, config_table)
 		end
 
 		vim.api.nvim_buf_set_extmark(buffer, renderer.namespace, content.row_end - 1, vim.fn.strchars(block_end_line or ""), {
+			undo_restore = false, invalidate = true,
+
 			virt_text_pos = "inline",
 			virt_text = {
 				{ string.rep(config_table.pad_char or " ", (block_length - vim.fn.strchars(tail_section)) + ((config_table.pad_amount or 1) * 2)), set_hl(config_table.hl) },
@@ -1427,6 +1417,8 @@ renderer.render_code_blocks = function (buffer, content, config_table)
 			local position = #text;
 
 			vim.api.nvim_buf_set_extmark(buffer, renderer.namespace, content.row_start + line, content.col_start, {
+				undo_restore = false, invalidate = true,
+
 				hl_group = set_hl(config_table.hl),
 
 				end_row = content.row_start + line,
@@ -1435,14 +1427,17 @@ renderer.render_code_blocks = function (buffer, content, config_table)
 
 			-- NOTE: If the line is smaller than the start position of the code block then subtract it
 			vim.api.nvim_buf_set_extmark(buffer, renderer.namespace, content.row_start + line, length < 0 and content.col_start + length or content.col_start, {
+				undo_restore = false, invalidate = true,
+
 				virt_text_pos = "inline",
 				virt_text = {
 					{ string.rep(config_table.pad_char or " ", config_table.pad_amount or 1), set_hl(config_table.hl) }
 				}
 			})
 
-
 			vim.api.nvim_buf_set_extmark(buffer, renderer.namespace, content.row_start + line, position, {
+				undo_restore = false, invalidate = true,
+
 				virt_text_pos = "inline",
 				virt_text = {
 					{ string.rep(config_table.pad_char or " ", block_length - length), set_hl(config_table.hl) },
@@ -1489,13 +1484,21 @@ renderer.render_block_quotes = function (buffer, content, config_table)
 		return;
 	end
 
-	if qt_config.custom_title == true and content.title ~= "" then
+	local list_clamp = function (val, index)
+		if not vim.islist(val) then
+			return set_hl(val);
+		end
+
+		return set_hl(val[math.min(#val, index)]);
+	end
+
+	if (qt_config.title == true or qt_config.custom_title) and content.title ~= "" then
 		vim.api.nvim_buf_set_extmark(buffer, renderer.namespace, content.row_start, content.col_start, {
 			virt_text_pos = "inline",
 			virt_text = {
-				{ tbl_clamp(qt_config.border, 1), set_hl(tbl_clamp(qt_config.border_hl, 1)) },
+				{ tbl_clamp(qt_config.border, 1), list_clamp(qt_config.hl or qt_config.border_hl, 1) },
 				{ " " },
-				{ qt_config.custom_icon, set_hl(qt_config.callout_preview_hl) },
+				{ qt_config.icon or qt_config.custom_icon, list_clamp(qt_config.preview_hl or qt_config.callout_preview_hl or qt_config.hl, 1) },
 			},
 
 			end_col = content.col_start + vim.fn.strdisplaywidth(">[!" .. content.callout .. "]" .. (content.title:match("^(%s)") or "")),
@@ -1503,16 +1506,16 @@ renderer.render_block_quotes = function (buffer, content, config_table)
 		});
 
 		vim.api.nvim_buf_set_extmark(buffer, renderer.namespace, content.row_start, content.col_start, {
-			hl_group = set_hl(qt_config.callout_preview_hl),
+			hl_group = list_clamp(qt_config.hl or qt_config.preview_hl or qt_config.callout_preview_hl or qt_config.hl, 1),
 			end_col = #content.lines[1],
 		});
-	elseif qt_config.callout_preview ~= nil then
+	elseif qt_config.preview ~= nil or qt_config.callout_preview ~= nil then
 		vim.api.nvim_buf_set_extmark(buffer, renderer.namespace, content.row_start, content.col_start, {
 			virt_text_pos = "inline",
 			virt_text = {
-				{ tbl_clamp(qt_config.border, 1), set_hl(tbl_clamp(qt_config.border_hl, 1)) },
+				{ tbl_clamp(qt_config.border, 1), list_clamp(qt_config.hl or qt_config.border_hl, 1) },
 				{ " " },
-				{ qt_config.callout_preview, set_hl(qt_config.callout_preview_hl) },
+				{ qt_config.preview or qt_config.callout_preview, list_clamp(qt_config.preview_hl or qt_config.hl or qt_config.callout_preview_hl, 1) },
 			},
 
 			end_col = content.line_width,
@@ -1522,7 +1525,7 @@ renderer.render_block_quotes = function (buffer, content, config_table)
 		vim.api.nvim_buf_set_extmark(buffer, renderer.namespace, content.row_start, content.col_start, {
 			virt_text_pos = "inline",
 			virt_text = {
-				{ tbl_clamp(qt_config.border, 1), set_hl(tbl_clamp(qt_config.border_hl, 1)) },
+				{ tbl_clamp(qt_config.border, 1), list_clamp(qt_config.hl or qt_config.border_hl, 1) },
 			},
 
 			end_col = content.col_start + vim.fn.strchars(tbl_clamp(qt_config.border or "", 1)),
@@ -1543,7 +1546,7 @@ renderer.render_block_quotes = function (buffer, content, config_table)
 		vim.api.nvim_buf_set_extmark(buffer, renderer.namespace, content.row_start + line, content.col_start, {
 			virt_text_pos = "inline",
 			virt_text = {
-				{ tbl_clamp(qt_config.border, line + 1), set_hl(tbl_clamp(qt_config.border_hl, line + 1)) }
+				{ tbl_clamp(qt_config.border, line + 1), list_clamp(qt_config.hl or qt_config.border_hl, line + 1) }
 			},
 
 			end_col = end_col,
@@ -1992,8 +1995,27 @@ renderer.render_checkboxes = function (buffer, content, config_table)
 		end_col = content.col_end,
 		conceal = "",
 
+		-- line_hl_group = "DiagnosticDeprecated",
 		hl_mode = "combine"
 	});
+
+	if not chk_config.scope_hl or not content.list_item then
+		return;
+	end
+
+	for l = content.list_item.row_start, content.list_item.row_end - 1 do
+		local col_start = content.col_start;
+
+		if l == content.list_item.row_start then
+			col_start = content.col_end + 1;
+		end
+
+		vim.api.nvim_buf_set_extmark(buffer, renderer.namespace, l, col_start, {
+			end_col = #content.list_item.list_lines[l - content.list_item.row_start + 1],
+
+			hl_group = chk_config.scope_hl,
+		});
+	end
 end
 
 --- Renderer for custom table
