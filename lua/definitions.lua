@@ -149,6 +149,9 @@
 ---@field sign? string
 ---@field sign_hl? string
 ---
+---@field icon? string
+---@field icon_hl? string
+---
 ---@field corner_left? string
 ---@field padding_left? string
 ---@field padding_right? string
@@ -185,8 +188,8 @@
 ---@field icon? string
 ---@field icon_hl? string
 ---
----@field line string
----@field line_hl? string
+---@field border string
+---@field border_hl? string
 
 ---@class markview.conf.headings
 ---
@@ -408,6 +411,7 @@
 ---@field marker_star markview.list_items.item
 ---
 ---@field marker_dot { add_padding: boolean }
+---@field marker_parenthasis { add_padding: boolean }
 
 ---@class markview.list_items.item
 ---
@@ -418,6 +422,14 @@
 --- Tables
 ---------------------------------------------------------------
 
+---@class markview.tables.parts
+---
+---@field top string[]
+---@field header string[]
+---@field separator string[]
+---@field row string[]
+---@field bottom string[]
+
 ---@class markview.conf.tables
 ---
 ---@field enable boolean
@@ -425,7 +437,7 @@
 ---@field use_virt_lines boolean
 ---@field col_min_width? integer
 ---
----@field text string[]
----@field hl? string[]
+---@field parts markview.tables.parts
+---@field hls? markview.tables.parts
 
 -- vim:nospell:

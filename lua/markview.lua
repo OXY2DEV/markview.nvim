@@ -742,19 +742,26 @@ markview.configuration = {
 			text = "",
 			hl = "MarkviewListItemMinus"
 		},
+
 		marker_plus = {
 			add_padding = true,
 
 			text = "",
 			hl = "MarkviewListItemPlus"
 		},
+
 		marker_star = {
 			add_padding = true,
 
 			text = "",
 			hl = "MarkviewListItemStar"
 		},
+
 		marker_dot = {
+			add_padding = true
+		},
+
+		marker_parenthasis = {
 			add_padding = true
 		},
 		---_
@@ -772,27 +779,35 @@ markview.configuration = {
 	tables = {
 		---+ ${class, Tablws}
 		enable = true,
-		text = {
+		parts = {
 			--- ╭ ─ ╮ ┬
 			--- │ │ │   ╼
 			--- ├ ┼ ┤ ─ ╴╶
 			--- │ │ │   ╾
 			--- ╰ ─ ╯ ┴
-			"╭", "─", "╮", "┬",
-			"│", "│", "│",      "╼",
-			"├", "┼", "┤", "─", "╴", "╶",
-			"│", "│", "│",      "╾",
-			"╰", "─", "╯", "┴",
+			top = { "╭", "─", "╮", "┬" },
+			header = { "│", "│", "│" },
+			separator = { "├", "┼", "┤", "─" },
+			row = { "│", "│", "│" },
+			bottom = { "╰", "─", "╯", "┴" },
+
+			align_left = "╼",
+			align_right = "╾",
+			align_center = { "╴", "╶" }
 		},
 		hl = {
-			"TableHeader", "TableHeader", "TableHeader",    "TableHeader",
-			"TableHeader", "TableHeader", "TableHeader",                     "TableAlignLeft",
-			"TableHeader", "TableHeader", "TableHeader",    "TableHeader",   "TableAlignCenter", "TableAlignCenter",
-			"TableBorder", "TableBorder", "TableBorder",                     "TableAlignRight",
-			"TableBorder", "TableBorder", "TableBorder",    "TableBorder"
+			top = { "TableHeader", "TableHeader", "TableHeader", "TableHeader" },
+			header = { "TableHeader", "TableHeader", "TableHeader" },
+			separator = { "TableHeader", "TableHeader", "TableHeader", "TableHeader" },
+			row = { "TableBorder", "TableBorder", "TableBorder" },
+			bottom = { "TableBorder", "TableBorder", "TableBorder", "TableBorder" },
+
+			align_left = "TableAlignLeft",
+			align_right = "TableAlignRight",
+			align_center = { "TableAlignCenter", "TableAlignCenter" }
 		},
 
-		col_min_width = 5,
+		col_min_width = 10,
 		block_decorator = true,
 		use_virt_lines = true
 		---_
@@ -1290,7 +1305,6 @@ markview.setup = function (user_config)
 		hls.create(markview.configuration.highlight_groups)
 	end
 
-	markview.state.enable = markview.configuration.initial_state;
 	ts.inject(markview.configuration.injections);
 
 	if markview.state.enable ~= true then
