@@ -119,7 +119,7 @@ parser.filter_lines = function (buffer, from, to)
 	local align_spaces = {};
 	local start_pos = {};
 
-	local withinCodeBlock, insideDescription;
+	local withinCodeBlock, insideDescription = false, nil;
 	local parent_marker;
 
 	local tolarence = 3;
@@ -132,15 +132,17 @@ parser.filter_lines = function (buffer, from, to)
 
 	for l, line in ipairs(captured_lines) do
 		if l == 1 then
+			--- Marker list item
 			if line:match(">%s-([+%-*])") then
 				local sp = vim.fn.strchars(line:match(">(%s-)[+%-*]"));
 				local before = sp % 2 ~= 0 and line:match("(.*>%s)") or line:match("(.*>)");
 
 				start = #before;
 				line = line:gsub(before, "");
-				table.insert(start_pos, start)
-			elseif line:match(">%s-(%d+)[)%.]") then
-				local sp = vim.fn.strchars(line:match(">(%s-)%d+[)%.]"));
+				table.insert(start_pos, start);
+			--- Numbered list item
+			elseif line:match(">%s-(%d+)[%)%.]") then
+				local sp = vim.fn.strchars(line:match(">(%s-)%d+[%)%.]"));
 				local before = sp % 2 ~= 0 and line:match("(.*>%s)") or line:match("(.*>)");
 
 				start = #before;
@@ -148,9 +150,10 @@ parser.filter_lines = function (buffer, from, to)
 				table.insert(start_pos, start)
 			end
 		elseif l ~=	1 then
+			--- Another list item found, stop calculating
 			if line:match(">%s-([+%-*])") then
 				break;
-			elseif line:match(">%s-(%d+)[)%.]") then
+			elseif line:match(">%s-(%d+)[%)%.]") then
 				break;
 			end
 		else
@@ -158,10 +161,10 @@ parser.filter_lines = function (buffer, from, to)
 			table.insert(start_pos, start);
 		end
 
-		if l ~= 1 then
-			if withinCodeBlock ~= true and line:match("^%s*([+%-*])") then
+		if l ~= 1 and withinCodeBlock == false then
+			if line:match("^%s*([+%-*])") then
 				break;
-			elseif withinCodeBlock ~= true and line:match("^%s*(%d+[%.%)])") then
+			elseif line:match("^%s*(%d+[%.%)])") then
 				break;
 			end
 		end
@@ -175,7 +178,7 @@ parser.filter_lines = function (buffer, from, to)
 		if line:match("^%s*([+%-*])") then
 			parent_marker = line:match("^%s*([+%-*])");
 		elseif line:match("^%s*(%d+[%.%)])") then
-			parent_marker = line:match("^%s*(%d+[%.%)])");
+			parent_marker = line:match("^%s*(%d+[%)%.])");
 		end
 
 		if line:match("(```)") and withinCodeBlock ~= true then
@@ -184,11 +187,7 @@ parser.filter_lines = function (buffer, from, to)
 		elseif line:match("(```)") and withinCodeBlock == true then
 			withinCodeBlock = false;
 		elseif withinCodeBlock == true then
-			spaces_before = spaces_before > code_block_indent and
-				spaces_before - code_block_indent - 2 or
-				spaces_before
-			;
-
+			spaces_before = code_block_indent;
 			goto withinElement;
 		end
 
@@ -199,7 +198,9 @@ parser.filter_lines = function (buffer, from, to)
 			insideDescription = false;
 		end
 
-		if not line:match("^%s*([+%-*])") and not line:match("^%s*(%d+[%.%)])") and parent_marker then
+		if not line:match("^%s*([+%-*])") and
+			not line:match("^%s*(%d+[%.%)])") and parent_marker
+		then
 			spaces_before = math.max(0, spaces_before - vim.fn.strchars((parent_marker or "") .. " "));
 
 			if line:match("(```)") then
