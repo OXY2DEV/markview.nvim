@@ -2100,7 +2100,7 @@ latex.render_block = function (buffer, content, user_config)
 	vim.api.nvim_buf_set_extmark(buffer, latex.namespace, content.row_end - 1, content.col_end - 2, {
 		virt_text_pos = "right_align",
 		virt_text = {
-			user_config.text or { " Latex ", "Comment" }
+			user_config.text
 		},
 
 		end_col = content.col_end,
