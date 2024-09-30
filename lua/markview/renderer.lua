@@ -38,11 +38,21 @@ renderer.get_icon = function (language, config_table)
 end
 
 local tbl_map = function (value)
-	if #value == 22 then
+	if not vim.islist(value) then
 		return value;
 	end
 
-	local _o = {};
+	local _o = {
+		top = {},
+		header = {},
+		separator = {},
+		row = {},
+		bottom = {},
+
+		align_left = nil,
+		align_right = nil,
+		align_center = {}
+	};
 
 	-- / - \ v
 	-- > | < +
@@ -51,33 +61,33 @@ local tbl_map = function (value)
 
 	for p, part in ipairs(value) do
 		if vim.list_contains({ 1, 2, 3, 4 }, p) then
-			_o[p] = part;
+			_o.top[p] = part;
 
 			if p == 2 then
-				_o[12] = part;
+				_o.separator[4] = part;
 			end
 		elseif p == 5 then
-			_o[9] = part;
+			_o.separator[1] = part;
 		elseif p == 6 then
-			_o[5] = part;
-			_o[6] = part;
-			_o[7] = part;
+			_o.header[1] = part;
+			_o.header[2] = part;
+			_o.header[3] = part;
 
-			_o[15] = part;
-			_o[16] = part;
-			_o[17] = part;
+			_o.row[1] = part;
+			_o.row[2] = part;
+			_o.row[3] = part;
 		elseif p == 7 then
-			_o[11] = part;
+			_o.separator[3] = part;
 		elseif p == 8 then
-			_o[10] = part;
+			_o.separator[2] = part;
 		elseif vim.list_contains({ 9, 10, 11, 12 }, p) then
-			_o[p + 10] = part;
+			_o.bottom[p - 8] = part;
 		elseif vim.list_contains({ 13, 14 }, p) then
-			_o[p] = part;
+			_o.align_right[p - 12] = part;
 		elseif p == 15 then
-			_o[8] = part;
+			_o.align_left = part;
 		else
-			_o[18] = part;
+			_o.align_right = part;
 		end
 	end
 
@@ -506,6 +516,16 @@ local table_header = function (buffer, content, config_table)
 	--- 1. ╭ 2. ─ 3. ╮ 4. ┬
 	--- 5. │ 6. │ 7. │ 8. ╼
 
+	if not tbl_conf.parts or (not tbl_conf.parts.header or not tbl_conf.parts.top) then
+		return;
+	end
+
+	local top = tbl_conf.parts.top;
+	local header = tbl_conf.parts.header;
+
+	local top_hl = tbl_conf.hls.top;
+	local header_hl = tbl_conf.hls.header;
+
 	local row_start = content.__r_start or content.row_start;
 	local col_start = content.col_start;
 
@@ -523,27 +543,27 @@ local table_header = function (buffer, content, config_table)
 			vim.api.nvim_buf_set_extmark(buffer, renderer.namespace, row_start, col_start, {
 				virt_text_pos = "inline",
 				virt_text = {
-					{ tbl_conf.text[5], set_hl(tbl_conf.hl[5]) }
+					{ header[1], set_hl(top_hl[1]) }
 				},
 
 				end_col = col_start + 1,
 				conceal = ""
 			});
 
-			table.insert(virt_txt, { tbl_conf.text[1], set_hl(tbl_conf.hl[1]) })
+			table.insert(virt_txt, { top[1], set_hl(top_hl[1]) })
 			curr_col = curr_col + 1
 		elseif index == #content.rows[1] then
 			vim.api.nvim_buf_set_extmark(buffer, renderer.namespace, row_start, col_start + curr_col, {
 				virt_text_pos = "inline",
 				virt_text = {
-					{ tbl_conf.text[7], set_hl(tbl_conf.hl[7]) }
+					{ header[3], set_hl(header_hl[3]) }
 				},
 
 				end_col = col_start + curr_col + 1,
 				conceal = ""
 			});
 
-			table.insert(virt_txt, { tbl_conf.text[3], set_hl(tbl_conf.hl[3]) })
+			table.insert(virt_txt, { top[3], set_hl(top_hl[3]) })
 
 			if tbl_conf.block_decorator ~= false and config_table.tables.use_virt_lines == true then
 				-- Add extra spaces to match the tables position
@@ -594,14 +614,14 @@ local table_header = function (buffer, content, config_table)
 			vim.api.nvim_buf_set_extmark(buffer, renderer.namespace, row_start, col_start + curr_col, {
 				virt_text_pos = "inline",
 				virt_text = {
-					{ tbl_conf.text[6], set_hl(tbl_conf.hl[6]) }
+					{ header[2], set_hl(header_hl[2]) }
 				},
 
 				end_col = col_start + curr_col + 1,
 				conceal = ""
 			});
 
-			table.insert(virt_txt, { tbl_conf.text[4], set_hl(tbl_conf.hl[4]) })
+			table.insert(virt_txt, { top[4], set_hl(top_hl[4]) })
 			curr_col = curr_col + 1
 		else
 			local width, actual_width = display_width(col, config_table);
@@ -652,7 +672,7 @@ local table_header = function (buffer, content, config_table)
 				end
 			end
 
-			table.insert(virt_txt, { string.rep(tbl_conf.text[2], actual_width), set_hl(tbl_conf.hl[2]) })
+			table.insert(virt_txt, { string.rep(top[2], actual_width), set_hl(top_hl[2]) })
 			curr_col = curr_col + #col;
 			curr_tbl_col = curr_tbl_col + 1;
 		end
@@ -669,6 +689,20 @@ local table_seperator = function (buffer, content, user_config, r_num)
 	--- Border structure
 	--- 9. ├ 10. ┼ 11. ┤ 12. │ 13. ╴ 14.╶
 
+	if not tbl_conf.parts or not tbl_conf.parts.separator then
+		return;
+	end
+
+	local separator = tbl_conf.parts.separator;
+	local align_left = tbl_conf.parts.align_left;
+	local align_right = tbl_conf.parts.align_right;
+	local align_center = tbl_conf.parts.align_center;
+
+	local separator_hl = tbl_conf.hls.separator;
+	local align_left_hl = tbl_conf.hls.align_left;
+	local align_right_hl = tbl_conf.hls.align_right;
+	local align_center_hl = tbl_conf.hls.align_center;
+
 	local row_start = content.__r_start or content.row_start;
 	local col_start = content.col_start;
 
@@ -684,7 +718,7 @@ local table_seperator = function (buffer, content, user_config, r_num)
 			vim.api.nvim_buf_set_extmark(buffer, renderer.namespace, row_start + (r_num - 1), col_start, {
 				virt_text_pos = "inline",
 				virt_text = {
-					{ tbl_conf.text[9], set_hl(tbl_conf.hl[9]) }
+					{ separator[1], set_hl(separator_hl[1]) }
 				},
 
 				end_col = col_start + 1,
@@ -696,7 +730,7 @@ local table_seperator = function (buffer, content, user_config, r_num)
 			vim.api.nvim_buf_set_extmark(buffer, renderer.namespace, row_start + (r_num - 1), col_start + curr_col, {
 				virt_text_pos = "inline",
 				virt_text = {
-					{ tbl_conf.text[11], set_hl(tbl_conf.hl[11]) }
+					{ separator[3], set_hl(separator_hl[3]) }
 				},
 
 				end_col = col_start + curr_col + 1,
@@ -708,7 +742,7 @@ local table_seperator = function (buffer, content, user_config, r_num)
 			vim.api.nvim_buf_set_extmark(buffer, renderer.namespace, row_start + (r_num - 1), col_start + curr_col, {
 				virt_text_pos = "inline",
 				virt_text = {
-					{ tbl_conf.text[10], set_hl(tbl_conf.hl[10]) }
+					{ separator[2], set_hl(separator_hl[2]) }
 				},
 
 				end_col = col_start + curr_col + 1,
@@ -725,8 +759,8 @@ local table_seperator = function (buffer, content, user_config, r_num)
 					vim.api.nvim_buf_set_extmark(buffer, renderer.namespace, row_start + (r_num - 1), col_start + curr_col, {
 						virt_text_pos = "inline",
 						virt_text = {
-							{ tbl_conf.text[8], set_hl(tbl_conf.hl[8]) },
-							{ string.rep(tbl_conf.text[12], tbl_col_width - 1), set_hl(tbl_conf.hl[12]) }
+							{ align_left, set_hl(align_right_hl) },
+							{ string.rep(separator[4], tbl_col_width - 1), set_hl(separator_hl[4]) }
 						},
 
 						end_col = col_start + curr_col + vim.fn.strchars(col) + 1,
@@ -736,8 +770,8 @@ local table_seperator = function (buffer, content, user_config, r_num)
 					vim.api.nvim_buf_set_extmark(buffer, renderer.namespace, row_start + (r_num - 1), col_start + curr_col, {
 						virt_text_pos = "inline",
 						virt_text = {
-							{ string.rep(tbl_conf.text[12], tbl_col_width - 1), set_hl(tbl_conf.hl[12]) },
-							{ tbl_conf.text[18], set_hl(tbl_conf.hl[18]) }
+							{ string.rep(separator[4], tbl_col_width - 1), set_hl(separator_hl[4]) },
+							{ align_right, set_hl(align_right_hl) }
 						},
 
 						end_col = col_start + curr_col + vim.fn.strchars(col) + 1,
@@ -747,9 +781,9 @@ local table_seperator = function (buffer, content, user_config, r_num)
 					vim.api.nvim_buf_set_extmark(buffer, renderer.namespace, row_start + (r_num - 1), col_start + curr_col, {
 						virt_text_pos = "inline",
 						virt_text = {
-							{ tbl_conf.text[13], set_hl(tbl_conf.hl[13]) },
-							{ string.rep(tbl_conf.text[12], tbl_col_width - 2), set_hl(tbl_conf.hl[12]) },
-							{ tbl_conf.text[14], set_hl(tbl_conf.hl[14]) }
+							{ align_center[1], set_hl(align_center_hl[1]) },
+							{ string.rep(separator[4], tbl_col_width - 2), set_hl(separator_hl[4]) },
+							{ align_center[2], set_hl(align_center_hl[2]) }
 						},
 
 						end_col = col_start + curr_col + vim.fn.strchars(col) + 1,
@@ -760,7 +794,7 @@ local table_seperator = function (buffer, content, user_config, r_num)
 				vim.api.nvim_buf_set_extmark(buffer, renderer.namespace, row_start + (r_num - 1), col_start + curr_col, {
 					virt_text_pos = "inline",
 					virt_text = {
-						{ string.rep(tbl_conf.text[12], tbl_col_width), set_hl(tbl_conf.hl[12]) }
+						{ string.rep(separator[4], tbl_col_width), set_hl(separator_hl[4]) }
 					},
 
 					end_col = col_start + curr_col + vim.fn.strchars(col) + 1,
@@ -784,6 +818,16 @@ local table_footer = function (buffer, content, config_table)
 	--- 15. │ 16. │ 17. │ 18. ╾
 	--- 19. ╰ 20. ─ 21. ╯ 22. ┴
 
+	if not tbl_conf.parts or (not tbl_conf.parts.row or not tbl_conf.parts.bottom) then
+		return;
+	end
+
+	local row = tbl_conf.parts.row;
+	local bottom = tbl_conf.parts.bottom;
+
+	local row_hl = tbl_conf.hls.row;
+	local bottom_hl = tbl_conf.hls.bottom;
+
 	local row_end = content.__r_end or content.row_end;
 	local col_start = content.col_start;
 
@@ -801,27 +845,27 @@ local table_footer = function (buffer, content, config_table)
 			vim.api.nvim_buf_set_extmark(buffer, renderer.namespace, row_end - 1, col_start, {
 				virt_text_pos = "inline",
 				virt_text = {
-					{ tbl_conf.text[15], set_hl(tbl_conf.hl[15]) }
+					{ row[1], set_hl(row_hl[1]) }
 				},
 
 				end_col = col_start + 1,
 				conceal = ""
 			});
 
-			table.insert(virt_txt, { tbl_conf.text[19], set_hl(tbl_conf.hl[19]) })
+			table.insert(virt_txt, { bottom[1], set_hl(bottom_hl[1]) })
 			curr_col = curr_col + 1
 		elseif index == #content.rows[#content.rows] then
 			vim.api.nvim_buf_set_extmark(buffer, renderer.namespace, row_end - 1, col_start + curr_col, {
 				virt_text_pos = "inline",
 				virt_text = {
-					{ tbl_conf.text[17], set_hl(tbl_conf.hl[17]) }
+					{ row[2], set_hl(row_hl[2]) }
 				},
 
 				end_col = col_start + curr_col + 1,
 				conceal = ""
 			});
 
-			table.insert(virt_txt, { tbl_conf.text[21], set_hl(tbl_conf.hl[21]) })
+			table.insert(virt_txt, { bottom[3], set_hl(bottom_hl[21]) })
 
 			if tbl_conf.block_decorator ~= false and config_table.tables.use_virt_lines == true then
 				if content.content_positions and content.content_positions[#content.content_positions] then
@@ -858,14 +902,14 @@ local table_footer = function (buffer, content, config_table)
 			vim.api.nvim_buf_set_extmark(buffer, renderer.namespace, row_end - 1, col_start + curr_col, {
 				virt_text_pos = "inline",
 				virt_text = {
-					{ tbl_conf.text[16], set_hl(tbl_conf.hl[16]) }
+					{ row[2], set_hl(row_hl[2]) }
 				},
 
 				end_col = col_start + curr_col + 1,
 				conceal = ""
 			});
 
-			table.insert(virt_txt, { tbl_conf.text[22], set_hl(tbl_conf.hl[22]) })
+			table.insert(virt_txt, { bottom[4], set_hl(bottom_hl[4]) })
 			curr_col = curr_col + 1
 		else
 			local width, actual_width = display_width(col, config_table);
@@ -912,7 +956,7 @@ local table_footer = function (buffer, content, config_table)
 				end
 			end
 
-			table.insert(virt_txt, { string.rep(tbl_conf.text[20], actual_width), set_hl(tbl_conf.hl[20]) })
+			table.insert(virt_txt, { string.rep(bottom[2], actual_width), set_hl(bottom_hl[2]) })
 			curr_col = curr_col + #col;
 			curr_tbl_col = curr_tbl_col + 1;
 		end
@@ -929,6 +973,13 @@ local table_content = function (buffer, content, config_table, r_num)
 	--- Border structure
 	--- 15. │ 16. │ 17. │ 18. ╾
 
+	if not tbl_conf.parts or (not tbl_conf.parts.row or not tbl_conf.parts.bottom) then
+		return;
+	end
+
+	local row = tbl_conf.parts.row;
+	local row_hl = tbl_conf.hls.row;
+
 	local row_start = content.__r_start or content.row_start;
 	local col_start = content.col_start;
 
@@ -944,7 +995,7 @@ local table_content = function (buffer, content, config_table, r_num)
 			vim.api.nvim_buf_set_extmark(buffer, renderer.namespace, row_start + r_num - 1, col_start, {
 				virt_text_pos = "inline",
 				virt_text = {
-					{ tbl_conf.text[15], set_hl(tbl_conf.hl[15]) }
+					{ row[1], set_hl(row_hl[1]) }
 				},
 
 				end_col = col_start + 1,
@@ -956,7 +1007,7 @@ local table_content = function (buffer, content, config_table, r_num)
 			vim.api.nvim_buf_set_extmark(buffer, renderer.namespace, row_start + r_num - 1, col_start + curr_col, {
 				virt_text_pos = "inline",
 				virt_text = {
-					{ tbl_conf.text[17], set_hl(tbl_conf.hl[17]) }
+					{ row[3], set_hl(row_hl[3]) }
 				},
 
 				end_col = col_start + curr_col + 1,
@@ -968,7 +1019,7 @@ local table_content = function (buffer, content, config_table, r_num)
 			vim.api.nvim_buf_set_extmark(buffer, renderer.namespace, row_start + r_num - 1, col_start + curr_col, {
 				virt_text_pos = "inline",
 				virt_text = {
-					{ tbl_conf.text[16], set_hl(tbl_conf.hl[16]) }
+					{ row[2], set_hl(row_hl[2]) }
 				},
 
 				end_col = col_start + curr_col + 1,
@@ -1212,12 +1263,12 @@ renderer.render_headings_s = function (buffer, content, config)
 					hl_mode = "combine",
 				});
 			else
-				local line = content.marker:match("=") and (conf.line or "=") or (conf.line or "-");
+				local line = content.marker:match("=") and (conf.border or conf.line or "=") or (conf.border or conf.line or "-");
 
 				vim.api.nvim_buf_set_extmark(buffer, renderer.namespace, content.row_start + i, content.col_start, {
 					virt_text_pos = "overlay",
 					virt_text = {
-						{ string.rep(line, vim.o.columns), set_hl(conf.line_hl or conf.hl) }
+						{ string.rep(line, vim.o.columns), set_hl(conf.border_hl or conf.line_hl or conf.hl) }
 					},
 
 					line_hl_group = set_hl(conf.hl),
@@ -1416,7 +1467,7 @@ renderer.render_code_blocks = function (buffer, content, config_table)
 			local length = content.line_lengths[line] - content.col_start;
 			local position = #text;
 
-			vim.api.nvim_buf_set_extmark(buffer, renderer.namespace, content.row_start + line, content.col_start, {
+			vim.api.nvim_buf_set_extmark(buffer, renderer.namespace, content.row_start + line, math.min(content.col_start, position), {
 				undo_restore = false, invalidate = true,
 
 				hl_group = set_hl(config_table.hl),
@@ -1425,22 +1476,23 @@ renderer.render_code_blocks = function (buffer, content, config_table)
 				end_col = #text,
 			});
 
+			vim.api.nvim_buf_set_extmark(buffer, renderer.namespace, content.row_start + line, position, {
+				undo_restore = false, invalidate = true,
+
+				virt_text_pos = "inline",
+				virt_text = {
+					{ string.rep(config_table.pad_char or " ", block_length - math.max(0, length)), set_hl(config_table.hl) },
+					{ string.rep(config_table.pad_char or " ", config_table.pad_amount or 1), set_hl(config_table.hl) }
+				}
+			})
+
 			-- NOTE: If the line is smaller than the start position of the code block then subtract it
 			vim.api.nvim_buf_set_extmark(buffer, renderer.namespace, content.row_start + line, length < 0 and content.col_start + length or content.col_start, {
 				undo_restore = false, invalidate = true,
 
 				virt_text_pos = "inline",
 				virt_text = {
-					{ string.rep(config_table.pad_char or " ", config_table.pad_amount or 1), set_hl(config_table.hl) }
-				}
-			})
-
-			vim.api.nvim_buf_set_extmark(buffer, renderer.namespace, content.row_start + line, position, {
-				undo_restore = false, invalidate = true,
-
-				virt_text_pos = "inline",
-				virt_text = {
-					{ string.rep(config_table.pad_char or " ", block_length - length), set_hl(config_table.hl) },
+					{ string.rep(config_table.pad_char or " ", text == "" and content.col_start or 0) },
 					{ string.rep(config_table.pad_char or " ", config_table.pad_amount or 1), set_hl(config_table.hl) }
 				}
 			})
@@ -1883,8 +1935,11 @@ renderer.render_lists = function (buffer, content, config_table)
 		ls_conf = config_table.marker_plus or {};
 	elseif string.match(content.marker_symbol, "*") then
 		ls_conf = config_table.marker_star or {};
-	elseif string.match(content.marker_symbol, "[.%)]") then
+	elseif string.match(content.marker_symbol, "[%.]") then
 		ls_conf = config_table.marker_dot or {};
+	elseif string.match(content.marker_symbol, "[%)]") then
+		ls_conf = config_table.marker_dot or {};
+		-- ls_conf = config_table.marker_parenthasis or {};
 	end
 
 	-- Do not render list types with no configuration
@@ -1906,10 +1961,8 @@ renderer.render_lists = function (buffer, content, config_table)
 				local offset = 0;
 
 				if content.marker_symbol:match("^%d+") then
-					conceal_end = vim.fn.strchars(content.list_lines[1]:match("^%s*"));
+					conceal_end = (content.starts[l] or 0) + vim.fn.strchars(content.list_lines[1]:match("^%s*"));
 					use_text = "";
-
-					offset = 2;
 				end
 
 				if content.is_checkbox == true then
@@ -1947,12 +2000,22 @@ renderer.render_lists = function (buffer, content, config_table)
 			end
 		end
 	else
-		vim.api.nvim_buf_set_extmark(buffer, renderer.namespace, content.row_start, content.col_start, {
-			virt_text_pos = "overlay",
-			virt_text = {
-				{ vim.trim(use_text), set_hl(ls_conf.hl) or "Special" }
-			}
-		})
+		local start = content.starts[1] or 0;
+		local before = content.spaces[1] or 0;
+
+		if content.is_checkbox == true then
+			vim.api.nvim_buf_set_extmark(buffer, renderer.namespace, content.row_start, start + before, {
+				end_col = start + before + vim.fn.strdisplaywidth(content.marker_symbol),
+				conceal = ""
+			});
+		else
+			vim.api.nvim_buf_set_extmark(buffer, renderer.namespace, content.row_start, start + before, {
+				virt_text_pos = "overlay",
+				virt_text = {
+					{ vim.trim(use_text), set_hl(ls_conf.hl) or "Special" }
+				}
+			});
+		end
 	end
 end
 
@@ -2027,8 +2090,8 @@ renderer.render_tables = function (buffer, content, user_config)
 		return;
 	end
 
-	user_config.tables.text = tbl_map(user_config.tables.text);
-	user_config.tables.hl = tbl_map(user_config.tables.hl);
+	user_config.tables.parts = tbl_map(user_config.tables.parts or user_config.tables.text);
+	user_config.tables.hls = tbl_map(user_config.tables.hls or user_config.tables.hl);
 
 	for row_number, _ in ipairs(content.rows) do
 		if content.row_type[row_number] == "header" then
