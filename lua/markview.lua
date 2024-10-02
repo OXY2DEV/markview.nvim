@@ -761,7 +761,7 @@ markview.configuration = {
 			add_padding = true
 		},
 
-		marker_parenthasis = {
+		marker_parenthesis = {
 			add_padding = true
 		},
 		---_

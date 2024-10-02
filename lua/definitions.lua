@@ -411,7 +411,7 @@
 ---@field marker_star markview.list_items.item
 ---
 ---@field marker_dot { add_padding: boolean }
----@field marker_parenthasis { add_padding: boolean }
+---@field marker_parenthesis { add_padding: boolean }
 
 ---@class markview.list_items.item
 ---
