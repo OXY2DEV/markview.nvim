@@ -1391,23 +1391,27 @@ renderer.render_code_blocks = function (buffer, content, config_table)
 				rendered_info = rendered_info .. "...";
 			end
 
-			vim.api.nvim_buf_set_extmark(buffer, renderer.namespace, content.row_start, content.col_start + 3 + vim.fn.strlen(content.language), {
+			vim.api.nvim_buf_set_extmark(buffer, renderer.namespace, content.row_start, content.col_start, {
+				undo_restore = false, invalidate = true,
+
+				end_col = content.col_start + vim.fn.strchars(content.info_string),
+				conceal = ""
+			});
+
+			vim.api.nvim_buf_set_extmark(buffer, renderer.namespace, content.row_start, content.col_start + vim.fn.strlen(content.language), {
 				undo_restore = false, invalidate = true,
 
 				virt_text_pos = "inline",
 				virt_text = {
 					{ icon, set_hl(hl or config_table.hl) },
 					{ languageName .. " ", set_hl(config_table.language_hl or hl or config_table.hl) },
-					{ string.rep(config_table.pad_char or " ", block_length - lang_width - vim.fn.strchars(rendered_info) + ((config_table.pad_amount or 1) * 2)), set_hl(config_table.hl) },
+					{ string.rep(config_table.pad_char or " ", block_length - lang_width - 1 - vim.fn.strchars(rendered_info) + ((config_table.pad_amount or 1) * 2)), set_hl(config_table.hl) },
 					{ rendered_info, set_hl(config_table.info_hl or config_table.hl) },
+					{ config_table.pad_char or " ", set_hl(config_table.hl) },
 				},
 
 				sign_text = config_table.sign == true and sign or nil,
 				sign_hl_group = set_hl(config_table.sign_hl or sign_hl or hl),
-
-				hl_mode = "combine",
-				end_col = content.col_start + vim.fn.strchars(content.info_string),
-				conceal = "",
 			});
 		elseif config_table.language_direction == "right" then
 			local rendered_info = vim.fn.strcharpart(content.block_info or "", 0, block_length - lang_width + ((config_table.pad_amount or 1) * 2) - 4);
@@ -1416,7 +1420,7 @@ renderer.render_code_blocks = function (buffer, content, config_table)
 				rendered_info = rendered_info .. "...";
 			end
 
-			vim.api.nvim_buf_set_extmark(buffer, renderer.namespace, content.row_start, content.col_start + 3 + vim.fn.strlen(content.language), {
+			vim.api.nvim_buf_set_extmark(buffer, renderer.namespace, content.row_start, content.col_start, {
 				undo_restore = false, invalidate = true,
 
 				end_col = content.col_start + vim.fn.strchars(content.info_string),
@@ -1435,9 +1439,7 @@ renderer.render_code_blocks = function (buffer, content, config_table)
 				},
 
 				sign_text = config_table.sign == true and sign or nil,
-				sign_hl_group = set_hl(config_table.sign_hl or sign_hl or hl),
-
-				hl_mode = "combine"
+				sign_hl_group = set_hl(config_table.sign_hl or sign_hl or hl)
 			});
 		end
 
