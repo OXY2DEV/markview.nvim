@@ -299,7 +299,7 @@ parser.md = function (buffer, TStree, from, to)
 		end
 	end
 
-	local scanned_queies = vim.treesitter.query.parse("markdown", [[
+	local scanned_queries = vim.treesitter.query.parse("markdown", [[
 		((setext_heading) @setext_heading)
 
 		(atx_heading [
@@ -326,8 +326,8 @@ parser.md = function (buffer, TStree, from, to)
 	]]);
 
 	-- The last 2 _ represent the metadata & query
-	for capture_id, capture_node, _, _ in scanned_queies:iter_captures(TStree:root(), buffer, from, to) do
-		local capture_name = scanned_queies.captures[capture_id];
+	for capture_id, capture_node, _, _ in scanned_queries:iter_captures(TStree:root(), buffer, from, to) do
+		local capture_name = scanned_queries.captures[capture_id];
 		local capture_text = vim.treesitter.get_node_text(capture_node, buffer);
 		local row_start, col_start, row_end, col_end = capture_node:range();
 
@@ -383,9 +383,12 @@ parser.md = function (buffer, TStree, from, to)
 
 			local language_string, additional_info = "", nil;
 
-			if block_start:match("%s*```{{?([^}]*)}}?") then
-				language_string = block_start:match("%s*```{{?([^}]*)}}?");
-				additional_info = block_start:match("%s*```{{?[^}]*}}?%s*(.*)$");
+			if block_start:match("%s*```%{%{([^%}]*)%}%}") then
+				language_string = block_start:match("%s*```%{%{([^%}]*)%}%}");
+				additional_info = block_start:match("%s*```%{%{[^%}]*%}%}%s*(.*)$");
+			elseif block_start:match("%s*```%{([^%}]*)%}") then
+				language_string = block_start:match("%s*```%{([^%}]*)%}");
+				additional_info = block_start:match("%s*```%{[^%}]*%}%s*(.*)$");
 			elseif block_start:match("%s*```(%S*)$") then
 				language_string = block_start:match("%s*```(%S*)$");
 			elseif block_start:match("%s*```(%S*)%s*") then
@@ -742,7 +745,7 @@ parser.md_inline = function (buffer, TStree, from, to)
 		end
 	end
 
-	local scanned_queies = vim.treesitter.query.parse("markdown_inline", [[
+	local scanned_queries = vim.treesitter.query.parse("markdown_inline", [[
 		((shortcut_link) @callout)
 
 		([
@@ -761,8 +764,8 @@ parser.md_inline = function (buffer, TStree, from, to)
 	]]);
 
 	-- The last 2 _ represent the metadata & query
-	for capture_id, capture_node, _, _ in scanned_queies:iter_captures(TStree:root(), buffer, from, to) do
-		local capture_name = scanned_queies.captures[capture_id];
+	for capture_id, capture_node, _, _ in scanned_queries:iter_captures(TStree:root(), buffer, from, to) do
+		local capture_name = scanned_queries.captures[capture_id];
 		local capture_text = vim.treesitter.get_node_text(capture_node, buffer);
 		local row_start, col_start, row_end, col_end = capture_node:range();
 
@@ -987,12 +990,12 @@ parser.html = function (buffer, TStree, from, to)
 		end
 	end
 
-	local scanned_queies = vim.treesitter.query.parse("html", [[
+	local scanned_queries = vim.treesitter.query.parse("html", [[
 		((element) @elem)
 	]]);
 
-	for capture_id, capture_node, _, _ in scanned_queies:iter_captures(TStree:root(), buffer, from, to) do
-		local capture_name = scanned_queies.captures[capture_id];
+	for capture_id, capture_node, _, _ in scanned_queries:iter_captures(TStree:root(), buffer, from, to) do
+		local capture_name = scanned_queries.captures[capture_id];
 		local capture_text = vim.treesitter.get_node_text(capture_node, buffer);
 		local row_start, col_start, row_end, col_end = capture_node:range();
 
@@ -1057,7 +1060,7 @@ parser.latex = function (buffer, TStree, from, to)
 		end
 	end
 
-	local scanned_queies = vim.treesitter.query.parse("latex", [[
+	local scanned_queries = vim.treesitter.query.parse("latex", [[
 		((curly_group) @bracket)
 
 		;; Various fonts
@@ -1097,8 +1100,8 @@ parser.latex = function (buffer, TStree, from, to)
 		((displayed_equation) @block)
 	]]);
 
-	for capture_id, capture_node, _, _ in scanned_queies:iter_captures(TStree:root(), buffer, from, to) do
-		local capture_name = scanned_queies.captures[capture_id];
+	for capture_id, capture_node, _, _ in scanned_queries:iter_captures(TStree:root(), buffer, from, to) do
+		local capture_name = scanned_queries.captures[capture_id];
 		local capture_text = vim.treesitter.get_node_text(capture_node, buffer);
 		local row_start, col_start, row_end, col_end = capture_node:range();
 

@@ -52,7 +52,7 @@ languages.hls = {
 	["md"]    = { "MarkviewIcon6", "MarkviewIcon6Sign" },
 	["styl"]  = { "MarkviewIcon4", "MarkviewIcon4Sign" },
 	["toml"]  = { "MarkviewIcon1", "MarkviewIcon1Sign" },
-	["vim"]   = { "MarkviewIconr", "MarkviewIcon4Sign" },
+	["vim"]   = { "MarkviewIcon4", "MarkviewIcon4Sign" },
 	["wxs"]   = { "MarkviewIcon3", "MarkviewIcon3Sign" },
 	["yaml"]  = { "MarkviewIcon6", "MarkviewIcon6Sign" },
 	["zsh"]   = { "MarkviewIcon4", "MarkviewIcon4Sign" },
@@ -392,6 +392,7 @@ languages.patterns = {
     ["xs"] = "XS",
     ["z"] = "Z",
 	["css"] = "CSS",
+	["html"] = "HTML"
 };
 
 --- Gets the language name from a string
