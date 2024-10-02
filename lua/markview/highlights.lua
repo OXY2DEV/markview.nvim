@@ -489,16 +489,25 @@ highlights.dynamic = {
 					group_name = "Icon1Sign",
 					value = { default = true, bg = nr, fg = util.hex(c1) }
 				},
+				{
+					group_name = "Icon1Fg",
+					value = { default = true, fg = util.hex(c1) }
+				},
 				{ group_name = "Icon2", value = { default = true, bg = bg, fg = util.hex(c2) } },
 				{ group_name = "Icon2Sign", value = { default = true, bg = nr, fg = util.hex(c2) } },
+				{ group_name = "Icon2Fg", value = { default = true, fg = util.hex(c2) } },
 				{ group_name = "Icon3", value = { default = true, bg = bg, fg = util.hex(c3) } },
 				{ group_name = "Icon3Sign", value = { default = true, bg = nr, fg = util.hex(c3) } },
+				{ group_name = "Icon3Fg", value = { default = true, fg = util.hex(c3) } },
 				{ group_name = "Icon4", value = { default = true, bg = bg, fg = util.hex(c4) } },
 				{ group_name = "Icon4Sign", value = { default = true, bg = nr, fg = util.hex(c4) } },
+				{ group_name = "Icon4Fg", value = { default = true, fg = util.hex(c4) } },
 				{ group_name = "Icon5", value = { default = true, bg = bg, fg = util.hex(c5) } },
 				{ group_name = "Icon5Sign", value = { default = true, bg = nr, fg = util.hex(c5) } },
+				{ group_name = "Icon5Fg", value = { default = true, fg = util.hex(c5) } },
 				{ group_name = "Icon6", value = { default = true, bg = bg, fg = util.hex(c6) } },
 				{ group_name = "Icon6Sign", value = { default = true, bg = nr, fg = util.hex(c6) } },
+				{ group_name = "Icon6Fg", value = { default = true, fg = util.hex(c6) } },
 			}
 		end
 	},
