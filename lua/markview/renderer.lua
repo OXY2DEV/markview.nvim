@@ -1940,8 +1940,7 @@ renderer.render_lists = function (buffer, content, config_table)
 	elseif string.match(content.marker_symbol, "[%.]") then
 		ls_conf = config_table.marker_dot or {};
 	elseif string.match(content.marker_symbol, "[%)]") then
-		ls_conf = config_table.marker_dot or {};
-		-- ls_conf = config_table.marker_parenthasis or {};
+		ls_conf = config_table.marker_parenthesis or {};
 	end
 
 	-- Do not render list types with no configuration
