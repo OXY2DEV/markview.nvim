@@ -5,8 +5,9 @@ https://github.com/user-attachments/assets/ae3d2912-65d4-4dd7-a8bb-614c4406c4e3
 
 A highly-customisable & feature rich markdown previewer inside Neovim.
 
-[Recipes]()
-[Wiki]()
+<p align="center">
+    <a href="https://github.com/OXY2DEV/markview.nvim/wiki">📖 Wiki page</a>
+</p>
 
 <p align="center">
     <img alt="Headings" src="https://github.com/OXY2DEV/markview.nvim/blob/images/Dev/Headings.jpg" width="75%">
@@ -300,11 +301,11 @@ Highlight groups defined by the plugin are given below.
 
 ## 📚 Wiki
 
-Don't forget to check out the [wiki]()!
+Don't forget to check out the [wiki](https://github.com/OXY2DEV/markview.nvim/wiki)!
 
-### 🌟 Hybrid mode usage
+### 🌟 Usage example: Hybrid mode
 
-Hybrid mode can now be used by just modifying the option itself.
+Hybrid mode can be used by just modifying the `hybrid_modes` option.
 
 ```lua
 require("markview").setup({
