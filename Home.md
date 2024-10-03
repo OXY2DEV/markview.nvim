@@ -9,20 +9,20 @@ https://github.com/user-attachments/assets/ae3d2912-65d4-4dd7-a8bb-614c4406c4e3
 
 ## 📖 Table of contents
 
-- [Migration guides]()
-- [Plugin options]()
+- [Migration guides](https://github.com/OXY2DEV/markview.nvim/wiki/Migration-guide)
+- [Plugin options](https://github.com/OXY2DEV/markview.nvim/wiki/Plugin-options)
 
-- [Block quotes]()
-- [Checkboxes]()
-- [Code blocks]()
-- [Headings]()
-- [Horizontal rules]()
-- [HTML]()
-- [Inline codes]()
-- [LaTeX]()
-- [Links]()
-- [List items]()
-- [Tables]()
+- [Block quotes](https://github.com/OXY2DEV/markview.nvim/wiki/Block-quotes)
+- [Checkboxes](https://github.com/OXY2DEV/markview.nvim/wiki/Checkboxes)
+- [Code blocks](https://github.com/OXY2DEV/markview.nvim/wiki/Code-blocks)
+- [Headings](https://github.com/OXY2DEV/markview.nvim/wiki/Headings)
+- [Horizontal rules](https://github.com/OXY2DEV/markview.nvim/wiki/Horizontal-rules)
+- [HTML](https://github.com/OXY2DEV/markview.nvim/wiki/HTML)
+- [Inline codes](https://github.com/OXY2DEV/markview.nvim/wiki/Inline-codes)
+- [LaTeX](https://github.com/OXY2DEV/markview.nvim/wiki/LaTeX)
+- [Links](https://github.com/OXY2DEV/markview.nvim/wiki/Links)
+- [List items](https://github.com/OXY2DEV/markview.nvim/wiki/List-items)
+- [Tables](https://github.com/OXY2DEV/markview.nvim/wiki/Tables)
 
 ## ✨ Configuration options
 
