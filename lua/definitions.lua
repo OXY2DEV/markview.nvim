@@ -270,7 +270,7 @@
 ---@class markview.conf.injections
 ---
 ---@field enable boolean
----@field languages? table<string, { enable: boolean?, query: string }>
+---@field languages? table<string, { enable: boolean?, overwrite: boolean?, query: string }>
 
 --- Inline codes
 ---------------------------------------------------------------
