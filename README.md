@@ -6,7 +6,9 @@ https://github.com/user-attachments/assets/ae3d2912-65d4-4dd7-a8bb-614c4406c4e3
 A highly-customisable & feature rich markdown previewer inside Neovim.
 
 <p align="center">
-    <a href="https://github.com/OXY2DEV/markview.nvim/wiki">📖 Wiki page</a>
+    <a href="https://github.com/OXY2DEV/markview.nvim/wiki">📖 Wiki page</a> | 
+    <a href="#-usage-examples">🎮 Usage examples</a> | 
+    <a href="https://github.com/OXY2DEV/markview.nvim/wiki/Extras">🔋 Extras</a>
 </p>
 
 <p align="center">
@@ -299,17 +301,123 @@ Highlight groups defined by the plugin are given below.
   - `MarkviewTableAlignLeft`
   - `MarkviewTableAlignRight`
 
-## 📚 Wiki
+## 🎮 Usage examples
 
 Don't forget to check out the [wiki](https://github.com/OXY2DEV/markview.nvim/wiki)!
 
-### 🌟 Usage example: Hybrid mode
+### 🌟 Hybrid mode
 
 Hybrid mode can be used by just modifying the `hybrid_modes` option.
 
 ```lua
 require("markview").setup({
     hybrid_modes = { "n" }
+});
+```
+
+>[!Tip]
+> You can toggle `hybrid mode` via `:Markview hybridToggle`!
+
+### 🌟 Split view
+
+You can show previews in a split!
+
+```vim
+:Markview splitToggle
+```
+
+### 🌟 Foldable headings
+
+You can use `tree-sitter` injections for folding text!
+
+You first need to modify the fold method and the expression used for folding text.
+
+```lua
+vim.o.foldmethod = "expr";
+vim.o.foldexpr= "nvim_treesitter#foldexpr()";
+```
+
+>[!Note]
+> You might want to set this using the `on_enable` callback of the plugin, if you don't want this in other filetypes.
+
+Now, we create a query to fold the headings.
+
+```lua
+require("markview").setup({
+    injections = {
+        languages = {
+            markdown = {
+                --- This disables other
+                --- injected queries!
+                overwrite = true,
+                query = [[
+                    (section
+                        (atx_headng) @injections.mkv.fold
+                        (#set! @fold))
+                ]]
+            }
+        }
+    }
+});
+```
+
+Here's a bit of explanation on what the text does.
+
+```query
+; Matches any section of text that starts with
+; a heading.
+(section
+    (atx_headng) @injections.mkv.fold
+    ; This folds the section!
+    (#set! fold))
+```
+
+Optionally, you can use a foldtext plugin tp change what is shown! For example, I can use [foldtext.nvim](https://www.github.com/OXY2DEV/foldtext.nvim) for this.
+
+```lua
+local def = require("foldtext").configuration;
+local handler = function (_, buf)
+    local ln = table.concat(vim.fn.getbufline(buf, vim.v.foldstart));
+    local markers = ln:match("^%s*([#]+)");
+    local heading_txt = ln:match("^%s*[#]+(.+)$");
+
+    local icons = {
+        "󰎤", "󰎩", "󰎪", "󰎮", "󰎱", "󰎵"
+    }
+
+    return {
+        icons[vim.fn.strchars(markers or "")] .. heading_txt,
+        "MarkviewHeading" .. vim.fn.strchars(markers or "");
+    }
+end
+local spaces = function (_, buf)
+    local ln = table.concat(vim.fn.getbufline(buf, vim.v.foldstart));
+    local markers = ln:match("^%s*([#]+)");
+    local heading_txt = ln:match("^%s*[#]+(.+)$");
+
+    return {
+        string.rep(" ", vim.o.columns - vim.fn.strchars(heading_txt) - 1),
+        "MarkviewHeading" .. vim.fn.strchars(markers or "");
+    }
+end
+
+require("foldtext").setup({
+    custom = vim.list_extend(def, {
+        {
+            ft = { "markdown" },
+            config = {
+                { type = "indent" },
+                {
+                    type = "custom",
+                    handler = handler
+                },
+                {
+                    type = "custom",
+                    handler = spaces
+                }
+            }
+        }
+    });
 });
 ```
 
