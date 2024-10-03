@@ -1,58 +1,51 @@
-# 📒 Tables
+# Tables
+
+![Tables](https://github.com/OXY2DEV/markview.nvim/blob/images/Wiki/tables.jpg)
 
 ```lua
 tables = {
     enable = true,
-    use_virt_lines = false,
 
-    text = {},
-    hl = {}
+    --- Parts for the table border.
+    ---@type { [string]: string[] }
+    text = {
+        top       = { "╭", "─", "╮", "┬" },
+        header    = { "│", "│", "│" },
+        separator = { "├", "┼", "┤", "─" },
+        row       = { "│", "│", "│" },
+        bottom    = { "╰", "─", "╯", "┴" },
+
+        align_left = "╼",
+        align_right = "╾",
+        align_center = { "╴", "╶",}
+    },
+
+    --- Highlight groups for the "parts".
+    ---@type { [string]: string[] }
+    hls = {
+        top       = { "TableHeader", "TableHeader", "TableHeader", "TableHeader" },
+        header    = { "TableHeader", "TableHeader", "TableHeader" },
+        separator = { "TableHeader", "TableHeader", "TableHeader", "TableHeader" },
+        row       = { "TableBorder", "TableBorder", "TableBorder" },
+        bottom    = { "TableBorder", "TableBorder", "TableBorder", "TableBorder" },
+
+        align_left = "TableAlignLeft",
+        align_right = "TableAlignRight",
+        align_center = { "TableAlignCenter", "TableAlignCenter",}
+    },
+
+    --- Minimum width of a table cell
+    ---@type integer?
+    col_min_width = 5,
+
+    --- When true, top & bottom borders aren't drawn
+    ---@type boolean
+    block_decorator = true,
+
+    --- When true, top & bottom borders are made with
+    --- virtual lines instead of virtual text.
+    ---@type boolean
+    use_virt_lines = true
 }
 ```
-
-## 🔩 Configuration options
-
-- enable, `boolean` or nil
-
-  Used for toggling rendering of tables.
-
-- use_virt_lines, `boolean` or nil
-
-  When `true` the top and bottom border of the table are made using virtual lines.
-
-  Useful if you don't like adding spaces between tables. Disabled by default.
-
-- text, `table`
-
-  A list of **parts** to create the table.
-
-- hl, `table` or nil
-
-  A list of highlight groups to color `text`.
-
-## 📐 Table parts
-
-Both `text` & `hl` have the following structure.
-
-```lua
-{
---    Main parts    Seperators
-    "╭", "─", "╮",      "┬",
-    "├", "│", "┤",      "┼",
-    "╰", "─", "╯",      "┴",
-
---    Alignment indicators
---   Left   right     center
-    "╼",     "╾",    "╴", "╶"
-}
-```
-
-Here's an example table,
-
-| Col 1    |   Col 2   |    Col 3 |
-|:---------|:---------:|---------:|
-| 1        |     2     |        3 |
-| 4        |     4     |        6 |
-
-
 

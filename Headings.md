@@ -1,255 +1,148 @@
-# 🔖 Headings
+# Headings
+
+![Headings](https://github.com/OXY2DEV/markview.nvim/blob/images/Wiki/headings.jpg)
 
 ```lua
 headings = {
     enable = true,
 
-    textoff = 0,
+    --- Amount of character to shift per heading level
+    ---@type integer
     shift_width = 1,
 
     heading_1 = {
         style = "simple",
 
-        shift_char = " ",
-        hl = "DiagnosticOk"
+        --- Background highlight group.
+        ---@type string
+        hl = "MarkviewHeading1"
     },
-    heading_2 = {},
-    heading_3 = {},
+    heading_2 = {
+        style = "icon",
+
+        --- Primary highlight group. Used by other
+        --- options that end with "_hl" when their
+        --- values are nil.
+        ---@type string
+        hl = "MarkviewHeading2",
+
+        --- Character used to shift/indent the heading
+        ---@type string
+        shift_char = " ",
+
+        --- Highlight group for the "shift_char"
+        ---@type string?
+        shift_hl = "MarkviewHeading2Sign",
+
+        --- Text to show on the signcolumn
+        ---@type string?
+        sign = "󰌕 ",
+
+        --- Highlight group for the sign
+        ---@type string?
+        sign_hl = "MarkviewHeading2Sign",
+
+        --- Icon to show before the heading text
+        ---@type string?
+        icon = "󰼏  ",
+
+        --- Highlight group for the Icon
+        ---@type string?
+        icon_hl = "MarkviewHeading2"
+    },
+    heading_3 = {
+        style = "label",
+
+        --- Alignment of the heading.
+        ---@type "left" | "center" | "right"
+        align = "center",
+
+        --- Primary highlight group. Used by other
+        --- options that end with "_hl" when their
+        --- values are nil.
+        ---@type string
+        hl = "MarkviewHeading3",
+
+        --- Left corner, Added before the left padding
+        ---@type string?
+        corner_left = "",
+
+        --- Left padding, Added before the icon
+        ---@type string?
+        padding_left = " ",
+
+        --- Right padding, Added after the heading text
+        ---@type string?
+        padding_right = " ",
+
+        --- Right corner, Added after the right padding
+        ---@type string?
+        corner_right = "",
+
+        ---@type string?
+        corner_left_hl = "MarkviewHeading3Sign",
+        ---@type string?
+        padding_left_hl = nil,
+
+        ---@type string?
+        padding_right_hl = nil,
+        ---@type string?
+        corner_right_hl = "MarkviewHeading3Sign",
+
+        --- Text to show on the signcolumn.
+        ---@type string?
+        sign = "󰌕 ",
+
+        --- Highlight group for the sign.
+        ---@type string?
+        sign_hl = "MarkviewHeading3Sign",
+
+        --- Icon to show before the heading text.
+        ---@type string?
+        icon = "",
+
+        --- Highlight group for the Icon.
+        ---@type string?
+        icon_hl = "MarkviewHeading3"
+    },
     heading_4 = {},
     heading_5 = {},
     heading_6 = {},
 
-    setext_1 = {},
-    setext_2 = {}
+    setext_1 = {
+        style = "simple",
+
+        --- Background highlight group.
+        ---@type string
+        hl = "MarkviewHeading1"
+    },
+    setext_2 = {
+        style = "decorated",
+
+        --- Text to show on the signcolumn.
+        ---@type string?
+        sign = "󰌕 ",
+
+        --- Highlight group for the sign.
+        ---@type string?
+        sign_hl = "MarkviewHeading2Sign",
+
+        --- Icon to show before the heading text.
+        ---@type string?
+        icon = "  ",
+
+        --- Highlight group for the Icon.
+        ---@type string?
+        icon_hl = "MarkviewHeading2",
+
+        --- Bottom border for the heading.
+        ---@type string?
+        border = "▂",
+
+        --- Highlight group for the bottom border.
+        ---@type string?
+        border_hl = "MarkviewHeading2"
+    }
 }
 ```
-
-## 🔩 Configuration options
-
-- enable, `boolean` or nil
-
-  Used for toggling the rendering of headings.
-
-- textoff, `number` or nil
-
-  Default value of `textoff` when headings have alignment added.
-
-  Only affects `label` style headings who use the `align` option.
-
-- shift_width, `number` or nil
-
-  Number of `shift_char` to add per level.
-
-- heading_<1-6>
-
-  Configuration table for various atx heading levels.
-
-- setext_<1-2>
-
-  Configuration table for various setext heading levels.
-
-## ⭐ Heading configuration
-
-Used to style `atx headings`.
-
-- style, `string`
-
-  Name of the rendering style. Possible values are,
-
-  - simple
-  - label
-  - icon
-
-- hl, `string` or nil
-
-  Default highlight group for the heading.
-
-### 🎨 Simple
-
-```lua
-heading_1 = {
-    style = "simple",
-    hl = "DiagnosticOk"
-}
-```
-
-Adds a simple background to the heading.
-
-### 🎨 Label
-
-```lua
-heading_1 = {
-    style = "label",
-    align = "left",
-
-    shift_char = "",
-    shift_hl = nil,
-
-    sign = nil,
-    sign_hl = nil,
-
-    hl = "DiagnosticOk",
-
-    corner_left = nil,
-    corner_left_hl = nil,
-
-    padding_left = " ",
-    padding_left_hl = nil,
-
-    icon = "",
-    icon_hl = nil,
-
-    padding_right = " ",
-    padding_right_hl = nil,
-
-    corner_right = nil,
-    corner_right_hl = nil
-}
-```
-
-Makes headings look like labels. It adds the following options,
-
-- align, `string` or nil
-
-  Alignment of the label. Can either be `left`, `center` or `right`.
-
-- shift_char, `string` or nil
-
-  Text to use for shifting the heading.
-
-- shift_hl, `string` or nil
-
-  Highlight group for the `shift_char`.
-
-- sign, `string` or nil
-
-  Text to use as the sign for the heading.
-
-- sign_hl, `string` or nil
-
-  Highlight group for `sign`.
-
-- hl, `string` or nil
-
-  Default highlight group for the heading.
-
-- corner_left, `string` or nil
-
-  Text used as the left corner of the label.
-
-- corner_left_hl, `string` or nil
-
-  Highlight group for `corner_left`.
-
-- padding_left, `string` or nil
-
-  Text used as the left padding of the label.
-
-- padding_left_hl, `string` or nil
-
-  Highlight group for `padding_left`.
-
-- icon, `string` or nil
-
-  Text used as the icon for the heading.
-
-- icon_hl, `string` or nil
-
-  Highlight group for `icon`.
-
-- padding_right, `string` or nil
-
-  Text used as the right padding of the label.
-
-- padding_right_hl, `string` or nil
-
-  Highlight group for `padding_right`.
-
-- corner_right, `string` or nil
-
-  Text used as the right corner of the label.
-
-- corner_right_hl, `string` or nil
-
-  Highlight group for `corner_right`.
-
-### 🎨 Icon
-
-```lua
-heading_1 = {
-    style = "icon",
-    shift_char = "",
-    shift_hl = nil,
-
-    sign = nil,
-    sign_hl = nil,
-
-    hl = "DiagnosticOk"
-}
-```
-
-Adds icons to the headings. It has the following options,
-
-- shift_char, `string` or nil
-
-  Text to use for shifting the heading.
-
-- shift_hl, `string` or nil
-
-  Highlight group for the `shift_char`.
-
-- sign, `string` or nil
-
-  Text to use as the sign for the heading.
-
-- sign_hl, `string` or nil
-
-  Highlight group for `sign`.
-
-- hl, `string` or nil
-
-  Highlight group for the line containing the heading.
-
-## ⭐ Setext heading configuration
-
-Used to style `setext headings`.
-
-- style, `string`
-
-  Name of the rendering style. Possible values are,
-
-  - simple
-  - github
-
-- hl, `string` or nil
-
-  Default highlight group for the heading.
-
-### 🎨 Simple
-
-```lua
-setext_1 = {
-    style = "simple",
-    hl = "DiagnosticOk"
-}
-```
-
-Adds a simple background to the heading.
-
-### 🎨 Github
-
-```lua
-setext_1 = {
-    style = "github",
-
-    icon = "🔗",
-    hl = "DiagnosticOk"
-}
-```
-
-Adds an icon to the heading. It adds the following options,
-
-- icon, `string` or nil
-
-  Text to use as the icon.
 

@@ -1,126 +1,117 @@
-# 💻 Code blocks
+# Code blocks
+
+![Code blocks](https://github.com/OXY2DEV/markview.nvim/blob/images/Wiki/code_blocks.jpg)
 
 ```lua
 code_blocks = {
     enable = true,
-    style = "simple",
 
-    hl = "CursorLine"
+    --- Icon provider for the block icons & signs.
+    ---
+    --- Possible values are,
+    ---   • "devicons", Uses `nvim-web-devicons`.
+    ---   • "mini", Uses `mini.icons`.
+    ---   • "internal", Uses the internal icon provider.
+    ---   • "", Disables icons
+    ---
+    ---@type "devicons" | "mini" | "internal" | ""
+    icons = "internal",
+
+    --- Render style for the code block.
+    ---
+    --- Possible values are,
+    ---   • "simple", Simple line highlighting.
+    ---   • "minimal", Box surrounding the code block.
+    ---   • "language", Signs, icons & much more.
+    ---
+    ---@type "simple" | "minimal" | "language"
+    style = "language",
+
+    --- Primary highlight group.
+    --- Used by other options that end with "_hl" when
+    --- their values are nil.
+    ---@type string
+    hl = "MarkviewCode",
+
+    --- Highlight group for the info string
+    ---@type string
+    info_hl = "MarkviewCodeInfo",
+
+    --- Minimum width of a code block.
+    ---@type integer
+    min_width = 40,
+
+    --- Left & right padding amount
+    ---@type integer
+    pad_amount = 3,
+
+    --- Character to use as whitespace
+    ---@type string?
+    pad_char = " ",
+
+    --- Table containing various code block language names
+    --- and the text to show.
+    --- e.g. { cpp = "C++" }
+    ---@type { [string]: string }
+    language_names = nil,
+
+    --- Direction of the language preview
+    ---@type "left" | "right"
+    language_direction = "right",
+
+    --- Enables signs
+    ---@type boolean
+    sign = true,
+
+    --- Highlight group for the sign
+    ---@type string?
+    sign_hl = nil
 }
 ```
 
-## 🔩 Configuration options
-
-- enable, `boolean` or nil
-
-  Controls rendering of code blocks.
-
-- style, `string`
-
-  Name of the rendering style.
-
-- hl, `string` or nil
-
-  Highlight group for the code blocks.
-
-## 🚀 Styles
-
-Code blocks can be rendered in 3 styles,
-
-+ simple
-+ minimal
-+ language
-
-### 🎨 Simple
+## Style: simple
 
 ```lua
 code_blocks = {
     style = "simple",
-    hl = "CursorLine"
+    hl = "MarkviewCode"
 }
 ```
 
-Adds a simple background color to the code block.
-
-### 🎨 Minimal
+## Style: minimal
 
 ```lua
 code_blocks = {
     style = "minimal",
-    position = nil,
-    min_width = 70,
-    
-    pad_amount = 3,
-    pad_char = " ",
 
-    hl = "CursorLine"
+    min_width = 60,
+    pad_char = " ",
+    pad_amount = 3,
+
+    hl = "MarkviewCode"
 }
 ```
 
-Adds a border surrounding the code block. It adds the following options,
-
-- position, `string` or nil
-
-  `virt_text_pos` for the top and bottom borders.
-
-- min_width, `number` or nil
-
-  Minimum width of the code block. Default is 60.
-
-  Paddings are not counted.
-
-- pad_amount, `number` or nil
-
-  Number of times to repeat `pad_char` before & after the text. Default is 3.
-
-- pad_char, `string` or nil
-
-  Text to use as the padding.
-
-### 🎨 Language
+## Style: language
 
 ```lua
 code_blocks = {
-    style = "minimal",
-    icons = true,
-    position = nil,
-    min_width = 70,
-    
-    pad_amount = 3,
+    style = "language",
+
+    language_direction = "right",
+    min_width = 60,
     pad_char = " ",
+    pad_amount = 3,
 
-    language_direction = "left",
-    language_names = {},
+    language_names = {
+        ["txt"] = "Text"
+    },
 
-    hl = "CursorLine",
+    hl = "MarkviewCode",
+    info_hl = "MarkviewCodeInfo",
 
     sign = true,
     sign_hl = nil
 }
 ```
-
-Like `minimal` but also shows the language name. Other than supporting all the options of `minimal` it adds,
-
-- icons, `boolean` or nil
-
-  Allows disabling icons.
-
-- language_direction, `string` or nil
-
-  Changes the position of the language name. Default is **left**. Possible values are,
-
-  - left
-  - right
-
-- language_names, `table` or nil
-
-  A list of { pattern, name } tuples for changing the string that is shown.
-
-- sign, `boolean` or nil
-
-  Used for toggling the language icon sign.
-
-- sign_hl, `string` or nil
-
-  Highlight group for the sign. If nil the highlight group provided by `nvim-web-devicon` is used.
 

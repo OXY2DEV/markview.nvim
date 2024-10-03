@@ -1,68 +1,48 @@
-# ✅ Checkboxes
+# Checkboxes
+
+![Checkboxes](https://github.com/OXY2DEV/markview.nvim/blob/images/Wiki/checkboxes.jpg)
 
 ```lua
-Checkboxes = {
+checkboxes = {
     enable = true,
 
     checked = {
-        text = "✔", hl = "TabLineSel"
-    },
-    unchecked = {},
-    pending = {},
+        --- Text to show
+        ---@type string
+        text = "✔",
 
+        --- Highlight group for "text"
+        ---@type string?
+        hl = "MarkviewCheckboxChecked",
+
+        --- Highlight group to add to the body
+        --- of the list item.
+        ---@type string?
+        scope_hl = nil
+    },
+
+    unchecked = {
+        text = "✘", hl = "MarkviewCheckboxUnchecked",
+        scope_hl = nil
+    },
+
+    --- Custom checkboxes configuration
     custom = {
         {
-            match = "~",
-            text = "◕",
-            hl = "CheckboxProgress"
+            --- Text inside []
+            ---@type string
+            match_string = "-",
+
+            ---@type string
+            text = "◯",
+
+            ---@type string?
+            hl = "MarkviewCheckboxPending",
+
+            ---@type string?
+            scope_hl = nil
         }
     }
 }
 ```
-
-## 🔩 Configuration options
-
-- enable, `boolean` or nil
-
-  Used for toggling the rendering of Checkboxes.
-
-- checked, `table`
-
-  Configuration table for checked Checkboxes.
-
-- unchecked, `table`
-
-  Configuration table for unchecked Checkboxes.
-
-- pending, `table`
-
-  Configuration table for pending(uses `[-]`) Checkboxes.
-
-- custom, `table`
-
-  List of configuration for custom checkboxes.
-
-## 📦 Checkbox configuration
-
-- text, `string`
-
-  Text to show as the checkbox.
-
-- hl, `string` or nil
-
-  Highlight group for `text`.
-
-## 📦 Custom checkbox configuration
-
-- match, `string`
-
-  The text inside `[]`(must be a single character) to match.
-
-- text, `string`
-
-  Text to show as the checkbox.
-
-- hl, `string` or nil
-
-  Highlight group for `text`.
 

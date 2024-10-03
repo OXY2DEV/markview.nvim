@@ -1,88 +1,114 @@
-# 🔗 Links
+# Links
+
+![Links](https://github.com/OXY2DEV/markview.nvim/blob/images/Wiki/links.jpg)
 
 ```lua
 links = {
     enable = true,
 
-    hyperlinks = {},
-    images = {},
-    emails = {}
-}
-```
+    --- Configuration for normal links
+    hyperlinks = {
+        enable = true,
 
-## 🔩 Configuration options
+        --- When true, link texts that start with an emoji
+        --- won't have an icon in front of them.
+        ---@type boolean
+        __emoji_link_compatability = true,
 
-- enable, `boolean` or nil
+        --- Icon to show.
+        ---@type string?
+        icon = "󰌷 ",
 
-  Used for toggling the rendering of links.
+        --- Highlight group for the "icon".
+        ---@type string?
+        hl = "MarkviewHyperlink",
 
-- hyperlinks, `table`
+        --- Configuration for custom links.
+        custom = {
+            {
+                --- Pattern of the address.
+                ---@type string
+                match_string = "stackoverflow%.com",
 
-  Configuration table for normal links.
+                --- Icon to show.
+                ---@type string?
+                icon = " ",
 
-- images, `table`
+                --- Highlight group for the icon
+                ---@type string?
+                hl = nil
+            },
+            { match_string = "stackexchange%.com", icon = " " },
+        }
+    },
 
-  Configuration table for image links.
+    images = {
+        enable = true,
 
-- emails, `table`
+        --- When true, link texts that start with an emoji
+        --- won't have an icon in front of them.
+        ---@type boolean
+        __emoji_link_compatability = true,
 
-  Configuration table for email links.
+        --- Icon to show.
+        ---@type string?
+        icon = "󰥶 ",
 
-## 🧭 Link configuration
+        --- Highlight group for the "icon".
+        ---@type string?
+        hl = "MarkviewImageLink",
 
-- hl, `string` or nil
+        --- Configuration for custom image links.
+        custom = {
+            {
+                --- Pattern of the address.
+                ---@type string
+                match_string = "%.svg$",
 
-  Default highlight group for the links.
+                --- Icon to show.
+                ---@type string?
+                icon = "󰜡 ",
 
-- corner_left, `string` or nil
+                --- Highlight group for the icon
+                ---@type string?
+                hl = nil
+            },
+        }
+    },
 
-  Text used as the left corner of the links.
+    emails = {
+        enable = true,
 
-- corner_left_hl, `string` or nil
+        --- Icon to show.
+        ---@type string?
+        icon = " ",
 
-  Highlight group for `corner_left`.
+        --- Highlight group for the "icon".
+        ---@type string?
+        hl = "MarkviewEmail"
 
-- padding_left, `string` or nil
+        --- Configuration for custom emails
+        custom = {}
+    },
 
-  Text used as the left padding of the links.
+    internal_links = {
+        enable = true,
 
-- padding_left_hl, `string` or nil
+        --- When true, link texts that start with an emoji
+        --- won't have an icon in front of them.
+        __emoji_link_compatability = true,
 
-  Highlight group for `padding_left`.
+        --- Icon to show.
+        ---@type string?
+        icon = " ",
 
-- padding_right, `string` or nil
+        --- Highlight group for the "icon".
+        ---@type string?
+        hl = "MarkviewHyperlink",
 
-  Text used as the right padding of the links.
-
-- padding_right_hl, `string` or nil
-
-  Highlight group for `padding_right`.
-
-- corner_right, `string` or nil
-
-  Text used as the right corner of the links.
-
-- corner_right_hl, `string` or nil
-
-  Highlight group for `corner_right`.
-
-- custom, `table` or nil
-
-  **Only for hyperlinks**, A list of configuration tables allowing customization of how the link is shown based on a match pattern.
-
-## 🚀 Custom hyperlinks
-
-```lua
-custom = {
-    {
-        match = "^https://",
-        icon = "✔ "
+        --- Configuration for custom internal links
+        custom = {}
     }
 }
 ```
-
-Custom config for *hyperlinks* captured by `match`.
-
-Supports all the previously mentioned options.
-
 

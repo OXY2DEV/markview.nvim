@@ -1,63 +1,42 @@
-# 📑 Inline codes
+# Inline codes
+
+![Inline codes](https://github.com/OXY2DEV/markview.nvim/blob/images/Wiki/inline_codes.jpg)
 
 ```lua
 inline_codes = {
     enable = true,
-    hl = "DiagnosticOk",
 
+    --- Primary highlight group. Used by other
+    --- options that end with "_hl" when their
+    --- values are nil.
+    ---@type string
+    hl = "MarkviewHeading3",
+
+    --- Left corner, Added before the left padding.
+    ---@type string?
     corner_left = nil,
-    corner_left_hl = nil,
 
-    padding_left = " ",
+    --- Left padding, Added before the text.
+    ---@type string?
+    padding_left = nil,
+
+    --- Right padding, Added after the text.
+    ---@type string?
+    padding_right = nil,
+
+    --- Right corner, Added after the right padding.
+    ---@type string?
+    corner_right = nil,
+
+    ---@type string?
+    corner_left_hl = nil,
+    ---@type string?
     padding_left_hl = nil,
 
-    padding_right = " ",
+    ---@type string?
     padding_right_hl = nil,
-
-    corner_right = nil,
-    corner_right_hl = nil
+    ---@type string?
+    corner_right_hl = nil,
 }
 ```
-
-## 🔩 Configuration options
-
-- enable, `boolean` or nil
-
-  Used for toggling the rendering of inline codes.
-
-- hl, `string` or nil
-
-  Default highlight group for the inline codes.
-
-- corner_left, `string` or nil
-
-  Text used as the left corner of the inline codes.
-
-- corner_left_hl, `string` or nil
-
-  Highlight group for `corner_left`.
-
-- padding_left, `string` or nil
-
-  Text used as the left padding of the inline codes.
-
-- padding_left_hl, `string` or nil
-
-  Highlight group for `padding_left`.
-
-- padding_right, `string` or nil
-
-  Text used as the right padding of the inline codes.
-
-- padding_right_hl, `string` or nil
-
-  Highlight group for `padding_right`.
-
-- corner_right, `string` or nil
-
-  Text used as the right corner of the inline codes.
-
-- corner_right_hl, `string` or nil
-
-  Highlight group for `corner_right`.
 

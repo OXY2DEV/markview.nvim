@@ -1,4 +1,6 @@
-# 📏 Horizontal rules
+# Horizontal rules
+
+![Horizontal rules](https://github.com/OXY2DEV/markview.nvim/blob/images/Wiki/horizontal_rules.jpg)
 
 ```lua
 horizontal_rules = {
@@ -8,88 +10,44 @@ horizontal_rules = {
         {
             type = "repeating",
 
-            repeat_amount = 10,
-            text = "-",
-            hl = "Special"
+            --- Amount of time to repeat the text
+            --- Can be an integer or a function.
+            ---
+            --- If the value is a function the "buffer" ID
+            --- is provided as the parameter.
+            ---@type integer | fun(buffer: integer): nil
+            repeat_amount = function (buffer)
+                local textoff = vim.fn.getwininfo(vim.api.nvim_get_current_win())[1].textoff;
+
+                return math.floor((vim.o.columns - textoff - 3) / 2);
+            end,
+
+            --- Text to repeat.
+            ---@type string
+            text = "─",
+
+            --- Highlight group for this part.
+            --- Can be a string(for solid color) or a
+            --- list of string(for gradient)
+            ---@type string[] | string
+            hl = {
+                "MarkviewGradient1", "MarkviewGradient2", "MarkviewGradient3", "MarkviewGradient4", "MarkviewGradient5", "MarkviewGradient6", "MarkviewGradient7", "MarkviewGradient8", "MarkviewGradient9", "MarkviewGradient10"
+            },
+
+            --- Placement direction of the gradient.
+            ---@type "left" | "right"
+            direction = "left"
+        },
+        {
+            type = "text",
+            text = "  ",
+
+            ---@type string?
+            hl = "MarkviewGradient10"
         }
     }
 }
 ```
 
-## 🔩 Configuration options
 
-- enable, `boolean` or nil
-
-  Used for toggling rendering of horizontal rules.
-
-- parts, `table`
-
-  Lists of parts to create the horizontal rules.
-
-## 🧩 Parts
-
-There are 2 types of parts currently available.
-
-### 🍩 Repeating
-
-```lua
-{
-    type = "repeating",
-
-    repeat_amount = 10,
-    text = "-",
-    hl = "Special",
-    direction = "left"
-}
-```
-
-Repeats a text a specific number of times. It has the following options,
-
-- type, `string` or nil
-
-  Type of the part.
-
-- repeat_amount, `number` or `function` or nil
-
-  The number of times to repeat. If the value is a function then  the returned value is used.
-
-- text, `string`
-
-  The text to repeat.
-
-- hl, `string` or `table` or nil
-
-  The highlight group for the output text. If the value is a list then it is applied like a gradient.
-
-- direction, `string`
-
-  The direction from where `hl` is applied. Possible values are,
-
-  - left
-  - right
-
-### 🍩 Text
-
-```lua
-{
-    type = "text",
-
-    text = " • ",
-    hl = "Special"
-}
-```
-
-Shows some text in the horizontal rule. It has the following options,
-
-- type, `string` or nil
-
-  Type of the part.
-
-- text, `string`
-
-  The text to repeat.
-
-- hl, `string` or nil
-
-  The highlight group for the **text**.
 
