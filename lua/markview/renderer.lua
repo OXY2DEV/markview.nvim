@@ -1288,95 +1288,75 @@ renderer.render_code_blocks = function (buffer, content, config_table)
 		return;
 	end
 
+	local language = languages.get_ft(content.language);
+	local icon, hl, sign_hl = renderer.get_icon(language, config_table);
+	local sign = icon;
+
+	icon = icon or "";
+
+	if icon ~= "" and not icon:match("(%s)$") then
+		icon = icon .. " ";
+	end
+
+	icon = " " .. icon;
+
+	local languageName;
+
+	if config_table.language_names ~= nil then
+		for match, replace in pairs(config_table.language_names) do
+			if language == match then
+				languageName = replace;
+				goto nameFound;
+			end
+		end
+	end
+
+	languageName = languages.get_name(language)
+	::nameFound::
+
 	if config_table.style == "simple" then
-		vim.api.nvim_buf_set_extmark(buffer, renderer.namespace, content.row_start, content.col_start, {
+		if config_table.language_direction == nil or config_table.language_direction == "left" then
+			vim.api.nvim_buf_set_extmark(buffer, renderer.namespace, content.row_start, content.col_start, {
+				undo_restore = false, invalidate = true,
+
+				virt_text_pos = "inline",
+				virt_text = {
+					{ icon, set_hl(hl or config_table.hl) },
+					{ languageName .. " ", set_hl(config_table.language_hl or hl or config_table.hl) },
+				},
+
+				line_hl_group = set_hl(config_table.info_hl or config_table.hl),
+
+				sign_text = config_table.sign == true and sign or nil,
+				sign_hl_group = set_hl(config_table.sign_hl or sign_hl or hl),
+			});
+		elseif config_table.language_direction == "right" then
+			vim.api.nvim_buf_set_extmark(buffer, renderer.namespace, content.row_start, content.col_start + vim.fn.strchars(content.info_string), {
+				undo_restore = false, invalidate = true,
+
+				virt_text_pos = "right_align",
+				virt_text = {
+					{ " ", set_hl(config_table.hl) },
+					{ icon, set_hl(hl or config_table.hl) },
+					{ languageName .. " ", set_hl(config_table.language_hl or hl or config_table.hl) },
+					{ " ", set_hl(config_table.hl) },
+				},
+
+				line_hl_group = set_hl(config_table.info_hl or config_table.hl),
+
+				sign_text = config_table.sign == true and sign or nil,
+				sign_hl_group = set_hl(config_table.sign_hl or sign_hl or hl)
+			});
+		end
+
+		vim.api.nvim_buf_set_extmark(buffer, renderer.namespace, content.row_start + 1, content.col_start, {
 			line_hl_group = set_hl(config_table.hl),
 
 			-- NOTE: The node actually ends in the next line after the code block
 			end_row = content.row_end - 1, end_col = content.col_end
 		});
-	elseif config_table.style == "minimal" then
+	elseif config_table.style == "minimal" or config_table.style == "language" then
 		local block_length = content.largest_line;
-
-		if type(config_table.min_width) == "number" and config_table.min_width > block_length then
-			block_length = config_table.min_width
-		end
-
-		vim.api.nvim_buf_set_extmark(buffer, renderer.namespace, content.row_start, content.col_start + 3 + vim.fn.strlen(content.language), {
-			end_col = content.col_start + vim.fn.strchars(content.info_string),
-			conceal = ""
-		});
-
-		vim.api.nvim_buf_set_extmark(buffer, renderer.namespace, content.row_start, content.col_start + vim.fn.strchars(content.info_string), {
-			virt_text_pos = "inline",
-			virt_text = {
-				{ string.rep(config_table.pad_char or " ", block_length + ((config_table.pad_amount or 1) * 2)), set_hl(config_table.hl) },
-			},
-
-			hl_mode = "combine"
-		});
-
-		vim.api.nvim_buf_set_extmark(buffer, renderer.namespace, content.row_end - 1, content.col_start + 3, {
-			virt_text_pos = "inline",
-			virt_text = {
-				{ string.rep(config_table.pad_char or " ", block_length + ((config_table.pad_amount or 1) * 2)), set_hl(config_table.hl) },
-			},
-
-			hl_mode = "combine",
-		});
-
-		-- NOTE: The last line with ``` doesn't need this so we don't add it to that line
-		for line, text in ipairs(content.lines) do
-			-- NOTE: Nested code blocks have a different start position
-			local length = content.line_lengths[line] - content.col_start;
-			local position = #text;
-
-			vim.api.nvim_buf_add_highlight(buffer, renderer.namespace, set_hl(config_table.hl), content.row_start + line, content.col_start, -1)
-
-			-- NOTE: If the line is smaller than the start position of the code block then subtract it
-			vim.api.nvim_buf_set_extmark(buffer, renderer.namespace, content.row_start + line, length < 0 and content.col_start + length or content.col_start, {
-				virt_text_pos = "inline",
-				virt_text = {
-					{ string.rep(config_table.pad_char or " ", config_table.pad_amount or 1), set_hl(config_table.hl) }
-				}
-			})
-
-			vim.api.nvim_buf_set_extmark(buffer, renderer.namespace, content.row_start + line, position, {
-				virt_text_pos = "inline",
-				virt_text = {
-					{ string.rep(config_table.pad_char or " ", block_length - length), set_hl(config_table.hl) },
-					{ string.rep(config_table.pad_char or " ", config_table.pad_amount or 1), set_hl(config_table.hl) }
-				}
-			})
-		end
-	elseif config_table.style == "language" then
-		local language = languages.get_ft(content.language);
-		local icon, hl, sign_hl = renderer.get_icon(language, config_table);
-		local sign = icon;
-
-		icon = icon or "";
-
-		if icon ~= "" and not icon:match("(%s)$") then
-			icon = icon .. " ";
-		end
-
-		icon = " " .. icon;
-
-		local block_length = content.largest_line;
-
-		local languageName;
-
-		if config_table.language_names ~= nil then
-			for match, replace in pairs(config_table.language_names) do
-				if language == match then
-					languageName = replace;
-					goto nameFound;
-				end
-			end
-		end
-
-		languageName = languages.get_name(language)
-		::nameFound::
 
 		if type(config_table.min_width) == "number" and config_table.min_width > block_length then
 			block_length = config_table.min_width

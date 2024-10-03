@@ -84,8 +84,8 @@
 ---
 ---@field enable boolean
 ---
----@field checked { text: string, hl: string? } Configuration for checked checkboxes
----@field unchecked { text: string, hl: string? } Configuration for unchecked checkboxes
+---@field checked { text: string, hl: string?, scope_hl: string? } Configuration for checked checkboxes
+---@field unchecked { text: string, hl: string?, scope_hl: string? } Configuration for unchecked checkboxes
 ---
 ---@field custom markview.checkboxes.conf[]
 
@@ -97,7 +97,7 @@
 ---
 ---@field enable boolean
 ---@field icons string Icon provider
----@field style "simple" | "minimal" | "language" Render style
+---@field style "simple" | "language" Render style
 ---@field hl? string Highlight group for the code block
 ---@field info_hl? string Highlight group for the info string
 ---@field language_hl? string Highlight group for the language name
