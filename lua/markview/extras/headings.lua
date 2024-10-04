@@ -131,4 +131,18 @@ headings.decrease = function ()
 	end
 end
 
+headings.setup = function ()
+	vim.api.nvim_create_user_command("HeadingIncrease", function ()
+		headings.increase();
+	end, {
+		desc = "Increases heading level"
+	});
+
+	vim.api.nvim_create_user_command("HeadingDecrease", function ()
+		headings.decrease()
+	end, {
+		desc = "Decreases heading level"
+	});
+end
+
 return headings;

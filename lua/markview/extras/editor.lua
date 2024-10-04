@@ -73,7 +73,7 @@ editor.configuraton = {
 	},
 
 	width = { 0.5, 0.75 },
-	height = { 3, 10 },
+	height = { 3, 0.75 },
 
 	debounce = 50,
 
@@ -81,7 +81,12 @@ editor.configuraton = {
 	border_hl = nil,
 
 	filename_hl = nil,
-	lnum_hl = nil
+	lnum_hl = nil,
+
+	callback = function (buf, win)
+		vim.wo[win].sidescrolloff = 0;
+		vim.bo[buf].expandtab = true;
+	end
 }
 
 --- Gets the filetype from an info string
@@ -91,11 +96,11 @@ local get_ft = function (delim)
 	local ft = "";
 
 	if delim:match("^```%{%{(.-)%}%}") then
-		ft = delim:match("^```%{%{(.-)%}%}")
+		ft = languages.get_ft(delim:match("^```%{%{(.-)%}%}"));
 	elseif delim:match("^```%{(.-)%}") then
-		ft = delim:match("^```%{(.-)%}")
+		ft = languages.get_ft(delim:match("^```%{(.-)%}"));
 	elseif delim:match("^```(%S+)") then
-		ft = delim:match("^```(%S+)")
+		ft = languages.get_ft(delim:match("^```(%S+)"));
 	end
 
 	return ft;
@@ -121,17 +126,20 @@ end
 local set_win = function (config)
 	if not editor.window or vim.api.nvim_win_is_valid(editor.window) == false then
 		local win = vim.api.nvim_open_win(editor.buffer, true, config);
+		pcall(editor.configuraton.callback, editor.buffer, win);
 		return win;
 	elseif vim.api.nvim_win_get_tabpage(editor.window) ~= vim.api.nvim_get_current_tabpage() then
 		pcall(vim.api.nvim_win_close, editor.window, true);
 
 		local win = vim.api.nvim_open_win(editor.buffer, true, config);
+		pcall(editor.configuraton.callback, editor.buffer, win);
 		return win;
 	end
 
 	vim.api.nvim_win_set_config(editor.window, config);
 	vim.api.nvim_set_current_win(editor.window);
 
+	pcall(editor.configuraton.callback, editor.buffer, editor.window);
 	return editor.window;
 end
 
@@ -307,11 +315,11 @@ editor.open = function ()
 
 		title = {
 			{ "╼ ", editor.configuraton.border_hl or hl },
-			{ file, editor.configuraton.filename_hl or "Comment" },
-			{ ": ", "Comment" },
+			{ file, editor.configuraton.filename_hl or "Conceal" },
+			{ ": ", "Conceal" },
 			{ tostring(from + 1), editor.configuraton.lnum_hl or "Special" },
-			{ "-","Comment" },
-			{ tostring(to + 1), editor.configuraton.lnum_hl or "Special" },
+			{ "-","Conceal" },
+			{ tostring(to), editor.configuraton.lnum_hl or "Special" },
 			{ " ╾", editor.configuraton.border_hl or hl }
 		},
 		title_pos = "left",
@@ -384,48 +392,54 @@ editor.create = function ()
 		end
 	})
 
-	vim.api.nvim_buf_set_keymap(editor.buffer, "n", "D", "", {
+	vim.api.nvim_buf_set_keymap(editor.buffer, "n", "<tab>", "", {
 		callback = function ()
-			vim.ui.select({ "Start delimiter", "End delimiter" }, {
-				prompt = "Choose delimiter to edit: ",
-			}, function (item, index)
-				if not item then
+			vim.ui.input({ prompt = "Start delimiter: ", default = start_delim }, function (input)
+				if not input then
 					return;
 				end
 
-				if index == 1 then
-					vim.ui.input({ prompt = "Start delimiter: ", default = start_delim }, function (input)
-						if not input then
-							return;
-						end
+				start_delim = tostring(input);
+				vim.bo[editor.buffer].filetype = get_ft(start_delim);
+				local icon, hl = languages.get_icon(get_ft(start_delim));
 
-						start_delim = tostring(input);
-						vim.bo[editor.buffer].filetype = get_ft(start_delim);
-						local icon, hl = languages.get_icon(get_ft(start_delim));
+				ft = get_ft(start_delim);
 
-						editor.window = set_win({
-							footer = {
-								{ "╼ ", hl },
-								{ icon, hl },
-								{ languages.get_name(ft), hl },
-								{ " ╾", hl }
-							},
-							footer_pos = "right"
-						});
-						vim.wo[editor.window].winhl = "FloatBorder:" .. hl;
-					end)
-				elseif index == 2 then
-					vim.ui.input({ prompt = "End delimiter: ", default = end_delim }, function (input)
-						if not input then
-							return;
-						end
+				hl = hl .. "Fg";
 
-						end_delim = tostring(input);
-					end)
-				end
+				editor.window = set_win({
+					title = {
+						{ "╼ ", hl },
+						{ " Create on line: ", "Conceal" },
+						{ tostring(cursor[1]), editor.configuraton.lnum_hl or "Special" },
+						{ " ", "Conceal" },
+						{ " ╾", hl }
+					},
+
+					footer = {
+						{ "╼ ", hl },
+						{ icon, hl },
+						{ languages.get_name(ft), hl },
+						{ " ╾", hl }
+					},
+					footer_pos = "right"
+				});
+				vim.wo[editor.window].winhl = "FloatBorder:" .. hl;
 			end)
 		end
-	})
+	});
+
+	vim.api.nvim_buf_set_keymap(editor.buffer, "n", "<S-tab>", "", {
+		callback = function ()
+			vim.ui.input({ prompt = "End delimiter: ", default = end_delim }, function (input)
+				if not input then
+					return;
+				end
+
+				end_delim = tostring(input);
+			end)
+		end
+	});
 
 	vim.api.nvim_buf_set_keymap(editor.buffer, "n", "<ESC>", "", {
 		callback = function ()
@@ -459,7 +473,11 @@ editor.create = function ()
 		border = editor.configuraton.border,
 
 		title = {
-			{ "[T]: Top, [B]: Bottom " },
+			{ "╼ ", hl },
+			{ " Create on line: ", "Conceal" },
+			{ tostring(cursor[1]), editor.configuraton.lnum_hl or "Special" },
+			{ " ", "Conceal" },
+			{ " ╾", hl }
 		},
 
 		footer = {
@@ -481,6 +499,18 @@ end
 ---@param config markview.editor.configuraton?
 editor.setup = function (config)
 	editor.configuraton = vim.tbl_deep_extend("force", editor.configuraton, config or {});
+
+	vim.api.nvim_create_user_command("CodeCreate", function ()
+		editor.create();
+	end, {
+		desc = "Creates a code block"
+	})
+
+	vim.api.nvim_create_user_command("CodeEdit", function ()
+		editor.open();
+	end, {
+		desc = "Opens the editor"
+	})
 end
 
 vim.api.nvim_create_autocmd("VimResized", {
