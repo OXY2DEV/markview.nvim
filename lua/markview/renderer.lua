@@ -1104,6 +1104,8 @@ renderer.render_headings = function (buffer, content, config)
 	if conf.style == "simple" then
 		-- Adds a simple background
 		vim.api.nvim_buf_set_extmark(buffer, renderer.namespace, content.row_start, content.col_start, {
+			undo_restore = false, invalidate = true,
+
 			line_hl_group = set_hl(conf.hl),
 
 			hl_mode = "combine"
@@ -1160,6 +1162,8 @@ renderer.render_headings = function (buffer, content, config)
 		-- 1. Must start at the first column
 		-- 2. Must have 1 space between the marker and the title
 		vim.api.nvim_buf_set_extmark(buffer, renderer.namespace, content.row_start, content.col_start, {
+			undo_restore = false, invalidate = true,
+
 			virt_text_pos = "inline",
 			virt_text = {
 				{ string.rep(" ", spaces) },
@@ -1179,6 +1183,8 @@ renderer.render_headings = function (buffer, content, config)
 		vim.api.nvim_buf_add_highlight(buffer, renderer.namespace, set_hl(conf.hl), content.row_start, 0, line_length);
 
 		vim.api.nvim_buf_set_extmark(buffer, renderer.namespace, content.row_start, line_length, {
+			undo_restore = false, invalidate = true,
+
 			virt_text_pos = "overlay",
 			virt_text = {
 				{ conf.padding_right or "", set_hl(conf.padding_right_hl) or set_hl(conf.hl) },
@@ -1194,6 +1200,8 @@ renderer.render_headings = function (buffer, content, config)
 		-- 1. Must start at the first column
 		-- 2. Must have 1 space between the marker and the title
 		vim.api.nvim_buf_set_extmark(buffer, renderer.namespace, content.row_start, content.col_start, {
+			undo_restore = false, invalidate = true,
+
 			virt_text_pos = "inline",
 			virt_text = {
 				{ string.rep(conf.shift_char or " ", shift * (content.level - 1)), set_hl(conf.shift_hl) },
@@ -1232,6 +1240,8 @@ renderer.render_headings_s = function (buffer, content, config)
 		-- Adds a simple background
 
 		vim.api.nvim_buf_set_extmark(buffer, renderer.namespace, content.row_start, content.col_start, {
+			undo_restore = false, invalidate = true,
+
 			line_hl_group = set_hl(conf.hl),
 
 			hl_mode = "combine",
@@ -1243,6 +1253,8 @@ renderer.render_headings_s = function (buffer, content, config)
 		for i = 0, (content.row_end - content.row_start) - 1 do
 			if i == mid then
 				vim.api.nvim_buf_set_extmark(buffer, renderer.namespace, content.row_start + i, content.col_start, {
+					undo_restore = false, invalidate = true,
+
 					virt_text_pos = "inline",
 					virt_text = {
 						{ conf.icon or "", set_hl(conf.icon_hl or conf.hl) }
@@ -1254,6 +1266,8 @@ renderer.render_headings_s = function (buffer, content, config)
 				});
 			elseif i < (content.row_end - content.row_start) - 1 then
 				vim.api.nvim_buf_set_extmark(buffer, renderer.namespace, content.row_start + i, content.col_start, {
+					undo_restore = false, invalidate = true,
+
 					virt_text_pos = "inline",
 					virt_text = {
 						{ string.rep(" ", vim.fn.strchars(conf.icon or "")), set_hl(conf.hl) }
@@ -1266,6 +1280,8 @@ renderer.render_headings_s = function (buffer, content, config)
 				local line = content.marker:match("=") and (conf.border or conf.line or "=") or (conf.border or conf.line or "-");
 
 				vim.api.nvim_buf_set_extmark(buffer, renderer.namespace, content.row_start + i, content.col_start, {
+					undo_restore = false, invalidate = true,
+
 					virt_text_pos = "overlay",
 					virt_text = {
 						{ string.rep(line, vim.o.columns), set_hl(conf.border_hl or conf.line_hl or conf.hl) }
@@ -1528,6 +1544,8 @@ renderer.render_block_quotes = function (buffer, content, config_table)
 
 	if (qt_config.title == true or qt_config.custom_title) and content.title ~= "" then
 		vim.api.nvim_buf_set_extmark(buffer, renderer.namespace, content.row_start, content.col_start, {
+			undo_restore = false, invalidate = true,
+
 			virt_text_pos = "inline",
 			virt_text = {
 				{ tbl_clamp(qt_config.border, 1), list_clamp(qt_config.hl or qt_config.border_hl, 1) },
@@ -1545,6 +1563,8 @@ renderer.render_block_quotes = function (buffer, content, config_table)
 		});
 	elseif qt_config.preview ~= nil or qt_config.callout_preview ~= nil then
 		vim.api.nvim_buf_set_extmark(buffer, renderer.namespace, content.row_start, content.col_start, {
+			undo_restore = false, invalidate = true,
+
 			virt_text_pos = "inline",
 			virt_text = {
 				{ tbl_clamp(qt_config.border, 1), list_clamp(qt_config.hl or qt_config.border_hl, 1) },
@@ -1557,6 +1577,8 @@ renderer.render_block_quotes = function (buffer, content, config_table)
 		});
 	else
 		vim.api.nvim_buf_set_extmark(buffer, renderer.namespace, content.row_start, content.col_start, {
+			undo_restore = false, invalidate = true,
+
 			virt_text_pos = "inline",
 			virt_text = {
 				{ tbl_clamp(qt_config.border, 1), list_clamp(qt_config.hl or qt_config.border_hl, 1) },
@@ -1578,6 +1600,8 @@ renderer.render_block_quotes = function (buffer, content, config_table)
 		end
 
 		vim.api.nvim_buf_set_extmark(buffer, renderer.namespace, content.row_start + line, content.col_start, {
+			undo_restore = false, invalidate = true,
+
 			virt_text_pos = "inline",
 			virt_text = {
 				{ tbl_clamp(qt_config.border, line + 1), list_clamp(qt_config.hl or qt_config.border_hl, line + 1) }
@@ -1954,6 +1978,8 @@ renderer.render_lists = function (buffer, content, config_table)
 				local level = math.floor(before / (config_table.indent_size or 2)) + 1;
 
 				vim.api.nvim_buf_set_extmark(buffer, renderer.namespace, line_num, content.starts[l] or 0, {
+					undo_restore = false, invalidate = true,
+
 					virt_text_pos = "inline",
 					virt_text = {
 						{ string.rep(" ", (level * shift) - offset) },
@@ -1969,6 +1995,8 @@ renderer.render_lists = function (buffer, content, config_table)
 				local level = math.floor(before / (config_table.indent_size or 2)) + 1;
 
 				vim.api.nvim_buf_set_extmark(buffer, renderer.namespace, line_num, content.starts[l] or 0, {
+					undo_restore = false, invalidate = true,
+
 					virt_text_pos = "inline",
 					virt_text = {
 						{ string.rep(" ", level * shift) },
@@ -1986,11 +2014,15 @@ renderer.render_lists = function (buffer, content, config_table)
 
 		if content.is_checkbox == true then
 			vim.api.nvim_buf_set_extmark(buffer, renderer.namespace, content.row_start, start + before, {
+				undo_restore = false, invalidate = true,
+
 				end_col = start + before + vim.fn.strdisplaywidth(content.marker_symbol),
 				conceal = ""
 			});
 		else
 			vim.api.nvim_buf_set_extmark(buffer, renderer.namespace, content.row_start, start + before, {
+				undo_restore = false, invalidate = true,
+
 				virt_text_pos = "overlay",
 				virt_text = {
 					{ vim.trim(use_text), set_hl(ls_conf.hl) or "Special" }
@@ -2031,6 +2063,8 @@ renderer.render_checkboxes = function (buffer, content, config_table)
 	end
 
 	vim.api.nvim_buf_set_extmark(buffer, renderer.namespace, content.row_start, content.col_start, {
+		undo_restore = false, invalidate = true,
+
 		virt_text_pos = "inline",
 		virt_text = {
 			{ chk_config.text, set_hl(chk_config.hl) }
@@ -2039,7 +2073,6 @@ renderer.render_checkboxes = function (buffer, content, config_table)
 		end_col = content.col_end,
 		conceal = "",
 
-		-- line_hl_group = "DiagnosticDeprecated",
 		hl_mode = "combine"
 	});
 
@@ -2055,6 +2088,8 @@ renderer.render_checkboxes = function (buffer, content, config_table)
 		end
 
 		vim.api.nvim_buf_set_extmark(buffer, renderer.namespace, l, col_start, {
+			undo_restore = false, invalidate = true,
+
 			end_col = #content.list_item.list_lines[l - content.list_item.row_start + 1],
 
 			hl_group = chk_config.scope_hl,
