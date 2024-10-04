@@ -49,11 +49,12 @@ ts.inject = function (opts)
 			goto continue;
 		end
 
-		local _q = "";
-
 		if conf.overwrite == true then
-			goto skip;
+			pcall(vim.treesitter.query.set, lang, conf.query);
+			return;
 		end
+
+		local _q = "";
 
 		--- Get the default injections file
 		local _f = vim.treesitter.query.get_files(lang, "injections");
@@ -68,8 +69,6 @@ ts.inject = function (opts)
 				_r:close();
 			end
 		end
-
-		::skip::
 
 		--- Append the new query
 		--- TODO, Fix indentation
