@@ -1009,7 +1009,7 @@ markview.commands = {
 				goto continue;
 			end
 
-			local parsed_content = markview.parser.init(buf);
+			local parsed_content = markview.parser.init(buf, markview.configuration);
 			local windows = utils.find_attached_wins(buf);
 
 			if markview.configuration.callbacks and markview.configuration.callbacks.on_enable then
@@ -1155,7 +1155,7 @@ markview.commands = {
 
 		local windows = utils.find_attached_wins(buffer);
 
-		local parsed_content = markview.parser.init(buffer);
+		local parsed_content = markview.parser.init(buffer, markview.configuration);
 
 		for _, window in ipairs(windows) do
 			pcall(markview.configuration.callbacks.on_enable, buf, window);
