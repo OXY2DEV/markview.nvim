@@ -2,6 +2,8 @@
 
 ## Heading level changer
 
+https://github.com/user-attachments/assets/15af23b0-0970-438c-8d26-23420d8fd5c8
+
 Changes the heading level. Works with setext headings too!
 
 Usage:
@@ -31,6 +33,8 @@ The module comes with 2 commands.
 ```
 
 ## Checkbox state toggle
+
+https://github.com/user-attachments/assets/aa22cbfe-5703-482d-88e5-84ec1b894d30
 
 Toggles checkboxes and changes their states.
 
@@ -92,6 +96,8 @@ You can then use this via the commands.
 ```
 
 ## Code blocks editor
+
+https://github.com/user-attachments/assets/d3c4d262-8c4e-4f10-a13a-3d0c27e1036f
 
 Create & edit code block in a floating window!
 
