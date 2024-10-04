@@ -10,6 +10,7 @@ https://github.com/user-attachments/assets/ae3d2912-65d4-4dd7-a8bb-614c4406c4e3
 ## 📖 Table of contents
 
 - [Migration guides](https://github.com/OXY2DEV/markview.nvim/wiki/Migration-guide)
+- [Extra modules](https://github.com/OXY2DEV/markview.nvim/wiki/Extras)
 - [Plugin options](https://github.com/OXY2DEV/markview.nvim/wiki/Plugin-options)
 
 - [Block quotes](https://github.com/OXY2DEV/markview.nvim/wiki/Block-quotes)
