@@ -32,6 +32,88 @@ markview.state = {
 markview.configuration = {
 	__inside_code_block = false,
 
+	buf_ignore = { "nofile" },
+
+	callbacks = {
+		---+ ${class, Callbacks}
+		on_enable = function (_, window)
+			local _m = {};
+
+			if markview.state.hybrid_mode == true and vim.islist(markview.configuration.hybrid_modes) then
+				for _, mod in ipairs(markview.configuration.modes) do
+					if vim.list_contains({ "n", "i", "v", "c" }, mod) and
+						not vim.list_contains(markview.configuration.hybrid_modes, mod)
+					then
+						table.insert(_m, mod);
+					end
+				end
+			else
+				for _, mod in ipairs(markview.configuration.modes) do
+					if vim.list_contains({ "n", "i", "v", "c" }, mod) then
+						table.insert(_m, mod);
+					end
+				end
+			end
+
+			vim.wo[window].conceallevel = 2;
+			vim.wo[window].concealcursor = table.concat(_m);
+		end,
+		on_disable = function (_, window)
+			vim.wo[window].conceallevel = 0;
+			vim.wo[window].concealcursor = "";
+		end,
+
+		on_mode_change = function (_, window, mode)
+			if vim.list_contains(markview.configuration.modes, mode) then
+				local _m = {};
+
+				if markview.state.hybrid_mode == true and vim.islist(markview.configuration.hybrid_modes) then
+					for _, mod in ipairs(markview.configuration.modes) do
+						if vim.list_contains({ "n", "i", "v", "c" }, mod) and
+							not vim.list_contains(markview.configuration.hybrid_modes, mod)
+						then
+							table.insert(_m, mod);
+						end
+					end
+				else
+					for _, mod in ipairs(markview.configuration.modes) do
+						if vim.list_contains({ "n", "i", "v", "c" }, mod) then
+							table.insert(_m, mod);
+						end
+					end
+				end
+
+				vim.wo[window].concealcursor = table.concat(_m);
+				vim.wo[window].conceallevel = 2;
+			else
+				vim.wo[window].conceallevel = 0;
+				vim.wo[window].concealcursor = "";
+			end
+		end,
+
+		split_enter = nil
+		---_
+	},
+
+	debounce = 50,
+	escaped = { enable = true },
+
+	filetypes = { "markdown", "quarto", "rmd" },
+
+	highlight_groups = "dynamic",
+
+	hybrid_modes = nil,
+
+	initial_state = true,
+	max_file_length = 1000,
+	modes = { "n", "no", "c" },
+	render_distance = 100,
+
+	split_conf = {
+		split = "right"
+	},
+
+
 	block_quotes = {
 		---+ ${class, Block quote}
 		enable = true,
@@ -317,69 +399,6 @@ markview.configuration = {
 		---_
 	},
 
-	buf_ignore = { "nofile" },
-
-	callbacks = {
-		---+ ${class, Callbacks}
-		on_enable = function (_, window)
-			local _m = {};
-
-			if markview.state.hybrid_mode == true and vim.islist(markview.configuration.hybrid_modes) then
-				for _, mod in ipairs(markview.configuration.modes) do
-					if vim.list_contains({ "n", "i", "v", "c" }, mod) and
-						not vim.list_contains(markview.configuration.hybrid_modes, mod)
-					then
-						table.insert(_m, mod);
-					end
-				end
-			else
-				for _, mod in ipairs(markview.configuration.modes) do
-					if vim.list_contains({ "n", "i", "v", "c" }, mod) then
-						table.insert(_m, mod);
-					end
-				end
-			end
-
-			vim.wo[window].conceallevel = 2;
-			vim.wo[window].concealcursor = table.concat(_m);
-		end,
-		on_disable = function (_, window)
-			vim.wo[window].conceallevel = 0;
-			vim.wo[window].concealcursor = "";
-		end,
-
-		on_mode_change = function (_, window, mode)
-			if vim.list_contains(markview.configuration.modes, mode) then
-				local _m = {};
-
-				if markview.state.hybrid_mode == true and vim.islist(markview.configuration.hybrid_modes) then
-					for _, mod in ipairs(markview.configuration.modes) do
-						if vim.list_contains({ "n", "i", "v", "c" }, mod) and
-							not vim.list_contains(markview.configuration.hybrid_modes, mod)
-						then
-							table.insert(_m, mod);
-						end
-					end
-				else
-					for _, mod in ipairs(markview.configuration.modes) do
-						if vim.list_contains({ "n", "i", "v", "c" }, mod) then
-							table.insert(_m, mod);
-						end
-					end
-				end
-
-				vim.wo[window].concealcursor = table.concat(_m);
-				vim.wo[window].conceallevel = 2;
-			else
-				vim.wo[window].conceallevel = 0;
-				vim.wo[window].concealcursor = "";
-			end
-		end,
-
-		split_enter = nil
-		---_
-	},
-
 	checkboxes = {
 		---+ ${class, Checkboxes}
 		enable = true,
@@ -422,7 +441,7 @@ markview.configuration = {
 		enable = true,
 		icons = "internal",
 
-		style = "language",
+		style = "block",
 		hl = "MarkviewCode",
 		info_hl = "MarkviewCodeInfo",
 
@@ -435,11 +454,6 @@ markview.configuration = {
 		sign = true, sign_hl = nil
 		---_
 	},
-
-	debounce = 50,
-	escaped = { enable = true },
-
-	filetypes = { "markdown", "quarto", "rmd" },
 
 	footnotes = {
 		enable = true,
@@ -518,15 +532,13 @@ markview.configuration = {
 		---_
 	},
 
-	highlight_groups = "dynamic",
-
 	horizontal_rules = {
 		---+ ${class, Horizontal rules}
 		enable = true,
 
 		parts = {
 			{
-				---+ ${conf, Lsft portion}
+				---+ ${conf, Left portion}
 				type = "repeating",
 				repeat_amount = function () --[[@as function]]
 					local textoff = vim.fn.getwininfo(vim.api.nvim_get_current_win())[1].textoff;
@@ -593,8 +605,6 @@ markview.configuration = {
 		}
 		---_
 	},
-
-	hybrid_modes = nil,
 
 	injections = {
 		---+ ${class, Query injections}
@@ -765,15 +775,6 @@ markview.configuration = {
 			add_padding = true
 		},
 		---_
-	},
-
-	initial_state = true,
-	max_file_length = 1000,
-	modes = { "n", "no", "c" },
-	render_distance = 100,
-
-	split_conf = {
-		split = "right"
 	},
 
 	tables = {

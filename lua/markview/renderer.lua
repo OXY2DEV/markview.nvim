@@ -1371,7 +1371,7 @@ renderer.render_code_blocks = function (buffer, content, config_table)
 			-- NOTE: The node actually ends in the next line after the code block
 			end_row = content.row_end - 1, end_col = content.col_end
 		});
-	elseif config_table.style == "minimal" or config_table.style == "language" then
+	elseif config_table.style == "minimal" or config_table.style == "block" or config_table.style == "language" then
 		local block_length = content.largest_line;
 
 		if type(config_table.min_width) == "number" and config_table.min_width > block_length then
@@ -1442,18 +1442,13 @@ renderer.render_code_blocks = function (buffer, content, config_table)
 		-- The text on the final line
 		-- We need to get the tail section to see if it contains ``` 
 		local block_end_line = vim.api.nvim_buf_get_lines(buffer, content.row_end - 1, content.row_end, false)[1];
-		local tail_section = vim.fn.strcharpart(block_end_line or "", content.col_start);
-
-		if tail_section:match("```$") then
-			tail_section = tail_section:gsub("```$", "");
-		end
 
 		vim.api.nvim_buf_set_extmark(buffer, renderer.namespace, content.row_end - 1, vim.fn.strchars(block_end_line or ""), {
 			undo_restore = false, invalidate = true,
 
 			virt_text_pos = "inline",
 			virt_text = {
-				{ string.rep(config_table.pad_char or " ", (block_length - vim.fn.strchars(tail_section)) + ((config_table.pad_amount or 1) * 2)), set_hl(config_table.hl) },
+				{ string.rep(config_table.pad_char or " ", (block_length) + ((config_table.pad_amount or 1) * 2)), set_hl(config_table.hl) },
 			},
 
 			hl_mode = "combine",

@@ -97,7 +97,7 @@
 ---
 ---@field enable boolean
 ---@field icons string Icon provider
----@field style "simple" | "language" Render style
+---@field style "simple" | "block" Render style
 ---@field hl? string Highlight group for the code block
 ---@field info_hl? string Highlight group for the info string
 ---@field language_hl? string Highlight group for the language name
