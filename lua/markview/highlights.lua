@@ -201,7 +201,7 @@ end
 
 --- Creates highlight groups from an array of tables
 ---@param array markview.conf.hl[]
----@param list? "text" | "tables"
+---@param list? "text" | "table"
 highlights.create = function (array, list)
 	local _c = {};
 
@@ -259,7 +259,7 @@ highlights.create = function (array, list)
 				log_file:write(color.group_name, "\n");
 			elseif log_file and list == "table" then
 				log_file:write("	{\n");
-				log_file:write("		group_name = ", '"', color.group_name, '"', "\n");
+				log_file:write("		group_name = ", '"', color.group_name, '",', "\n");
 				log_file:write("		value = {", "\n");
 
 				for opt, value in pairs(color.value) do
@@ -640,8 +640,6 @@ highlights.dynamic = {
 	---+ ${hl, Links}
 	{
 		output = function (util)
-			if exists("Hyperlink") then return; end
-
 			return {
 				group_name = "Hyperlink",
 				value = {
@@ -653,8 +651,6 @@ highlights.dynamic = {
 	},
 	{
 		output = function (util)
-			if exists("ImageLink") then return; end
-
 			return {
 				group_name = "ImageLink",
 				value = {
@@ -666,8 +662,6 @@ highlights.dynamic = {
 	},
 	{
 		output = function (util)
-			if exists("Email") then return; end
-
 			return {
 				group_name = "Email",
 				value = {
@@ -787,7 +781,7 @@ highlights.dynamic = {
 
 ---@type markview.conf.hl[]
 highlights.dark = {
-	---+ ${hl, Tables}
+	---+ ${hl, Dark static highlight group}
 	{
 		group_name = "MarkviewTableHeader",
 		value = {
@@ -823,9 +817,6 @@ highlights.dark = {
 			fg = "#89dceb",
 		}
 	},
-	---_
-
-	---+ ${hl, List Items}
 	{
 		group_name = "MarkviewListItemStar",
 		value = {
@@ -847,9 +838,22 @@ highlights.dark = {
 			fg = "#f9e2af",
 		}
 	},
-	---_
-
-	---+ ${hl, Horizontal rules}
+	{
+		group_name = "MarkviewLatexSubscript",
+		value = {
+			fg = "#a1947b",
+			default = true,
+			italic = true,
+		}
+	},
+	{
+		group_name = "MarkviewLatexSuperscript",
+		value = {
+			fg = "#6f9473",
+			default = true,
+			italic = true,
+		}
+	},
 	{
 		group_name = "MarkviewGradient1",
 		value = {
@@ -920,15 +924,12 @@ highlights.dark = {
 			fg = "#89b4fa",
 		}
 	},
-	---_
-
-	---+ ${hl, Heading 6}
 	{
 		group_name = "MarkviewHeading6",
 		value = {
+			bg = "#434662",
 			default = true,
 			fg = "#b4befe",
-			bg = "#434662",
 		}
 	},
 	{
@@ -938,14 +939,12 @@ highlights.dark = {
 			fg = "#b4befe",
 		}
 	},
-	---_
-	---+ ${hl, Heading 5}
 	{
 		group_name = "MarkviewHeading5",
 		value = {
+			bg = "#33485d",
 			default = true,
 			fg = "#74c7ec",
-			bg = "#33485d",
 		}
 	},
 	{
@@ -955,14 +954,12 @@ highlights.dark = {
 			fg = "#74c7ec",
 		}
 	},
-	---_
-	---+ ${hl, Heading 4}
 	{
 		group_name = "MarkviewHeading4",
 		value = {
+			bg = "#404f4a",
 			default = true,
 			fg = "#a6e3a1",
-			bg = "#404f4a",
 		}
 	},
 	{
@@ -972,14 +969,12 @@ highlights.dark = {
 			fg = "#a6e3a1",
 		}
 	},
-	---_
-	---+ ${hl, Heading 3}
 	{
 		group_name = "MarkviewHeading3",
 		value = {
+			bg = "#544f4e",
 			default = true,
 			fg = "#f9e2af",
-			bg = "#544f4e",
 		}
 	},
 	{
@@ -989,14 +984,12 @@ highlights.dark = {
 			fg = "#f9e2af",
 		}
 	},
-	---_
-	---+ ${hl, Heading 2}
 	{
 		group_name = "MarkviewHeading2",
 		value = {
+			bg = "#554344",
 			default = true,
 			fg = "#fab387",
-			bg = "#554344",
 		}
 	},
 	{
@@ -1006,14 +999,12 @@ highlights.dark = {
 			fg = "#fab387",
 		}
 	},
-	---_
-	---+ ${hl, Heading 1}
 	{
 		group_name = "MarkviewHeading1",
 		value = {
+			bg = "#53394c",
 			default = true,
 			fg = "#f38ba8",
-			bg = "#53394c",
 		}
 	},
 	{
@@ -1023,9 +1014,6 @@ highlights.dark = {
 			fg = "#f38ba8",
 		}
 	},
-	---_
-
-	---+ ${hl, Code bocks & inline codes}
 	{
 		group_name = "MarkviewCode",
 		value = {
@@ -1036,9 +1024,9 @@ highlights.dark = {
 	{
 		group_name = "MarkviewCodeInfo",
 		value = {
-			default = true,
-			fg = "#6c7086",
 			bg = "#28283d",
+			default = true,
+			fg = "#9399b2",
 		}
 	},
 	{
@@ -1048,9 +1036,138 @@ highlights.dark = {
 			bg = "#32324c",
 		}
 	},
-	---_
-
-	---+ ${hl, Checkbox}
+	{
+		group_name = "MarkviewIcon1",
+		value = {
+			bg = "#28283d",
+			default = true,
+			fg = "#f38ba8",
+		}
+	},
+	{
+		group_name = "MarkviewIcon1Sign",
+		value = {
+			default = true,
+			fg = "#f38ba8",
+		}
+	},
+	{
+		group_name = "MarkviewIcon1Fg",
+		value = {
+			default = true,
+			fg = "#f38ba8",
+		}
+	},
+	{
+		group_name = "MarkviewIcon2",
+		value = {
+			bg = "#28283d",
+			default = true,
+			fg = "#fab387",
+		}
+	},
+	{
+		group_name = "MarkviewIcon2Sign",
+		value = {
+			default = true,
+			fg = "#fab387",
+		}
+	},
+	{
+		group_name = "MarkviewIcon2Fg",
+		value = {
+			default = true,
+			fg = "#fab387",
+		}
+	},
+	{
+		group_name = "MarkviewIcon3",
+		value = {
+			bg = "#28283d",
+			default = true,
+			fg = "#f9e2af",
+		}
+	},
+	{
+		group_name = "MarkviewIcon3Sign",
+		value = {
+			default = true,
+			fg = "#f9e2af",
+		}
+	},
+	{
+		group_name = "MarkviewIcon3Fg",
+		value = {
+			default = true,
+			fg = "#f9e2af",
+		}
+	},
+	{
+		group_name = "MarkviewIcon4",
+		value = {
+			bg = "#28283d",
+			default = true,
+			fg = "#a6e3a1",
+		}
+	},
+	{
+		group_name = "MarkviewIcon4Sign",
+		value = {
+			default = true,
+			fg = "#a6e3a1",
+		}
+	},
+	{
+		group_name = "MarkviewIcon4Fg",
+		value = {
+			default = true,
+			fg = "#a6e3a1",
+		}
+	},
+	{
+		group_name = "MarkviewIcon5",
+		value = {
+			bg = "#28283d",
+			default = true,
+			fg = "#74c7ec",
+		}
+	},
+	{
+		group_name = "MarkviewIcon5Sign",
+		value = {
+			default = true,
+			fg = "#74c7ec",
+		}
+	},
+	{
+		group_name = "MarkviewIcon5Fg",
+		value = {
+			default = true,
+			fg = "#74c7ec",
+		}
+	},
+	{
+		group_name = "MarkviewIcon6",
+		value = {
+			bg = "#28283d",
+			default = true,
+			fg = "#b4befe",
+		}
+	},
+	{
+		group_name = "MarkviewIcon6Sign",
+		value = {
+			default = true,
+			fg = "#b4befe",
+		}
+	},
+	{
+		group_name = "MarkviewIcon6Fg",
+		value = {
+			default = true,
+			fg = "#b4befe",
+		}
+	},
 	{
 		group_name = "MarkviewCheckboxUnchecked",
 		value = {
@@ -1083,12 +1200,9 @@ highlights.dark = {
 		group_name = "MarkviewCheckboxCancelled",
 		value = {
 			default = true,
-			fg = "#6c7086",
+			fg = "#9399b2",
 		}
 	},
-	---_
-
-	---+ ${hl, Block quotes}
 	{
 		group_name = "MarkviewBlockQuoteWarn",
 		value = {
@@ -1128,39 +1242,36 @@ highlights.dark = {
 		group_name = "MarkviewBlockQuoteDefault",
 		value = {
 			default = true,
-			fg = "#6c7086",
+			fg = "#9399b2",
 		}
 	},
-	---_
-
-	---+ ${hl, Links}
 	{
 		group_name = "MarkviewHyperlink",
 		value = {
-			default = true,
 			link = "@markup.link.label.markdown_inline",
+			default = true,
 		}
 	},
 	{
 		group_name = "MarkviewImageLink",
 		value = {
-			default = true,
 			link = "@markup.link.label.markdown_inline",
+			default = true,
 		}
 	},
 	{
 		group_name = "MarkviewEmail",
 		value = {
-			default = true,
 			link = "@markup.link.url.markdown_inline",
+			default = true,
 		}
-	}
+	},
 	---_
 };
 
 ---@type markview.conf.hl[]
 highlights.light = {
-	---+ ${hl, Tables}
+	---+ ${hl, Light static highlight groups}
 	{
 		group_name = "MarkviewTableHeader",
 		value = {
@@ -1196,9 +1307,6 @@ highlights.light = {
 			default = true,
 		}
 	},
-	---_
-
-	---+ ${hl, List items}
 	{
 		group_name = "MarkviewListItemStar",
 		value = {
@@ -1220,9 +1328,22 @@ highlights.light = {
 			default = true,
 		}
 	},
-	---_
-
-	---+ ${hl, Horizontal rules}
+	{
+		group_name = "MarkviewLatexSubscript",
+		value = {
+			italic = true,
+			fg = "#e5b573",
+			default = true,
+		}
+	},
+	{
+		group_name = "MarkviewLatexSuperscript",
+		value = {
+			italic = true,
+			fg = "#86c07b",
+			default = true,
+		}
+	},
 	{
 		group_name = "MarkviewGradient1",
 		value = {
@@ -1293,14 +1414,11 @@ highlights.light = {
 			default = true,
 		}
 	},
-	---_
-
-	---+ ${hl, Heading 6}
 	{
 		group_name = "MarkviewHeading6",
 		value = {
-			fg = "#7287fd",
 			bg = "#dbe1fe",
+			fg = "#7287fd",
 			default = true,
 		}
 	},
@@ -1311,13 +1429,11 @@ highlights.light = {
 			default = true,
 		}
 	},
-	---_
-	---+ ${hl, Heading 5}
 	{
 		group_name = "MarkviewHeading5",
 		value = {
-			fg = "#209fb5",
 			bg = "#c7e7ec",
+			fg = "#209fb5",
 			default = true,
 		}
 	},
@@ -1328,13 +1444,11 @@ highlights.light = {
 			default = true,
 		}
 	},
-	---_
-	---+ ${hl, Heading 4}
 	{
 		group_name = "MarkviewHeading4",
 		value = {
-			fg = "#40a02b",
 			bg = "#cfe7ca",
+			fg = "#40a02b",
 			default = true,
 		}
 	},
@@ -1345,13 +1459,11 @@ highlights.light = {
 			default = true,
 		}
 	},
-	---_
-	---+ ${hl, Heading 3}
 	{
 		group_name = "MarkviewHeading3",
 		value = {
-			fg = "#df8e1d",
 			bg = "#f7e2c6",
+			fg = "#df8e1d",
 			default = true,
 		}
 	},
@@ -1362,13 +1474,11 @@ highlights.light = {
 			default = true,
 		}
 	},
-	---_
-	---+ ${hl, Heading 2}
 	{
 		group_name = "MarkviewHeading2",
 		value = {
-			fg = "#fe640b",
 			bg = "#fed8c2",
+			fg = "#fe640b",
 			default = true,
 		}
 	},
@@ -1379,13 +1489,11 @@ highlights.light = {
 			default = true,
 		}
 	},
-	---_
-	---+ ${hl, Heading1}
 	{
 		group_name = "MarkviewHeading1",
 		value = {
-			fg = "#d20f39",
 			bg = "#f3c3cd",
+			fg = "#d20f39",
 			default = true,
 		}
 	},
@@ -1396,9 +1504,6 @@ highlights.light = {
 			default = true,
 		}
 	},
-	---_
-
-	---+ ${hl, Code block}
 	{
 		group_name = "MarkviewCode",
 		value = {
@@ -1409,8 +1514,8 @@ highlights.light = {
 	{
 		group_name = "MarkviewCodeInfo",
 		value = {
-			fg = "#9ca0b0",
 			default = true,
+			fg = "#7c7f93",
 			bg = "#dfe3eb",
 		}
 	},
@@ -1421,9 +1526,138 @@ highlights.light = {
 			default = true,
 		}
 	},
-	---_
-
-	---+ ${hl, Checkbox}
+	{
+		group_name = "MarkviewIcon1",
+		value = {
+			default = true,
+			fg = "#d20f39",
+			bg = "#dfe3eb",
+		}
+	},
+	{
+		group_name = "MarkviewIcon1Sign",
+		value = {
+			default = true,
+			fg = "#d20f39",
+		}
+	},
+	{
+		group_name = "MarkviewIcon1Fg",
+		value = {
+			fg = "#d20f39",
+			default = true,
+		}
+	},
+	{
+		group_name = "MarkviewIcon2",
+		value = {
+			default = true,
+			fg = "#fe640b",
+			bg = "#dfe3eb",
+		}
+	},
+	{
+		group_name = "MarkviewIcon2Sign",
+		value = {
+			default = true,
+			fg = "#fe640b",
+		}
+	},
+	{
+		group_name = "MarkviewIcon2Fg",
+		value = {
+			fg = "#fe640b",
+			default = true,
+		}
+	},
+	{
+		group_name = "MarkviewIcon3",
+		value = {
+			default = true,
+			fg = "#df8e1d",
+			bg = "#dfe3eb",
+		}
+	},
+	{
+		group_name = "MarkviewIcon3Sign",
+		value = {
+			default = true,
+			fg = "#df8e1d",
+		}
+	},
+	{
+		group_name = "MarkviewIcon3Fg",
+		value = {
+			fg = "#df8e1d",
+			default = true,
+		}
+	},
+	{
+		group_name = "MarkviewIcon4",
+		value = {
+			default = true,
+			fg = "#40a02b",
+			bg = "#dfe3eb",
+		}
+	},
+	{
+		group_name = "MarkviewIcon4Sign",
+		value = {
+			default = true,
+			fg = "#40a02b",
+		}
+	},
+	{
+		group_name = "MarkviewIcon4Fg",
+		value = {
+			fg = "#40a02b",
+			default = true,
+		}
+	},
+	{
+		group_name = "MarkviewIcon5",
+		value = {
+			default = true,
+			fg = "#209fb5",
+			bg = "#dfe3eb",
+		}
+	},
+	{
+		group_name = "MarkviewIcon5Sign",
+		value = {
+			default = true,
+			fg = "#209fb5",
+		}
+	},
+	{
+		group_name = "MarkviewIcon5Fg",
+		value = {
+			fg = "#209fb5",
+			default = true,
+		}
+	},
+	{
+		group_name = "MarkviewIcon6",
+		value = {
+			default = true,
+			fg = "#7287fd",
+			bg = "#dfe3eb",
+		}
+	},
+	{
+		group_name = "MarkviewIcon6Sign",
+		value = {
+			default = true,
+			fg = "#7287fd",
+		}
+	},
+	{
+		group_name = "MarkviewIcon6Fg",
+		value = {
+			fg = "#7287fd",
+			default = true,
+		}
+	},
 	{
 		group_name = "MarkviewCheckboxUnchecked",
 		value = {
@@ -1455,13 +1689,10 @@ highlights.light = {
 	{
 		group_name = "MarkviewCheckboxCancelled",
 		value = {
-			fg = "#9ca0b0",
+			fg = "#7c7f93",
 			default = true,
 		}
 	},
-	---_
-
-	---+ ${hl, Block quotes}
 	{
 		group_name = "MarkviewBlockQuoteWarn",
 		value = {
@@ -1500,34 +1731,31 @@ highlights.light = {
 	{
 		group_name = "MarkviewBlockQuoteDefault",
 		value = {
-			fg = "#9ca0b0",
+			fg = "#7c7f93",
 			default = true,
 		}
 	},
-	---_
-
-	---+ ${hl, Links}
 	{
 		group_name = "MarkviewHyperlink",
 		value = {
-			default = true,
 			link = "@markup.link.label.markdown_inline",
+			default = true,
 		}
 	},
 	{
 		group_name = "MarkviewImageLink",
 		value = {
-			default = true,
 			link = "@markup.link.label.markdown_inline",
+			default = true,
 		}
 	},
 	{
 		group_name = "MarkviewEmail",
 		value = {
-			default = true,
 			link = "@markup.link.url.markdown_inline",
+			default = true,
 		}
-	}
+	},
 	---_
 }
 

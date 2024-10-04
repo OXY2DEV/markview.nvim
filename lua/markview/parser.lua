@@ -396,8 +396,9 @@ parser.md = function (buffer, TStree, from, to)
 				additional_info = block_start:match("%s*```%S*%s+(.*)$");
 			end
 
-			for i = 1,(row_end - row_start) - 2 do
-				local this_code = vim.api.nvim_buf_get_lines(buffer, row_start + i, row_start + i + 1, false)[1];
+			local code_lines = vim.api.nvim_buf_get_lines(buffer, row_start + 1, row_end - 1, false);
+
+			for _, this_code in ipairs(code_lines) do
 				local len = vim.fn.strdisplaywidth(this_code) or 0;
 
 				if vim.list_contains(parser.cached_conf.filetypes or {}, string.lower(lang.get_name(language_string))) then
