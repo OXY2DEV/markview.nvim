@@ -31,32 +31,118 @@ presets.checkboxes = {
 	---_
 	},
 
-	nerd_alt = {
+	minimal = {
 		---+ ${conf, Minimal style checkboxes}
 		enable = true,
 
 		checked = {
-			text = "󰄯", hl = "MarkviewCheckboxChecked"
+			text = "󰗠", hl = "MarkviewCheckboxChecked"
 		},
 		unchecked = {
 			text = "󰄰", hl = "MarkviewCheckboxUnchecked"
 		},
 		custom = {
 			{
-				match = "-",
+				match_string = "/",
 				text = "󱎖",
 				hl = "MarkviewCheckboxPending"
 			},
 			{
-				match = "~",
-				text = "󰪢",
+				match = ">",
+				text = "",
+				hl = "MarkviewCheckboxCancelled"
+			},
+			{
+				match = "<",
+				text = "󰃖",
+				hl = "MarkviewCheckboxCancelled"
+			},
+			{
+				match_string = "-",
+				text = "󰍶",
+				hl = "MarkviewCheckboxCancelled"
+			},
+
+			{
+				match_string = "?",
+				text = "󰋗",
+				hl = "MarkviewCheckboxPending"
+			},
+			{
+				match = "!",
+				text = "󰀦",
+				hl = "MarkviewCheckboxUnchecked"
+			},
+			{
+				match = "*",
+				text = "󰓎",
+				hl = "MarkviewCheckboxPending"
+			},
+			{
+				match = '"',
+				text = "󰸥",
+				hl = "MarkviewCheckboxCancelled"
+			},
+			{
+				match = "l",
+				text = "󰆋",
 				hl = "MarkviewCheckboxProgress"
 			},
 			{
-				match = "o",
-				text = "󰄰",
-				hl = "MarkviewCheckboxCancelled"
-			}
+				match = "b",
+				text = "󰃀",
+				hl = "MarkviewCheckboxProgress"
+			},
+			{
+				match = "i",
+				text = "󰰄",
+				hl = "MarkviewCheckboxChecked"
+			},
+			{
+				match = "S",
+				text = "",
+				hl = "MarkviewCheckboxChecked"
+			},
+			{
+				match = "I",
+				text = "󰛨",
+				hl = "MarkviewCheckboxPending"
+			},
+			{
+				match = "p",
+				text = "",
+				hl = "MarkviewCheckboxChecked"
+			},
+			{
+				match = "c",
+				text = "",
+				hl = "MarkviewCheckboxUnchecked"
+			},
+			{
+				match = "f",
+				text = "󱠇",
+				hl = "MarkviewCheckboxUnchecked"
+			},
+			{
+				match = "k",
+				text = "",
+				hl = "MarkviewCheckboxPending"
+			},
+			{
+				match = "w",
+				text = "",
+				hl = "MarkviewCheckboxProgress"
+			},
+			{
+				match = "u",
+				text = "󰔵",
+				hl = "MarkviewCheckboxChecked"
+			},
+			{
+				match = "d",
+				text = "󰔳",
+				hl = "MarkviewCheckboxUnchecked"
+			},
 		}
 		---_
 	}
