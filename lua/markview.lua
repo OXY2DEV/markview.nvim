@@ -104,7 +104,9 @@ markview.configuration = {
 
 	hybrid_modes = nil,
 
+	ignore_nodes = nil,
 	initial_state = true,
+
 	max_file_length = 1000,
 	modes = { "n", "no", "c" },
 	render_distance = 100,

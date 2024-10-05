@@ -48,6 +48,16 @@ local buf_render = function (buffer)
 
 	-- Get the cursor
 	local cursor = vim.api.nvim_win_get_cursor(win or 0);
+	local node = vim.treesitter.get_node({ bufnr = buffer, pos = { cursor[1] - 1, cursor[2]} });
+
+	--- Don't hide stuff on specific nodes
+	while node:parent() do
+		if vim.list_contains(markview.configuration.ignore_nodes or {}, node:type()) then
+			return;
+		end
+
+		node = node:parent();
+	end
 
 	-- Range to start & stop parsing
 	local start = math.max(0, cursor[1] - 1);

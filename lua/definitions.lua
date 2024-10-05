@@ -21,6 +21,7 @@
 ---@field horizontal_rules markview.conf.hrs
 ---@field html markview.conf.html
 ---@field hybrid_modes? string[] Modes where hybrid mode should be enabled
+---@field ignore_nodes? string[] Tree-sitter nodes to ignore when using hybrid modes
 ---@field initial_state boolean Whether to show the preview at start or not
 ---@field injections markview.conf.injections
 ---@field inline_codes markview.conf.inline_codes
