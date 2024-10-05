@@ -1589,6 +1589,10 @@ latex.operator_conf = {
 			}
 		}
 	},
+
+	set = {
+		operator = { conceal = "" }
+	}
 }
 
 --- Renders brackets
@@ -2123,6 +2127,19 @@ latex.render_block = function (buffer, content, user_config)
 	end
 end
 
+latex.render_specials = {
+	["text"] = function (buffer, content, user_config)
+		if not user_config or user_config.enable == false then
+			return;
+		end
+
+		vim.api.nvim_buf_set_extmark(buffer, latex.namespace, content.row_start, content.col_start, {
+			end_col = content.col_start + 5,
+			conceal = ""
+		});
+	end
+}
+
 --- Renders latex
 ---@param render_type string
 ---@param buffer integer
@@ -2160,6 +2177,8 @@ latex.render = function (render_type, buffer, content, config_table)
 		pcall(latex.render_symbol, buffer, content, conf)
 	elseif render_type == "latex_operator" then
 		pcall(latex.render_operator, buffer, content, conf.operators)
+	elseif render_type == "latex_special_syntax" then
+		pcall(latex.render_specials[content.name], buffer, content, conf.operators)
 	end
 end
 

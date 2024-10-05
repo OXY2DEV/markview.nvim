@@ -1094,6 +1094,8 @@ parser.latex = function (buffer, TStree, from, to)
 			(curly_group)+
 			) @operator_block)
 
+		((text_mode) @special_text)
+
 		((superscript) @superscript)
 		((subscript) @subscript)
 
@@ -1143,6 +1145,13 @@ parser.latex = function (buffer, TStree, from, to)
 				-- Subscript
 				goto invalidBracket;
 			elseif text:match("\\(%a-)$") and vim.fn.strchars(capture_text) > 3 then
+				local name = text:match("\\(%a-)$");
+
+				--- Special operators
+				if vim.list_contains({ "set" }, name) then
+					goto invalidBracket;
+				end
+
 				has_operator = true;
 			elseif text:match("%}$") and vim.fn.strchars(capture_text) > 3 then
 				has_operator = true;
@@ -1170,6 +1179,22 @@ parser.latex = function (buffer, TStree, from, to)
 				node = capture_node,
 				type = "latex_font",
 				font = capture_name,
+
+				text = capture_text:match("%\\" .. capture_name .. "%{(.+)%}$"),
+
+				row_start = row_start,
+				row_end = row_end,
+
+				col_start = col_start,
+				col_end = col_end
+			});
+		elseif capture_name:match("^special%_(.-)") then
+			capture_name = capture_name:gsub("^special%_", "");
+
+			table.insert(parser.parsed_content, {
+				node = capture_node,
+				type = "latex_special_syntax",
+				name = capture_name,
 
 				text = capture_text:match("%\\" .. capture_name .. "%{(.+)%}$"),
 
