@@ -12,7 +12,7 @@ A highly-customisable & feature rich markdown previewer inside Neovim.
 
 <p align="center">
     <a href="https://github.com/OXY2DEV/markview.nvim/wiki/Extras">🔋 Extras</a> |
-    <a href="https://github.com/OXY2DEV/markview.nvim/wiki/Presets">🧩 Presets</a> |
+    <a href="https://github.com/OXY2DEV/markview.nvim/wiki/Presets">🧩 Presets</a>
 </p>
 
 <p align="center">
