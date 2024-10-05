@@ -877,10 +877,12 @@ options in their own sections.
 	        text = {
 	            top       = { "╭", "─", "╮", "┬" },
 	            header    = { "│", "│", "│" },
-	            separator = { "├", "┼", "┤", "─" },
+	            separator = { "├", "─", "┤", "┼" },
 	            row       = { "│", "│", "│" },
 	            bottom    = { "╰", "─", "╯", "┴" },
 	
+	            overlap   = { "├", "─", "┤", "┼" },
+
 	            align_left = "╼",
 	            align_right = "╾",
 	            align_center = { "╴", "╶",}
@@ -895,6 +897,8 @@ options in their own sections.
 	            row       = { "TableBorder", "TableBorder", "TableBorder" },
 	            bottom    = { "TableBorder", "TableBorder", "TableBorder", "TableBorder" },
 	
+	            overlap   = { "TableBorder", "TableBorder", "TableBorder", "TableBorder" },
+
 	            align_left = "TableAlignLeft",
 	            align_right = "TableAlignRight",
 	            align_center = { "TableAlignCenter", "TableAlignCenter",}
@@ -2139,9 +2143,12 @@ syntax, html elements & entities, escaped characters etc.
 	    text = {
 	        top       = { "╭", "─", "╮", "┬" },
 	        header    = { "│", "│", "│" },
-	        separator = { "├", "┼", "┤", "─" },
+	        separator = { "├", "─", "┤", "┼" },
 	        row       = { "│", "│", "│" },
 	        bottom    = { "╰", "─", "╯", "┴" },
+
+			--- Used when tables are overlapping
+			overlap   = { "├", "─", "┤", "┼" },
 	
 	        align_left = "╼",
 	        align_right = "╾",
@@ -2157,6 +2164,8 @@ syntax, html elements & entities, escaped characters etc.
 	        row       = { "TableBorder", "TableBorder", "TableBorder" },
 	        bottom    = { "TableBorder", "TableBorder", "TableBorder", "TableBorder" },
 	
+	        overlap   = { "TableHeader", "TableHeader", "TableHeader", "TableHeader" },
+
 	        align_left = "TableAlignLeft",
 	        align_right = "TableAlignRight",
 	        align_center = { "TableAlignCenter", "TableAlignCenter",}

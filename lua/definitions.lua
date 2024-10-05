@@ -429,6 +429,11 @@
 ---@field separator string[]
 ---@field row string[]
 ---@field bottom string[]
+---@field overlap string[]
+---
+---@field align_left string
+---@field align_right string
+---@field align_center [ string, string ]
 
 ---@class markview.conf.tables
 ---

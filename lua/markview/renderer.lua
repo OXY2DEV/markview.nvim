@@ -64,7 +64,7 @@ local tbl_map = function (value)
 			_o.top[p] = part;
 
 			if p == 2 then
-				_o.separator[4] = part;
+				_o.separator[2] = part;
 			end
 		elseif p == 5 then
 			_o.separator[1] = part;
@@ -79,7 +79,7 @@ local tbl_map = function (value)
 		elseif p == 7 then
 			_o.separator[3] = part;
 		elseif p == 8 then
-			_o.separator[2] = part;
+			_o.separator[4] = part;
 		elseif vim.list_contains({ 9, 10, 11, 12 }, p) then
 			_o.bottom[p - 8] = part;
 		elseif vim.list_contains({ 13, 14 }, p) then
@@ -91,6 +91,7 @@ local tbl_map = function (value)
 		end
 	end
 
+	_o.overlap = _o.separator;
 	return _o;
 end
 
@@ -162,19 +163,23 @@ local set_hl = function (hl)
 	end
 end
 
+--- Checks if table border exists on a line
+---@param extmark table
+---@param config markview.conf.tables
+---@return boolean
 local isTableBorder = function (extmark, config)
 	if not extmark or (not config or config.enable == false) then
 		return false;
 	end
 
-	local hl = config.hl;
+	local hl = config.parts.bottom;
 
 	for i, v in ipairs(hl) do
 		hl[i] = set_hl(v);
 	end
 
 	for _, item in ipairs(extmark[4].virt_text) do
-		if vim.list_contains(hl, item[2]) then
+		if vim.list_contains(hl, item[1]) then
 			return true;
 		end
 	end
@@ -534,6 +539,44 @@ local table_header = function (buffer, content, config_table)
 
 	local virt_txt = {};
 
+	local above_line = vim.api.nvim_buf_get_lines(buffer, row_start - 1, row_start, false);
+	local start_line = vim.api.nvim_buf_get_lines(buffer, row_start, row_start + 1, false);
+
+	--- If a table border is on the current line
+	--- we should get it here
+	local current = vim.api.nvim_buf_get_extmarks(buffer,
+		renderer.namespace,
+		{ row_start, math.min(col_start, #start_line[1]) },
+		{ row_start, math.min(col_start, #start_line[1]) - 1 },
+		{ details = true }
+	)[1];
+
+	-- If there's a table border already on the line
+	-- delete it
+	if above_line[1] then
+		local prev = vim.api.nvim_buf_get_extmarks(buffer,
+			renderer.namespace,
+			{ row_start - 1, math.min(col_start, #above_line[1]) },
+			{ row_start - 1, math.min(col_start, #above_line[1]) - 1 },
+			{ details = true }
+		)[1];
+
+		-- If there's a table border already on the previous line
+		-- delete it
+		if isTableBorder(prev, tbl_conf) then
+			vim.api.nvim_buf_del_extmark(buffer, renderer.namespace, prev[1]);
+
+			if tbl_conf.use_virt_lines == false then
+				top = tbl_conf.parts.overlap or tbl_conf.parts.separator;
+				top_hl = tbl_conf.hls.overlap or tbl_conf.hls.separator;
+			end
+		-- If there's a table border already on the current line
+		-- delete it
+		elseif isTableBorder(current, tbl_conf) then
+			vim.api.nvim_buf_del_extmark(buffer, renderer.namespace, current[1]);
+		end
+	end
+
 	if content.content_positions and content.content_positions[1] then
 		col_start = content.content_positions[1].col_start;
 	end
@@ -578,23 +621,10 @@ local table_header = function (buffer, content, config_table)
 					}
 				});
 			elseif tbl_conf.block_decorator ~= false and row_start > 0 then
-				local above_line = vim.api.nvim_buf_get_lines(buffer, row_start - 1, row_start, false);
-
 				if not above_line[1] then
 					goto noAboveLine;
-				end
-
-				local prev = vim.api.nvim_buf_get_extmarks(buffer,
-					renderer.namespace,
-					{ row_start - 1, math.min(col_start, #above_line[1]) },
-					{ row_start - 1, math.min(col_start, #above_line[1]) - 1 },
-					{ details = true }
-				)[1];
-
-				-- If there's a table border already on the line
-				-- delete it
-				if isTableBorder(prev, tbl_conf) then
-					vim.api.nvim_buf_del_extmark(buffer, renderer.namespace, prev[1])
+				elseif isTableBorder(current, tbl_conf) then
+					goto noAboveLine;
 				end
 
 				if vim.fn.strchars(above_line[1]) < col_start then
@@ -686,8 +716,6 @@ end
 ---@param r_num integer
 local table_seperator = function (buffer, content, user_config, r_num)
 	local tbl_conf = user_config.tables;
-	--- Border structure
-	--- 9. ├ 10. ┼ 11. ┤ 12. │ 13. ╴ 14.╶
 
 	if not tbl_conf.parts or not tbl_conf.parts.separator then
 		return;
@@ -742,7 +770,7 @@ local table_seperator = function (buffer, content, user_config, r_num)
 			vim.api.nvim_buf_set_extmark(buffer, renderer.namespace, row_start + (r_num - 1), col_start + curr_col, {
 				virt_text_pos = "inline",
 				virt_text = {
-					{ separator[2], set_hl(separator_hl[2]) }
+					{ separator[4], set_hl(separator_hl[4]) }
 				},
 
 				end_col = col_start + curr_col + 1,
@@ -759,8 +787,8 @@ local table_seperator = function (buffer, content, user_config, r_num)
 					vim.api.nvim_buf_set_extmark(buffer, renderer.namespace, row_start + (r_num - 1), col_start + curr_col, {
 						virt_text_pos = "inline",
 						virt_text = {
-							{ align_left, set_hl(align_right_hl) },
-							{ string.rep(separator[4], tbl_col_width - 1), set_hl(separator_hl[4]) }
+							{ align_left, set_hl(align_left_hl) },
+							{ string.rep(separator[2], tbl_col_width - 1), set_hl(separator_hl[2]) }
 						},
 
 						end_col = col_start + curr_col + vim.fn.strchars(col) + 1,
@@ -770,7 +798,7 @@ local table_seperator = function (buffer, content, user_config, r_num)
 					vim.api.nvim_buf_set_extmark(buffer, renderer.namespace, row_start + (r_num - 1), col_start + curr_col, {
 						virt_text_pos = "inline",
 						virt_text = {
-							{ string.rep(separator[4], tbl_col_width - 1), set_hl(separator_hl[4]) },
+							{ string.rep(separator[2], tbl_col_width - 1), set_hl(separator_hl[2]) },
 							{ align_right, set_hl(align_right_hl) }
 						},
 
@@ -782,7 +810,7 @@ local table_seperator = function (buffer, content, user_config, r_num)
 						virt_text_pos = "inline",
 						virt_text = {
 							{ align_center[1], set_hl(align_center_hl[1]) },
-							{ string.rep(separator[4], tbl_col_width - 2), set_hl(separator_hl[4]) },
+							{ string.rep(separator[2], tbl_col_width - 2), set_hl(separator_hl[2]) },
 							{ align_center[2], set_hl(align_center_hl[2]) }
 						},
 
@@ -794,7 +822,7 @@ local table_seperator = function (buffer, content, user_config, r_num)
 				vim.api.nvim_buf_set_extmark(buffer, renderer.namespace, row_start + (r_num - 1), col_start + curr_col, {
 					virt_text_pos = "inline",
 					virt_text = {
-						{ string.rep(separator[4], tbl_col_width), set_hl(separator_hl[4]) }
+						{ string.rep(separator[2], tbl_col_width), set_hl(separator_hl[4]) }
 					},
 
 					end_col = col_start + curr_col + vim.fn.strchars(col) + 1,
@@ -814,9 +842,6 @@ end
 ---@param config_table markview.configuration
 local table_footer = function (buffer, content, config_table)
 	local tbl_conf = config_table.tables;
-	--- Border structure
-	--- 15. │ 16. │ 17. │ 18. ╾
-	--- 19. ╰ 20. ─ 21. ╯ 22. ┴
 
 	if not tbl_conf.parts or (not tbl_conf.parts.row or not tbl_conf.parts.bottom) then
 		return;
@@ -865,7 +890,7 @@ local table_footer = function (buffer, content, config_table)
 				conceal = ""
 			});
 
-			table.insert(virt_txt, { bottom[3], set_hl(bottom_hl[21]) })
+			table.insert(virt_txt, { bottom[3], set_hl(bottom_hl[3]) })
 
 			if tbl_conf.block_decorator ~= false and config_table.tables.use_virt_lines == true then
 				if content.content_positions and content.content_positions[#content.content_positions] then

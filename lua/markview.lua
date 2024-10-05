@@ -781,16 +781,13 @@ markview.configuration = {
 		---+ ${class, Tablws}
 		enable = true,
 		parts = {
-			--- ╭ ─ ╮ ┬
-			--- │ │ │   ╼
-			--- ├ ┼ ┤ ─ ╴╶
-			--- │ │ │   ╾
-			--- ╰ ─ ╯ ┴
 			top = { "╭", "─", "╮", "┬" },
 			header = { "│", "│", "│" },
-			separator = { "├", "┼", "┤", "─" },
+			separator = { "├", "─", "┤", "┼" },
 			row = { "│", "│", "│" },
 			bottom = { "╰", "─", "╯", "┴" },
+
+			overlap = { "┝", "━", "┥", "┿" },
 
 			align_left = "╼",
 			align_right = "╾",
@@ -802,6 +799,8 @@ markview.configuration = {
 			separator = { "TableHeader", "TableHeader", "TableHeader", "TableHeader" },
 			row = { "TableBorder", "TableBorder", "TableBorder" },
 			bottom = { "TableBorder", "TableBorder", "TableBorder", "TableBorder" },
+
+			overlap = { "TableBorder", "TableBorder", "TableBorder", "TableBorder" },
 
 			align_left = "TableAlignLeft",
 			align_right = "TableAlignRight",
