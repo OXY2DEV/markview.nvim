@@ -336,7 +336,7 @@ presets.headings = {
 		}
 		---_
 	},
-	arrow = {
+	arrowed = {
 		---+ ${conf, Arrow cornered headings}
 		enable = true,
 		shift_width = 0,
