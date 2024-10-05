@@ -3,6 +3,11 @@ local utils = require("markview.utils");
 local hls = require("markview.highlights");
 local ts = require("markview.treesitter");
 
+if vim.fn.has("nvim-0.10.1") == 0 then
+	vim.notify("[ markview.nvim ]: Neovim version 0.10+ required!", vim.diagnostic.severity.ERROR)
+	return;
+end
+
 ---@diagnostic disable
 ts.inject(markview.configuration.injections)
 hls.create(markview.configuration.highlight_groups)

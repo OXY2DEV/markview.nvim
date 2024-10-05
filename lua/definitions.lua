@@ -45,6 +45,7 @@
 ---@field on_enable fun(buf: integer, win: integer): nil
 ---@field on_disable fun(buf: integer, win: integer): nil
 ---@field on_mode_change fun(buf: integer, win: integer, mode: string): nil
+---@field split_enter? fun(buf: integer, win: integer): nil
 
 --- Block quotes
 ---------------------------------------------------------------

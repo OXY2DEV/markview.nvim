@@ -973,6 +973,7 @@ markview.splitView = {
 		local cursor = vim.api.nvim_win_get_cursor(windows[1]);
 		pcall(vim.api.nvim_win_set_cursor, self.window, cursor);
 
+		vim.api.nvim_buf_clear_namespace(self.buffer, markview.renderer.namespace, 0, -1);
 		local parsed_content;
 
 		if #content < markview.configuration.max_file_length then
