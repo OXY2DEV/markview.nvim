@@ -112,6 +112,10 @@ checkboxes = {
 }
 ```
 
+Checkboxes now use `nerd font` instead of `Unicode symbols`.
+
+If you prefer the old configuration, you can use the `legacy` preset.
+
 ## Code blocks
 
 `minimal` style has been deprecated.
