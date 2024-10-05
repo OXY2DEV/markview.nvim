@@ -400,38 +400,118 @@ markview.configuration = {
 	},
 
 	checkboxes = {
-		---+ ${class, Checkboxes}
+		---+ ${conf, Minimal style checkboxes}
 		enable = true,
 
 		checked = {
-			text = "✔", hl = "MarkviewCheckboxChecked"
+			text = "󰗠", hl = "MarkviewCheckboxChecked"
 		},
 		unchecked = {
-			text = "✘", hl = "MarkviewCheckboxUnchecked"
+			text = "󰄰", hl = "MarkviewCheckboxUnchecked"
 		},
 		custom = {
-			---+ ${conf, Custom cehckboxes}
 			{
-				match_string = "-",
-				text = "◯",
-				hl = "MarkviewCheckboxPending",
+				match_string = "/",
+				text = "󱎖",
+				hl = "MarkviewCheckboxPending"
 			},
 			{
-				match_string = "~",
-				text = "◕",
+				match_string = ">",
+				text = "",
+				hl = "MarkviewCheckboxCancelled"
+			},
+			{
+				match_string = "<",
+				text = "󰃖",
+				hl = "MarkviewCheckboxCancelled"
+			},
+			{
+				match_string = "-",
+				text = "󰍶",
+				hl = "MarkviewCheckboxCancelled",
+				scope_hl = "MarkviewCheckboxStriked"
+			},
+
+			{
+				match_string = "?",
+				text = "󰋗",
+				hl = "MarkviewCheckboxPending"
+			},
+			{
+				match_string = "!",
+				text = "󰀦",
+				hl = "MarkviewCheckboxUnchecked"
+			},
+			{
+				match_string = "*",
+				text = "󰓎",
+				hl = "MarkviewCheckboxPending"
+			},
+			{
+				match_string = '"',
+				text = "󰸥",
+				hl = "MarkviewCheckboxCancelled"
+			},
+			{
+				match_string = "l",
+				text = "󰆋",
 				hl = "MarkviewCheckboxProgress"
 			},
 			{
-				match_string = "o",
-				text = "󰩹",
-				hl = "MarkviewCheckboxCancelled"
+				match_string = "b",
+				text = "󰃀",
+				hl = "MarkviewCheckboxProgress"
+			},
+			{
+				match_string = "i",
+				text = "󰰄",
+				hl = "MarkviewCheckboxChecked"
+			},
+			{
+				match_string = "S",
+				text = "",
+				hl = "MarkviewCheckboxChecked"
+			},
+			{
+				match_string = "I",
+				text = "󰛨",
+				hl = "MarkviewCheckboxPending"
 			},
 			{
 				match_string = "p",
-				text = "󰩹",
-				hl = "MarkviewCheckboxCancelled"
-			}
-			---_
+				text = "",
+				hl = "MarkviewCheckboxChecked"
+			},
+			{
+				match_string = "c",
+				text = "",
+				hl = "MarkviewCheckboxUnchecked"
+			},
+			{
+				match_string = "f",
+				text = "󱠇",
+				hl = "MarkviewCheckboxUnchecked"
+			},
+			{
+				match_string = "k",
+				text = "",
+				hl = "MarkviewCheckboxPending"
+			},
+			{
+				match_string = "w",
+				text = "",
+				hl = "MarkviewCheckboxProgress"
+			},
+			{
+				match_string = "u",
+				text = "󰔵",
+				hl = "MarkviewCheckboxChecked"
+			},
+			{
+				match_string = "d",
+				text = "󰔳",
+				hl = "MarkviewCheckboxUnchecked"
+			},
 		}
 		---_
 	},

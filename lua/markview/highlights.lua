@@ -416,6 +416,19 @@ highlights.dynamic = {
 			return hlGenerator({ "DiagnosticError" }, "#D20F39", "#F38BA8", "CheckboxUnchecked");
 		end
 	},
+	{
+		output = function (util)
+			local fg = util.color("fg", { "Comment" }, "#9ca0b0", "#6c7086");
+
+			return {
+				group_name = "CheckboxStriked",
+				value = {
+					fg = util.hex(fg),
+					strikethrough = true
+				}
+			};
+		end
+	},
 	---_
 
 	---+ ${hl, Code blocks}
@@ -1204,6 +1217,14 @@ highlights.dark = {
 		}
 	},
 	{
+		group_name = "MarkviewCheckboxStriked",
+		value = {
+			default = true,
+			strikethrough = true,
+			bg = "#28283d",
+		}
+	},
+	{
 		group_name = "MarkviewBlockQuoteWarn",
 		value = {
 			default = true,
@@ -1690,6 +1711,14 @@ highlights.light = {
 		group_name = "MarkviewCheckboxCancelled",
 		value = {
 			fg = "#7c7f93",
+			default = true,
+		}
+	},
+	{
+		group_name = "MarkviewCheckboxStriked",
+		value = {
+			bg = "#dfe3eb",
+			strikethrough = true,
 			default = true,
 		}
 	},

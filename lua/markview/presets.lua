@@ -1,30 +1,65 @@
 local presets = {};
 
+---@type { [string]: markview.conf.checkboxes }
 presets.checkboxes = {
+	legacy = {
+		---+ ${conf, Old checkboxes}
+		enable = true,
+
+		checked = {
+			text = "✔", hl = "MarkviewCheckboxChecked",
+			scope_hl = "MarkviewCheckboxStriked"
+		},
+		unchecked = {
+			text = "✘", hl = "MarkviewCheckboxUnchecked"
+		},
+		custom = {
+			---+ ${conf, Custom cehckboxes}
+			{
+				match_string = "-",
+				text = "◯",
+				hl = "MarkviewCheckboxPending",
+			},
+			{
+				match_string = "~",
+				text = "◕",
+				hl = "MarkviewCheckboxProgress"
+			},
+			{
+				match_string = "o",
+				text = "󰩹",
+				hl = "MarkviewCheckboxCancelled"
+			},
+			---_
+		}
+		---_
+	},
+
 	nerd = {
 		---+ ${conf, Uses nerd font characters}
 		enable = true,
 
 		checked = {
-			text = "", hl = "MarkviewCheckboxChecked"
+			text = "", hl = "MarkviewCheckboxChecked",
+			scope_hl = "MarkviewCheckboxStriked"
 		},
 		unchecked = {
-			text = "", hl = "MarkviewCheckboxUnchecked"
+			text = "", hl = "MarkviewCheckboxUnchecked"
 		},
 		custom = {
 			{
-				match = "-",
-				text = "󰡖",
+				match_string = "-",
+				text = "",
 				hl = "MarkviewCheckboxPending"
 			},
 			{
-				match = "~",
-				text = "󰄗",
+				match_string = "~",
+				text = "",
 				hl = "MarkviewCheckboxProgress"
 			},
 			{
-				match = "o",
-				text = "",
+				match_string = "o",
+				text = "",
 				hl = "MarkviewCheckboxCancelled"
 			}
 		}
@@ -48,19 +83,20 @@ presets.checkboxes = {
 				hl = "MarkviewCheckboxPending"
 			},
 			{
-				match = ">",
+				match_string = ">",
 				text = "",
 				hl = "MarkviewCheckboxCancelled"
 			},
 			{
-				match = "<",
+				match_string = "<",
 				text = "󰃖",
 				hl = "MarkviewCheckboxCancelled"
 			},
 			{
 				match_string = "-",
 				text = "󰍶",
-				hl = "MarkviewCheckboxCancelled"
+				hl = "MarkviewCheckboxCancelled",
+				scope_hl = "MarkviewCheckboxStriked"
 			},
 
 			{
@@ -69,77 +105,77 @@ presets.checkboxes = {
 				hl = "MarkviewCheckboxPending"
 			},
 			{
-				match = "!",
+				match_string = "!",
 				text = "󰀦",
 				hl = "MarkviewCheckboxUnchecked"
 			},
 			{
-				match = "*",
+				match_string = "*",
 				text = "󰓎",
 				hl = "MarkviewCheckboxPending"
 			},
 			{
-				match = '"',
+				match_string = '"',
 				text = "󰸥",
 				hl = "MarkviewCheckboxCancelled"
 			},
 			{
-				match = "l",
+				match_string = "l",
 				text = "󰆋",
 				hl = "MarkviewCheckboxProgress"
 			},
 			{
-				match = "b",
+				match_string = "b",
 				text = "󰃀",
 				hl = "MarkviewCheckboxProgress"
 			},
 			{
-				match = "i",
+				match_string = "i",
 				text = "󰰄",
 				hl = "MarkviewCheckboxChecked"
 			},
 			{
-				match = "S",
+				match_string = "S",
 				text = "",
 				hl = "MarkviewCheckboxChecked"
 			},
 			{
-				match = "I",
+				match_string = "I",
 				text = "󰛨",
 				hl = "MarkviewCheckboxPending"
 			},
 			{
-				match = "p",
+				match_string = "p",
 				text = "",
 				hl = "MarkviewCheckboxChecked"
 			},
 			{
-				match = "c",
+				match_string = "c",
 				text = "",
 				hl = "MarkviewCheckboxUnchecked"
 			},
 			{
-				match = "f",
+				match_string = "f",
 				text = "󱠇",
 				hl = "MarkviewCheckboxUnchecked"
 			},
 			{
-				match = "k",
+				match_string = "k",
 				text = "",
 				hl = "MarkviewCheckboxPending"
 			},
 			{
-				match = "w",
+				match_string = "w",
 				text = "",
 				hl = "MarkviewCheckboxProgress"
 			},
 			{
-				match = "u",
+				match_string = "u",
 				text = "󰔵",
 				hl = "MarkviewCheckboxChecked"
 			},
 			{
-				match = "d",
+				match_string = "d",
 				text = "󰔳",
 				hl = "MarkviewCheckboxUnchecked"
 			},
