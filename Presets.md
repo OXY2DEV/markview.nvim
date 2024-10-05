@@ -37,7 +37,8 @@ require("markview").setup({
 
 ## Presets: Checkboxes
 
-https://github.com/OXY2DEV/markview.nvim/blob/images/Wiki/presets_checkboxes.gif
+![checkbox presets](https://github.com/OXY2DEV/markview.nvim/blob/images/Wiki/presets_checkboxes.gif)
+
 
 Currently available presets,
 - nerd
@@ -55,7 +56,7 @@ require("markview").setup({
 
 ## Presets: Headings
 
-https://github.com/OXY2DEV/markview.nvim/blob/images/Wiki/presets_headings.gif
+![heading presets](https://github.com/OXY2DEV/markview.nvim/blob/images/Wiki/presets_headings.gif)
 
 Currently available presets,
 - glow
@@ -77,7 +78,7 @@ require("markview").setup({
 
 ## Presets: Horizontal rules
 
-https://github.com/OXY2DEV/markview.nvim/blob/images/Wiki/presets_hrs.gif
+![hr presets](https://github.com/OXY2DEV/markview.nvim/blob/images/Wiki/presets_hrs.gif)
 
 Currently available presets,
 - thin
