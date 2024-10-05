@@ -1,570 +1,449 @@
 ---@meta
 
 ---------------------------------------------------------------
---- For the init.lua file
+--- Configuration table
 ---------------------------------------------------------------
 
---- Definition for the table passed into setup()
----@class markview.config.user
+---@class markview.configuration configuration table for markview
 ---
---- Debounce for redraw
----@field debounce? number
----
---- Window config for split view
----@field split_conf? table
----
---- List of custom highlight groups
----@field highlight_groups table[]?
----
---- List of filetypes where the plugin will be active
----@field filetypes string[]
----
---- List of buffer types to ignore
----@field buf_ignore string[]?
---- 
---- List of modes where the plugin will be active
----@field modes string[]?
----
---- List of modes where both raw & preview is shown
----@field hybrid_modes string[]?
----
---- Max number of lines in a file to do full rendering
----@field max_length number?
----
---- Number of lines to render on partial render mode
----@field render_range number?
----
---- Callbacks for plugin states
----@field callbacks markview.config.callbacks?
----
---- Table for heading configuration
----@field headings markview.render_config.headings?
----
---- Table for code block configuration
----@field code_blocks markview.render_config.code_blocks?
----
---- Table for block quotes configuration
----@field block_quotes markview.render_config.block_quotes?
----
---- Table for horizontal rule configuration
----@field horizontal_rules markview.render_config.hrs?
----
---- Table for hyperlink configuration
----@field links markview.render_config.links?
----
---- Table for inline codes configuration
----@field inline_codes markview.render_config.inline_codes?
----
---- Table for list item configuration
----@field list_items markview.render_config.list_items?
----
---- Table for list item configuration
----@field checkboxes markview.render_config.checkboxes?
----
---- Table for table configuration
----@field tables markview.render_config.tables?
-
-
---- Definition for the complete configuration table
----@class markview.config
----
---- Debounce for redraw
----@field debounce? number
----
---- Window config for split view
----@field split_conf? table
----
---- List of custom highlight groups
----@field highlight_groups table[]?
----
---- List of filetypes where the plugin will be active
----@field filetypes string[]
----
---- List of buffer types to ignore
----@field buf_ignore string[]?
---- 
---- List of modes where the plugin will be active
----@field modes string[]
----
---- List of modes where both raw & preview is shown
----@field hybrid_modes string[]?
----
---- Max number of lines in a file to do full rendering
----@field max_length number?
----
---- Number of lines to render on partial render mode
----@field render_range number?
----
---- Options for various plugins states
----@field callbacks markview.config.callbacks
----
---- Table for heading configuration
----@field headings markview.render_config.headings
----
---- Table for code block configuration
----@field code_blocks markview.render_config.code_blocks
----
---- Table for block quotes configuration
----@field block_quotes markview.render_config.block_quotes
----
---- Table for horizontal rule configuration
----@field horizontal_rules markview.render_config.hrs
----
---- Table for hyperlink configuration
----@field links markview.render_config.links
----
---- Table for inline code configuration
----@field inline_codes markview.render_config.inline_codes
----
---- Table for list item configuration
----@field list_items markview.render_config.list_items
----
---- Table for checkbox configuration
----@field checkboxes markview.render_config.checkboxes
----
---- Table for table configuration
----@field tables markview.render_config.tables
-
-
---- Definition for the plugin callbacks
----@class markview.config.callbacks
----
----@field on_enable function?
----
----@field on_disable function?
----
----@field on_mode_change function?
+---@field __inside_code_block boolean Experimental settings that stops rendering inside code blocks
+---@field block_quotes markview.conf.block_quotes Block quote configuration
+---@field buf_ignore? string[] Buffer types to ignore
+---@field callbacks markview.conf.callbacks
+---@field checkboxes markview.conf.checkboxes
+---@field code_blocks markview.conf.code_blocks
+---@field debounce number Time in miliseconds to wait before redrawing after an event
+---@field escaped { enable: boolean } Configuration table for escaped characters
+---@field filetypes string[] File types where the plugin is active
+---@field footnotes markview.conf.footnotes
+---@field headings markview.conf.headings
+---@field highlight_groups? string | markview.conf.hl[] List of highlight groups
+---@field horizontal_rules markview.conf.hrs
+---@field html markview.conf.html
+---@field hybrid_modes? string[] Modes where hybrid mode should be enabled
+---@field initial_state boolean Whether to show the preview at start or not
+---@field injections markview.conf.injections
+---@field inline_codes markview.conf.inline_codes
+---@field latex markview.conf.latex
+---@field links markview.conf.links
+---@field list_items markview.conf.list_items
+---@field max_file_length? integer Maximum number of lines a file can have for it to be rendered entirely
+---@field modes string[] Modes where the plugin will show preview
+---@field render_distance integer Amount of lines(from the cursor) to render on large files
+---@field split_conf table Window options for splitView
+---@field tables markview.conf.tables
 
 ---------------------------------------------------------------
---- For rendering things
+--- Configuration options table
 ---------------------------------------------------------------
 
+--- Callbacks
+---------------------------------------------------------------
 
---- Definition for the configuration table for the custom headings
----@class markview.render_config.headings
+---@class markview.conf.callbacks Callbacks run on various events
 ---
---- Enable/Disable stylized headings
----@field enable boolean?
----
---- Fallback textoff value
----@field textoff? number
----
---- Number of characters to shift per heading level
----@field shift_width number?
----
----@field heading_1 markview.render_config.headings.h?
----@field heading_2 markview.render_config.headings.h?
----@field heading_3 markview.render_config.headings.h?
----@field heading_4 markview.render_config.headings.h?
----@field heading_5 markview.render_config.headings.h?
----@field heading_6 markview.render_config.headings.h?
+---@field on_enable fun(buf: integer, win: integer): nil
+---@field on_disable fun(buf: integer, win: integer): nil
+---@field on_mode_change fun(buf: integer, win: integer, mode: string): nil
+---@field split_enter? fun(buf: integer, win: integer): nil
 
+--- Block quotes
+---------------------------------------------------------------
 
---- Definition for the individual heading configuration table
----@class markview.render_config.headings.h
+--- Configuration for callouts
+---@class markview.block_quotes.callouts
 ---
---- Name of the style to use
----@field style string
----
---- Alignment for label styled headings
----@field align? string
----
---- Default highlight group used by the rest of the options
---- Used for highlighting the line when the style is "simple"
----@field hl string?
----
---- Character added before the heading name to separate heading levels
----@field shift_char string?
----
---- Highlight group for shift_char
----@field shift_hl string?
----
---- Sets the character to use as the sign, preferably 2 characters
----@field sign string?
----
---- The highlight group for the sign, inherits from hl if nil
----@field sign_hl string?
----
---- The icon to use for the heading
----@field icon string?
----
---- Highlight group for the icon
----@field icon_hl string?
----
---- Custom text for the heading. The heading text is used when nil
----@field text string?
----
---- Highlight group for the heading text, inherits from icon_hl
----@field text_hl string?
----
---- Used bu the "label" style to add text before the left padding
----@field corner_left string?
----
---- Highlight group for the left corner
----@field corner_left_hl string?
----
---- Used bu the "label" style to add text after the right padding
----@field corner_right string?
----
---- Highlight group for the right corner
----@field corner_right_hl string?
----
---- Used bu the "label" style to add text before the heading text
----@field padding_left string?
----
---- Highlight group for the left padding
----@field padding_left_hl string?
----
---- Used bu the "label" style to add text after the heading text
----@field padding_right string?
----
---- Highlight group for the left padding
----@field padding_right_hl string?
----
---- Character for underline on setext headings
----@field line string?
----
---- Highlight group for underline, when nil hl is used
----@field line_hl string?
+---@field match_string string | string[] Patterns for this callout
+---@field hl? string Primary highlight group
+---@field preview string String to show instead of [!text]
+---@field preview_hl? string Highlight group for callout_preview & custom_title
+---@field title? boolean? When true, callouts can have titles
+---@field icon? string? Icon for the title
+---@field border string | string[] Text to use for the border
+---@field border_hl? string | string[] Highlight group(s) for the border
 
-
-
---- Definition for the configuration table for the custom code blocks
----@class markview.render_config.code_blocks
+--- Configuration table for block quotes, callouts & alerts
+---@class markview.conf.block_quotes
 ---
---- Enable/Disable custom code blocks
----@field enable boolean?
----
---- Name of the style to use
----@field style string
----
---- Used for disabling icons on language view
----@field icons boolean?
----
---- Default highlight group used by the rest of the options
---- Used for highlighting the lines when the style is "simple"
----@field hl string?
----
---- Highlight group for the info string
----@field info_hl string?
----
---- The minimum number of columns to take(without the paddings)
----@field min_width number
----
---- Character to use as padding for the code blocks
----@field pad_char string?
----
---- Number of characters to use for the left and right padding
----@field pad_amount number?
----
---- List of tuples to map the identifier for the code block to
---- an actual language name. E.g. cpp » c++
----
---- The first value is what will be matched and the second value
---- is what will be used
----@field language_names [string, string][]?
----
---- Highlight group to color the language name. When nil uses the
---- icon's highlight group
----@field name_hl string?
----
---- The direction where the language name & icon is shown in the
---- "language" style
----@field language_direction string?
----
---- "virt_text_pos" value for the top & bottom border
----@field position string?
----
---- Enable/Disable the code block sign
----@field sign boolean?
----
---- The highlight group for the signs. When nil, the icon's highlight
---- group is used
----@field sign_hl string?
-
-
---- Definition for the configuration table for the custom block quotes
----@class markview.render_config.block_quotes
----
---- Enable/Disable custom block quotes
----@field enable boolean?
----
---- Default configuration for block quotes and unsupported callouts
+---@field enable boolean
 ---@field default { border: string | string[], border_hl: string | string[] }
+---@field callouts? markview.block_quotes.callouts[]
+
+--- Checkbox
+---------------------------------------------------------------
+
+--- Configuration for custom checkboxes
+---@class markview.checkboxes.conf
 ---
---- List of configuration for various callouts
----@field callouts markview.render_config.block_quotes.callouts[]?
+---@field match_string string | string[] Text inside [] to match for this checkbox style
+---@field text string Text to show
+---@field hl? string Highlight group for the text
+---@field scope_hl? string Highlight group to add to the scope of a checkbox
+
+--- Configuration table for checkboxes
+---@class markview.conf.checkboxes
+---
+---@field enable boolean
+---
+---@field checked { text: string, hl: string?, scope_hl: string? } Configuration for checked checkboxes
+---@field unchecked { text: string, hl: string?, scope_hl: string? } Configuration for unchecked checkboxes
+---
+---@field custom markview.checkboxes.conf[]
+
+--- Code blocks
+---------------------------------------------------------------
+
+--- Configuration table for code blocks
+---@class markview.conf.code_blocks
+---
+---@field enable boolean
+---@field icons string Icon provider
+---@field style "simple" | "block" Render style
+---@field hl? string Highlight group for the code block
+---@field info_hl? string Highlight group for the info string
+---@field language_hl? string Highlight group for the language name
+---
+---@field min_width integer Minimum width of the code block
+---@field pad_amount integer Width of left & right padding
+---@field pad_char? string Character to use as padding
+---
+---@field language_direction "left" | "right" Direction of the language
+---@field language_names? table<string, string>
+---@field sign boolean When true, signs are shown
+---@field sign_hl? string Highlight group for the sign
+
+--- Footnotes
+---------------------------------------------------------------
+
+--- Configuration table for footnotes
+---@class markview.conf.footnotes
+---
+---@field enable boolean
+---@field superscript? boolean
+---@field hl? string
+
+--- Headings
+---------------------------------------------------------------
+
+---@class markview.headings.h
+---
+---@field style "simple" | "icon" | "label" Render style
+---@field align? "left" | "center" | "right" Alignment for label styled headings
+---@field hl? string Primary highlight group for the heading
+---
+---@field shift_char? string Text to use for shifting the icon
+---@field shift_hl? string Highlight group for shift_char
 
 
---- Definition for the configuration table for various callouts
----@class markview.render_config.block_quotes.callouts
+---@class markview.h.simple
 ---
---- String to match to detect the callout, this is not case-sensitive
----@field match_string string|string[]
----
---- The text to show for the callout
----@field callout_preview string
----
----@field callout_preview_hl string?
---- Highlight group for callout_preview
----
---- Adds support for custom titles(when available)
---- Custom title are colored using callout_preview_hl
----@field custom_title boolean?
----
---- Icon to use for custom title
----@field custom_icon string?
----
---- Border for the callout
----@field border string | string[]
----
---- Highlight group for border
----@field border_hl string | string[]
+---@field style "simple" Render style
+---@field hl? string Primary highlight group for the heading
 
 
---- Definition for the configuration table for the custom horizontal rules
----@class markview.render_config.hrs
+---@class markview.h.label
 ---
---- Enable/Disable custom block quotes
----@field enable boolean?
+---@field style "label" Render style
+---@field align "left" | "center" | "right"
+---@field hl? string Primary highlight group for the heading
 ---
---- Parts used to make the horizontal rule
----@field parts markview.render_config.hr.parts[]
+---@field sign? string
+---@field sign_hl? string
+---
+---@field icon? string
+---@field icon_hl? string
+---
+---@field corner_left? string
+---@field padding_left? string
+---@field padding_right? string
+---@field corner_right? string
+---
+---@field corner_left_hl? string
+---@field padding_left_hl? string
+---@field padding_right_hl? string
+---@field corner_right_hl? string
 
 
---- Configuration table for the parts of the horizontal rule
----@class markview.render_config.hr.parts
+---@class markview.h.icon
 ---
---- The type name for the part
----@field type string
+---@field style "icon" Render style
+---@field hl? string Primary highlight group for the heading
 ---
---- The number of times to repeat "text" 
----@field repeat_amount (number | function)?
+---@field shift_char? string
+---@field shift_hl? string
 ---
---- The direction for the gradient
----@field direction string?
+---@field sign? string
+---@field sign_hl? string
 ---
---- The text used to construct the part
---- It's directly used if style is "text"
----@field text (string | string[])?
----
---- Highlight group for text
----@field hl (string | string[])?
+---@field icon? string
+---@field icon_hl? string
 
+---@class markview.h.decorated
+---
+---@field style "decorated" Render style
+---@field hl? string Primary highlight group for the heading
+---
+---@field sign? string
+---@field sign_hl? string
+---
+---@field icon? string
+---@field icon_hl? string
+---
+---@field border string
+---@field border_hl? string
 
---- Configuration table for custom hyperlinks & image links
----@class markview.render_config.links
+---@class markview.conf.headings
 ---
---- Enable/Disable custom hyperlink
----@field enable boolean?
+---@field enable boolean
+---@field shift_width integer Number of spaces to add per heading level
+---@field textoff? integer Default textoff value, affects alignment
 ---
----@field hyperlinks markview.render_config.links.hyperlink
+---@field heading_1 (markview.h.simple | markview.h.label | markview.h.icon)
+---@field heading_2 (markview.h.simple | markview.h.label | markview.h.icon)
+---@field heading_3 (markview.h.simple | markview.h.label | markview.h.icon)
+---@field heading_4 (markview.h.simple | markview.h.label | markview.h.icon)
+---@field heading_5 (markview.h.simple | markview.h.label | markview.h.icon)
+---@field heading_6 (markview.h.simple | markview.h.label | markview.h.icon)
 ---
----@field images markview.render_config.links.link
----
----@field emails markview.render_config.links.link
+---@field setext_1 (markview.h.simple | markview.h.decorated)
+---@field setext_2 (markview.h.simple | markview.h.decorated)
 
+--- Highlight groups
+---------------------------------------------------------------
 
---- Configuration table for various link types
----@class markview.render_config.links.hyperlink
+---@class markview.conf.hl
 ---
----@field custom? markview.render_config.links.link[]
+---@field group_name? string
+---@field value? table
 ---
---- Default highlight group for the various parts
----@field hl string?
----
---- The icon to use for the heading
----@field icon string?
----
---- Highlight group for the icon
----@field icon_hl string?
----
---- Used bu the "label" style to add text before the left padding
----@field corner_left string?
----
---- Highlight group for the left corner
----@field corner_left_hl string?
----
---- Used bu the "label" style to add text after the right padding
----@field corner_right string?
----
---- Highlight group for the right corner
----@field corner_right_hl string?
----
---- Used bu the "label" style to add text before the heading text
----@field padding_left string?
----
---- Highlight group for the left padding
----@field padding_left_hl string?
----
---- Used bu the "label" style to add text after the heading text
----@field padding_right string?
----
---- Highlight group for the left padding
----@field padding_right_hl string?
+---@field output? fun(util: table): ({ group_name: string, value: table } | { group_name: string, value: table}[] | nil)
 
+--- Horizontal rules
+---------------------------------------------------------------
 
---- Configuration table for various link types
----@class markview.render_config.links.link
+---@class markview.conf.hrs
 ---
---- Only for custom hyperlinks. Match string
----@field match? string
----
---- Default highlight group for the various parts
----@field hl string?
----
---- The icon to use for the heading
----@field icon string?
----
---- Highlight group for the icon
----@field icon_hl string?
----
---- Used bu the "label" style to add text before the left padding
----@field corner_left string?
----
---- Highlight group for the left corner
----@field corner_left_hl string?
----
---- Used bu the "label" style to add text after the right padding
----@field corner_right string?
----
---- Highlight group for the right corner
----@field corner_right_hl string?
----
---- Used bu the "label" style to add text before the heading text
----@field padding_left string?
----
---- Highlight group for the left padding
----@field padding_left_hl string?
----
---- Used bu the "label" style to add text after the heading text
----@field padding_right string?
----
---- Highlight group for the left padding
----@field padding_right_hl string?
+---@field enable boolean
+---@field parts (markview.hr.text | markview.hr.repeating)[]
 
+--- Shows some text on the horizontal rule
+---@class markview.hr.text
+---
+---@field type "text" Part type
+---@field text string Text to show
+---@field hl? string Highlight group for the text
 
---- Configuration table for custom inline codes
----@class markview.render_config.inline_codes
+--- Repeats provided text by the specified amount
+---@class markview.hr.repeating
 ---
---- Enable/Disable custom inline codes
----@field enable boolean?
+---@field type "repeating" Part type
+---@field repeat_amount fun(buf: integer): integer | integer
+---@field text string Text to repeat
 ---
---- Default highlight group for the various parts
----@field hl string?
----
---- Used bu the "label" style to add text before the left padding
----@field corner_left string?
----
---- Highlight group for the left corner
----@field corner_left_hl string?
----
---- Used bu the "label" style to add text after the right padding
----@field corner_right string?
----
---- Highlight group for the right corner
----@field corner_right_hl string?
----
---- Used bu the "label" style to add text before the heading text
----@field padding_left string?
----
---- Highlight group for the left padding
----@field padding_left_hl string?
----
---- Used bu the "label" style to add text after the heading text
----@field padding_right string?
----
---- Highlight group for the left padding
----@field padding_right_hl string?
+---@field hl? string | string[] Highlight group for the text
+---@field direction? "left" | "right" Direction from where to start adding hl
 
+--- HTML
+---------------------------------------------------------------
 
---- Configuration table for the custom list items
----@class markview.render_config.list_items
+---@class markview.conf.html
 ---
---- Enable/Disable custom list items
----@field enable boolean?
+---@field enable boolean
 ---
---- Indent size of list items
----@field indent_size number?
----
---- Number of characters to shift per level
----@field shift_width number?
----
---- Configuration for the + list item
----@field marker_plus markview.render_config.list_items.item?
----
---- Configuration for the - list item
----@field marker_minus markview.render_config.list_items.item?
----
---- Configuration for the * list item
----@field marker_star markview.render_config.list_items.item?
----
---- Configuration for the . list item
----@field marker_dot markview.render_config.list_items.item?
+---@field tags markview.html.tags
+---@field entities markview.html.entities
 
+---@class markview.html.tags
+---
+---@field enable boolean
+---
+---@field default { conceal: boolean, hl: string }
+---@field configs { [string]: { conceal: boolean, hl: string } }
 
---- Configuration table for various list items
----@class markview.render_config.list_items.item
+---@class markview.html.entities
 ---
---- Enable/Disable indent based padding for lists
----@field add_padding boolean?
----
---- Custom marker for list item
----@field text string?
----
---- Highlight group for text
----@field hl string?
+---@field enable boolean
+---@field hl? string
 
+--- Injections
+---------------------------------------------------------------
 
---- Configuration table for custom checkbox
----@class markview.render_config.checkboxes
+---@class markview.conf.injections
 ---
---- Enable/Disable custom checkbox
----@field enable boolean?
----
---- Configuration table for the checked state
----@field checked markview.render_config.checkbox.state
----
---- Configuration table for the pending state
----@field pending markview.render_config.checkbox.state
----
---- Configuration table for the unchecked state
----@field unchecked markview.render_config.checkbox.state
----
---- Configuration table for the unchecked state
----@field custom markview.render_config.checkbox.state[]?
+---@field enable boolean
+---@field languages? table<string, { enable: boolean?, overwrite: boolean?, query: string }>
 
+--- Inline codes
+---------------------------------------------------------------
 
---- Configuration table for the checkbox state
----@class markview.render_config.checkbox.state
+---@class markview.conf.inline_codes
 ---
---- The text inside [] checkboxes to match
----@field match string?
+---@field enable boolean
+---@field hl? string
 ---
---- Text to use as the custom checkbox
+---@field corner_left? string
+---@field padding_left? string
+---@field padding_right? string
+---@field corner_right? string
+---
+---@field corner_left_hl? string
+---@field padding_left_hl? string
+---@field padding_right_hl? string
+---@field corner_right_hl? string
+
+--- LaTeX
+---------------------------------------------------------------
+
+---@class markview.conf.latex
+---
+---@field enable boolean
+---@field brackets? markview.latex.brackets
+---@field inline? { enable: boolean } Hides $...$ in inline latex
+---@field block? markview.latex.block
+---@field symbols? markview.latex.symbols
+---@field operators? markview.latex.operators
+---@field subscript? markview.latex.subscript
+---@field superscript? markview.latex.superscript
+
+---@class markview.latex.brackets
+---
+---@field enable boolean
+---@field hl? string
+
+---@class markview.latex.block
+---
+---@field enable boolean
+---
+---@field pad_amount? integer
+---@field text? [ string, string? ]
+---@field hl? string
+
+---@class markview.latex.symbols
+---
+---@field enable boolean
+---@field overwrite? table<string, string>
+---@field groups? { match: (string[] | fun(txt: string): boolean), hl: string? }[]
+---@field hl? string
+
+---@class markview.latex.operators
+---
+---@field enable boolean
+---@field configs table<string, markview.operators.config>
+
+---@class markview.operators.config
+---
+---@field operator? table
+---@field args? (table | nil)[]
+
+---@class markview.latex.superscript
+---
+---@field enable boolean
+---@field hl? string
+---@field conceal_brackets? boolean
+
+---@class markview.latex.subscript
+---
+---@field enable boolean
+---@field hl? string
+---@field conceal_brackets? boolean
+
+--- Links
+---------------------------------------------------------------
+
+---@class markview.conf.links
+---
+---@field enable boolean
+---
+---@field hyperlinks markview.links.config
+---@field internal_links markview.links.config
+---@field images markview.links.config
+---@field emails markview.links.config
+
+---@class markview.links.config
+---
+---@field enable boolean
+---
+---@field hl? string
+---
+---@field icon string
+---@field icon_hl? string
+---
+---@field corner_left? string
+---@field padding_left? string
+---@field padding_right? string
+---@field corner_right? string
+---
+---@field corner_left_hl? string
+---@field padding_left_hl? string
+---@field padding_right_hl? string
+---@field corner_right_hl? string
+---
+---@field custom? markview.links.custom[]
+
+---@class markview.links.custom
+---
+---@field match_string string
+---
+---@field icon? string
+---@field hl? string
+---
+---@field corner_left? string
+---@field padding_left? string
+---@field padding_right? string
+---@field corner_right? string
+---
+---@field corner_left_hl? string
+---@field padding_left_hl? string
+---@field padding_right_hl? string
+---@field corner_right_hl? string
+
+--- List items
+---------------------------------------------------------------
+
+---@class markview.conf.list_items
+---
+---@field enable boolean
+---
+---@field indent_size integer
+---@field shift_width integer
+---
+---@field marker_plus markview.list_items.item
+---@field marker_minus markview.list_items.item
+---@field marker_star markview.list_items.item
+---
+---@field marker_dot { add_padding: boolean }
+---@field marker_parenthesis { add_padding: boolean }
+
+---@class markview.list_items.item
+---
+---@field add_padding boolean
 ---@field text string
----
---- Highlight group for text
----@field hl string?
+---@field hl? string
 
+--- Tables
+---------------------------------------------------------------
 
---- Configuration table for custom tables
----@class markview.render_config.tables
+---@class markview.tables.parts
 ---
---- Enable/Disable custom table
----@field enable boolean?
+---@field top string[]
+---@field header string[]
+---@field separator string[]
+---@field row string[]
+---@field bottom string[]
+---@field overlap string[]
 ---
---- Minimum width of a column
----@field col_min_width integer?
+---@field align_left string
+---@field align_right string
+---@field align_center [ string, string ]
+
+---@class markview.conf.tables
 ---
---- Enable/Disable the usage of virtual lines for the top/bottom border
----@field use_virt_lines boolean?
+---@field enable boolean
+---@field block_decorator boolean
+---@field use_virt_lines boolean
+---@field col_min_width? integer
 ---
---- Enable/Disable the usage of the top & bottom border
----@field block_decorator boolean?
----
---- List of various parts for the table
----@field text string[]
----
---- List of highlight groups for text
----@field hl string[]
+---@field parts markview.tables.parts
+---@field hls? markview.tables.parts
+
+-- vim:nospell:

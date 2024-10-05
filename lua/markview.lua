@@ -1,154 +1,41 @@
 local markview = {};
 local utils = require("markview.utils");
+local hls = require("markview.highlights");
+local ts = require("markview.treesitter");
+local latex = require("markview.latex_renderer");
 
 markview.parser = require("markview.parser");
 markview.renderer = require("markview.renderer");
 markview.keymaps = require("markview.keymaps");
 
-markview.colors = require("markview.colors");
-
-markview.list_contains = function (tbl, value)
-	for index, item in ipairs(tbl) do
-		if item == value or vim.deep_equal(item, value) then
-			return true, index;
-		end
-	end
-
-	return false;
-end
-
-markview.deep_merge = function (behavior, tbl_1, tbl_2)
-	if not tbl_1 or type(tbl_1) ~= "table" then
-		tbl_1 = {};
-	end
-
-	if not tbl_2 or type(tbl_2) ~= "table" then
-		tbl_2 = {};
-	end
-
-	for key, value in pairs(tbl_2) do
-		if not tbl_1[key] then
-			tbl_1[key] = value;
-			goto skip;
-		end
-
-		if type(value) ~= type(tbl_1[key]) then
-			goto skip;
-		end
-
-		if vim.islist(value) then
-			if not tbl_1.overwrite or tbl_1.overwrite and not vim.list_contains(tbl_1.overwrite, key) then
-				for index, item in ipairs(value) do
-					if not markview.list_contains(tbl_1[key], item) then
-						table.insert(tbl_1[key], item);
-					elseif tbl_1[key][index] and type(tbl_1[key][index]) == "table" and type(item) == "table" then
-						tbl_1[key][index] = markview.deep_merge(behavior, tbl_1[key][index], item);
-					elseif not markview.list_contains(tbl_1[key], item) then
-						tbl_1[key][index] = item;
-					end
-				end
-			else
-				tbl_1[key] = value;
-			end
-		elseif type(value) == "table" then
-			tbl_1[key] = markview.deep_merge(behavior, tbl_1[key], value);
-		elseif behavior == "force" then
-			tbl_1[key] = value;
-		end
-
-		::skip::
-	end
-
-	return tbl_1;
-end
-
-markview.hl_exists = function (hl_list, hl)
-	for index, item in ipairs(hl_list) do
-		if item.group_name == hl.group_name then
-			return true, index;
-		end
-	end
-
-	return false;
-end
-
-markview.added_hls = {};
-
-markview.remove_hls = function ()
-	if vim.tbl_isempty(markview.added_hls) then
-		return;
-	end
-
-	for _, hl in ipairs(markview.added_hls) do
-		if vim.fn.hlexists("Markview" .. hl) == 1 then
-			vim.api.nvim_set_hl(0, "Markview" .. hl, {});
-		end
-	end
-end
-
-markview.add_hls = function (obj)
-	markview.added_hls = {};
-	local use_hl = {};
-
-	for _, hl in ipairs(obj) do
-		if hl.output and type(hl.output) == "function" and pcall(hl.output) then
-			local _o = hl.output();
-			local _n = {};
-
-			for _, item in ipairs(_o) do
-				local exists, index = markview.hl_exists(use_hl, item);
-
-				if exists == true then
-					table.remove(use_hl, index);
-				else
-					table.insert(_n, item.group_name);
-				end
-			end
-
-			use_hl = vim.list_extend(use_hl, _o);
-			markview.added_hls = vim.list_extend(markview.added_hls, _n);
-		elseif hl.group_name and hl.value then
-			local contains, index = markview.list_contains(markview.added_hls, hl.group_name);
-
-			if contains == true and index then
-				use_hl[index] = hl;
-			else
-				table.insert(use_hl, hl)
-				table.insert(markview.added_hls, hl.group_name);
-			end
-		end
-	end
-
-	for _, hl in ipairs(use_hl) do
-		local _opt = hl.value;
-
-		if type(hl.value) == "function" then
-			_opt = hl.value();
-		end
-
-		vim.api.nvim_set_hl(0, "Markview" .. hl.group_name, _opt);
-	end
-end
-
-
+---@type integer[] List of attached buffers
 markview.attached_buffers = {};
+
+---@type integer[] List of attached windows
 markview.attached_windows = {};
 
+---@type { was_detached: boolean, id: integer }[]
+markview.autocmds = {};
+
+---@class markview.state Stores the various states of the plugin
+---
+---@field enable boolean Plugin state
+---@field hybrid_mode boolean Hybrid mode state
+---@field buf_states { [integer]: boolean } Buffer local plugin state
 markview.state = {
 	enable = true,
 	hybrid_mode = true,
 	buf_states = {}
 };
 
-markview.global_options = {};
-
----@type markview.config
+---@type markview.configuration
 markview.configuration = {
-	split_conf = {
-		split = "right"
-	},
-	filetypes = { "markdown", "quarto", "rmd" },
+	__inside_code_block = false,
+
+	buf_ignore = { "nofile" },
+
 	callbacks = {
+		---+ ${class, Callbacks}
 		on_enable = function (_, window)
 			local _m = {};
 
@@ -202,1334 +89,536 @@ markview.configuration = {
 				vim.wo[window].conceallevel = 0;
 				vim.wo[window].concealcursor = "";
 			end
-		end
+		end,
+
+		split_enter = nil
+		---_
 	},
 
-	highlight_groups = {
-		---+ ##code##
-		{
-			-- Heading level 1
-			output = function ()
-				if markview.colors.get_hl_value(0, "DiagnosticVirtualTextOk", "bg") and markview.colors.get_hl_value(0, "DiagnosticVirtualTextOk", "fg") then
-					local bg = markview.colors.get_hl_value(0, "DiagnosticVirtualTextOk", "bg");
-					local fg = markview.colors.get_hl_value(0, "DiagnosticVirtualTextOk", "fg");
+	debounce = 50,
+	escaped = { enable = true },
 
-					return {
-						{
-							group_name = "Heading1",
-							value = {
-								bg = bg,
-								fg = fg,
+	filetypes = { "markdown", "quarto", "rmd" },
 
-								default = true
-							}
-						},
-						{
-							group_name = "Heading1Sign",
-							value = {
-								fg = fg,
+	highlight_groups = "dynamic",
 
-								default = true
-							}
-						},
-					}
-				elseif markview.colors.get_hl_value(0, "DiagnosticOk", "fg") and markview.colors.bg() then
-					local bg = markview.colors.bg();
-					local fg = markview.colors.get_hl_value(0, "DiagnosticOk", "fg");
+	hybrid_modes = nil,
 
-					local nr = markview.colors.get_hl_value(0, "LineNr", "bg");
+	initial_state = true,
+	max_file_length = 1000,
+	modes = { "n", "no", "c" },
+	render_distance = 100,
 
-					return {
-						{
-							group_name = "Heading1",
-							value = {
-								bg = vim.o.background == "dark"
-									and
-									markview.colors.mix(bg, fg, 0.5, 0.15)
-									or
-									markview.colors.mix(bg, fg, 0.85, 0.20),
-								fg = fg,
+	split_conf = {
+		split = "right"
+	},
 
-								default = true
-							}
-						},
-						{
-							group_name = "Heading1Sign",
-							value = {
-								bg = nr,
-								fg = fg,
 
-								default = true
-							}
-						},
-					}
-				else
-					local bg = markview.colors.get_hl_value(0, "Normal", "bg");
-					local fg = vim.o.background == "dark" and "#a6e3a1" or "#40a02b";
+	block_quotes = {
+		---+ ${class, Block quote}
+		enable = true,
 
-					local nr = markview.colors.get_hl_value(0, "LineNr", "bg");
-
-					return {
-						{
-							group_name = "Heading1",
-							value = {
-								bg = vim.o.background == "dark"
-									and
-									markview.colors.mix(bg, fg, 0.5, 0.15)
-									or
-									markview.colors.mix(bg, fg, 0.85, 0.20),
-								fg = fg,
-
-								default = true
-							}
-						},
-						{
-							group_name = "Heading1Sign",
-							value = {
-								bg = nr,
-								fg = fg,
-
-								default = true
-							}
-						},
-					}
-				end
-			end
-		},
-		{
-			-- Heading level 2
-			output = function ()
-				if markview.colors.get_hl_value(0, "DiagnosticVirtualTextHint", "bg") and markview.colors.get_hl_value(0, "DiagnosticVirtualTextHint", "fg") then
-					local bg = markview.colors.get_hl_value(0, "DiagnosticVirtualTextHint", "bg");
-					local fg = markview.colors.get_hl_value(0, "DiagnosticVirtualTextHint", "fg");
-
-					return {
-						{
-							group_name = "Heading2",
-							value = {
-								bg = bg,
-								fg = fg,
-
-								default = true
-							}
-						},
-						{
-							group_name = "Heading2Sign",
-							value = {
-								fg = fg,
-
-								default = true
-							}
-						},
-					}
-				elseif markview.colors.get_hl_value(0, "DiagnosticHint", "fg") and markview.colors.bg() then
-					local bg = markview.colors.bg();
-					local fg = markview.colors.get_hl_value(0, "DiagnosticHint", "fg");
-
-					local nr = markview.colors.get_hl_value(0, "LineNr", "bg");
-
-					return {
-						{
-							group_name = "Heading2",
-							value = {
-								bg = vim.o.background == "dark"
-									and
-									markview.colors.mix(bg, fg, 0.5, 0.15)
-									or
-									markview.colors.mix(bg, fg, 0.85, 0.20),
-								fg = fg,
-
-								default = true
-							}
-						},
-						{
-							group_name = "Heading2Sign",
-							value = {
-								bg = nr,
-								fg = fg,
-
-								default = true
-							}
-						},
-					}
-				else
-					local bg = markview.colors.get_hl_value(0, "Normal", "bg");
-					local fg = vim.o.background == "dark" and "#94e2d5" or "#179299";
-
-					local nr = markview.colors.get_hl_value(0, "LineNr", "bg");
-
-					return {
-						{
-							group_name = "Heading2",
-							value = {
-								bg = vim.o.background == "dark"
-									and
-									markview.colors.mix(bg, fg, 0.5, 0.15)
-									or
-									markview.colors.mix(bg, fg, 0.85, 0.20),
-								fg = fg,
-
-								default = true
-							}
-						},
-						{
-							group_name = "Heading2Sign",
-							value = {
-								bg = nr,
-								fg = fg,
-
-								default = true
-							}
-						},
-					}
-				end
-			end
-		},
-		{
-			-- Heading level 3
-			output = function ()
-				if markview.colors.get_hl_value(0, "DiagnosticVirtualTextInfo", "bg") and markview.colors.get_hl_value(0, "DiagnosticVirtualTextInfo", "fg") then
-					local bg = markview.colors.get_hl_value(0, "DiagnosticVirtualTextInfo", "bg");
-					local fg = markview.colors.get_hl_value(0, "DiagnosticVirtualTextInfo", "fg");
-
-					return {
-						{
-							group_name = "Heading3",
-							value = {
-								bg = bg,
-								fg = fg,
-
-								default = true
-							}
-						},
-						{
-							group_name = "Heading3Sign",
-							value = {
-								fg = fg,
-
-								default = true
-							}
-						},
-					}
-				elseif markview.colors.get_hl_value(0, "DiagnosticInfo", "fg") and markview.colors.bg() then
-					local bg = markview.colors.bg();
-					local fg = markview.colors.get_hl_value(0, "DiagnosticInfo", "fg");
-
-					local nr = markview.colors.get_hl_value(0, "LineNr", "bg");
-
-					return {
-						{
-							group_name = "Heading3",
-							value = {
-								bg = vim.o.background == "dark"
-									and
-									markview.colors.mix(bg, fg, 0.5, 0.15)
-									or
-									markview.colors.mix(bg, fg, 0.85, 0.20),
-								fg = fg,
-
-								default = true
-							}
-						},
-						{
-							group_name = "Heading3Sign",
-							value = {
-								bg = nr,
-								fg = fg,
-
-								default = true
-							}
-						},
-					}
-				else
-					local bg = markview.colors.get_hl_value(0, "Normal", "bg");
-					local fg = vim.o.background == "dark" and "#89dceb" or "#179299";
-
-					local nr = markview.colors.get_hl_value(0, "LineNr", "bg");
-
-					return {
-						{
-							group_name = "Heading3",
-							value = {
-								bg = vim.o.background == "dark"
-									and
-									markview.colors.mix(bg, fg, 0.5, 0.15)
-									or
-									markview.colors.mix(bg, fg, 0.85, 0.20),
-								fg = fg,
-
-								default = true
-							}
-						},
-						{
-							group_name = "Heading3Sign",
-							value = {
-								bg = nr,
-								fg = fg,
-
-								default = true
-							}
-						},
-					}
-				end
-			end
-		},
-		{
-			-- Heading level 4
-			output = function ()
-				if markview.colors.get_hl_value(0, "Special", "bg") and markview.colors.get_hl_value(0, "Special", "fg") then
-					local bg = markview.colors.get_hl_value(0, "Special", "bg");
-					local fg = markview.colors.get_hl_value(0, "Special", "fg");
-
-					return {
-						{
-							group_name = "Heading4",
-							value = {
-								bg = bg,
-								fg = fg,
-
-								default = true
-							}
-						},
-						{
-							group_name = "Heading4Sign",
-							value = {
-								fg = fg,
-
-								default = true
-							}
-						},
-					}
-				elseif markview.colors.get_hl_value(0, "Special", "fg") and markview.colors.bg() then
-					local bg = markview.colors.bg();
-					local fg = markview.colors.get_hl_value(0, "Special", "fg");
-
-					local nr = markview.colors.get_hl_value(0, "LineNr", "bg");
-
-					return {
-						{
-							group_name = "Heading4",
-							value = {
-								bg = vim.o.background == "dark"
-									and
-									markview.colors.mix(bg, fg, 0.5, 0.15)
-									or
-									markview.colors.mix(bg, fg, 0.85, 0.20),
-								fg = fg,
-
-								default = true
-							}
-						},
-						{
-							group_name = "Heading4Sign",
-							value = {
-								bg = nr,
-								fg = fg,
-
-								default = true
-							}
-						},
-					}
-				else
-					local bg = markview.colors.get_hl_value(0, "Normal", "bg");
-					local fg = vim.o.background == "dark" and "#f5c2e7" or "#ea76cb";
-
-					local nr = markview.colors.get_hl_value(0, "LineNr", "bg");
-
-					return {
-						{
-							group_name = "Heading4",
-							value = {
-								bg = vim.o.background == "dark"
-									and
-									markview.colors.mix(bg, fg, 0.5, 0.15)
-									or
-									markview.colors.mix(bg, fg, 0.85, 0.20),
-								fg = fg,
-
-								default = true
-							}
-						},
-						{
-							group_name = "Heading4Sign",
-							value = {
-								bg = nr,
-								fg = fg,
-
-								default = true
-							}
-						},
-					}
-				end
-			end
-		},
-		{
-			-- Heading level 5
-			output = function ()
-				if markview.colors.get_hl_value(0, "DiagnosticVirtualTextWarn", "bg") and markview.colors.get_hl_value(0, "DiagnosticVirtualTextWarn", "fg") then
-					local bg = markview.colors.get_hl_value(0, "DiagnosticVirtualTextWarn", "bg");
-					local fg = markview.colors.get_hl_value(0, "DiagnosticVirtualTextWarn", "fg");
-
-					return {
-						{
-							group_name = "Heading5",
-							value = {
-								bg = bg,
-								fg = fg,
-
-								default = true
-							}
-						},
-						{
-							group_name = "Heading5Sign",
-							value = {
-								fg = fg,
-
-								default = true
-							}
-						},
-					}
-				elseif markview.colors.get_hl_value(0, "DiagnosticWarn", "fg") and markview.colors.bg() then
-					local bg = markview.colors.bg();
-					local fg = markview.colors.get_hl_value(0, "DiagnosticWarn", "fg");
-
-					local nr = markview.colors.get_hl_value(0, "LineNr", "bg");
-
-					return {
-						{
-							group_name = "Heading5",
-							value = {
-								bg = vim.o.background == "dark"
-									and
-									markview.colors.mix(bg, fg, 0.5, 0.15)
-									or
-									markview.colors.mix(bg, fg, 0.85, 0.20),
-								fg = fg,
-
-								default = true
-							}
-						},
-						{
-							group_name = "Heading5Sign",
-							value = {
-								bg = nr,
-								fg = fg,
-
-								default = true
-							}
-						},
-					}
-				else
-					local bg = markview.colors.get_hl_value(0, "Normal", "bg");
-					local fg = vim.o.background == "dark" and "#F9E3AF" or "#DF8E1D";
-
-					local nr = markview.colors.get_hl_value(0, "LineNr", "bg");
-
-					return {
-						{
-							group_name = "Heading5",
-							value = {
-								bg = vim.o.background == "dark"
-									and
-									markview.colors.mix(bg, fg, 0.5, 0.15)
-									or
-									markview.colors.mix(bg, fg, 0.85, 0.20),
-								fg = fg,
-
-								default = true
-							}
-						},
-						{
-							group_name = "Heading5Sign",
-							value = {
-								bg = nr,
-								fg = fg,
-
-								default = true
-							}
-						},
-					}
-				end
-			end
-		},
-		{
-			-- Heading level 6
-			output = function ()
-				if markview.colors.get_hl_value(0, "DiagnosticVirtualTextError", "bg") and markview.colors.get_hl_value(0, "DiagnosticVirtualTextError", "fg") then
-					local bg = markview.colors.get_hl_value(0, "DiagnosticVirtualTextError", "bg");
-					local fg = markview.colors.get_hl_value(0, "DiagnosticVirtualTextError", "fg");
-
-					return {
-						{
-							group_name = "Heading6",
-							value = {
-								bg = bg,
-								fg = fg,
-
-								default = true
-							}
-						},
-						{
-							group_name = "Heading6Sign",
-							value = {
-								fg = fg,
-
-								default = true
-							}
-						},
-					}
-				elseif markview.colors.get_hl_value(0, "DiagnosticError", "fg") and markview.colors.bg() then
-					local bg = markview.colors.bg();
-					local fg = markview.colors.get_hl_value(0, "DiagnosticError", "fg");
-
-					local nr = markview.colors.get_hl_value(0, "LineNr", "bg");
-
-					return {
-						{
-							group_name = "Heading6",
-							value = {
-								bg = vim.o.background == "dark"
-									and
-									markview.colors.mix(bg, fg, 0.5, 0.15)
-									or
-									markview.colors.mix(bg, fg, 0.85, 0.20),
-								fg = fg,
-
-								default = true
-							}
-						},
-						{
-							group_name = "Heading6Sign",
-							value = {
-								bg = nr,
-								fg = fg,
-
-								default = true
-							}
-						},
-					}
-				else
-					local bg = markview.colors.get_hl_value(0, "Normal", "bg");
-					local fg = vim.o.background == "dark" and "#F38BA8" or "#D20F39";
-
-					local nr = markview.colors.get_hl_value(0, "LineNr", "bg");
-
-					return {
-						{
-							group_name = "Heading6",
-							value = {
-								bg = vim.o.background == "dark"
-									and
-									markview.colors.mix(bg, fg, 0.5, 0.15)
-									or
-									markview.colors.mix(bg, fg, 0.85, 0.20),
-								fg = fg,
-
-								default = true
-							}
-						},
-						{
-							group_name = "Heading6Sign",
-							value = {
-								bg = nr,
-								fg = fg,
-
-								default = true
-							}
-						},
-					}
-				end
-			end
+		default = {
+			border = "▋", hl = "MarkviewBlockQuoteDefault"
 		},
 
-
-		{
-			group_name = "BlockQuoteDefault",
-			value = function ()
-				local fg = markview.colors.get({
-					markview.colors.get_hl_value(0, "Comment", "fg"),
-
-					vim.o.background == "dark" and "#6c7086" or "#9ca0b0";
-				});
-
-				return { fg = fg, default = true };
-			end
-		},
-		{
-			group_name = "BlockQuoteError",
-			value = function ()
-				local fg = markview.colors.get({
-					markview.colors.get_hl_value(0, "DiagnosticError", "fg"),
-
-					vim.o.background == "dark" and "#F38BA8" or "#D20F39";
-				});
-
-				return { fg = fg, default = true };
-			end
-		},
-		{
-			group_name = "BlockQuoteWarn",
-			value = function ()
-				local fg = markview.colors.get({
-					markview.colors.get_hl_value(0, "DiagnosticWarn", "fg"),
-
-					vim.o.background == "dark" and "#F9E3AF" or "#DF8E1D";
-				});
-
-				return { fg = fg, default = true };
-			end
-		},
-		{
-			group_name = "BlockQuoteOk",
-			value = function ()
-				local fg = markview.colors.get({
-					markview.colors.get_hl_value(0, "DiagnosticOk", "fg"),
-
-					vim.o.background == "dark" and "#a6e3a1" or "#40a02b";
-				});
-
-				return { fg = fg, default = true };
-			end
-		},
-		{
-			group_name = "BlockQuoteNote",
-			value = function ()
-				local fg = markview.colors.get({
-					markview.colors.get_hl_value(0, "@comment.note", "bg"),
-					markview.colors.get_hl_value(0, "@comment.note", "fg"),
-
-					markview.colors.get_hl_value(0, "Title", "fg"),
-					vim.o.background == "dark" and "#89b4fa" or "#1e66f5"
-				});
-
-				return { fg = fg, default = true };
-			end
-		},
-		{
-			group_name = "BlockQuoteSpecial",
-			value = function ()
-				local fg = markview.colors.get({
-					markview.colors.get_hl_value(0, "Conditional", "fg"),
-					markview.colors.get_hl_value(0, "Keyword", "fg"),
-
-					vim.o.background == "dark" and "#cba6f7" or "#8839ef"
-				});
-
-				return { fg = fg, default = true };
-			end
-		},
-
-
-
-		{
-			group_name = "Code",
-			value = function ()
-				local bg = markview.colors.get({
-					markview.colors.get_hl_value(0, "Normal", "bg"),
-					markview.colors.get_hl_value(0, "Cursor", "fg"),
-					markview.colors.get_hl_value(0, "EndOfBuffer", "bg"),
-					markview.colors.get_hl_value(0, "EndOfBuffer", "fg"),
-
-					vim.o.background == "dark" and "#1e1e2e" or "#cdd6f4"
-				});
-
-				local luminosity = markview.colors.get_brightness(bg);
-
-				if luminosity < 0.5 then
-					return {
-						bg = markview.colors.mix(bg, bg, 1, math.max(luminosity, 0.25)),
-						default = true
-					};
-				else
-					return {
-						bg = markview.colors.mix(bg, bg, 1, math.max(1 - luminosity, 0.05) * -1),
-						default = true
-					};
-				end
-			end
-		},
-		{
-			group_name = "CodeInfo",
-			value = function ()
-				local bg = markview.colors.get({
-					markview.colors.get_hl_value(0, "Normal", "bg"),
-					markview.colors.get_hl_value(0, "Cursor", "fg"),
-					markview.colors.get_hl_value(0, "EndOfBuffer", "bg"),
-					markview.colors.get_hl_value(0, "EndOfBuffer", "fg"),
-
-					vim.o.background == "dark" and "#1e1e2e" or "#cdd6f4"
-				});
-
-				local luminosity = markview.colors.get_brightness(bg);
-
-				if luminosity < 0.5 then
-					return {
-						bg = markview.colors.mix(bg, bg, 1, math.max(luminosity, 0.25)),
-						fg = markview.colors.get_hl_value(0, "Comment", "fg"),
-						default = true
-					};
-				else
-					return {
-						bg = markview.colors.mix(bg, bg, 1, math.min(luminosity, 0.25) * -1),
-						fg = markview.colors.get_hl_value(0, "Comment", "fg"),
-						default = true
-					};
-				end
-			end
-		},
-		{
-			group_name = "InlineCode",
-			value = function ()
-				local bg = markview.colors.get({
-					markview.colors.get_hl_value(0, "Normal", "bg"),
-					markview.colors.get_hl_value(0, "Cursor", "fg"),
-					markview.colors.get_hl_value(0, "EndOfBuffer", "bg"),
-					markview.colors.get_hl_value(0, "EndOfBuffer", "fg"),
-
-					vim.o.background == "dark" and "#1e1e2e" or "#cdd6f4"
-				});
-
-				local luminosity = markview.colors.get_brightness(bg);
-
-				if luminosity < 0.5 then
-					return {
-						bg = markview.colors.mix(bg, bg, 1, math.max(luminosity, 0.5)),
-						default = true
-					};
-				else
-					return {
-						bg = markview.colors.mix(bg, bg, 1, math.min(luminosity, 0.15) * -1),
-						default = true
-					};
-				end
-			end
-		},
-
-
-		{
-			group_name = "CheckboxChecked",
-			value = function ()
-				local fg = markview.colors.get({
-					markview.colors.get_hl_value(0, "DiagnosticOk", "fg"),
-
-					vim.o.background == "dark" and "#a6e3a1" or "#40a02b";
-				});
-
-				return { fg = fg, default = true };
-			end
-		},
-		{
-			group_name = "CheckboxUnchecked",
-			value = function ()
-				local fg = markview.colors.get({
-					markview.colors.get_hl_value(0, "DiagnosticError", "fg"),
-
-					vim.o.background == "dark" and "#F38BA8" or "#D20F39";
-				});
-
-				return { fg = fg, default = true };
-			end
-		},
-		{
-			group_name = "CheckboxPending",
-			value = function ()
-				local fg = markview.colors.get({
-					markview.colors.get_hl_value(0, "DiagnosticWarn", "fg"),
-
-					vim.o.background == "dark" and "#F9E3AF" or "#DF8E1D";
-				});
-
-				return { fg = fg, default = true };
-			end
-		},
-		{
-			group_name = "CheckboxProgress",
-			value = function ()
-				local fg = markview.colors.get({
-					markview.colors.get_hl_value(0, "Conditional", "fg"),
-					markview.colors.get_hl_value(0, "Keyword", "fg"),
-
-					vim.o.background == "dark" and "#cba6f7" or "#8839ef"
-				});
-
-				return { fg = fg, default = true };
-			end
-		},
-		{
-			group_name = "CheckboxCancelled",
-			value = function ()
-				local fg = markview.colors.get({
-					markview.colors.get_hl_value(0, "Comment", "fg"),
-
-					vim.o.background == "dark" and "#6c7086" or "#9ca0b0";
-				});
-
-				return { fg = fg, default = true };
-			end
-		},
-
-
-		{
-			group_name = "TableBorder",
-			value = function ()
-				local fg = markview.colors.get({
-					markview.colors.get_hl_value(0, "@comment.note", "bg"),
-					markview.colors.get_hl_value(0, "@comment.note", "fg"),
-
-					markview.colors.get_hl_value(0, "Title", "fg"),
-					vim.o.background == "dark" and "#89b4fa" or "#1e66f5"
-				});
-
-				return { fg = fg, default = true };
-			end
-		},
-		{
-			group_name = "TableAlignLeft",
-			value = function ()
-				local fg = markview.colors.get({
-					markview.colors.get_hl_value(0, "@comment.note", "bg"),
-					markview.colors.get_hl_value(0, "@comment.note", "fg"),
-
-					markview.colors.get_hl_value(0, "Title", "fg"),
-					vim.o.background == "dark" and "#89b4fa" or "#1e66f5"
-				});
-
-				return { fg = fg, default = true };
-			end
-		},
-		{
-			group_name = "TableAlignRight",
-			value = function ()
-				local fg = markview.colors.get({
-					markview.colors.get_hl_value(0, "@comment.note", "bg"),
-					markview.colors.get_hl_value(0, "@comment.note", "fg"),
-
-					markview.colors.get_hl_value(0, "Title", "fg"),
-					vim.o.background == "dark" and "#89b4fa" or "#1e66f5"
-				});
-
-				return { fg = fg, default = true };
-			end
-		},
-		{
-			group_name = "TableAlignCenter",
-			value = function ()
-				local fg = markview.colors.get({
-					markview.colors.get_hl_value(0, "@comment.note", "bg"),
-					markview.colors.get_hl_value(0, "@comment.note", "fg"),
-
-					markview.colors.get_hl_value(0, "Title", "fg"),
-					vim.o.background == "dark" and "#89b4fa" or "#1e66f5"
-				});
-
-				return { fg = fg, default = true };
-			end
-		},
-
-
-		{
-			group_name = "ListItemMinus",
-			value = function ()
-				local fg = markview.colors.get({
-					markview.colors.get_hl_value(0, "DiagnosticWarn", "fg"),
-
-					vim.o.background == "dark" and "#F9E3AF" or "#DF8E1D";
-				});
-
-				return { fg = fg, default = true };
-			end
-		},
-		{
-			group_name = "ListItemPlus",
-			value = function ()
-				local fg = markview.colors.get({
-					markview.colors.get_hl_value(0, "DiagnosticOk", "fg"),
-
-					vim.o.background == "dark" and "#a6e3a1" or "#40a02b";
-				});
-
-				return { fg = fg, default = true };
-			end
-		},
-		{
-			group_name = "ListItemStar",
-			value = function ()
-				local fg = markview.colors.get({
-					markview.colors.get_hl_value(0, "@comment.note", "bg"),
-					markview.colors.get_hl_value(0, "@comment.note", "fg"),
-
-					markview.colors.get_hl_value(0, "Title", "fg"),
-					vim.o.background == "dark" and "#89b4fa" or "#1e66f5"
-				});
-
-				return { fg = fg, default = true };
-			end
-		},
-
-
-		{
-			group_name = "Hyperlink",
-			value = function ()
-				if markview.colors.get_hl_value(0, "markdownLinkText", "fg") then
-					return { link = "markdownLinkText", default = true };
-				elseif markview.colors.get_hl_value(0, "@markup.link.label.markdown_inline", "fg") then
-					return { link = "@markup.link.label.markdown_inline", default = true };
-				end
-
-				local fg = markview.colors.get({
-					markview.colors.get_hl_value(0, "Label", "fg"),
-
-					vim.o.background == "dark" and "#74c7ec" or "#209fb5"
-				});
-
-				return { fg = fg, underline = true, default = true };
-			end
-		},
-		{
-			group_name = "ImageLink",
-			value = function ()
-				if markview.colors.get_hl_value(0, "markdownLinkText", "fg") then
-					return { link = "markdownLinkText", default = true };
-				elseif markview.colors.get_hl_value(0, "@markup.link.label.markdown_inline", "fg") then
-					return { link = "@markup.link.label.markdown_inline", default = true };
-				end
-
-				local fg = markview.colors.get({
-					markview.colors.get_hl_value(0, "Label", "fg"),
-
-					vim.o.background == "dark" and "#74c7ec" or "#209fb5"
-				});
-
-				return { fg = fg, underline = true, default = true };
-			end
-		},
-		{
-			group_name = "Email",
-			value = function ()
-				if markview.colors.get_hl_value(0, "@markup.link.url.markdown_inline", "fg") then
-					return { link = "@markup.link.url.markdown_inline", default = true };
-				elseif markview.colors.get_hl_value(0, "@markup.link.url", "fg") then
-					return { link = "@markup.link.url", default = true };
-				end
-
-				local fg = markview.colors.get({
-					markview.colors.get_hl_value(0, "Label", "fg"),
-
-					vim.o.background == "dark" and "#f5e0dc" or "#dc8a78"
-				});
-
-				return { fg = fg, underline = true, default = true };
-			end
-		},
-
-
-		{
-			output = function ()
-				return markview.colors.create_gradient("Gradient", markview.colors.get_hl_value(0, "Normal", "bg") or markview.colors.get_hl_value(0, "Cursor", "fg"), markview.colors.get_hl_value(0, "Title", "fg"), 10, "fg");
-			end
+		callouts = {
+			---+ ${conf, From `Obsidian`}
+			{
+				match_string = "ABSTRACT",
+				preview = "󱉫 Abstract",
+				hl = "MarkviewBlockQuoteNote",
+
+				title = true,
+				icon = "󱉫 ",
+
+				border = "▋"
+			},
+			{
+				match_string = "SUMMARY",
+				hl = "MarkviewBlockQuoteNote",
+				preview = "󱉫 Summary",
+
+				title = true,
+				icon = "󱉫 ",
+
+				border = "▋"
+			},
+			{
+				match_string = "TLDR",
+				hl = "MarkviewBlockQuoteNote",
+				preview = "󱉫 Tldr",
+
+				title = true,
+				icon = "󱉫 ",
+
+				border = "▋"
+			},
+			{
+				match_string = "TODO",
+				hl = "MarkviewBlockQuoteNote",
+				preview = " Todo",
+
+				title = true,
+				icon = " ",
+
+				border = "▋"
+			},
+			{
+				match_string = "INFO",
+				hl = "MarkviewBlockQuoteNote",
+				preview = " Info",
+
+				custom_title = true,
+				icon = " ",
+
+				border = "▋"
+			},
+			{
+				match_string = "SUCCESS",
+				hl = "MarkviewBlockQuoteOk",
+				preview = "󰗠 Success",
+
+				title = true,
+				icon = "󰗠 ",
+
+				border = "▋"
+			},
+			{
+				match_string = "CHECK",
+				hl = "MarkviewBlockQuoteOk",
+				preview = "󰗠 Check",
+
+				title = true,
+				icon = "󰗠 ",
+
+				border = "▋"
+			},
+			{
+				match_string = "DONE",
+				hl = "MarkviewBlockQuoteOk",
+				preview = "󰗠 Done",
+
+				title = true,
+				icon = "󰗠 ",
+
+				border = "▋"
+			},
+			{
+				match_string = "QUESTION",
+				hl = "MarkviewBlockQuoteWarn",
+				preview = "󰋗 Question",
+
+				title = true,
+				icon = "󰋗 ",
+
+				border = "▋"
+			},
+			{
+				match_string = "HELP",
+				hl = "MarkviewBlockQuoteWarn",
+				preview = "󰋗 Help",
+
+				title = true,
+				icon = "󰋗 ",
+
+				border = "▋"
+			},
+			{
+				match_string = "FAQ",
+				hl = "MarkviewBlockQuoteWarn",
+				preview = "󰋗 Faq",
+
+				custom_title = true,
+				custom_icon = "󰋗 ",
+
+				border = "▋"
+			},
+			{
+				match_string = "FAILURE",
+				hl = "MarkviewBlockQuoteError",
+				preview = "󰅙 Failure",
+
+				title = true,
+				icon = "󰅙 ",
+
+				border = "▋"
+			},
+			{
+				match_string = "FAIL",
+				hl = "MarkviewBlockQuoteError",
+				preview = "󰅙 Fail",
+
+				title = true,
+				icon = "󰅙 ",
+
+				border = "▋"
+			},
+			{
+				match_string = "MISSING",
+				hl = "MarkviewBlockQuoteError",
+				preview = "󰅙 Missing",
+
+				title = true,
+				icon = "󰅙 ",
+
+				border = "▋"
+			},
+			{
+				match_string = "DANGER",
+				hl = "MarkviewBlockQuoteError",
+				preview = " Danger",
+
+				title = true,
+				icon = "  ",
+
+				border = "▋"
+			},
+			{
+				match_string = "ERROR",
+				hl = "MarkviewBlockQuoteError",
+				preview = " Error",
+
+				title = true,
+				icon = "  ",
+
+				border = "▋"
+			},
+			{
+				match_string = "BUG",
+				hl = "MarkviewBlockQuoteError",
+				preview = " Bug",
+
+				title = true,
+				icon = "  ",
+
+				border = "▋"
+			},
+			{
+				match_string = "EXAMPLE",
+				hl = "MarkviewBlockQuoteSpecial",
+				preview = "󱖫 Example",
+
+				title = true,
+				icon = " 󱖫 ",
+
+				border = "▋"
+			},
+			{
+				match_string = "QUOTE",
+				hl = "MarkviewBlockQuoteDefault",
+				preview = " Quote",
+
+				title = true,
+				icon = "  ",
+
+				border = "▋"
+			},
+			{
+				match_string = "CITE",
+				hl = "MarkviewBlockQuoteDefault",
+				preview = " Cite",
+
+				title = true,
+				icon = "  ",
+
+				border = "▋"
+			},
+			{
+				match_string = "HINT",
+				hl = "MarkviewBlockQuoteOk",
+				preview = " Hint",
+
+				title = true,
+				icon = "  ",
+
+				border = "▋"
+			},
+			{
+				match_string = "ATTENTION",
+				hl = "MarkviewBlockQuoteWarn",
+				preview = " Attention",
+
+				title = true,
+				icon = "  ",
+
+				border = "▋"
+			},
+			---_
+			---+ ${conf, From Github}
+			{
+				match_string = "NOTE",
+				hl = "MarkviewBlockQuoteNote",
+				preview = "󰋽 Note",
+
+				border = "▋"
+			},
+			{
+				match_string = "TIP",
+				hl = "MarkviewBlockQuoteOk",
+				preview = " Tip",
+
+				border = "▋"
+			},
+			{
+				match_string = "IMPORTANT",
+				hl = "MarkviewBlockQuoteSpecial",
+				preview = " Important",
+
+				border = "▋"
+			},
+			{
+				match_string = "WARNING",
+				hl = "MarkviewBlockQuoteWarn",
+				preview = " Warning",
+
+				border = "▋"
+			},
+			{
+				match_string = "CAUTION",
+				hl = "MarkviewBlockQuoteError",
+				preview = "󰳦 Caution",
+
+				border = "▋"
+			},
+			---_
+
+			---+ ${conf, Custom}
+			{
+				match_string = "CUSTOM",
+				hl = "MarkviewBlockQuoteWarn",
+				preview = "󰠳 Custom",
+
+				custom_title = true,
+				custom_icon = " 󰠳 ",
+
+				border = "▋"
+			}
+			---_
 		}
 		---_
 	},
-	buf_ignore = { "nofile" },
 
-	modes = { "n", "no" },
-	hybrid_modes = nil,
-
-	headings = {
+	checkboxes = {
+		---+ ${conf, Minimal style checkboxes}
 		enable = true,
-		shift_width = 3,
 
-		heading_1 = {
-			style = "icon",
-			sign = "󰌕 ", sign_hl = "MarkviewHeading1Sign",
-
-			icon = "󰼏  ", hl = "MarkviewHeading1",
-
+		checked = {
+			text = "󰗠", hl = "MarkviewCheckboxChecked"
 		},
-		heading_2 = {
-			style = "icon",
-			sign = "󰌖 ", sign_hl = "MarkviewHeading2Sign",
-
-			icon = "󰎨  ", hl = "MarkviewHeading2",
+		unchecked = {
+			text = "󰄰", hl = "MarkviewCheckboxUnchecked"
 		},
-		heading_3 = {
-			style = "icon",
+		custom = {
+			{
+				match_string = "/",
+				text = "󱎖",
+				hl = "MarkviewCheckboxPending"
+			},
+			{
+				match_string = ">",
+				text = "",
+				hl = "MarkviewCheckboxCancelled"
+			},
+			{
+				match_string = "<",
+				text = "󰃖",
+				hl = "MarkviewCheckboxCancelled"
+			},
+			{
+				match_string = "-",
+				text = "󰍶",
+				hl = "MarkviewCheckboxCancelled",
+				scope_hl = "MarkviewCheckboxStriked"
+			},
 
-			icon = "󰼑  ", hl = "MarkviewHeading3",
-		},
-		heading_4 = {
-			style = "icon",
-
-			icon = "󰎲  ", hl = "MarkviewHeading4",
-		},
-		heading_5 = {
-			style = "icon",
-
-			icon = "󰼓  ", hl = "MarkviewHeading5",
-		},
-		heading_6 = {
-			style = "icon",
-
-			icon = "󰎴  ", hl = "MarkviewHeading6",
-		},
-
-		setext_1 = {
-			style = "github",
-
-			icon = "   ", hl = "MarkviewHeading1",
-			underline = "━"
-		},
-		setext_2 = {
-			style = "github",
-
-			icon = "   ", hl = "MarkviewHeading2",
-			underline = "─"
+			{
+				match_string = "?",
+				text = "󰋗",
+				hl = "MarkviewCheckboxPending"
+			},
+			{
+				match_string = "!",
+				text = "󰀦",
+				hl = "MarkviewCheckboxUnchecked"
+			},
+			{
+				match_string = "*",
+				text = "󰓎",
+				hl = "MarkviewCheckboxPending"
+			},
+			{
+				match_string = '"',
+				text = "󰸥",
+				hl = "MarkviewCheckboxCancelled"
+			},
+			{
+				match_string = "l",
+				text = "󰆋",
+				hl = "MarkviewCheckboxProgress"
+			},
+			{
+				match_string = "b",
+				text = "󰃀",
+				hl = "MarkviewCheckboxProgress"
+			},
+			{
+				match_string = "i",
+				text = "󰰄",
+				hl = "MarkviewCheckboxChecked"
+			},
+			{
+				match_string = "S",
+				text = "",
+				hl = "MarkviewCheckboxChecked"
+			},
+			{
+				match_string = "I",
+				text = "󰛨",
+				hl = "MarkviewCheckboxPending"
+			},
+			{
+				match_string = "p",
+				text = "",
+				hl = "MarkviewCheckboxChecked"
+			},
+			{
+				match_string = "c",
+				text = "",
+				hl = "MarkviewCheckboxUnchecked"
+			},
+			{
+				match_string = "f",
+				text = "󱠇",
+				hl = "MarkviewCheckboxUnchecked"
+			},
+			{
+				match_string = "k",
+				text = "",
+				hl = "MarkviewCheckboxPending"
+			},
+			{
+				match_string = "w",
+				text = "",
+				hl = "MarkviewCheckboxProgress"
+			},
+			{
+				match_string = "u",
+				text = "󰔵",
+				hl = "MarkviewCheckboxChecked"
+			},
+			{
+				match_string = "d",
+				text = "󰔳",
+				hl = "MarkviewCheckboxUnchecked"
+			},
 		}
-	},
-
-	latex = {
-		enable = true,
-
-		brackets = {
-			enable = true,
-			opening = {
-				{ "(", "MarkviewHeading1Sign" },
-				{ "{", "MarkviewHeading2Sign" },
-				{ "[", "MarkviewHeading3Sign" },
-			},
-			closing = {
-				{ ")", "MarkviewHeading1Sign" },
-				{ "}", "MarkviewHeading2Sign" },
-				{ "]", "MarkviewHeading3" },
-			},
-
-			-- scope = {
-			-- 	"DiagnosticVirtualTextError",
-			-- 	"DiagnosticVirtualTextOk",
-			-- 	"DiagnosticVirtualTextWarn",
-			-- }
-		},
-
-		inline = {
-			enable = true
-		},
-		block = {
-			hl = "Code",
-			text = { " Latex ", "Special" }
-		},
-
-		symbols = {
-			enable = true,
-			overwrite = {}
-		},
-
-		subscript = {
-			enable = true
-		},
-		superscript = {
-			enable = true
-		},
+		---_
 	},
 
 	code_blocks = {
+		---+ ${class, Code blocks}
 		enable = true,
-		icons = true,
+		icons = "internal",
 
-		style = "language",
+		style = "block",
 		hl = "MarkviewCode",
 		info_hl = "MarkviewCodeInfo",
 
 		min_width = 60,
 		pad_amount = 3,
 
-		language_names = {
-			{ "py", "python" },
-			{ "cpp", "C++" }
-		},
+		language_names = nil,
 		language_direction = "right",
 
 		sign = true, sign_hl = nil
+		---_
 	},
 
-	block_quotes = {
+	footnotes = {
 		enable = true,
-		overwrite = { "callouts" },
+		use_unicode = true,
+		hl = "Special"
+	},
 
-		default = {
-			border = "▋", border_hl = "MarkviewBlockQuoteDefault"
+	headings = {
+		---+ ${class, Headings}
+		enable = true,
+		shift_width = 1,
+
+		heading_1 = {
+			---+ ${conf, Heading 1}
+			style = "icon",
+			sign = "󰌕 ", sign_hl = "MarkviewHeading1Sign",
+
+			icon = "󰼏  ", hl = "MarkviewHeading1",
+			---_
+		},
+		heading_2 = {
+			---+ ${conf, Heading 2}
+			style = "icon",
+			sign = "󰌖 ", sign_hl = "MarkviewHeading2Sign",
+
+			icon = "󰎨  ", hl = "MarkviewHeading2",
+			---_
+		},
+		heading_3 = {
+			---+ ${conf, Heading 3}
+			style = "icon",
+
+			icon = "󰼑  ", hl = "MarkviewHeading3",
+			---_
+		},
+		heading_4 = {
+			---+ ${conf, Heading 4}
+			style = "icon",
+
+			icon = "󰎲  ", hl = "MarkviewHeading4",
+			---_
+		},
+		heading_5 = {
+			---+ ${conf, Heading 5}
+			style = "icon",
+
+			icon = "󰼓  ", hl = "MarkviewHeading5",
+			---_
+		},
+		heading_6 = {
+			---+ ${conf, Heading 6}
+			style = "icon",
+
+			icon = "󰎴  ", hl = "MarkviewHeading6",
+			---_
 		},
 
-		callouts = {
-			--- From `Obsidian`
-			{
-				match_string = "ABSTRACT",
-				callout_preview = "󱉫 Abstract",
-				callout_preview_hl = "MarkviewBlockQuoteNote",
+		setext_1 = {
+			---+ ${conf, Setext heading 1}
+			style = "decorated",
 
-				custom_title = true,
-				custom_icon = "󱉫 ",
+			sign = "󰌕 ", sign_hl = "MarkviewHeading1Sign",
+			icon = "  ", hl = "MarkviewHeading1",
+			line = "▂"
+			---_
+		},
+		setext_2 = {
+			---+ ${conf, Setext heading 2}
+			style = "decorated",
 
-				border = "▋", border_hl = "MarkviewBlockQuoteNote"
-			},
-			{
-				match_string = "SUMMARY",
-				callout_preview = "󱉫 Summary",
-				callout_preview_hl = "MarkviewBlockQuoteNote",
-
-				custom_title = true,
-				custom_icon = "󱉫 ",
-
-				border = "▋", border_hl = "MarkviewBlockQuoteNote"
-			},
-			{
-				match_string = "TLDR",
-				callout_preview = "󱉫 Tldr",
-				callout_preview_hl = "MarkviewBlockQuoteNote",
-
-				custom_title = true,
-				custom_icon = "󱉫 ",
-
-				border = "▋", border_hl = "MarkviewBlockQuoteNote"
-			},
-			{
-				match_string = "TODO",
-				callout_preview = " Todo",
-				callout_preview_hl = "MarkviewBlockQuoteNote",
-
-				custom_title = true,
-				custom_icon = " ",
-
-				border = "▋", border_hl = "MarkviewBlockQuoteNote"
-			},
-			{
-				match_string = "INFO",
-				callout_preview = " Info",
-				callout_preview_hl = "MarkviewBlockQuoteNote",
-
-				custom_title = true,
-				custom_icon = " ",
-
-				border = "▋", border_hl = "MarkviewBlockQuoteNote"
-			},
-			{
-				match_string = "SUCCESS",
-				callout_preview = "󰗠 Success",
-				callout_preview_hl = "MarkviewBlockQuoteOk",
-
-				custom_title = true,
-				custom_icon = "󰗠 ",
-
-				border = "▋", border_hl = "MarkviewBlockQuoteOk"
-			},
-			{
-				match_string = "CHECK",
-				callout_preview = "󰗠 Check",
-				callout_preview_hl = "MarkviewBlockQuoteOk",
-
-				custom_title = true,
-				custom_icon = "󰗠 ",
-
-				border = "▋", border_hl = "MarkviewBlockQuoteOk"
-			},
-			{
-				match_string = "DONE",
-				callout_preview = "󰗠 Done",
-				callout_preview_hl = "MarkviewBlockQuoteOk",
-
-				custom_title = true,
-				custom_icon = "󰗠 ",
-
-				border = "▋", border_hl = "MarkviewBlockQuoteOk"
-			},
-			{
-				match_string = "QUESTION",
-				callout_preview = "󰋗 Question",
-				callout_preview_hl = "MarkviewBlockQuoteWarn",
-
-				custom_title = true,
-				custom_icon = "󰋗 ",
-
-				border = "▋", border_hl = "MarkviewBlockQuoteWarn"
-			},
-			{
-				match_string = "HELP",
-				callout_preview = "󰋗 Help",
-				callout_preview_hl = "MarkviewBlockQuoteWarn",
-
-				custom_title = true,
-				custom_icon = "󰋗 ",
-
-				border = "▋", border_hl = "MarkviewBlockQuoteWarn"
-			},
-			{
-				match_string = "FAQ",
-				callout_preview = "󰋗 Faq",
-				callout_preview_hl = "MarkviewBlockQuoteWarn",
-
-				custom_title = true,
-				custom_icon = "󰋗 ",
-
-				border = "▋", border_hl = "MarkviewBlockQuoteWarn"
-			},
-			{
-				match_string = "FAILURE",
-				callout_preview = "󰅙 Failure",
-				callout_preview_hl = "MarkviewBlockQuoteError",
-
-				custom_title = true,
-				custom_icon = "󰅙 ",
-
-				border = "▋", border_hl = "MarkviewBlockQuoteError"
-			},
-			{
-				match_string = "FAIL",
-				callout_preview = "󰅙 Fail",
-				callout_preview_hl = "MarkviewBlockQuoteError",
-
-				custom_title = true,
-				custom_icon = "󰅙 ",
-
-				border = "▋", border_hl = "MarkviewBlockQuoteError"
-			},
-			{
-				match_string = "MISSING",
-				callout_preview = "󰅙 Missing",
-				callout_preview_hl = "MarkviewBlockQuoteError",
-
-				custom_title = true,
-				custom_icon = "󰅙 ",
-
-				border = "▋", border_hl = "MarkviewBlockQuoteError"
-			},
-			{
-				match_string = "DANGER",
-				callout_preview = " Danger",
-				callout_preview_hl = "MarkviewBlockQuoteError",
-
-				custom_title = true,
-				custom_icon = "  ",
-
-				border = "▋", border_hl = "MarkviewBlockQuoteError"
-			},
-			{
-				match_string = "ERROR",
-				callout_preview = " Error",
-				callout_preview_hl = "MarkviewBlockQuoteError",
-
-				custom_title = true,
-				custom_icon = "  ",
-
-				border = "▋", border_hl = "MarkviewBlockQuoteError"
-			},
-			{
-				match_string = "BUG",
-				callout_preview = " Bug",
-				callout_preview_hl = "MarkviewBlockQuoteError",
-
-				custom_title = true,
-				custom_icon = "  ",
-
-				border = "▋", border_hl = "MarkviewBlockQuoteError"
-			},
-			{
-				match_string = "EXAMPLE",
-				callout_preview = "󱖫 Example",
-				callout_preview_hl = "MarkviewBlockQuoteSpecial",
-
-				custom_title = true,
-				custom_icon = " 󱖫 ",
-
-				border = "▋", border_hl = "MarkviewBlockQuoteSpecial"
-			},
-			{
-				match_string = "QUOTE",
-				callout_preview = " Quote",
-				callout_preview_hl = "MarkviewBlockQuoteDefault",
-
-				custom_title = true,
-				custom_icon = "  ",
-
-				border = "▋", border_hl = "MarkviewBlockQuoteDefault"
-			},
-			{
-				match_string = "CITE",
-				callout_preview = " Cite",
-				callout_preview_hl = "MarkviewBlockQuoteDefault",
-
-				custom_title = true,
-				custom_icon = "  ",
-
-				border = "▋", border_hl = "MarkviewBlockQuoteDefault"
-			},
-			{
-				match_string = "HINT",
-				callout_preview = " Hint",
-				callout_preview_hl = "MarkviewBlockQuoteOk",
-
-				border = "▋", border_hl = "MarkviewBlockQuoteOk"
-			},
-			{
-				match_string = "ATTENTION",
-				callout_preview = " Attention",
-				callout_preview_hl = "MarkviewBlockQuoteWarn",
-
-				border = "▋", border_hl = "MarkviewBlockQuoteWarn"
-			},
-
-
-			{
-				match_string = "NOTE",
-				callout_preview = "󰋽 Note",
-				callout_preview_hl = "MarkviewBlockQuoteNote",
-
-				border = "▋", border_hl = "MarkviewBlockQuoteNote"
-			},
-			{
-				match_string = "TIP",
-				callout_preview = " Tip",
-				callout_preview_hl = "MarkviewBlockQuoteOk",
-
-				border = "▋", border_hl = "MarkviewBlockQuoteOk"
-			},
-			{
-				match_string = "IMPORTANT",
-				callout_preview = " Important",
-				callout_preview_hl = "MarkviewBlockQuoteSpecial",
-
-				border = "▋", border_hl = "MarkviewBlockQuoteSpecial"
-			},
-			{
-				match_string = "WARNING",
-				callout_preview = " Warning",
-				callout_preview_hl = "MarkviewBlockQuoteWarn",
-
-				border = "▋", border_hl = "MarkviewBlockQuoteWarn"
-			},
-			{
-				match_string = "CAUTION",
-				callout_preview = "󰳦 Caution",
-				callout_preview_hl = "MarkviewBlockQuoteError",
-
-				border = "▋", border_hl = "MarkviewBlockQuoteError"
-			},
-			{
-				match_string = "CUSTOM",
-				callout_preview = "󰠳 Custom",
-				callout_preview_hl = "MarkviewBlockQuoteWarn",
-
-				custom_title = true,
-				custom_icon = " 󰠳 ",
-
-				border = "▋", border_hl = "MarkviewBlockQuoteWarn"
-			}
+			sign = "󰌖 ", sign_hl = "MarkviewHeading2Sign",
+			icon = "  ", hl = "MarkviewHeading2",
+			line = "▁"
+			---_
 		}
+		---_
 	},
+
 	horizontal_rules = {
+		---+ ${class, Horizontal rules}
 		enable = true,
-		overwrite = { "parts" },
 
 		parts = {
 			{
+				---+ ${conf, Left portion}
 				type = "repeating",
 				repeat_amount = function () --[[@as function]]
 					local textoff = vim.fn.getwininfo(vim.api.nvim_get_current_win())[1].textoff;
@@ -1541,12 +630,14 @@ markview.configuration = {
 				hl = {
 					"MarkviewGradient1", "MarkviewGradient2", "MarkviewGradient3", "MarkviewGradient4", "MarkviewGradient5", "MarkviewGradient6", "MarkviewGradient7", "MarkviewGradient8", "MarkviewGradient9", "MarkviewGradient10"
 				}
+				---_
 			},
 			{
 				type = "text",
 				text = "  ",
 			},
 			{
+				---+ ${conf, Right portion}
 				type = "repeating",
 				repeat_amount = function () --[[@as function]]
 					local textoff = vim.fn.getwininfo(vim.api.nvim_get_current_win())[1].textoff;
@@ -1559,10 +650,16 @@ markview.configuration = {
 				hl = {
 					"MarkviewGradient1", "MarkviewGradient2", "MarkviewGradient3", "MarkviewGradient4", "MarkviewGradient5", "MarkviewGradient6", "MarkviewGradient7", "MarkviewGradient8", "MarkviewGradient9", "MarkviewGradient10"
 				}
+				---_
 			}
 		}
+		---_
 	},
+
 	html = {
+		---+ ${class, Html}
+		enable = true,
+
 		tags = {
 			enable = true,
 
@@ -1583,55 +680,149 @@ markview.configuration = {
 			}
 		},
 
-		entites = {
+		entities = {
 			enable = true
 		}
+		---_
 	},
 
-	links = {
+	injections = {
+		---+ ${class, Query injections}
 		enable = true,
-
-		hyperlinks = {
-			icon = "󰌷 ",
-			hl = "MarkviewHyperlink",
-
-			custom = {
-				{
-					match = "https://(.+)$",
-
-					icon = "󰞉 ",
-				},
-				{
-					match = "http://(.+)$",
-
-					icon = "󰕑 ",
-				},
-				{
-					match = "[%.]md$",
-
-					icon = " ",
-				}
-			}
-		},
-		images = {
-			icon = "󰥶 ",
-			hl = "MarkviewImageLink",
-		},
-		emails = {
-			icon = " ",
-			hl = "MarkviewEmail"
-		}
+		-- languages = {
+		-- 	markdown = {
+		-- 		enable = true,
+		-- 		query = [[
+		-- 			(section
+		-- 				(atx_heading)
+		-- 				) @fold
+		-- 				(#set! @fold)
+		-- 		]]
+		-- 	}
+		-- }
+		---_
 	},
 
 	inline_codes = {
+		---+ ${class, Inline codes}
 		enable = true,
 		corner_left = " ",
 		corner_right = " ",
 
 		hl = "MarkviewInlineCode"
+		---_
+	},
+
+	latex = {
+		---+ ${class, Latex}
+		enable = true,
+
+		brackets = {
+			enable = true,
+			hl = "@punctuation.brackets"
+		},
+
+		block = {
+			enable = true,
+
+			hl = "Code",
+			text = { " LaTeX ", "Special" }
+		},
+
+		inline = {
+			enable = true
+		},
+
+		operators = {
+			enable = true,
+			configs = latex.operator_conf
+		},
+
+		symbols = {
+			enable = true,
+			hl = "@operator.latex",
+			overwrite = {},
+			groups = {
+				{
+					match = { "lim", "today" },
+					hl = "Special"
+				}
+			}
+		},
+
+		subscript = {
+			enable = true,
+			hl = "MarkviewLatexSubscript",
+		},
+		superscript = {
+			enable = true,
+			hl = "MarkviewLatexSuperscript",
+		},
+		---_
+	},
+
+	links = {
+		---+ ${class, Links}
+		enable = true,
+
+		hyperlinks = {
+			enable = true,
+			__emoji_link_compatability = true,
+
+			icon = "󰌷 ",
+			hl = "MarkviewHyperlink",
+
+			custom = {
+				---+ ${conf, Stack*}
+				{ match_string = "stackoverflow%.com", icon = " " },
+				{ match_string = "stackexchange%.com", icon = " " },
+				---_
+
+				{ match_string = "neovim%.org", icon = " " },
+
+				{ match_string = "dev%.to", icon = " " },
+				{ match_string = "github%.com", icon = " " },
+				{ match_string = "reddit%.com", icon = " " },
+				{ match_string = "freecodecamp%.org", icon = " " },
+
+				{ match_string = "https://(.+)$", icon = "󰞉 " },
+				{ match_string = "http://(.+)$", icon = "󰕑 " },
+				{ match_string = "[%.]md$", icon = " " }
+			}
+		},
+		images = {
+			enable = true,
+			__emoji_link_compatability = true,
+
+			icon = "󰥶 ",
+			hl = "MarkviewImageLink",
+
+			custom = {
+				{ match_string = "%.svg$", icon = "󰜡 " },
+			}
+		},
+		emails = {
+			enable = true,
+			__emoji_link_compatability = true,
+
+			icon = " ",
+			hl = "MarkviewEmail"
+		},
+
+		internal_links = {
+			enable = true,
+			__emoji_link_compatability = true,
+
+			icon = " ",
+			hl = "MarkviewHyperlink"
+		}
+		---_
 	},
 
 	list_items = {
+		---+ ${class, List items}
+		enable = true,
+
 		indent_size = 2,
 		shift_width = 4,
 
@@ -1641,77 +832,79 @@ markview.configuration = {
 			text = "",
 			hl = "MarkviewListItemMinus"
 		},
+
 		marker_plus = {
 			add_padding = true,
 
 			text = "",
 			hl = "MarkviewListItemPlus"
 		},
+
 		marker_star = {
 			add_padding = true,
 
 			text = "",
-			text_hl = "MarkviewListItemStar"
+			hl = "MarkviewListItemStar"
 		},
+
 		marker_dot = {
 			add_padding = true
 		},
-	},
 
-	checkboxes = {
-		enable = true,
-
-		checked = {
-			text = "✔", hl = "MarkviewCheckboxChecked"
+		marker_parenthesis = {
+			add_padding = true
 		},
-		pending = {
-			text = "◯", hl = "MarkviewCheckboxPending"
-		},
-		unchecked = {
-			text = "✘", hl = "MarkviewCheckboxUnchecked"
-		},
-		custom = {
-			{
-				match = "~",
-				text = "◕",
-				hl = "MarkviewCheckboxProgress"
-			},
-			{
-				match = "o",
-				text = "󰩹",
-				hl = "MarkviewCheckboxCancelled"
-			}
-		}
+		---_
 	},
 
 	tables = {
+		---+ ${class, Tables}
 		enable = true,
-		col_min_width = 10,
 
-		text = {
-			"╭", "─", "╮", "┬",
-			"├", "│", "┤", "┼",
-			"╰", "─", "╯", "┴",
+		parts = {
+			top = { "╭", "─", "╮", "┬" },
+			header = { "│", "│", "│" },
+			separator = { "├", "─", "┤", "┼" },
+			row = { "│", "│", "│" },
+			bottom = { "╰", "─", "╯", "┴" },
 
-			"╼", "╾", "╴", "╶"
+			overlap = { "┝", "━", "┥", "┿" },
+
+			align_left = "╼",
+			align_right = "╾",
+			align_center = { "╴", "╶" }
 		},
+
 		hl = {
-			"MarkviewTableBorder", "MarkviewTableBorder", "MarkviewTableBorder", "MarkviewTableBorder",
-			"MarkviewTableBorder", "MarkviewTableBorder", "MarkviewTableBorder", "MarkviewTableBorder",
-			"MarkviewTableBorder", "MarkviewTableBorder", "MarkviewTableBorder", "MarkviewTableBorder",
+			top = { "TableHeader", "TableHeader", "TableHeader", "TableHeader" },
+			header = { "TableHeader", "TableHeader", "TableHeader" },
+			separator = { "TableHeader", "TableHeader", "TableHeader", "TableHeader" },
+			row = { "TableBorder", "TableBorder", "TableBorder" },
+			bottom = { "TableBorder", "TableBorder", "TableBorder", "TableBorder" },
 
-			"MarkviewTableAlignLeft", "MarkviewTableAlignRight", "MarkviewTableAlignCenter", "MarkviewTableAlignCenter"
+			overlap = { "TableBorder", "TableBorder", "TableBorder", "TableBorder" },
+
+			align_left = "TableAlignLeft",
+			align_right = "TableAlignRight",
+			align_center = { "TableAlignCenter", "TableAlignCenter" }
 		},
 
+		col_min_width = 10,
 		block_decorator = true,
 		use_virt_lines = true
-	},
-
-	escaped = {
-		enable = true
+		---_
 	}
 };
 
+--- Split view related functions
+---@class markview.splitView
+---
+---@field attached_buffer integer? Buffer ID of the currently attached buffer, `nil` if no buffer is attached
+---@field augroup integer Autocmd group for scroll sync and closing the window
+---
+---@field close function Window closing function
+---@field open function Window opening function
+---@field init function Initializes the current buffer to be shown in a split
 markview.splitView = {
 	attached_buffer = nil,
 	augroup = vim.api.nvim_create_augroup("markview_splitview", { clear = true }),
@@ -1752,6 +945,8 @@ markview.splitView = {
 				win = windows[1],
 				split = "right"
 			}, markview.configuration.split_conf or {}));
+
+			pcall(markview.configuration.callbacks.split_enter, self.buffer, self.window);
 		else
 			vim.api.nvim_win_set_config(self.window, vim.tbl_deep_extend("force", {
 				win = windows[1],
@@ -1780,19 +975,20 @@ markview.splitView = {
 		local cursor = vim.api.nvim_win_get_cursor(windows[1]);
 		pcall(vim.api.nvim_win_set_cursor, self.window, cursor);
 
+		vim.api.nvim_buf_clear_namespace(self.buffer, markview.renderer.namespace, 0, -1);
 		local parsed_content;
 
-		if #content < (markview.configuration.max_length or 1000) then
+		if #content < markview.configuration.max_file_length then
 			-- Buffer isn't too big. Render everything
 			parsed_content = markview.parser.init(self.buffer, markview.configuration);
 
 			markview.renderer.render(self.buffer, parsed_content, markview.configuration)
 		else
 			-- Buffer is too big, render only parts of it
-			local start = math.max(0, cursor[1] - (markview.configuration.render_range or 100));
-			local stop = math.min(lines, cursor[1] + (markview.configuration.render_range or 100));
+			local start = math.max(0, cursor[1] - markview.configuration.render_distance);
+			local stop = math.min(lines, cursor[1] + markview.configuration.render_distance);
 
-			parsed_content = markview.parser.parse_range(self.buffer, markview.configuration, start, stop);
+			parsed_content = markview.parser.init(self.buffer, markview.configuration, start, stop);
 
 			markview.renderer.render(self.buffer, parsed_content, markview.configuration)
 		end
@@ -1843,20 +1039,21 @@ markview.splitView = {
 
 					-- Write text to the split buffer
 					vim.bo[self.buffer].modifiable = true;
+					vim.api.nvim_buf_clear_namespace(self.buffer, markview.renderer.namespace, 0, -1);
 					vim.api.nvim_buf_set_lines(self.buffer, 0, -1, false, content);
 					vim.bo[self.buffer].modifiable = false;
 
-					if #content < (markview.configuration.max_length or 1000) then
+					if #content < markview.configuration.max_file_length then
 						-- Buffer isn't too big. Render everything
 						parsed_content = markview.parser.init(self.buffer, markview.configuration);
 
 						markview.renderer.render(self.buffer, parsed_content, markview.configuration)
 					else
 						-- Buffer is too big, render only parts of it
-						local start = math.max(0, cursor[1] - (markview.configuration.render_range or 100));
-						local stop = math.min(lines, cursor[1] + (markview.configuration.render_range or 100));
+						local start = math.max(0, cursor[1] - markview.configuration.render_distance);
+						local stop = math.min(lines, cursor[1] + markview.configuration.render_distance);
 
-						parsed_content = markview.parser.parse_range(self.buffer, markview.configuration, start, stop);
+						parsed_content = markview.parser.init(self.buffer, markview.configuration, start, stop);
 
 						markview.renderer.render(self.buffer, parsed_content, markview.configuration)
 					end
@@ -1869,6 +1066,13 @@ markview.splitView = {
 };
 
 markview.commands = {
+	attach = function (buf)
+		vim.api.nvim_exec_autocmds("User", { pattern = "MarkviewEnter", buffer = buf })
+	end,
+	detach = function (buf)
+		vim.api.nvim_exec_autocmds("User", { pattern = "MarkviewLeave", buffer = buf })
+	end,
+
 	toggleAll = function ()
 		if markview.state.enable == true then
 			markview.commands.disableAll();
@@ -1888,7 +1092,7 @@ markview.commands = {
 				goto continue;
 			end
 
-			local parsed_content = markview.parser.init(buf);
+			local parsed_content = markview.parser.init(buf, markview.configuration);
 			local windows = utils.find_attached_wins(buf);
 
 			if markview.configuration.callbacks and markview.configuration.callbacks.on_enable then
@@ -1967,7 +1171,7 @@ markview.commands = {
 		local lines = vim.api.nvim_buf_line_count(buffer);
 		local parsed_content;
 
-		if lines < (markview.configuration.max_length or 1000) then
+		if lines < markview.configuration.max_file_length then
 			-- Buffer isn't too big. Render everything
 			parsed_content = markview.parser.init(buffer, markview.configuration);
 
@@ -1975,10 +1179,10 @@ markview.commands = {
 		else
 			-- Buffer is too big, render only parts of it
 			local cursor = vim.api.nvim_win_get_cursor(0);
-			local start = math.max(0, cursor[1] - (markview.configuration.render_range or 100));
-			local stop = math.min(lines, cursor[1] + (markview.configuration.render_range or 100));
+			local start = math.max(0, cursor[1] - markview.configuration.render_distance);
+			local stop = math.min(lines, cursor[1] + (markview.configuration.render_distance));
 
-			parsed_content = markview.parser.parse_range(buffer, markview.configuration, start, stop);
+			parsed_content = markview.parser.init(buffer, markview.configuration, start, stop);
 
 			markview.renderer.render(buffer, parsed_content, markview.configuration)
 		end
@@ -2034,7 +1238,7 @@ markview.commands = {
 
 		local windows = utils.find_attached_wins(buffer);
 
-		local parsed_content = markview.parser.init(buffer);
+		local parsed_content = markview.parser.init(buffer, markview.configuration);
 
 		for _, window in ipairs(windows) do
 			pcall(markview.configuration.callbacks.on_enable, buf, window);
@@ -2069,14 +1273,21 @@ markview.commands = {
 		else
 			markview.state.hybrid_mode = false;
 		end
-	end
+	end,
+	hybridEnable = function ()
+		markview.state.hybrid_mode = true;
+	end,
+	hybridDisable = function ()
+		markview.state.hybrid_mode = false;
+	end,
 }
 
 
 vim.api.nvim_create_autocmd({ "colorscheme" }, {
 	callback = function ()
-		if type(markview.configuration.highlight_groups) == "table" then
-			markview.add_hls(markview.configuration.highlight_groups);
+		if type(markview.configuration.highlight_groups) == "string" or vim.islist(markview.configuration.highlight_groups) then
+			---@diagnostic disable-next-line
+			hls.create(markview.configuration.highlight_groups)
 		end
 	end
 })
@@ -2141,15 +1352,19 @@ end, {
 	end
 });
 
-markview.unload = function ()
+markview.unload = function (buffer)
 	for index, buf in ipairs(markview.attached_buffers) do
-		if vim.api.nvim_buf_is_valid(buf) == false then
+		if buffer and buf == buffer then
+			table.remove(markview.attached_buffers, index);
+		elseif vim.api.nvim_buf_is_valid(buf) == false then
 			table.remove(markview.attached_buffers, index);
 		end
 	end
 
 	for index, win in ipairs(markview.attached_windows) do
-		if vim.api.nvim_win_is_valid(win) == false then
+		if buffer and vim.api.nvim_win_is_valid(win) and vim.api.nvim_win_get_buf(win) == buffer then
+			table.remove(markview.attached_windows, index);
+		elseif vim.api.nvim_win_is_valid(win) == false then
 			table.remove(markview.attached_windows, index);
 		end
 	end
@@ -2157,16 +1372,26 @@ end
 
 markview.setup = function (user_config)
 	if user_config and user_config.highlight_groups then
-		markview.configuration.highlight_groups = vim.list_extend(markview.configuration.highlight_groups, user_config.highlight_groups);
-		user_config.highlight_groups = nil;
+		if vim.islist(user_config.highlight_groups) then
+			markview.configuration.highlight_groups = user_config.highlight_groups;
+		else
+			markview.configuration.highlight_groups = vim.list_extend(markview.configuration.highlight_groups, user_config.highlight_groups);
+		end
 	end
 
-	---@type markview.config
+	---@type markview.configuration
 	-- Merged configuration tables
 	markview.configuration = vim.tbl_deep_extend("force", markview.configuration, user_config or {});
 
-	if vim.islist(markview.configuration.highlight_groups) then
-		markview.add_hls(markview.configuration.highlight_groups);
+	if type(markview.configuration.highlight_groups) == "string" or vim.islist(markview.configuration.highlight_groups) then
+		---@diagnostic disable-next-line
+		hls.create(markview.configuration.highlight_groups);
+	end
+
+	ts.inject(markview.configuration.injections);
+
+	if markview.state.enable ~= true then
+		return;
 	end
 	markview.commands.enableAll();
 end

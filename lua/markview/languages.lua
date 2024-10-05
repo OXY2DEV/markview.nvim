@@ -1,5 +1,141 @@
 local languages = {};
 
+--- Table for icon & sign highlight group
+---@type { [string]: string[]} }
+languages.hls = {
+	default   = { "MarkviewIcon5", "MarkviewIcon5Sign" },
+
+	["c"]     = { "MarkviewIcon5", "MarkviewIcon5Sign" },
+	["cpp"]   = { "MarkviewIcon5", "MarkviewIcon5Sign" },
+	["java"]  = { "MarkviewIcon1", "MarkviewIcon1Sign" },
+	["py"]    = { "MarkviewIcon2", "MarkviewIcon2Sign" },
+	["js"]    = { "MarkviewIcon3", "MarkviewIcon3Sign" },
+	["ts"]    = { "MarkviewIcon5", "MarkviewIcon5Sign" },
+	["rb"]    = { "MarkviewIcon1", "MarkviewIcon1Sign" },
+	["php"]   = { "MarkviewIcon6", "MarkviewIcon6Sign" },
+	["cs"]    = { "MarkviewIcon5", "MarkviewIcon5Sign" },
+	["swift"] = { "MarkviewIcon2", "MarkviewIcon2Sign" },
+	["kt"]    = { "MarkviewIcon6", "MarkviewIcon6Sign" },
+	["go"]    = { "MarkviewIcon5", "MarkviewIcon5Sign" },
+	["rs"]    = { "MarkviewIcon2", "MarkviewIcon2Sign" },
+	["r"]     = { "MarkviewIcon5", "MarkviewIcon5Sign" },
+	["pl"]    = { "MarkviewIcon5", "MarkviewIcon5Sign" },
+	["lua"]   = { "MarkviewIcon5", "MarkviewIcon5Sign" },
+	["sh"]    = { "MarkviewIcon4", "MarkviewIcon4Sign" },
+	["bash"]  = { "MarkviewIcon4", "MarkviewIcon4Sign" },
+	["ps1"]   = { "MarkviewIcon6", "MarkviewIcon6Sign" },
+	["scala"] = { "MarkviewIcon1", "MarkviewIcon1Sign" },
+	["hs"]    = { "MarkviewIcon6", "MarkviewIcon6Sign" },
+	["jl"]    = { "MarkviewIcon5", "MarkviewIcon5Sign" },
+	["clj"]   = { "MarkviewIcon4", "MarkviewIcon4Sign" },
+	["dart"]  = { "MarkviewIcon5", "MarkviewIcon5Sign" },
+	["grrovy"]= { "MarkviewIcon6", "MarkviewIcon6Sign" },
+	["erl"]   = { "MarkviewIcon1", "MarkviewIcon1Sign" },
+	["ex"]    = { "MarkviewIcon6", "MarkviewIcon6Sign" },
+	["elm"]   = { "MarkviewIcon5", "MarkviewIcon5Sign" },
+	["f90"]   = { "MarkviewIcon6", "MarkviewIcon6Sign" },
+	["ml"]    = { "MarkviewIcon2", "MarkviewIcon2Sign" },
+	["sql"]   = { "MarkviewIcon5", "MarkviewIcon5Sign" },
+	["p"]     = { "MarkviewIcon6", "MarkviewIcon6Sign" },
+	["nim"]   = { "MarkviewIcon3", "MarkviewIcon3Sign" },
+	["coffee"]= { "MarkviewIcon2", "MarkviewIcon2Sign" },
+	["fs"]    = { "MarkviewIcon5", "MarkviewIcon5Sign" },
+	["hx"]    = { "MarkviewIcon2", "MarkviewIcon2Sign" },
+	["asp"]   = { "MarkviewIcon6", "MarkviewIcon6Sign" },
+	["cl"]    = { "MarkviewIcon4", "MarkviewIcon4Sign" },
+	["gd"]    = { "MarkviewIcon5", "MarkviewIcon5Sign" },
+	["glsl"]  = { "MarkviewIcon4", "MarkviewIcon4Sign" },
+	["h"]     = { "MarkviewIcon6", "MarkviewIcon6Sign" },
+	["hpp"]   = { "MarkviewIcon6", "MarkviewIcon6Sign" },
+	["hrl"]   = { "MarkviewIcon6", "MarkviewIcon6Sign" },
+	["mjs"]   = { "MarkviewIcon4", "MarkviewIcon4Sign" },
+	["md"]    = { "MarkviewIcon6", "MarkviewIcon6Sign" },
+	["styl"]  = { "MarkviewIcon4", "MarkviewIcon4Sign" },
+	["toml"]  = { "MarkviewIcon1", "MarkviewIcon1Sign" },
+	["vim"]   = { "MarkviewIcon4", "MarkviewIcon4Sign" },
+	["wxs"]   = { "MarkviewIcon3", "MarkviewIcon3Sign" },
+	["yaml"]  = { "MarkviewIcon6", "MarkviewIcon6Sign" },
+	["zsh"]   = { "MarkviewIcon4", "MarkviewIcon4Sign" },
+	["exs"]   = { "MarkviewIcon6", "MarkviewIcon6Sign" },
+	["fnl"]   = { "MarkviewIcon3", "MarkviewIcon3Sign" },
+	["gsl"]   = { "MarkviewIcon4", "MarkviewIcon4Sign" },
+	["gs"]    = { "MarkviewIcon5", "MarkviewIcon5Sign" },
+	["scss"]  = { "MarkviewIcon2", "MarkviewIcon2Sign" },
+	["zig"]   = { "MarkviewIcon3", "MarkviewIcon3Sign" },
+	["html"]  = { "MarkviewIcon1", "MarkviewIcon1Sign" },
+	["css"]   = { "MarkviewIcon5", "MarkviewIcon5Sign" },
+};
+
+--- Icons table for various filetypes
+---@type { [string]: string }
+languages.icons = {
+	default = "󰈮 ",
+
+	["c"] = " ",
+	["cpp"] = " ",
+    ["java"] = " ",
+    ["py"] = " ",
+    ["js"] = " ",
+    ["ts"] = " ",
+    ["rb"] = " ",
+    ["php"] = " ",
+    ["cs"] = " ",
+    ["swift"] = " ",
+    ["kt"] = " ",
+    ["go"] = " ",
+    ["rs"] = " ",
+    ["r"] = "󰟔 ",
+    ["pl"] = " ",
+    ["lua"] = " ",
+    ["sh"] = " ",
+    ["bash"] = " ",
+    ["ps1"] = "󰨊 ",
+    ["scala"] = " ",
+    ["hs"] = "󰲒 ",
+    ["jl"] = " ",
+    ["clj"] = " ",
+    ["dart"] = " ",
+    ["groovy"] = " ",
+    ["erl"] = " ",
+    ["ex"] = "",
+    ["elm"] = " ",
+    ["f90"] = "󱈚 ",
+    ["ml"] = " ",
+    ["sql"] = " ",
+    ["p"] = " ",
+    ["nim"] = " ",
+    ["coffee"] = " ",
+    ["fs"] = " ",
+    ["hx"] = " ",
+    ["asp"] = "󰪮 ",
+    ["cl"] = " ",
+    ["gd"] = " ",
+    ["glsl"] = "󱓙 ",
+    ["h"] = " ",
+    ["hpp"] = " ",
+    ["hrl"] = " ",
+    ["mjs"] = "󰎙 ",
+    ["md"] = " ",
+    ["styl"] = " ",
+    ["toml"] = " ",
+    ["vim"] = " ",
+    ["wxs"] = " ",
+    ["yaml"] = " ",
+    ["zsh"] = " ",
+    ["exs"] = " ",
+    ["fnl"] = " ",
+    ["gsl"] = "󰿦 ",
+    ["gs"] = "󰊭 ",
+    ["scss"] = " ",
+    ["zig"] = " ",
+	["text"] = "󰗊 ",
+	["htmx"] = " ",
+	["json"] = "󰅩 ",
+	["html"] = " ",
+	["css"] = " "
+};
+
+---@type table<string, string> Language name to filetype mapping
 languages.reverse_map = {
     ["c"] = "c",
     ["c_plus_plus"] = "cpp",
@@ -78,7 +214,7 @@ languages.reverse_map = {
     ["toml"] = "toml",
     ["vala"] = "vala",
     ["vala_api"] = "vapi",
-    ["vim_script"] = "vim",
+    ["vimscript"] = "vim",
     ["wix"] = "wxs",
     ["xslt"] = "xt",
     ["yaml"] = "yaml",
@@ -125,9 +261,10 @@ languages.reverse_map = {
     ["xpl"] = "xpl",
     ["xquery_file"] = "xqy",
     ["xs"] = "xs",
-    ["z"] = "z"
+    ["txt"] = "text",
 };
 
+---@type table<string, string> Filetype to language name mapping
 languages.patterns = {
     ["c"] = "C",
     ["cpp"] = "C++",
@@ -186,9 +323,9 @@ languages.patterns = {
     ["g"] = "G",
     ["gd"] = "GDScript",
     ["glsl"] = "GLSL",
-    ["h"] = "C Header",
-    ["hpp"] = "C++ Header",
-    ["hrl"] = "Erlang Header",
+    ["h"] = "Header",
+    ["hpp"] = "Header",
+    ["hrl"] = "Header",
     ["lid"] = "Lisp Identifier",
     ["mjs"] = "Node.js ES Module",
     ["md"] = "Markdown",
@@ -254,8 +391,13 @@ languages.patterns = {
     ["xquery"] = "XQuery",
     ["xs"] = "XS",
     ["z"] = "Z",
+	["css"] = "CSS",
+	["html"] = "HTML"
 };
 
+--- Gets the language name from a string
+---@param name string
+---@return string
 languages.get_name = function (name)
 	if not name or name == "" then
 		return "Unknown";
@@ -263,9 +405,13 @@ languages.get_name = function (name)
 		return languages.patterns[name];
 	end
 
-	return string.gsub(name, "^%l", string.upper);
+	local _u = string.gsub(name, "^%l", string.upper);
+	return _u;
 end
 
+--- Gets the filetype from a string
+---@param name string
+---@return string
 languages.get_ft = function (name)
 	if not name or name == "" then
 		return "Unknown";
@@ -274,6 +420,18 @@ languages.get_ft = function (name)
 	else
 		return name;
 	end
+end
+
+--- Gets an icon from a filetype
+---@param ft string
+---@return string # The icon
+---@return string # The icon's hl
+---@return string # The sign's hl
+languages.get_icon = function (ft)
+	---@diagnostic disable-next-line
+	local hl, sign = unpack(languages.hls[ft] or languages.hls.default);
+
+	return languages.icons[ft] or languages.icons.default, hl, sign;
 end
 
 return languages;

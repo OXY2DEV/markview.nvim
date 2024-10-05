@@ -1,6 +1,7 @@
-local entites = {};
+local entities = {};
 
-entites.lookup = {
+---@type table<string, string> HTML entities lookup table
+entities.lookup = {
     Aacute = "Á",
     aacute = "á",
     Acirc = "Â",
@@ -249,8 +250,12 @@ entites.lookup = {
     -- zwnj = "‌"
 }
 
-entites.get = function (string)
-	return entites.lookup[string], vim.fn.strdisplaywidth(entites.lookup[string]);
+--- Gets an HTML entity & it's character width
+---@param string string
+---@return string
+---@return number
+entities.get = function (string)
+	return entities.lookup[string], vim.fn.strdisplaywidth(entities.lookup[string]);
 end
 
-return entites;
+return entities;

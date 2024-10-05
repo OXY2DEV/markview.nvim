@@ -1,13 +1,16 @@
 local colors = {};
 
+---@deprecated
 colors.clamp = function (val, min, max)
 	return math.min(math.max(val, min), max)
 end
 
+---@deprecated
 colors.lerp = function (x, y, t)
 	return x + ((y - x) * t);
 end
 
+---@deprecated
 colors.name_to_hex = function (name)
 	---+ ##code##
 	local lookup = {
@@ -44,6 +47,7 @@ colors.name_to_hex = function (name)
 	return lookup[string.lower(name)] or lookup_nvim[string.lower(name)];
 end
 
+---@deprecated
 colors.name_to_rgb = function (name)
 	local hex = colors.name_to_hex(name);
 
@@ -54,6 +58,7 @@ colors.name_to_rgb = function (name)
 	return colors.hex_to_rgb(hex);
 end
 
+---@deprecated
 colors.num_to_hex = function (num)
 	if not num then
 		return;
@@ -66,6 +71,7 @@ colors.num_to_hex = function (num)
 	end
 end
 
+---@deprecated
 colors.num_to_rgb = function (num)
 	if not num then
 		return;
@@ -80,6 +86,7 @@ colors.num_to_rgb = function (num)
 	}
 end
 
+---@deprecated
 colors.hex_to_rgb = function (str)
 	str = str:gsub("#", "");
 
@@ -98,6 +105,7 @@ colors.hex_to_rgb = function (str)
 	end
 end
 
+---@deprecated
 colors.rgb_to_hex = function (tbl)
 	return string.format("#%02X%02X%02X", tbl.r, tbl.g, tbl.b);
 end
@@ -132,6 +140,7 @@ colors.get_hl_value = function (ns_id, hl_group, value)
 	end
 end
 
+---@deprecated
 colors.create_gradient = function (name_prefix, from, to, steps, mode)
 	local start, stop;
 
@@ -174,6 +183,7 @@ colors.create_gradient = function (name_prefix, from, to, steps, mode)
 	return _t;
 end
 
+---@deprecated
 colors.mix = function (color_1, color_2, per_1, per_2)
 	local c_1, c_2;
 
@@ -204,6 +214,7 @@ colors.mix = function (color_1, color_2, per_1, per_2)
 	return colors.rgb_to_hex({ r = _r, g = _g, b = _b });
 end
 
+---@deprecated
 colors.get_brightness = function (color)
 	if type(color) == "string" and color:match("^[#]?(%x+)$") then
 		color = colors.hex_to_rgb(color);
@@ -222,6 +233,7 @@ colors.get_brightness = function (color)
 	return (color.r * 0.2126) + (color.g * 0.7152) + (color.b * 0.0722);
 end
 
+---@deprecated
 colors.brightest = function (col_list, debug)
 	if not col_list then
 		return;
@@ -269,6 +281,7 @@ colors.brightest = function (col_list, debug)
 	return colors.rgb_to_hex(brightest);
 end
 
+---@deprecated
 colors.get = function (col_list)
 	if not col_list then
 		return;
@@ -285,6 +298,7 @@ colors.get = function (col_list)
 	return col_list[1];
 end
 
+---@deprecated
 colors.bg = function ()
 	return colors.get({
 		colors.get_hl_value(0, "Normal", "bg"),
