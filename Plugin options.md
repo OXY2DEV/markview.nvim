@@ -85,6 +85,11 @@ Options that don't deal with `rendering` of nodes.
         }
     },
 
+    --- When using "hybrid mode" if the cursor is inside
+    --- specific nodes the decorations will not be removed.
+    ---@type string[]?
+    ignore_modes = nil,
+
     --- Initial state of the plugin for newly attached buffers.
     --- When false, automatic previews are disabled. You can then
     --- enable the preview via a command.
