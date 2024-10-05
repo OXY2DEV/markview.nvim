@@ -1383,7 +1383,7 @@ markview.setup = function (user_config)
 
 	if type(markview.configuration.highlight_groups) == "string" or vim.islist(markview.configuration.highlight_groups) then
 		---@diagnostic disable-next-line
-		hls.create(markview.configuration.highlight_groups)
+		hls.create(markview.configuration.highlight_groups);
 	end
 
 	ts.inject(markview.configuration.injections);

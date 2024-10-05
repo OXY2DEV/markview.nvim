@@ -7,8 +7,12 @@ A highly-customisable & feature rich markdown previewer inside Neovim.
 
 <p align="center">
     <a href="https://github.com/OXY2DEV/markview.nvim/wiki">📖 Wiki page</a> | 
-    <a href="#-usage-examples">🎮 Usage examples</a> | 
-    <a href="https://github.com/OXY2DEV/markview.nvim/wiki/Extras">🔋 Extras</a>
+    <a href="#-usage-examples">🎮 Usage examples</a>
+</p>
+
+<p align="center">
+    <a href="https://github.com/OXY2DEV/markview.nvim/wiki/Extras">🔋 Extras</a> |
+    <a href="https://github.com/OXY2DEV/markview.nvim/wiki/Presets">🧩 Presets</a> |
 </p>
 
 <p align="center">
@@ -248,11 +252,32 @@ Highlight groups defined by the plugin are given below.
   - `MarkviewCheckboxPending`
   - `MarkviewCheckboxProgress`
   - `MarkviewCheckboxUnchecked`
+  - `MarkviewCheckboxStriked`
 
 + Code blocks & Inline codes
   - `MarkviewInlineCode`
   - `MarkviewCodeInfo`
   - `MarkviewCode`
+
++ Code block icons(Internal icon provider)
+  - `MarkviewIcon1`
+  - `MarkviewIcon1Sign`
+  - `MarkviewIcon1Fg`
+  - `MarkviewIcon2`
+  - `MarkviewIcon2Sign`
+  - `MarkviewIcon2Fg`
+  - `MarkviewIcon3`
+  - `MarkviewIcon3Sign`
+  - `MarkviewIcon3Fg`
+  - `MarkviewIcon4`
+  - `MarkviewIcon4Sign`
+  - `MarkviewIcon4Fg`
+  - `MarkviewIcon5`
+  - `MarkviewIcon5Sign`
+  - `MarkviewIcon5Fg`
+  - `MarkviewIcon6`
+  - `MarkviewIcon6Sign`
+  - `MarkviewIcon6Fg`
 
 + Headings
   - `MarkviewHeading1Sign`
