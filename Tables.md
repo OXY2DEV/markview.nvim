@@ -11,9 +11,12 @@ tables = {
     text = {
         top       = { "╭", "─", "╮", "┬" },
         header    = { "│", "│", "│" },
-        separator = { "├", "┼", "┤", "─" },
+        separator = { "├", "─", "┤", "┼" },
         row       = { "│", "│", "│" },
         bottom    = { "╰", "─", "╯", "┴" },
+
+        --- Used when table borders are overlapping.
+        overlap   = { "├", "─", "┤", "┼" },
 
         align_left = "╼",
         align_right = "╾",
@@ -28,6 +31,8 @@ tables = {
         separator = { "TableHeader", "TableHeader", "TableHeader", "TableHeader" },
         row       = { "TableBorder", "TableBorder", "TableBorder" },
         bottom    = { "TableBorder", "TableBorder", "TableBorder", "TableBorder" },
+
+        overlap   = { "TableBorder", "TableBorder", "TableBorder", "TableBorder" },
 
         align_left = "TableAlignLeft",
         align_right = "TableAlignRight",

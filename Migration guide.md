@@ -226,6 +226,8 @@ tables = {
         row       = { "│", "│", "│" },
         bottom    = { "╰", "─", "╯", "┴" },
 
+        overlap   = { "├", "┼", "┤", "─" },
+
         align_left = "╼",
         align_right = "╾",
         align_center = { "╴", "╶",}
