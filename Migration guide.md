@@ -1,6 +1,6 @@
 # Migrating to latest version
 
-Here's the major changes in version `v25`.
+Here's the major changes in version `v24`.
 
 ## Hybrid mode
 
