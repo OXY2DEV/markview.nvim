@@ -848,7 +848,7 @@ parser.md_inline = function (buffer, TStree, from, to)
 				for _, extmark in ipairs(parser.parsed_content) do
 					if extmark.type == "block_quote"
 						and extmark.row_start == row_start
-						and (extmark.col_start == col_start - before:match("%> ?$"):len())
+						and extmark.col_start == col_start - before:match("%> ?$"):len()
 					then
 						extmark.callout = string.match(capture_text, "%[!([^%]]+)%]");
 						extmark.title = title;
