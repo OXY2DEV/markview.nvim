@@ -71,7 +71,7 @@ Extras,
 
 ## 📦 Requirements
 
-- Neovim version `>=0.10.0`.
+- Neovim version `>=0.10.1`.
 - Tree-sitter parsers: `markdown`, `markdown_inline`, `html`.
 - Nerd font.
 

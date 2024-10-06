@@ -17,8 +17,10 @@ health.check = function ()
 
 	vim.health.start("Checking essentials:")
 
-	if vim.fn.has("nvim-0.10.0") == 1 then
+	if vim.fn.has("nvim-0.10.1") == 1 then
 		vim.health.ok("Neovim version: " .. string.format("`%d.%d.%d`", ver.major, ver.minor, ver.patch));
+	elseif ver.major == 0 and ver.minor == 10 and ver.patch == 0 then
+		vim.health.warn("Neovim version(may experience errors): " .. string.format("`%d.%d.%d`", ver.major, ver.minor, ver.patch));
 	else
 		vim.health.error("Unsupported neovim version. Minimum requirement `0.10.1`, found: " .. string.format("`%d.%d.%d`", ver.major, ver.minor, ver.patch));
 	end
