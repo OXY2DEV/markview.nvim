@@ -842,15 +842,15 @@ parser.md_inline = function (buffer, TStree, from, to)
 					col_start = col_start,
 					col_end = col_end,
 				});
-			elseif before:match("%>$") then
-				local title = string.match(line or "", "%b[](.*)$")
+			elseif before:match("%> ?$") then
+				local title = string.match(line or "", "%](.*)$")
 
 				for _, extmark in ipairs(parser.parsed_content) do
 					if extmark.type == "block_quote"
 						and extmark.row_start == row_start
-						and extmark.col_start == col_start - 1
+						and extmark.col_start == col_start - before:match("(%> ?)$"):len()
 					then
-						extmark.callout = string.match(capture_text, "%[!([^%]]+)%]");
+						extmark.callout = string.match(capture_text, "%[!(.-)%]");
 						extmark.title = title;
 
 						extmark.line_width = vim.fn.strchars(line);

@@ -132,7 +132,7 @@ markview.configuration = {
 				hl = "MarkviewBlockQuoteNote",
 
 				title = true,
-				icon = "󱉫 ",
+				icon = "󱉫",
 
 				border = "▋"
 			},
@@ -142,7 +142,7 @@ markview.configuration = {
 				preview = "󱉫 Summary",
 
 				title = true,
-				icon = "󱉫 ",
+				icon = "󱉫",
 
 				border = "▋"
 			},
@@ -152,7 +152,7 @@ markview.configuration = {
 				preview = "󱉫 Tldr",
 
 				title = true,
-				icon = "󱉫 ",
+				icon = "󱉫",
 
 				border = "▋"
 			},
@@ -162,7 +162,7 @@ markview.configuration = {
 				preview = " Todo",
 
 				title = true,
-				icon = " ",
+				icon = "",
 
 				border = "▋"
 			},
@@ -172,7 +172,7 @@ markview.configuration = {
 				preview = " Info",
 
 				custom_title = true,
-				icon = " ",
+				icon = "",
 
 				border = "▋"
 			},
@@ -182,7 +182,7 @@ markview.configuration = {
 				preview = "󰗠 Success",
 
 				title = true,
-				icon = "󰗠 ",
+				icon = "󰗠",
 
 				border = "▋"
 			},
@@ -192,7 +192,7 @@ markview.configuration = {
 				preview = "󰗠 Check",
 
 				title = true,
-				icon = "󰗠 ",
+				icon = "󰗠",
 
 				border = "▋"
 			},
@@ -202,7 +202,7 @@ markview.configuration = {
 				preview = "󰗠 Done",
 
 				title = true,
-				icon = "󰗠 ",
+				icon = "󰗠",
 
 				border = "▋"
 			},
@@ -212,7 +212,7 @@ markview.configuration = {
 				preview = "󰋗 Question",
 
 				title = true,
-				icon = "󰋗 ",
+				icon = "󰋗",
 
 				border = "▋"
 			},
@@ -222,7 +222,7 @@ markview.configuration = {
 				preview = "󰋗 Help",
 
 				title = true,
-				icon = "󰋗 ",
+				icon = "󰋗",
 
 				border = "▋"
 			},
@@ -231,8 +231,8 @@ markview.configuration = {
 				hl = "MarkviewBlockQuoteWarn",
 				preview = "󰋗 Faq",
 
-				custom_title = true,
-				custom_icon = "󰋗 ",
+				title = true,
+				icon = "󰋗",
 
 				border = "▋"
 			},
@@ -242,7 +242,7 @@ markview.configuration = {
 				preview = "󰅙 Failure",
 
 				title = true,
-				icon = "󰅙 ",
+				icon = "󰅙",
 
 				border = "▋"
 			},
@@ -252,7 +252,7 @@ markview.configuration = {
 				preview = "󰅙 Fail",
 
 				title = true,
-				icon = "󰅙 ",
+				icon = "󰅙",
 
 				border = "▋"
 			},
@@ -262,7 +262,7 @@ markview.configuration = {
 				preview = "󰅙 Missing",
 
 				title = true,
-				icon = "󰅙 ",
+				icon = "󰅙",
 
 				border = "▋"
 			},
@@ -272,7 +272,7 @@ markview.configuration = {
 				preview = " Danger",
 
 				title = true,
-				icon = "  ",
+				icon = "",
 
 				border = "▋"
 			},
@@ -282,7 +282,7 @@ markview.configuration = {
 				preview = " Error",
 
 				title = true,
-				icon = "  ",
+				icon = "",
 
 				border = "▋"
 			},
@@ -292,7 +292,7 @@ markview.configuration = {
 				preview = " Bug",
 
 				title = true,
-				icon = "  ",
+				icon = "",
 
 				border = "▋"
 			},
@@ -302,7 +302,7 @@ markview.configuration = {
 				preview = "󱖫 Example",
 
 				title = true,
-				icon = " 󱖫 ",
+				icon = "󱖫",
 
 				border = "▋"
 			},
@@ -312,7 +312,7 @@ markview.configuration = {
 				preview = " Quote",
 
 				title = true,
-				icon = "  ",
+				icon = "",
 
 				border = "▋"
 			},
@@ -322,7 +322,7 @@ markview.configuration = {
 				preview = " Cite",
 
 				title = true,
-				icon = "  ",
+				icon = "",
 
 				border = "▋"
 			},
@@ -332,7 +332,7 @@ markview.configuration = {
 				preview = " Hint",
 
 				title = true,
-				icon = "  ",
+				icon = "",
 
 				border = "▋"
 			},
@@ -342,7 +342,7 @@ markview.configuration = {
 				preview = " Attention",
 
 				title = true,
-				icon = "  ",
+				icon = "",
 
 				border = "▋"
 			},
@@ -392,7 +392,7 @@ markview.configuration = {
 				preview = "󰠳 Custom",
 
 				custom_title = true,
-				custom_icon = " 󰠳 ",
+				custom_icon = "󰠳",
 
 				border = "▋"
 			}

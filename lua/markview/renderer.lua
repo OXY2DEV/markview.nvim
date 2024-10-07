@@ -1569,7 +1569,7 @@ renderer.render_block_quotes = function (buffer, content, config_table)
 				{ qt_config.icon or qt_config.custom_icon, list_clamp(qt_config.preview_hl or qt_config.callout_preview_hl or qt_config.hl, 1) },
 			},
 
-			end_col = content.col_start + vim.fn.strdisplaywidth(">[!" .. content.callout .. "]" .. (content.title:match("^(%s)") or "")),
+			end_col = content.col_start + vim.fn.strdisplaywidth(">[!" .. content.callout .. "]"),
 			conceal = ""
 		});
 
