@@ -2255,6 +2255,10 @@ end
 ---@param from? integer
 ---@param to? integer
 renderer.clear = function (buffer, from, to)
+	if vim.api.nvim_buf_is_valid(buffer) == false then
+		return;
+	end
+
 	vim.api.nvim_buf_clear_namespace(buffer, renderer.namespace, from or 0, to or -1)
 end
 

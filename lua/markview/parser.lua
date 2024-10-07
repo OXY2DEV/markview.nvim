@@ -1319,6 +1319,70 @@ parser.latex = function (buffer, TStree, from, to)
 	end
 end
 
+parser.typst = function (buffer, TStree, from, to)
+	if not parser_installed("typst") then
+		return;
+	end
+
+	--- "__inside_code_block" is still experimental
+	---@diagnostic disable
+	if not parser.cached_conf or
+	   parser.cached_conf.__inside_code_block ~= true
+	then
+	---@diagnostic enable
+		for _, tbl in ipairs(parser.parsed_content) do
+			if not tbl.type == "code_block" then
+				goto skip;
+			end
+
+			local root = TStree:root();
+			local root_r_start, _, _, _ = root:range();
+
+			if root_r_start >= tbl.row_start and root_r_start <= tbl.row_end then
+				return;
+			end
+
+			::skip::
+		end
+	end
+
+	local scanned_queries = vim.treesitter.query.parse("typst", [[
+		((heading) @typst.heading)
+		((escape) @typst.escaped)
+		((item) @typst.list_item)
+
+		((math) @typst.math)
+		((raw_span) @typst.raw)
+	]]);
+
+	for capture_id, capture_node, _, _ in scanned_queries:iter_captures(TStree:root(), buffer, from, to) do
+		local capture_name = scanned_queries.captures[capture_id];
+		local capture_text = vim.treesitter.get_node_text(capture_node, buffer);
+		local row_start, col_start, row_end, col_end = capture_node:range();
+
+		if capture_name == "typst.heading" then
+			local level = capture_text:match("^(%=+)"):len();
+
+			-- table.insert(parser.parsed_content, {
+			-- 	node = capture_node,
+			-- 	type = "heading",
+			--
+			-- 	level = level,
+			--
+			-- 	line = capture_text,
+			-- 	marker = capture_text:match("^(%=+)"),
+			-- 	title = capture_text:match("^([=]+%s(.*)$)"),
+			--
+			-- 	row_start = row_start,
+			-- 	row_end = row_end,
+			--
+			-- 	col_start = col_start,
+			-- 	col_end = col_end
+			-- });
+		end
+	end
+end
+
 --- Initializes the parsers on the specified buffer
 --- Parsed data is stored as a "view" in renderer.lua
 ---
@@ -1348,6 +1412,8 @@ parser.init = function (buffer, config_table, from, to)
 			parser.html(buffer, TStree, from, to);
 		elseif tree_language == "latex" then
 			parser.latex(buffer, TStree, from, to);
+		elseif tree_language == "typst" then
+			parser.typst(buffer, TStree, from, to);
 		end
 	end)
 
