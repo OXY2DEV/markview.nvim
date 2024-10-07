@@ -1,7 +1,10 @@
-local entities = {};
+local html = {};
+
+html.namespace = nil;
 
 ---@type table<string, string> HTML entities lookup table
-entities.lookup = {
+html.entities = {
+	---+ ${class, HTML entities lookup table}
     Aacute = "Á",
     aacute = "á",
     Acirc = "Â",
@@ -248,14 +251,117 @@ entities.lookup = {
     zeta = "ζ",
     -- zwj = "‍",
     -- zwnj = "‌"
+	---_
 }
 
 --- Gets an HTML entity & it's character width
 ---@param string string
 ---@return string
----@return number
-entities.get = function (string)
-	return entities.lookup[string], vim.fn.strdisplaywidth(entities.lookup[string]);
+html.get_entity = function (string)
+	return html.entities[string];
+end
+--- Sets the namespace
+---@param ns integer
+html.set_namespace = function (ns)
+	html.namespace = ns;
 end
 
-return entities;
+--- Fixes a highlight group name
+---@param hl string?
+---@return string?
+local set_hl = function (hl)
+	if type(hl) ~= "string" then
+		return;
+	end
+
+	if vim.fn.hlexists("Markview" .. hl) == 1 then
+		return "Markview" .. hl;
+	elseif vim.fn.hlexists("Markview_" .. hl) == 1 then
+		return "Markview_" .. hl;
+	else
+		return hl;
+	end
+end
+
+--- Renders HTML tags
+---@param buffer integer
+---@param content table
+---@param user_config markview.html.tags
+html.render_inline = function (buffer, content, user_config)
+	if not user_config or user_config.enable == false then
+		return;
+	end
+
+	local html_conf = user_config.default or {};
+
+	if user_config.configs[string.lower(content.tag)] then
+		html_conf = user_config.configs[string.lower(content.tag)];
+	end
+
+	if html_conf.conceal ~= false then
+		vim.api.nvim_buf_set_extmark(buffer, html.namespace, content.row_start, content.start_tag_col_start, {
+			end_col = content.start_tag_col_end,
+			conceal = ""
+		});
+		vim.api.nvim_buf_set_extmark(buffer, html.namespace, content.row_start, content.end_tag_col_start, {
+			end_col = content.end_tag_col_end,
+			conceal = ""
+		});
+	end
+
+	if html_conf.hl then
+		vim.api.nvim_buf_add_highlight(buffer, html.namespace, html_conf.hl, content.row_start, content.start_tag_col_end, content.end_tag_col_start);
+	end
+end
+
+--- Renders HTML entities
+---@param buffer integer
+---@param content table
+---@param user_config markview.html.entities
+html.render_entities = function (buffer, content, user_config)
+	if not user_config or user_config.enable == false then
+		return;
+	end
+
+	local filtered_entity = content.text:gsub("[&;]", "");
+	local entity = html.get_entity(filtered_entity);
+
+
+	if not entity then
+		return;
+	end
+
+	vim.api.nvim_buf_set_extmark(buffer, html.namespace, content.row_start, content.col_start, {
+		virt_text_pos = "inline",
+		virt_text = {
+			{ entity, set_hl(user_config.hl) }
+		},
+
+		end_col = content.col_end,
+		conceal = ""
+	});
+end
+
+--- Renders latex
+---@param render_type string
+---@param buffer integer
+---@param content table
+---@param config_table markview.configuration
+html.render = function (render_type, buffer, content, config_table)
+	if not config_table or not config_table.html then
+		return;
+	elseif config_table.html and config_table.html.enable == false then
+		return;
+	end
+
+	---@type markview.conf.html
+	local conf = config_table.html;
+
+	if render_type == "html_inline" then
+		pcall(html.render_inline, buffer, content, conf.tags);
+	elseif render_type == "html_entity" then
+		pcall(html.render_entities, buffer, content, conf.entities);
+	end
+end
+
+return html;

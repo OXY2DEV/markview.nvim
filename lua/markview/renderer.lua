@@ -10,9 +10,9 @@ local function parser_installed(parser_name)
 end
 
 local utils = require("markview.utils");
-local entities = require("markview.entities");
 local languages = require("markview.languages");
 local latex_renderer = require("markview.latex_renderer");
+local html_renderer = require("markview.html_renderer");
 
 --- Gets the icon from the language
 ---@param language string
@@ -486,7 +486,7 @@ local display_width = function (text, config)
 			break;
 		end
 
-		local entity = entities.get(entity_name);
+		local entity = html_renderer.get_entity(entity_name);
 
 		if not entity then
 			goto invalid;
@@ -517,9 +517,6 @@ end
 ---@param config_table markview.configuration
 local table_header = function (buffer, content, config_table)
 	local tbl_conf = config_table.tables;
-	--- Border structure
-	--- 1. ╭ 2. ─ 3. ╮ 4. ┬
-	--- 5. │ 6. │ 7. │ 8. ╼
 
 	if not tbl_conf.parts or (not tbl_conf.parts.header or not tbl_conf.parts.top) then
 		return;
@@ -995,8 +992,6 @@ end
 ---@param r_num integer
 local table_content = function (buffer, content, config_table, r_num)
 	local tbl_conf = config_table.tables;
-	--- Border structure
-	--- 15. │ 16. │ 17. │ 18. ╾
 
 	if not tbl_conf.parts or (not tbl_conf.parts.row or not tbl_conf.parts.bottom) then
 		return;
@@ -1105,6 +1100,7 @@ end
 
 renderer.namespace = vim.api.nvim_create_namespace("markview");
 latex_renderer.set_namespace(renderer.namespace);
+html_renderer.set_namespace(renderer.namespace);
 
 renderer.views = {};
 
@@ -2142,72 +2138,6 @@ renderer.render_tables = function (buffer, content, user_config)
 	end
 end
 
---- Renders HTML tags
----@param buffer integer
----@param content table
----@param user_config markview.conf.html
-renderer.render_html_inline = function (buffer, content, user_config)
-	if not user_config or user_config.enable == false then
-		return;
-	end
-
-	if not user_config.tags or user_config.tags.enable == false then
-		return;
-	end
-
-	local html_conf = user_config.tags.default or {};
-
-	if user_config.tags.configs[string.lower(content.tag)] then
-		html_conf = user_config.tags.configs[string.lower(content.tag)];
-	end
-
-	if html_conf.conceal ~= false then
-		vim.api.nvim_buf_set_extmark(buffer, renderer.namespace, content.row_start, content.start_tag_col_start, {
-			end_col = content.start_tag_col_end,
-			conceal = ""
-		});
-		vim.api.nvim_buf_set_extmark(buffer, renderer.namespace, content.row_start, content.end_tag_col_start, {
-			end_col = content.end_tag_col_end,
-			conceal = ""
-		});
-	end
-
-	if html_conf.hl then
-		vim.api.nvim_buf_add_highlight(buffer, renderer.namespace, html_conf.hl, content.row_start, content.start_tag_col_end, content.end_tag_col_start);
-	end
-end
-
---- Renders HTML entities
----@param buffer integer
----@param content table
----@param user_config markview.conf.html
-renderer.render_html_entities = function (buffer, content, user_config)
-	if not user_config or user_config.enable == false then
-		return;
-	end
-
-	if not user_config.entities or user_config.entities.enable == false then
-		return;
-	end
-
-	local filtered_entity = content.text:gsub("[&;]", "");
-	local entity = entities.get(filtered_entity);
-
-	if not entity then
-		return;
-	end
-
-	vim.api.nvim_buf_set_extmark(buffer, renderer.namespace, content.row_start, content.col_start, {
-		virt_text_pos = "inline",
-		virt_text = {
-			{ entity, set_hl(user_config.entities.hl) }
-		},
-
-		end_col = content.col_end,
-		conceal = ""
-	});
-end
-
 --- Renders escaped characters
 ---@param buffer integer
 ---@param content table
@@ -2292,10 +2222,6 @@ renderer.render = function (buffer, parsed_content, config_table, conceal_start,
 			pcall(renderer.render_lists, buffer, content, config_table.list_items)
 		elseif type == "checkbox" then
 			pcall(renderer.render_checkboxes, buffer, content, config_table.checkboxes)
-		elseif type == "html_inline" then
-			pcall(renderer.render_html_inline, buffer, content, config_table.html);
-		elseif type == "html_entity" then
-			pcall(renderer.render_html_entities, buffer, content, config_table.html);
 		elseif type == "table" then
 			pcall(renderer.render_tables, buffer, content, config_table);
 		elseif type == "escaped" then
@@ -2314,8 +2240,10 @@ renderer.render = function (buffer, parsed_content, config_table, conceal_start,
 			elseif link_type == "footnote" then
 				pcall(renderer.render_footnotes, buffer, content, config_table.footnotes);
 			end
+		elseif type:match("^html_") then
+			pcall(html_renderer.render, type, buffer, content, config_table);
 		elseif type:match("^(latex_)") then
-			pcall(latex_renderer.render, type, buffer, content, config_table)
+			pcall(latex_renderer.render, type, buffer, content, config_table);
 		end
 
 		::extmark_skipped::

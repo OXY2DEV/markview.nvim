@@ -1053,7 +1053,7 @@ parser.latex = function (buffer, TStree, from, to)
 			local root = TStree:root();
 			local root_r_start, _, _, _ = root:range();
 
-			if root_r_start >= tbl.row_start and root_r_start <= tbl.row_end then	
+			if root_r_start >= tbl.row_start and root_r_start <= tbl.row_end then
 				return;
 			end
 
