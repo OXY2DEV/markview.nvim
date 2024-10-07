@@ -94,12 +94,35 @@ local redraw_autocmd = function (augroup, buffer, validate)
 	local timer = vim.uv.new_timer();
 
 	-- This is just a cache
-	local r_autocmd;
+	local r_autocmd, d_autocmd;
 
-	local tmp = vim.api.nvim_create_autocmd(update_events, {
+	d_autocmd = vim.api.nvim_create_autocmd({ "BufDelete" }, {
 		buffer = buffer,
 		group = augroup,
 		callback = function (event)
+			if not markview.autocmds[event.buf] then
+				return;
+			end
+
+			local data = markview.autocmds[event.buf];
+
+			markview.unload(event.buf);
+			vim.api.nvim_del_autocmd(data.refresh_id);
+			vim.api.nvim_del_autocmd(data.remove_id);
+
+			markview.renderer.clear(event.buf);
+			markview.autocmds[event.buf] = nil;
+		end
+	});
+
+	r_autocmd = vim.api.nvim_create_autocmd(update_events, {
+		buffer = buffer,
+		group = augroup,
+		callback = function (event)
+			if vim.api.nvim_buf_is_valid(buffer) == false then
+				return;
+			end
+
 			local windows = utils.find_attached_wins(buffer);
 			local debounce = markview.configuration.debounce;
 
@@ -112,11 +135,14 @@ local redraw_autocmd = function (augroup, buffer, validate)
 
 			timer:stop();
 			timer:start(debounce, 0, vim.schedule_wrap(function ()
-				if markview.autocmds[buffer] and markview.autocmds[buffer].was_detached == true then
-					return;
-				end
+				markview.renderer.clear(event.buf);
 
-				if markview.state.enable == false or markview.state.buf_states[buffer] == false then
+				if not vim.list_contains(markview.attached_buffers, event.buf) then
+					return;
+				elseif
+					markview.state.enable == false or
+					markview.state.buf_states[buffer] == false
+				then
 					return;
 				end
 
@@ -126,15 +152,12 @@ local redraw_autocmd = function (augroup, buffer, validate)
 
 				--- Incorrect file type
 				if not vim.list_contains(markview.configuration.filetypes or { "markdown" }, vim.bo[buffer].filetype) then
-					markview.unload();
+					markview.unload(event.buf);
 					vim.api.nvim_del_autocmd(r_autocmd);
 
 					return;
-				end
-
-				-- Incorrect buffer type
-				if vim.islist(markview.configuration.buf_ignore) and vim.list_contains(markview.configuration.buf_ignore, vim.bo[buffer].buftype) then
-					markview.unload();
+				elseif vim.islist(markview.configuration.buf_ignore) and vim.list_contains(markview.configuration.buf_ignore, vim.bo[buffer].buftype) then
+					markview.unload(event.buf);
 					vim.api.nvim_del_autocmd(r_autocmd);
 
 					return
@@ -173,10 +196,9 @@ local redraw_autocmd = function (augroup, buffer, validate)
 		end
 	});
 
-	r_autocmd = tmp;
 	markview.autocmds[buffer] = {
-		was_detached = false,
-		id = tmp
+		refresh_id = r_autocmd,
+		remove_id = d_autocmd
 	}
 end
 
@@ -204,7 +226,6 @@ vim.api.nvim_create_autocmd({ "BufWinEnter" }, {
 		-- If not attached then attach
 		if not vim.list_contains(markview.attached_buffers, buffer) then
 			table.insert(markview.attached_buffers, buffer);
-			markview.attached_windows = vim.list_extend(markview.attached_windows, windows);
 		end
 
 		-- Plugin is disabled
@@ -244,7 +265,7 @@ vim.api.nvim_create_autocmd({ "BufWinEnter" }, {
 
 		::addAutocmd::
 		-- Augroup for the special autocmds
-		local markview_augroup = vim.api.nvim_create_augroup("markview_buf_" .. buffer, { clear = true });
+		local markview_augroup = vim.api.nvim_create_augroup("MarkviewBufRedraw" .. buffer, { clear = true });
 		redraw_autocmd(markview_augroup, buffer);
 	end
 })
@@ -265,7 +286,6 @@ vim.api.nvim_create_autocmd({ "User" }, {
 		-- If not attached then attach
 		if not vim.list_contains(markview.attached_buffers, buffer) then
 			table.insert(markview.attached_buffers, buffer);
-			markview.attached_windows = vim.list_extend(markview.attached_windows, windows);
 		end
 
 		-- Plugin is disabled
@@ -304,7 +324,7 @@ vim.api.nvim_create_autocmd({ "User" }, {
 		end
 
 		-- Augroup for the special autocmds
-		local markview_augroup = vim.api.nvim_create_augroup("markview_buf_" .. buffer, { clear = true });
+		local markview_augroup = vim.api.nvim_create_augroup("MarkviewBufRedraw" .. buffer, { clear = true });
 		redraw_autocmd(markview_augroup, buffer, false);
 	end
 })
@@ -314,16 +334,16 @@ vim.api.nvim_create_autocmd("User", {
 	callback = function (event)
 		if not markview.autocmds[event.buf] then
 			return;
-		elseif markview.autocmds[event.buf].was_detached == true then
-			return;
 		end
 
 		local data = markview.autocmds[event.buf];
-		markview.renderer.clear(event.buf);
-		data.was_detached = true;
 
-		vim.api.nvim_del_autocmd(data.id);
 		markview.unload(event.buf);
+		vim.api.nvim_del_autocmd(data.refresh_id);
+		vim.api.nvim_del_autocmd(data.remove_id);
+
+		markview.renderer.clear(event.buf);
+		markview.autocmds[event.buf] = nil;
 	end
 });
 

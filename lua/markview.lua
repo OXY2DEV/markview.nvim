@@ -11,10 +11,7 @@ markview.keymaps = require("markview.keymaps");
 ---@type integer[] List of attached buffers
 markview.attached_buffers = {};
 
----@type integer[] List of attached windows
-markview.attached_windows = {};
-
----@type { was_detached: boolean, id: integer }[]
+---@type { refresh_id: integer, remove_id: integer }[]
 markview.autocmds = {};
 
 ---@class markview.state Stores the various states of the plugin
@@ -98,7 +95,7 @@ markview.configuration = {
 	debounce = 50,
 	escaped = { enable = true },
 
-	filetypes = { "markdown", "quarto", "rmd" },
+	filetypes = { "markdown", "quarto", "rmd", "typst" },
 
 	highlight_groups = "dynamic",
 
@@ -933,7 +930,7 @@ markview.splitView = {
 		-- Register the buffer
 		self.attached_buffer = buffer;
 
-		local windows = utils.find_attached_wins(buffer);
+		local windows = vim.fn.win_findbuf(buffer);
 
 		-- Buffer isn't attached to a window
 		if #windows == 0 then
@@ -1069,10 +1066,10 @@ markview.splitView = {
 
 markview.commands = {
 	attach = function (buf)
-		vim.api.nvim_exec_autocmds("User", { pattern = "MarkviewEnter", buffer = buf })
+		vim.api.nvim_exec_autocmds("User", { pattern = "MarkviewEnter" })
 	end,
 	detach = function (buf)
-		vim.api.nvim_exec_autocmds("User", { pattern = "MarkviewLeave", buffer = buf })
+		vim.api.nvim_exec_autocmds("User", { pattern = "MarkviewLeave" })
 	end,
 
 	toggleAll = function ()
@@ -1095,7 +1092,7 @@ markview.commands = {
 			end
 
 			local parsed_content = markview.parser.init(buf, markview.configuration);
-			local windows = utils.find_attached_wins(buf);
+			local windows = vim.fn.win_findbuf(buf);
 
 			if markview.configuration.callbacks and markview.configuration.callbacks.on_enable then
 				for _, window in ipairs(windows) do
@@ -1119,7 +1116,7 @@ markview.commands = {
 				goto continue;
 			end
 
-			local windows = utils.find_attached_wins(buf);
+			local windows = vim.fn.win_findbuf(buf);
 
 			if markview.configuration.callbacks and markview.configuration.callbacks.on_disable then
 				for _, window in ipairs(windows) do
@@ -1157,12 +1154,13 @@ markview.commands = {
 	end,
 	enable = function (buf)
 		local buffer = tonumber(buf) or vim.api.nvim_get_current_buf();
+		markview.unload();
 
 		if not vim.list_contains(markview.attached_buffers, buffer) or not vim.api.nvim_buf_is_valid(buffer) then
 			return;
 		end
 
-		local windows = utils.find_attached_wins(buffer);
+		local windows = vim.fn.win_findbuf(buffer);
 
 		markview.state.buf_states[buffer] = true;
 
@@ -1197,7 +1195,7 @@ markview.commands = {
 			return;
 		end
 
-		local windows = utils.find_attached_wins(buffer);
+		local windows = vim.fn.win_findbuf(buffer);
 
 		for _, window in ipairs(windows) do
 			pcall(markview.configuration.callbacks.on_disable, buf, window);
@@ -1238,7 +1236,7 @@ markview.commands = {
 			return;
 		end
 
-		local windows = utils.find_attached_wins(buffer);
+		local windows = vim.fn.win_findbuf(buffer);
 
 		local parsed_content = markview.parser.init(buffer, markview.configuration);
 
@@ -1257,7 +1255,7 @@ markview.commands = {
 			return;
 		end
 
-		local windows = utils.find_attached_wins(buffer);
+		local windows = vim.fn.win_findbuf(buffer);
 
 		for _, window in ipairs(windows) do
 			pcall(markview.configuration.callbacks.on_disable, buf, window);
@@ -1355,21 +1353,23 @@ end, {
 });
 
 markview.unload = function (buffer)
+	local remove = function (buffer)
+		local au = markview.autocmds[buffer]
+		pcall(vim.api.nvim_del_autocmd, au.id);
+	end
+
 	for index, buf in ipairs(markview.attached_buffers) do
 		if buffer and buf == buffer then
 			table.remove(markview.attached_buffers, index);
-		elseif vim.api.nvim_buf_is_valid(buf) == false then
+		elseif
+			vim.api.nvim_buf_is_valid(buf) == false or
+			vim.api.nvim_buf_is_loaded(buf) == false
+		then
 			table.remove(markview.attached_buffers, index);
+			remove(buf)
 		end
 	end
 
-	for index, win in ipairs(markview.attached_windows) do
-		if buffer and vim.api.nvim_win_is_valid(win) and vim.api.nvim_win_get_buf(win) == buffer then
-			table.remove(markview.attached_windows, index);
-		elseif vim.api.nvim_win_is_valid(win) == false then
-			table.remove(markview.attached_windows, index);
-		end
-	end
 end
 
 markview.setup = function (user_config)
