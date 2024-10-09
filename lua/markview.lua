@@ -1375,9 +1375,13 @@ end
 markview.setup = function (user_config)
 	if user_config and user_config.highlight_groups then
 		if vim.islist(user_config.highlight_groups) then
-			markview.configuration.highlight_groups = user_config.highlight_groups;
+			if vim.islist(markview.configuration.highlight_groups) then
+				markview.configuration.highlight_groups = vim.list_extend(markview.configuration.highlight_groups, user_config.highlight_groups);
+			else
+				markview.configuration.highlight_groups = vim.list_extend(hls[markview.configuration.highlight_groups], user_config.highlight_groups);
+			end
 		else
-			markview.configuration.highlight_groups = vim.list_extend(markview.configuration.highlight_groups, user_config.highlight_groups);
+			markview.configuration.highlight_groups = user_config.highlight_groups;
 		end
 	end
 
