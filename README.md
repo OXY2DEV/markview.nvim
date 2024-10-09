@@ -227,6 +227,10 @@ Available subcommands,
 > Subcommands that end with `{n}` can also take a buffer id. If a buffer id isn't provided then the current buffer's id is used.
 > Completion for buffer id is also provided by the plugin.
 
+Additional command(s),
+
+- `MarkOpen`, Opens the link under cursor, falls back to **vim.ui.open()**.
+
 ## 🎨 Highlight groups
 
 <p align="center">
