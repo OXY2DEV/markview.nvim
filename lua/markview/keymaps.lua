@@ -50,7 +50,7 @@ keymaps.create_command = function (buffer)
 end
 
 keymaps.createKeymap = function (buffer)
-	vim.api.nvim_buf_set_keymap(buffer, "n", "gx", "<CMD>MarkOpen", {
+	vim.api.nvim_buf_set_keymap(buffer, "n", "gx", "<CMD>MarkOpen<CR>", {
 		desc = "Opens the link under cursor"
 	})
 end
