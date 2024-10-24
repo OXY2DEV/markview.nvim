@@ -2,6 +2,8 @@
 local markdown = {};
 local utils = require("markview.utils");
 
+local inline = require("markview.parsers.markdown_inline");
+
 ---@class markview.parsers.range
 ---
 ---@field row_start integer
@@ -22,6 +24,10 @@ markdown.content = {};
 --- Queried contents, but sorted
 markdown.sorted = {}
 
+markdown.cache = {
+	table_ends = {}
+}
+
 markdown.insert = function (data)
 	table.insert(markdown.content, data);
 
@@ -29,7 +35,9 @@ markdown.insert = function (data)
 		markdown.sorted[data.class] = {};
 	end
 
-	table.insert(markdown.sorted[data.class], data);
+	table.insert(markdown.sorted[data.class], vim.tbl_extend("force", data, {
+		id = #markdown.content
+	}));
 end
 
 
@@ -42,7 +50,7 @@ markdown.atx_heading = function (buffer, TSNode, text, range)
 		class = "markdown_atx_heading",
 		node = TSNode,
 
-		marker = vim.treesitter.get_node_text(marker, buffer),
+		marker = vim.treesitter.get_node_text(marker, buffer):gsub("%s", ""),
 		text = text,
 
 		range = range
@@ -67,8 +75,18 @@ end
 
 ---@type markview.parsers.function
 markdown.block_quote = function (_, TSNode, text, range)
-	local callout = text[1]:match("^[%s%>]*%[%!(.-)%]");
-	local title = text[1]:match("^[%s%>]*%[%!.-%](.+)$");
+	local call_start, call_end, callout = text[1]:find("^%>%s?%[%!(.-)%]");
+	local title_start, title_end, title = text[1]:find("^%>%s?%[%!.-%](.+)$");
+
+	if callout then
+		range.callout_start = range.col_start + call_start;
+		range.callout_end = range.col_start + call_end;
+	end
+
+	if title then
+		range.title_start = range.col_start + title_start;
+		range.title_end = range.col_start + title_end;
+	end
 
 	markdown.insert({
 		class = "markdown_block_quote",
@@ -83,13 +101,24 @@ markdown.block_quote = function (_, TSNode, text, range)
 end
 
 ---@type markview.parsers.function
-markdown.code_block = function (buffer, TSNode, text, range)
-	local child = TSNode:named_child(1);
+markdown.code_block = function (_, TSNode, text, range)
+	local tmp, before = text[1], nil;
 	local language, info;
 
-	if child:type() == "info_string" then
-		language = vim.treesitter.get_node_text(child, buffer);
-		info = text[1]:match("```%S+%s(.-)$")
+	before = #tmp:match("^[%`%~][%`%~][%`%~]%s*");
+	tmp = tmp:gsub("^[%`%~][%`%~][%`%~]%s*", "");
+
+	if tmp:match("^(%S+)") then
+		language = tmp:match("^(%S+)");
+		range.lang_start = before;
+		range.lang_end = range.lang_start + #tmp:match("^(%S+)");
+		tmp = tmp:gsub("^(%S*)", "");
+	end
+
+	if tmp:match("^%s(.+)$") then
+		info = tmp:match("^%s(.+)$");
+		range.info_start = range.lang_end + 1;
+		range.info_end = range.info_start + #info;
 	end
 
 	markdown.insert({
@@ -110,19 +139,59 @@ markdown.checkbox = function (_, TSNode, text, range)
 		class = "markdown_checkbox",
 		node = TSNode,
 
-		text = text,
+		text = text[1]:sub(range.col_start + 2, range.col_end - 1),
 
 		range = range
 	})
 end
 
 ---@type markview.parsers.function
+markdown.link_ref = function (buffer, TSNode, text, range)
+	local label = text[1]:match("^%[(.-)%]%:");
+	local desc = text[1]:match("^%[.-%]%:%s*(.+)$");
+
+	if not desc and text[2] then
+		desc = text[2];
+	end
+
+	markdown.insert({
+		class = "inline_link_ref",
+		node = TSNode,
+
+		text = text[1]:sub(range.col_start, range.col_end),
+		label = label,
+		description = desc,
+
+		range = range
+	});
+
+	inline.cache.link_ref[label] = #markdown.content;
+end
+
+---@type markview.parsers.function
 markdown.list_item = function (buffer, TSNode, text, range)
-	local marker = vim.treesitter.get_node_text(TSNode:named_child(0), buffer);
+	local marker, before, indent, checkbox;
+
+	if text[1]:match("^[%>%s]*([%-%+%*])%s") then
+		marker = text[1]:match("^[%>%s]*([%-%+%*])%s");
+		checkbox = text[1]:match("^[%>%s]*[%-%+%*]%s+%[(.)%]")
+	elseif text[1]:match("^[%>%s]*(%d+[%.%)])%s") then
+		marker = text[1]:match("^[%>%s]*(%d+[%.%)])%s");
+		checkbox = text[1]:match("^[%>%s]*%d+[%.%)]%s+%[(.)%]");
+	end
+
+	before, indent = text[1]:match("^(.-)(%>?%s*)" .. utils.escape_string(marker));
+
+	if indent:match("^%>%s") then
+		indent = indent:sub(3);
+		before = before .. "> ";
+	end
+
+	range.col_start = before:len();
+
 	local tolarence = markdown.config.__list_item_tolarence or 3; ---@diagnostic disable-line
 
 	local candidates = {};
-	local indent;
 	local inside_code = false;
 
 	for l, line in ipairs(text) do
@@ -137,12 +206,10 @@ markdown.list_item = function (buffer, TSNode, text, range)
 		--- On the first line don't do checks
 		if l == 1 then
 			table.insert(candidates, 0);
-
-			indent = line:match("^.-(%s*)" .. utils.escape_string(marker)):len();
 			goto continue
 		end
 
-		line = vim.fn.strcharpart(line, range.col_start + 2, vim.fn.strchars(line));
+		line = line:sub(range.col_start);
 
 		if line:match("^%s*([%-%+%*])%s") then
 			break;
@@ -174,7 +241,7 @@ markdown.list_item = function (buffer, TSNode, text, range)
 		end
 
 		table.insert(candidates, l - 1);
-	    ::continue::
+		::continue::
 	end
 
 	markdown.insert({
@@ -183,7 +250,9 @@ markdown.list_item = function (buffer, TSNode, text, range)
 
 		text = text,
 		candidates = candidates,
-		indent = indent,
+		marker = marker:gsub("%s", ""),
+		checkbox = checkbox,
+		indent = #(indent or ""),
 
 		range = range
 	})
@@ -200,37 +269,55 @@ markdown.hr = function (_, TSNode, text, range)
 	})
 end
 
+local function overlap (row_start)
+	local top_border, border_overlap = true, false;
+
+	for _, item in ipairs(markdown.sorted.markdown_table or {}) do
+		if item.range.row_end == row_start then
+			markdown.content[item.id].bottom_border = false;
+			top_border = false;
+			break;
+		elseif item.range.row_end == row_start - 1 then
+			markdown.content[item.id].border_overlap = true;
+			top_border = false;
+			break;
+		end
+	end
+
+	return top_border, border_overlap;
+end
+
 ---@type markview.parsers.function
-markdown.table = function (buffer, TSNode, text, range)
-	local header, seperator, rows = {}, {}, {};
-	local max_cols = 0;
+markdown.table = function (_, TSNode, text, range)
+	local header, separator, rows = {}, {}, {};
+	local aligns = {};
 
 	local function line_processor (line)
 		local _o = {};
-		local carry;
-
 		local y = 0;
 
-		for sep, col in line:gmatch("(|)([^|\\|]+)") do
+		line = line:gsub("\\|", "  ");
+
+		for sep, col in line:gmatch("(|)([^|]+)") do
 			table.insert(_o, {
-				class = "seperator",
+				class = "separator",
 
 				text = sep,
 
-				col_start = range.col_start + y,
-				col_end = range.col_start + (y + #sep),
+				col_start = y,
+				col_end = y + #sep,
 			});
 
 			y = y + #sep;
 			col = col:gsub("MKVescapedPIPE", "\\|")
 
 			table.insert(_o, {
-				class = "seperator",
+				class = "column",
 
 				text = col,
 
-				col_start = range.col_start + y,
-				col_end = range.col_start + (y + #col),
+				col_start = y,
+				col_end = y + #col,
 			})
 
 			y = y + #col;
@@ -238,12 +325,12 @@ markdown.table = function (buffer, TSNode, text, range)
 
 		if line:match("|$") then
 			table.insert(_o, {
-				class = "seperator",
+				class = "separator",
 
 				text = "|",
 
-				col_start = range.col_start + y,
-				col_end = range.col_start + (y + 1),
+				col_start = y,
+				col_end = y + 1,
 			});
 		else
 			table.insert(_o, {
@@ -251,8 +338,8 @@ markdown.table = function (buffer, TSNode, text, range)
 
 				text = "|",
 
-				col_start = range.col_start + y,
-				col_end = range.col_start + (y + 1),
+				col_start = y,
+				col_end = y,
 			});
 		end
 
@@ -260,38 +347,74 @@ markdown.table = function (buffer, TSNode, text, range)
 	end
 
 	for l, line in ipairs(text) do
-		line = line:sub(range.col_start);
-		text[l] = line;
-
-		local row_text = line:sub(range.col_start, #line):gsub("\\|", "MKVescapedPIPE");
+		local row_text = line:gsub("\\|", "MKVescapedPIPE");
 
 		if l == 1 then
 			header = line_processor(row_text);
 		elseif l == 2 then
-			seperator = line_processor(row_text);
+			separator = line_processor(row_text);
+
+			for _, col in ipairs(separator) do
+				col = col.text;
+
+				if not col:match("^[%s%-%:]+$") then
+					goto continue;
+				end
+
+				if col:match("^%s*:") and col:match(":%s*$") then
+					table.insert(aligns, "center");
+				elseif col:match("^%s*:") then
+					table.insert(aligns, "left");
+				elseif col:match(":%s*$") then
+					table.insert(aligns, "right");
+				else
+					table.insert(aligns, "default");
+				end
+
+			    ::continue::
+			end
 		else
 			table.insert(rows, line_processor(row_text))
 		end
 	end
 
+	local top_border, border_overlap = overlap(range.row_start);
+
 	markdown.insert({
 		class = "markdown_table",
 		node = TSNode,
 
+		top_border = top_border,
+		bottom_border = true,
+		border_overlap = border_overlap,
+
 		text = text,
+		alignments = aligns,
 
 		header = header,
-		seperator = seperator,
+		separator = separator,
 		rows = rows,
 
+		range = range
+	});
+	table.insert(markdown.cache.table_ends, range.row_end);
+end
+
+---@type markview.parsers.function
+markdown.metadata_minus = function (_, TSNode, text, range)
+	table.insert(markdown.content, {
+		class = "markdown_metadata_minus",
+		node = TSNode,
+
+		text = text,
 		range = range
 	})
 end
 
 ---@type markview.parsers.function
-markdown.metadata = function (_, TSNode, text, range)
+markdown.metadata_plus = function (_, TSNode, text, range)
 	table.insert(markdown.content, {
-		class = "markdown_metadata",
+		class = "markdown_metadata_plus",
 		node = TSNode,
 
 		text = text,
@@ -305,22 +428,19 @@ markdown.parse = function (buffer, config, TSTree, from, to)
 	markdown.content = {};
 	markdown.config = config;
 
+	markdown.cache.table_ends = {};
+	inline.cache.checkbox = {};
+	inline.cache.link_ref = {};
+
 	local scanned_queries = vim.treesitter.query.parse("markdown", [[
-		((atx_heading [
-			(atx_h1_marker)
-			(atx_h2_marker)
-			(atx_h3_marker)
-			(atx_h4_marker)
-			(atx_h5_marker)
-			(atx_h6_marker)
-			]) @markdown.atx_heading)
+		((atx_heading) @markdown.atx_heading)
 
 		((block_quote) @markdown.block_quote)
 
 		([
 			(task_list_marker_unchecked)
 			(task_list_marker_checked)
-			] @markview.checkbox)
+			] @markdown.checkbox)
 
 		((fenced_code_block) @markdown.code_block)
 
@@ -328,11 +448,16 @@ markdown.parse = function (buffer, config, TSTree, from, to)
 
 		((list_item) @markdown.list_item)
 
-		((minus_metadata) @markdown.metadata)
+		((minus_metadata) @markdown.metadata_minus)
 
 		((setext_heading) @markdown.setext_heading)
 
+		((plus_metadata) @markdown.metadata_plus)
+
 		((pipe_table) @markdown.table)
+
+		((link_reference_definition) @markdown.link_ref)
+
 	]]);
 
 	for capture_id, capture_node, _, _ in scanned_queries:iter_captures(TSTree:root(), buffer, from, to) do
@@ -340,6 +465,15 @@ markdown.parse = function (buffer, config, TSTree, from, to)
 		local r_start, c_start, r_end, c_end = capture_node:range();
 
 		local capture_text = vim.api.nvim_buf_get_lines(buffer, r_start, r_start == r_end and r_end + 1 or r_end, false);
+
+		if capture_name ~= "markdown.list_item" and capture_name ~= "markdown.checkbox" then
+			local spaces = capture_text[1]:sub(c_start + 1):match("^(%s*)");
+			c_start = c_start + #spaces;
+
+			for l, line in ipairs(capture_text) do
+				capture_text[l] = line:sub(c_start + 1)
+			end
+		end
 
 		markdown[capture_name:gsub("^markdown%.", "")](buffer, capture_node, capture_text, {
 			row_start = r_start,

@@ -1,5 +1,48 @@
 local utils = {};
 
+local ts_available, treesitter_parsers = pcall(require, "nvim-treesitter.parsers");
+local ts_utils = require("nvim-treesitter.ts_utils");
+
+--- Checks if a parser is available or not
+---@param parser_name string
+---@return boolean
+utils.parser_installed = function (parser_name)
+	return (ts_available and treesitter_parsers.has_parser(parser_name)) or pcall(vim.treesitter.query.get, parser_name, "highlights")
+end
+
+utils.get_parent = function (node, buffer)
+	if node:parent() then
+		return node:parent();
+	end
+
+	local tree =tree
+end
+
+--- Escapes magic characters from a string
+---@param input string
+---@return string
+utils.escape_string = function (input)
+	input = input:gsub("%%", "%%%");
+
+	input = input:gsub("%(", "%%(");
+	input = input:gsub("%)", "%%)");
+
+	input = input:gsub("%.", "%%.");
+	input = input:gsub("%+", "%%+");
+	input = input:gsub("%-", "%%-");
+	input = input:gsub("%*", "%%*");
+	input = input:gsub("%?", "%%?");
+	input = input:gsub("%^", "%%^");
+	input = input:gsub("%$", "%%$");
+
+	input = input:gsub("%[", "%%[");
+	input = input:gsub("%]", "%%]");
+
+	return input;
+end
+
+-- vim.print(utils.escape_string(table.concat({ "", "", "󰌷 ", "X[XXXXXX]", "", "" })))
+
 --- Clamps a value between a range
 ---@param val number
 ---@param min number
@@ -31,6 +74,23 @@ utils.hl_exists = function (hl)
 	return false;
 end
 
+--- Checks if a highlight group exists or not
+---@param hl string?
+---@return string?
+utils.set_hl = function (hl)
+	if type(hl) ~= "string" then
+		return;
+	end
+
+	if vim.fn.hlexists("Markview" .. hl) == 1 then
+		return "Markview" .. hl;
+	elseif vim.fn.hlexists("Markview_" .. hl) == 1 then
+		return "Markview_" .. hl;
+	else
+		return hl;
+	end
+end
+
 --- Gets attached windows from a buffer ID
 ---@param buf integer
 ---@return integer[]
@@ -56,6 +116,20 @@ utils.get_cursor_range = function (buffer, window)
 	local lines = vim.api.nvim_buf_line_count(buffer);
 
 	return math.max(0, cursor[1] - 1), math.min(lines, cursor[1]);
+end
+
+utils.virt_len = function (virt_texts)
+	if not virt_texts then
+		return 0;
+	end
+
+	local _l = 0;
+
+	for _, text in ipairs(virt_texts) do
+		_l = _l + vim.fn.strdisplaywidth(text[1]);
+	end
+
+	return _l;
 end
 
 return utils;

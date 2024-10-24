@@ -13,6 +13,10 @@ local utils = require("markview.utils");
 local languages = require("markview.languages");
 local latex_renderer = require("markview.latex_renderer");
 local html_renderer = require("markview.html_renderer");
+local typst_renderer = require("markview.typst_renderer");
+
+local md = require("markview.renderers.markdown")
+local inl = require("markview.renderers.markdown_inline")
 
 --- Gets the icon from the language
 ---@param language string
@@ -1099,8 +1103,9 @@ local table_content = function (buffer, content, config_table, r_num)
 end
 
 renderer.namespace = vim.api.nvim_create_namespace("markview");
-latex_renderer.set_namespace(renderer.namespace);
-html_renderer.set_namespace(renderer.namespace);
+latex_renderer.namespace = renderer.namespace;
+html_renderer.namespace = renderer.namespace;
+typst_renderer.namespace = renderer.namespace;
 
 renderer.views = {};
 
@@ -1132,7 +1137,7 @@ renderer.render_headings = function (buffer, content, config)
 			hl_mode = "combine"
 		});
 	elseif conf.style == "label" then
-		local conceal_start = string.match(content.line, "^[#]+(%s*)");
+		local conceal_start = string.match(content.line, "^[#]+(%s)");
 		local line_length = #content.line;
 
 		local spaces = shift * (content.level - 1);
@@ -2192,62 +2197,9 @@ end
 ---@param conceal_start? integer
 ---@param conceal_stop? integer
 renderer.render = function (buffer, parsed_content, config_table, conceal_start, conceal_stop)
-	for _, content in ipairs(parsed_content) do
-		local type = content.type;
-		local fold_closed = vim.fn.foldclosed(content.row_start + 1);
-
-		if fold_closed ~= -1 then
-			goto extmark_skipped;
-		end
-
-		-- Unlike `conceal_start`, `conceal_stop` is 1-indexed
-		-- Do not render things inside the un-conceal range
-		if conceal_start and conceal_stop and content.row_start >= conceal_start and content.row_end <= (conceal_stop - 1) then
-			goto extmark_skipped;
-		end
-
-		if type == "heading_s" then
-			pcall(renderer.render_headings_s, buffer, content, config_table.headings);
-		elseif type == "heading" then
-			pcall(renderer.render_headings, buffer, content, config_table.headings)
-		elseif type == "code_block" then
-			pcall(renderer.render_code_blocks, buffer, content, config_table.code_blocks)
-		elseif type == "block_quote" then
-			pcall(renderer.render_block_quotes, buffer, content, config_table.block_quotes);
-		elseif type == "horizontal_rule" then
-			pcall(renderer.render_horizontal_rules, buffer, content, config_table.horizontal_rules);
-		elseif type == "inline_code" then
-			pcall(renderer.render_inline_codes, buffer, content, config_table.inline_codes)
-		elseif type == "list_item" then
-			pcall(renderer.render_lists, buffer, content, config_table.list_items)
-		elseif type == "checkbox" then
-			pcall(renderer.render_checkboxes, buffer, content, config_table.checkboxes)
-		elseif type == "table" then
-			pcall(renderer.render_tables, buffer, content, config_table);
-		elseif type == "escaped" then
-			pcall(renderer.render_escaped, buffer, content, config_table.escaped);
-		elseif type:match("^link_") then
-			local link_type = type:gsub("^link_", "");
-
-			if link_type == "hyperlink" then
-				pcall(renderer.render_links, buffer, content, config_table.links);
-			elseif link_type == "internal" then
-				pcall(renderer.render_internal_links, buffer, content, config_table.links);
-			elseif link_type == "image" then
-				pcall(renderer.render_img_links, buffer, content, config_table.links);
-			elseif link_type == "email" then
-				pcall(renderer.render_email_links, buffer, content, config_table.links);
-			elseif link_type == "footnote" then
-				pcall(renderer.render_footnotes, buffer, content, config_table.footnotes);
-			end
-		elseif type:match("^html_") then
-			pcall(html_renderer.render, type, buffer, content, config_table);
-		elseif type:match("^(latex_)") then
-			pcall(latex_renderer.render, type, buffer, content, config_table);
-		end
-
-		::extmark_skipped::
-	end
+	-- vim.print(parsed_content)
+	inl.render(buffer, parsed_content.markdown_inline, config_table)
+	md.render(buffer, parsed_content.markdown, config_table)
 end
 
 --- Clears a namespace within the range in a buffer
@@ -2259,6 +2211,8 @@ renderer.clear = function (buffer, from, to)
 		return;
 	end
 
+	vim.api.nvim_buf_clear_namespace(buffer, md.ns, from or 0, to or -1)
+	vim.api.nvim_buf_clear_namespace(buffer, inl.ns, from or 0, to or -1)
 	vim.api.nvim_buf_clear_namespace(buffer, renderer.namespace, from or 0, to or -1)
 end
 

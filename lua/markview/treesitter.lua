@@ -19,7 +19,7 @@ local ts = {};
 ---@return string
 local fix_indent = function (text)
 	local _l = "";
-	local leading_spaces;
+	local leading_spaces = "";
 
 	if text:sub(-1) ~= "\n" then text = text .. "\n" end
 
@@ -39,12 +39,12 @@ end
 
 ---@param opts markview.conf.injections
 ts.inject = function (opts)
-	if not opts or opts.enable == false or not vim.islist(opts.languages) then
+	if not opts or opts.enable == false then
 		return;
 	end
 
 	--- Iterate over all the languages
-	for lang, conf in pairs(opts.languages) do
+	for lang, conf in pairs(opts.languages or {}) do
 		if conf.enable == false then
 			goto continue;
 		end
@@ -70,6 +70,7 @@ ts.inject = function (opts)
 			end
 		end
 
+		vim.print(_q)
 		--- Append the new query
 		--- TODO, Fix indentation
 		_q = _q .. fix_indent(conf.query);
