@@ -9,6 +9,9 @@ parser.typst = require("markview.parsers.typst");
 
 parser.ignore_ranges = {};
 
+--- Cached contents
+parser.cached = {};
+
 parser.create_ignore_range = function (language, items)
 	local _r = {};
 
@@ -59,30 +62,41 @@ parser.sorted = {};
 --- Parsed data is stored as a "view" in renderer.lua
 ---
 ---@param buffer number
----@param config markview.configuration
 ---@param from integer?
 ---@param to integer?
-parser.init = function (buffer, config, from, to)
+---@param cache boolean?
+parser.init = function (buffer, from, to, cache)
 	-- Clear the previous contents
 	parser.content = {};
 	parser.sorted = {};
 	parser.ignore_ranges = {};
 
+	if
+		not pcall(vim.treesitter.get_parser, buffer) or
+		not vim.treesitter.get_parser(buffer)
+	then
+		return parser.content, parser.sorted;
+	end
+
+    vim.treesitter.get_parser(buffer):parse(range)
 	local root_parser = vim.treesitter.get_parser(buffer);
-	-- local root_tree = root_parser:parse(true)[1];
 
 	root_parser:for_each_tree(function (TSTree, language_tree)
 		local language = language_tree:lang();
 		local content, sorted = {}, {};
 
 		if parser[language] and not parser.should_ignore(TSTree) then
-			content, sorted = parser[language].parse(buffer, config, TSTree, from, to);
+			content, sorted = parser[language].parse(buffer, TSTree, from, to);
 			parser.create_ignore_range(language, sorted)
 		end
 
 		parser.content[language] = vim.list_extend(parser.content[language] or {}, content);
 		parser.sorted[language] = parser.deep_extend(parser.sorted[language] or {}, sorted);
 	end)
+
+	if cache ~= false then
+		parser.cached[buffer] = parser.sorted;
+	end
 
 	return parser.content, parser.sorted;
 end

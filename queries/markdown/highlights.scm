@@ -49,12 +49,12 @@
 
 (fenced_code_block
   (fenced_code_block_delimiter) @markup.raw.block
-  )
+  (#conceal-patch! @markup.raw.block))
 
 (fenced_code_block
   (info_string
     (language) @label
-    ))
+    (#set! conceal "")))
 
 (link_destination) @markup.link.url
 
