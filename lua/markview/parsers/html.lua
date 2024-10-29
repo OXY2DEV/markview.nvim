@@ -1,10 +1,6 @@
 --- HTML parser for `markview.nvim`
 local html = {};
 
---- Cached user config
----@type markview.configuration?
-html.config = nil;
-
 --- Queried contents
 ---@type table[]
 html.content = {};
@@ -108,11 +104,10 @@ html.element = function (buffer, TSNode, text, range)
 
 end
 
-html.parse = function (buffer, config, TSTree, from, to)
+html.parse = function (buffer, TSTree, from, to)
 	-- Clear the previous contents
 	html.sorted = {};
 	html.content = {};
-	html.config = config;
 
 	local scanned_queries = vim.treesitter.query.parse("html", [[
 		(((element

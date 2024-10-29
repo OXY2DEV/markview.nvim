@@ -1,9 +1,5 @@
 local inline = {};
 
---- Cached user config
----@type markview.configuration?
-inline.config = nil;
-
 --- Queried contents
 ---@type table[]
 inline.content = {};
@@ -277,10 +273,9 @@ inline.internal_link = function (_, TSNode, text, range)
 	});
 end
 
-inline.parse = function (buffer, config, TSTree, from, to)
+inline.parse = function (buffer, TSTree, from, to)
 	inline.sorted = {};
 	inline.content = {};
-	inline.config = config;
 
 	local pre_queries = vim.treesitter.query.parse("markdown_inline", [[
 		(

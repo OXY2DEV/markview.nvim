@@ -1,7 +1,6 @@
 local typst = {};
 local utils = require("markview.utils");
 
-typst.config = {};
 typst.content = {};
 
 typst.markup = function (buffer, TStree, from, to)

@@ -1,5 +1,7 @@
 --- Markdown parser for `markview.nvim`
 local markdown = {};
+
+local spec = require("markview.spec");
 local utils = require("markview.utils");
 
 local inline = require("markview.parsers.markdown_inline");
@@ -12,10 +14,6 @@ local inline = require("markview.parsers.markdown_inline");
 ---@field row_end integer
 
 ---@alias markview.parsers.function fun(buffer: integer, TSNode: table, text: string[], range: markview.parsers.range): nil
-
---- Cached user config
----@type markview.configuration?
-markdown.config = nil;
 
 --- Queried contents
 ---@type table[]
@@ -189,7 +187,7 @@ markdown.list_item = function (buffer, TSNode, text, range)
 
 	range.col_start = before:len();
 
-	local tolarence = markdown.config.__list_item_tolarence or 3; ---@diagnostic disable-line
+	local tolarence = spec.get("options", "list_empty_lines_tolerance") or 3; ---@diagnostic disable-line
 
 	local candidates = {};
 	local inside_code = false;
@@ -422,11 +420,10 @@ markdown.metadata_plus = function (_, TSNode, text, range)
 	})
 end
 
-markdown.parse = function (buffer, config, TSTree, from, to)
+markdown.parse = function (buffer, TSTree, from, to)
 	-- Clear the previous contents
 	markdown.sorted = {}
 	markdown.content = {};
-	markdown.config = config;
 
 	markdown.cache.table_ends = {};
 	inline.cache.checkbox = {};

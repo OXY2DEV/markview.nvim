@@ -1,6 +1,7 @@
 local markdown = {};
 local inline = require("markview.renderers.markdown_inline");
 
+local spec = require("markview.spec");
 local utils = require("markview.utils");
 local languages = require("markview.languages");
 local entities = require("markview.entities");
@@ -20,7 +21,9 @@ end
 
 markdown.ns = vim.api.nvim_create_namespace("markview/markdown");
 
-markdown.config = nil;
+local get_config = function (opt)
+	return spec.get("markdown", opt);
+end
 
 markdown.custom_config = function (config, value)
 	if not config.custom or not value then
@@ -54,7 +57,7 @@ end
 
 markdown.output = function (str)
 	local function config(opt)
-		local conf = markdown.config.markdown_inline;
+		local conf = spec.get("markdown_inline");
 
 		if not conf or conf.enable == false then
 			return;
@@ -451,20 +454,8 @@ markdown.concealed = function (str)
 	return str;
 end
 
-markdown.get_config = function (opt)
-	local _c = markdown.config;
-
-	if not _c.markdown or _c.markdown.enable == false then
-		return;
-	elseif not _c.markdown[opt] or _c.markdown[opt].enable == false then
-		return;
-	end
-
-	return _c.markdown[opt];
-end
-
 markdown.atx_heading = function (buffer, item)
-	local config = markdown.get_config("headings");
+	local config = get_config("headings");
 
 	if not config then
 		return;
@@ -508,7 +499,7 @@ markdown.atx_heading = function (buffer, item)
 				space = string.rep(" ", w_wid - wid);
 			end
 		else
-				space = string.rep(" ", #item.marker * (markdown.config.markdown.headings.shift_width or 1));
+				space = string.rep(" ", #item.marker * (get_config("headings").shift_width or 1));
 		end
 
 		vim.api.nvim_buf_set_extmark(buffer, markdown.ns, range.row_start, range.col_start, {
@@ -556,7 +547,7 @@ markdown.atx_heading = function (buffer, item)
 			sign_hl_group = utils.set_hl(config.sign_hl),
 			virt_text_pos = "inline",
 			virt_text = {
-				{ string.rep(" ", #item.marker * (markdown.config.markdown.headings.shift_width or 1)) },
+				{ string.rep(" ", #item.marker * (get_config("headings").shift_width or 1)) },
 				{ config.icon or "", utils.set_hl(config.icon_hl or config.hl) },
 			},
 			line_hl_group = utils.set_hl(config.hl),
@@ -567,7 +558,7 @@ markdown.atx_heading = function (buffer, item)
 end
 
 markdown.setext_heading = function (buffer, item)
-	local config = markdown.get_config("headings");
+	local config = get_config("headings");
 	local lvl = item.marker:match("%=") and 1 or 2;
 
 	if not config then
@@ -615,7 +606,7 @@ markdown.setext_heading = function (buffer, item)
 end
 
 markdown.block_quote = function (buffer, item)
-	local config = markdown.get_config("block_quotes");
+	local config = get_config("block_quotes");
 	local range = item.range;
 
 	if not config then
@@ -624,7 +615,7 @@ markdown.block_quote = function (buffer, item)
 
 	config = config.default or {};
 
-	for _, callout in ipairs(markdown.get_config("block_quotes").callouts or {}) do
+	for _, callout in ipairs(get_config("block_quotes").callouts or {}) do
 		if item.callout and callout.match_string:lower() == item.callout:lower() then
 			config = callout;
 			break;
@@ -671,7 +662,7 @@ markdown.block_quote = function (buffer, item)
 
 	for l = range.row_start, range.row_end - 1, 1  do
 		vim.api.nvim_buf_set_extmark(buffer, markdown.ns, l, range.col_start, {
-			end_col = range.col_start + 1,
+			end_col = math.min(range.col_start + 1, #item.text[(l - range.row_start) + 1]),
 			conceal = "",
 			undo_restore = false, invalidate = true,
 			virt_text_pos = "inline",
@@ -685,7 +676,7 @@ markdown.block_quote = function (buffer, item)
 end
 
 markdown.code_block = function (buffer, item)
-	local config = markdown.get_config("code_blocks");
+	local config = get_config("code_blocks");
 	local range = item.range;
 
 	if not config then
@@ -731,7 +722,7 @@ markdown.code_block = function (buffer, item)
 
 		if config.language_direction == nil or config.language_direction == "left" then
 			vim.api.nvim_buf_set_extmark(buffer, markdown.ns, range.row_start, range.col_start, {
-				end_col = range,
+				end_col = range.end_col,
 				undo_restore = false, invalidate = true,
 
 				virt_text_pos = "inline",
@@ -995,7 +986,7 @@ markdown.code_block = function (buffer, item)
 end
 
 markdown.list_item = function (buffer, item)
-	local config = markdown.get_config("list_items");
+	local config = get_config("list_items");
 	local checkbox;
 	local range = item.range;
 
@@ -1114,7 +1105,7 @@ markdown.checkbox = function (buffer, item)
 end
 
 markdown.table = function (buffer, item)
-	local config = markdown.get_config("tables");
+	local config = get_config("tables");
 	local range = item.range;
 
 	if not config then
@@ -1763,7 +1754,7 @@ markdown.table = function (buffer, item)
 end
 
 markdown.hr = function (buffer, item)
-	local config = markdown.get_config("horizontal_rules");
+	local config = get_config("horizontal_rules");
 	local range = item.range;
 
 	if not config then
@@ -1821,7 +1812,7 @@ markdown.hr = function (buffer, item)
 end
 
 markdown.metadata_minus = function (buffer, item)
-	local config = markdown.get_config("metadata_minus");
+	local config = get_config("metadata_minus");
 	local range = item.range;
 
 	if not config then
@@ -1839,7 +1830,7 @@ markdown.metadata_minus = function (buffer, item)
 end
 
 markdown.metadata_plus = function (buffer, item)
-	local config = markdown.get_config("metadata_minus");
+	local config = get_config("metadata_minus");
 	local range = item.range;
 
 	if not config then
@@ -1856,10 +1847,8 @@ markdown.metadata_plus = function (buffer, item)
 	})
 end
 
-markdown.render = function (buffer, content, config)
-	markdown.config = config;
-
-	for _, item in ipairs(content) do
+markdown.render = function (buffer, content)
+	for _, item in ipairs(content or {}) do
 		-- pcall(markdown[item.class:gsub("^markdown_", "")], buffer, item);
 		markdown[item.class:gsub("^markdown_", "")](buffer, item);
 	end

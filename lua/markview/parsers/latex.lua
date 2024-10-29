@@ -1,10 +1,6 @@
 --- HTML parser for `markview.nvim`
 local latex = {};
 
---- Cached user config
----@type markview.configuration?
-latex.config = nil;
-
 --- Queried contents
 ---@type table[]
 latex.content = {};
@@ -66,6 +62,7 @@ end
 latex.command = function (buffer, TSNode, text, range)
 	local args = {};
 	local nodes = TSNode:field("arg");
+	local command = text[1]:match("^\\([^%{%s]+)");
 
 	for _, arg in ipairs(nodes) do
 		table.insert(args, {
@@ -78,6 +75,7 @@ latex.command = function (buffer, TSNode, text, range)
 		class = "latex_command",
 
 		text = text,
+		command = command,
 		args = args,
 
 		range = range
@@ -153,11 +151,10 @@ latex.font = function (buffer, TSNode, text, range)
 	})
 end
 
-latex.parse = function (buffer, config, TSTree, from, to)
+latex.parse = function (buffer, TSTree, from, to)
 	-- Clear the previous contents
 	latex.sorted = {};
 	latex.content = {};
-	latex.config = config;
 
 	local scanned_queries = vim.treesitter.query.parse("latex", [[
 		((curly_group) @latex.parenthasis)
@@ -166,7 +163,7 @@ latex.parse = function (buffer, config, TSTree, from, to)
 			.
 			command: (
 				((command_name) @escaped.name)
-				(#match? @escaped.name "^\\\\.$")
+				(#match? @escaped.name "^\\.$")
 			)
 			.
 			) @latex.escaped)
@@ -187,7 +184,7 @@ latex.parse = function (buffer, config, TSTree, from, to)
 			.
 			command: (
 				(command_name) @font.cmd
-				(#match? @font.cmd "^\\\\math")
+				(#match? @font.cmd "^\\math")
 			)
 			arg: (curly_group)
 			.

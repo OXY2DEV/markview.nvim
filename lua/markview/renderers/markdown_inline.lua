@@ -4,18 +4,8 @@ local entities = require("markview.entities");
 
 inline.ns = vim.api.nvim_create_namespace("markview/inline");
 
-inline.config = nil;
-
-inline.get_config = function (opt)
-	local _c = inline.config;
-
-	if not _c.markdown_inline or _c.markdown_inline.enable == false then
-		return;
-	elseif not _c.markdown_inline[opt] or _c.markdown_inline[opt].enable == false then
-		return;
-	end
-
-	return _c.markdown_inline[opt];
+local get_config = function (opt)
+	return spec.get("markdown_inline", opt);
 end
 
 inline.custom_config = function (config, value)
@@ -33,7 +23,7 @@ inline.custom_config = function (config, value)
 end
 
 inline.code_span = function (buffer, item)
-	local config = inline.get_config("inline_codes");
+	local config = get_config("inline_codes");
 	local range = item.range;
 
 	if not config then
@@ -76,7 +66,7 @@ inline.code_span = function (buffer, item)
 end
 
 inline.link_email = function (buffer, item)
-	local config = inline.get_config("emails");
+	local config = get_config("emails");
 	local range = item.range;
 
 	if not config then
@@ -125,7 +115,7 @@ inline.link_email = function (buffer, item)
 end
 
 inline.link_image = function (buffer, item)
-	local config = inline.get_config("images");
+	local config = get_config("images");
 	local range = item.range;
 
 	if not config then
@@ -174,7 +164,7 @@ inline.link_image = function (buffer, item)
 end
 
 inline.link_hyperlink = function (buffer, item)
-	local config = inline.get_config("hyperlinks");
+	local config = get_config("hyperlinks");
 	local range = item.range;
 
 	if not config then
@@ -223,7 +213,7 @@ inline.link_hyperlink = function (buffer, item)
 end
 
 inline.link_shortcut = function (buffer, item)
-	local config = inline.get_config("hyperlinks");
+	local config = get_config("hyperlinks");
 	local range = item.range;
 
 	if not config then
@@ -270,7 +260,7 @@ inline.link_shortcut = function (buffer, item)
 end
 
 inline.link_uri_autolink = function (buffer, item)
-	local config = inline.get_config("uri_autolinks");
+	local config = get_config("uri_autolinks");
 	local range = item.range;
 
 	if not config then
@@ -319,7 +309,7 @@ inline.link_uri_autolink = function (buffer, item)
 end
 
 inline.link_internal = function (buffer, item)
-	local config = inline.get_config("internal_links");
+	local config = get_config("internal_links");
 	local range = item.range;
 
 	if not config then
@@ -368,7 +358,7 @@ inline.link_internal = function (buffer, item)
 end
 
 inline.link_embed_file = function (buffer, item)
-	local config = inline.get_config("embed_files");
+	local config = get_config("embed_files");
 	local range = item.range;
 
 	if not config then
@@ -417,7 +407,7 @@ inline.link_embed_file = function (buffer, item)
 end
 
 inline.link_block_ref = function (buffer, item)
-	local config = inline.get_config("block_references");
+	local config = get_config("block_references");
 	local range = item.range;
 
 	if not config then
@@ -466,7 +456,7 @@ inline.link_block_ref = function (buffer, item)
 end
 
 inline.escaped = function (buffer, item)
-	local config = inline.get_config("escapes");
+	local config = get_config("escapes");
 	local range = item.range;
 
 	if not config then
@@ -481,7 +471,7 @@ inline.escaped = function (buffer, item)
 end
 
 inline.entity = function (buffer, item)
-	local config = inline.get_config("entities");
+	local config = get_config("entities");
 	local range = item.range;
 
 	if not config then
@@ -503,7 +493,7 @@ inline.entity = function (buffer, item)
 end
 
 inline.checkbox = function (buffer, item)
-	local config = inline.get_config("checkboxes");
+	local config = get_config("checkboxes");
 	local range = item.range;
 
 	if not config then
@@ -546,9 +536,7 @@ inline.checkbox = function (buffer, item)
 	})
 end
 
-inline.render = function (buffer, content, config)
-	inline.config = config;
-
+inline.render = function (buffer, content)
 	for _, item in ipairs(content or {}) do
 		pcall(inline[item.class:gsub("^inline_", "")], buffer, item);
 		-- inline[item.class:gsub("^inline_", "")](buffer, item);
