@@ -17,7 +17,7 @@ spec.default = {
 		end
 	},
 	preview = {
-		modes = { "n", "i", "no", "c" },
+		modes = { "n", "no", "c" },
 		hybrid_modes = {},
 
 		auto_start = true,
@@ -549,9 +549,261 @@ spec.default = {
 
 		metadata_minus = {
 			hl = "Code"
-		}
+		},
+
+		tables = {
+			---+ ${class, Tables}
+			enable = true,
+    
+			parts = {
+				top = { "╭", "─", "╮", "┬" },
+				header = { "│", "│", "│" },
+				separator = { "├", "─", "┤", "┼" },
+				row = { "│", "│", "│" },
+				bottom = { "╰", "─", "╯", "┴" },
+    
+				overlap = { "┝", "━", "┥", "┿" },
+    
+				align_left = "╼",
+				align_right = "╾",
+				align_center = { "╴", "╶" }
+			},
+    
+			hl = {
+				top = { "TableHeader", "TableHeader", "TableHeader", "TableHeader" },
+				header = { "TableHeader", "TableHeader", "TableHeader" },
+				separator = { "TableHeader", "TableHeader", "TableHeader", "TableHeader" },
+				row = { "TableBorder", "TableBorder", "TableBorder" },
+				bottom = { "TableBorder", "TableBorder", "TableBorder", "TableBorder" },
+    
+				overlap = { "TableBorder", "TableBorder", "TableBorder", "TableBorder" },
+    
+				align_left = "TableAlignLeft",
+				align_right = "TableAlignRight",
+				align_center = { "TableAlignCenter", "TableAlignCenter" }
+			},
+    
+			col_min_width = 10,
+			block_decorator = true,
+			use_virt_lines = true
+			---_
+		},
 	},
-	markdown_inline = {},
+	markdown_inline = {
+		inline_codes = {
+			enable = true,
+			hl = "Code",
+
+			padding_left = " ",
+			padding_right = " "
+		},
+
+		emails = {
+			enable = true,
+			__emoji_link_compatability = true,
+
+			icon = " ",
+			hl = "MarkviewEmail"
+		},
+
+		uri_autolinks = {
+			enable = true,
+			__emoji_link_compatability = true,
+
+			icon = " ",
+			hl = "MarkviewEmail"
+		},
+
+		images = {
+			enable = true,
+			__emoji_link_compatability = true,
+
+			icon = "󰥶 ",
+			hl = "MarkviewImageLink",
+
+			custom = {
+				{ match_string = "%.svg$", icon = "󰜡 " },
+			}
+		},
+
+		embed_files = {
+			enable = true,
+
+			icon = "󰠮 ",
+			hl = "Special"
+		},
+
+		block_references = {
+			enable = true,
+
+			icon = "󰿨 ",
+			hl = "Comment"
+		},
+
+		internal_links = {
+			enable = true,
+			__emoji_link_compatability = true,
+
+			icon = "󰌷 ",
+			hl = "MarkviewHyperlink",
+
+			custom = {
+			}
+		},
+
+		hyperlinks = {
+			enable = true,
+			__emoji_link_compatability = true,
+
+			icon = "󰌷 ",
+			hl = "MarkviewHyperlink",
+
+			custom = {
+				---+ ${conf, Stack*}
+				{ match_string = "stackoverflow%.com", icon = " " },
+				{ match_string = "stackexchange%.com", icon = " " },
+				---_
+
+				{ match_string = "neovim%.org", icon = " " },
+
+				{ match_string = "dev%.to", icon = " " },
+				{ match_string = "github%.com", icon = " " },
+				{ match_string = "reddit%.com", icon = " " },
+				{ match_string = "freecodecamp%.org", icon = " " },
+
+				{ match_string = "https://(.+)$", icon = "󰞉 " },
+				{ match_string = "http://(.+)$", icon = "󰕑 " },
+				{ match_string = "[%.]md$", icon = " " }
+			}
+		},
+
+		escapes = {
+			enable = true
+		},
+
+		entities = {
+			enable = true,
+			hl = "Special"
+		},
+
+		checkboxes = {
+			---+ ${conf, Minimal style checkboxes}
+			enable = true,
+
+			checked = {
+				text = "󰗠", hl = "MarkviewCheckboxChecked"
+			},
+			unchecked = {
+				text = "󰄰", hl = "MarkviewCheckboxUnchecked"
+			},
+			custom = {
+				{
+					match_string = "/",
+					text = "󱎖",
+					hl = "MarkviewCheckboxPending",
+					scope_hl = "Special",
+				},
+				{
+					match_string = ">",
+					text = "",
+					hl = "MarkviewCheckboxCancelled"
+				},
+				{
+					match_string = "<",
+					text = "󰃖",
+					hl = "MarkviewCheckboxCancelled"
+				},
+				{
+					match_string = "-",
+					text = "󰍶",
+					hl = "MarkviewCheckboxCancelled",
+					scope_hl = "MarkviewCheckboxStriked"
+				},
+
+				{
+					match_string = "?",
+					text = "󰋗",
+					hl = "MarkviewCheckboxPending"
+				},
+				{
+					match_string = "!",
+					text = "󰀦",
+					hl = "MarkviewCheckboxUnchecked"
+				},
+				{
+					match_string = "*",
+					text = "󰓎",
+					hl = "MarkviewCheckboxPending"
+				},
+				{
+					match_string = '"',
+					text = "󰸥",
+					hl = "MarkviewCheckboxCancelled"
+				},
+				{
+					match_string = "l",
+					text = "󰆋",
+					hl = "MarkviewCheckboxProgress"
+				},
+				{
+					match_string = "b",
+					text = "󰃀",
+					hl = "MarkviewCheckboxProgress"
+				},
+				{
+					match_string = "i",
+					text = "󰰄",
+					hl = "MarkviewCheckboxChecked"
+				},
+				{
+					match_string = "S",
+					text = "",
+					hl = "MarkviewCheckboxChecked"
+				},
+				{
+					match_string = "I",
+					text = "󰛨",
+					hl = "MarkviewCheckboxPending"
+				},
+				{
+					match_string = "p",
+					text = "",
+					hl = "MarkviewCheckboxChecked"
+				},
+				{
+					match_string = "c",
+					text = "",
+					hl = "MarkviewCheckboxUnchecked"
+				},
+				{
+					match_string = "f",
+					text = "󱠇",
+					hl = "MarkviewCheckboxUnchecked"
+				},
+				{
+					match_string = "k",
+					text = "",
+					hl = "MarkviewCheckboxPending"
+				},
+				{
+					match_string = "w",
+					text = "",
+					hl = "MarkviewCheckboxProgress"
+				},
+				{
+					match_string = "u",
+					text = "󰔵",
+					hl = "MarkviewCheckboxChecked"
+				},
+				{
+					match_string = "d",
+					text = "󰔳",
+					hl = "MarkviewCheckboxUnchecked"
+				},
+			}
+			---_
+		},
+	},
 	html = {},
 	latex = {},
 	typst = {}
