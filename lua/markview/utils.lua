@@ -10,12 +10,19 @@ utils.parser_installed = function (parser_name)
 	return (ts_available and treesitter_parsers.has_parser(parser_name)) or pcall(vim.treesitter.query.get, parser_name, "highlights")
 end
 
-utils.get_parent = function (node, buffer)
-	if node:parent() then
-		return node:parent();
+utils.within_range = function (range, pos)
+	if pos.row_start < range.row_start then
+		return false;
+	elseif pos.row_end > range.row_end then
+		return false;
+	elseif
+		(pos.row_start == range.row_start and pos.row_end == range.row_end) and
+		(pos.col_start < range.col_start or pos.col_end > range.col_end)
+	then
+		return false;
 	end
 
-	local tree =tree
+	return true;
 end
 
 --- Escapes magic characters from a string

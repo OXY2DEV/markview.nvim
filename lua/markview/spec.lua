@@ -19,6 +19,9 @@ spec.default = {
 	preview = {
 		modes = { "n", "no", "c" },
 		hybrid_modes = {},
+		ignore_node_types = {
+			-- markdown = { "code_blocks" }
+		},
 
 		auto_start = true,
 
@@ -805,7 +808,39 @@ spec.default = {
 		},
 	},
 	html = {},
-	latex = {},
+	latex = {
+		brackets = {
+			enable = true,
+			left = "(",
+			right = "(",
+			hl = "Special"
+		},
+
+		escapes = { enable = true },
+		symbols = { enable = true, hl = "Comment" },
+		fonts = { enable = true },
+		subscripts = { enable = true, hl = "LatexSubscript" },
+		superscripts = { enable = true, hl = "LatexSuperscript" },
+		texts = { enable = true },
+
+		inlines = {
+			enable = true,
+
+			padding_left = " ",
+			padding_right = " ",
+
+			hl = "Code"
+		},
+		blocks = {
+			enable = true,
+			hl = "Code",
+			text = "  LaTeX ",
+			text_hl = "CodeInfo",
+
+			pad_amount = 3,
+			pad_char = " "
+		},
+	},
 	typst = {}
 };
 
