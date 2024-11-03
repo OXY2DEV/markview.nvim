@@ -110,7 +110,7 @@ markview.draw = function (buffer)
 			local hide_start, hide_end = renderer.range(hidden_content);
 
 			if hide_start and hide_end then
-				renderer.clear(buffer, hide_start, hide_end);
+				renderer.clear(buffer, markview.get_config("ignore_node_types", {}), hide_start, hide_end);
 			end
 		end
 	end
