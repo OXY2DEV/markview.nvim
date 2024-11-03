@@ -19,8 +19,6 @@ local function tbl_clamp(value, index)
 	return value[index];
 end
 
-markdown.ns = vim.api.nvim_create_namespace("markview/markdown");
-
 local get_config = function (opt)
 	return spec.get("markdown", opt);
 end
@@ -454,7 +452,42 @@ markdown.concealed = function (str)
 	return str;
 end
 
+markdown.__ns = {
+	__call = function (self, key)
+		return self[key] or self.default;
+	end
+}
+
+markdown.ns = {
+	default = vim.api.nvim_create_namespace("markview/markdown"),
+};
+setmetatable(markdown.ns, markdown.__ns)
+
+markdown.set_ns = function ()
+	local ns_pref = get_config("use_seperate_ns");
+	if not ns_pref then ns_pref = true; end
+
+	local available = vim.api.nvim_get_namespaces();
+	local ns_list = {
+		["block_quotes"] = "markview/markdown/block_quotes",
+		["code_blocks"] = "markview/markdown/code_blocks",
+		["list_items"] = "markview/markdown/list_items",
+		["metadatas"] = "markview/markdown/metadatas",
+		["headings"] = "markview/markdown/headings",
+		["tables"] = "markview/markdown/tables",
+	};
+
+	if ns_pref == true then
+		for ns, name in pairs(ns_list) do
+			if vim.list_contains(available, ns) == false then
+				markdown.ns[ns] = vim.api.nvim_create_namespace(name);
+			end
+		end
+	end
+end
+
 markdown.atx_heading = function (buffer, item)
+	---+${func, Renders ATX headings}
 	local config = get_config("headings");
 
 	if not config then
@@ -467,7 +500,7 @@ markdown.atx_heading = function (buffer, item)
 	config = config["heading_" .. #item.marker];
 
 	if config.style == "simple" then
-		vim.api.nvim_buf_set_extmark(buffer, markdown.ns, range.row_start, range.col_start, {
+		vim.api.nvim_buf_set_extmark(buffer, markdown.ns("headings"), range.row_start, range.col_start, {
 			undo_restore = false, invalidate = true,
 			line_hl_group = utils.set_hl(config.hl)
 		});
@@ -502,7 +535,7 @@ markdown.atx_heading = function (buffer, item)
 				space = string.rep(" ", #item.marker * (get_config("headings").shift_width or 1));
 		end
 
-		vim.api.nvim_buf_set_extmark(buffer, markdown.ns, range.row_start, range.col_start, {
+		vim.api.nvim_buf_set_extmark(buffer, markdown.ns("headings"), range.row_start, range.col_start, {
 			undo_restore = false, invalidate = true,
 			end_col = range.col_start + #item.marker + 1,
 			conceal = "",
@@ -520,14 +553,14 @@ markdown.atx_heading = function (buffer, item)
 			hl_mode = "combine"
 		});
 
-		vim.api.nvim_buf_set_extmark(buffer, markdown.ns, range.row_start, range.col_start, {
+		vim.api.nvim_buf_set_extmark(buffer, markdown.ns("headings"), range.row_start, range.col_start, {
 			undo_restore = false, invalidate = true,
 			end_row = range.row_end,
 			end_col = range.col_end,
 			hl_group = utils.set_hl(config.hl)
 		});
 
-		vim.api.nvim_buf_set_extmark(buffer, markdown.ns, range.row_start, range.col_end, {
+		vim.api.nvim_buf_set_extmark(buffer, markdown.ns("headings"), range.row_start, range.col_end, {
 			undo_restore = false, invalidate = true,
 			conceal = "",
 			virt_text_pos = "inline",
@@ -539,7 +572,7 @@ markdown.atx_heading = function (buffer, item)
 			hl_mode = "combine"
 		});
 	elseif config.style == "icon" then
-		vim.api.nvim_buf_set_extmark(buffer, markdown.ns, range.row_start, range.col_start, {
+		vim.api.nvim_buf_set_extmark(buffer, markdown.ns("headings"), range.row_start, range.col_start, {
 			undo_restore = false, invalidate = true,
 			end_col = range.col_start + #item.marker + 1,
 			conceal = "",
@@ -555,57 +588,11 @@ markdown.atx_heading = function (buffer, item)
 			hl_mode = "combine"
 		});
 	end
-end
-
-markdown.setext_heading = function (buffer, item)
-	local config = get_config("headings");
-	local lvl = item.marker:match("%=") and 1 or 2;
-
-	if not config then
-		return;
-	elseif not config["setext_" .. lvl] then
-		return;
-	end
-
-	local range = item.range;
-	config = config["setext_" .. lvl];
-
-	if config.style == "simple" then
-		vim.api.nvim_buf_set_extmark(buffer, markdown.ns, range.row_start, range.col_start, {
-			undo_restore = false, invalidate = true,
-			end_row = range.row_end,
-			end_col = range.col_end,
-			line_hl_group = utils.set_hl(config.hl)
-		});
-	elseif config.style == "decorated" then
-		vim.api.nvim_buf_set_extmark(buffer, markdown.ns, range.row_start, range.col_start, {
-			undo_restore = false, invalidate = true,
-			end_row = range.row_end - 1,
-			end_col = range.col_end,
-			line_hl_group = utils.set_hl(config.hl)
-		});
-
-		if config.border then
-			vim.api.nvim_buf_set_extmark(buffer, markdown.ns, range.row_end - 1, range.col_start, {
-				undo_restore = false, invalidate = true,
-				end_row = range.row_end - 1,
-				end_col = range.col_end,
-				line_hl_group = utils.set_hl(config.hl),
-				virt_text_pos = "overlay",
-				virt_text = {
-					{
-						string.rep(config.border or config.line, vim.o.columns),
-						utils.set_hl(config.border_hl or config.line_hl or config.hl)
-					}
-				},
-
-				hl_mode = "combine",
-			});
-		end
-	end
+	---_
 end
 
 markdown.block_quote = function (buffer, item)
+	---+${func, Renders Block quotes & Callouts/Alerts}
 	local config = get_config("block_quotes");
 	local range = item.range;
 
@@ -624,7 +611,7 @@ markdown.block_quote = function (buffer, item)
 
 	if item.callout then
 		if item.title and config.title == true then
-			vim.api.nvim_buf_set_extmark(buffer, markdown.ns, range.row_start, range.callout_start, {
+			vim.api.nvim_buf_set_extmark(buffer, markdown.ns("block_quotes"), range.row_start, range.callout_start, {
 				end_col = range.callout_end,
 				conceal = "",
 				undo_restore = false, invalidate = true,
@@ -637,7 +624,7 @@ markdown.block_quote = function (buffer, item)
 				hl_mode = "combine",
 			});
 
-			vim.api.nvim_buf_set_extmark(buffer, markdown.ns, range.row_start, range.title_start, {
+			vim.api.nvim_buf_set_extmark(buffer, markdown.ns("block_quotes"), range.row_start, range.title_start, {
 				end_col = range.title_end,
 				undo_restore = false, invalidate = true,
 				hl_group = utils.set_hl(config.hl),
@@ -645,7 +632,7 @@ markdown.block_quote = function (buffer, item)
 				hl_mode = "combine",
 			});
 		elseif config.preview then
-			vim.api.nvim_buf_set_extmark(buffer, markdown.ns, range.row_start, range.callout_start, {
+			vim.api.nvim_buf_set_extmark(buffer, markdown.ns("block_quotes"), range.row_start, range.callout_start, {
 				end_col = range.callout_end,
 				conceal = "",
 				undo_restore = false, invalidate = true,
@@ -661,7 +648,7 @@ markdown.block_quote = function (buffer, item)
 	end
 
 	for l = range.row_start, range.row_end - 1, 1  do
-		vim.api.nvim_buf_set_extmark(buffer, markdown.ns, l, range.col_start, {
+		vim.api.nvim_buf_set_extmark(buffer, markdown.ns("block_quotes"), l, range.col_start, {
 			end_col = math.min(range.col_start + 1, #item.text[(l - range.row_start) + 1]),
 			conceal = "",
 			undo_restore = false, invalidate = true,
@@ -673,9 +660,16 @@ markdown.block_quote = function (buffer, item)
 			hl_mode = "combine",
 		});
 	end
+	---_
+end
+
+markdown.checkbox = function (buffer, item)
+	--- Wrapper for the inline checkbox renderer function
+	inline.checkbox(buffer, item)
 end
 
 markdown.code_block = function (buffer, item)
+	---+${func, Renders Code blocks}
 	local config = get_config("code_blocks");
 	local range = item.range;
 
@@ -715,13 +709,13 @@ markdown.code_block = function (buffer, item)
 	::nameFound::
 
 	if config.style == "simple" then
-		vim.api.nvim_buf_set_extmark(buffer, markdown.ns, range.row_start, range.col_start, {
+		vim.api.nvim_buf_set_extmark(buffer, markdown.ns("code_blocks"), range.row_start, range.col_start, {
 			end_col = range.col_start + item.text[1]:len(),
 			conceal = "",
 		});
 
 		if config.language_direction == nil or config.language_direction == "left" then
-			vim.api.nvim_buf_set_extmark(buffer, markdown.ns, range.row_start, range.col_start, {
+			vim.api.nvim_buf_set_extmark(buffer, markdown.ns("code_blocks"), range.row_start, range.col_start, {
 				end_col = range.end_col,
 				undo_restore = false, invalidate = true,
 
@@ -738,7 +732,7 @@ markdown.code_block = function (buffer, item)
 				sign_hl_group = utils.set_hl(config.sign_hl or sign_hl or hl),
 			});
 		elseif config.language_direction == "right" then
-			vim.api.nvim_buf_set_extmark(buffer, markdown.ns, range.row_start, range.col_start + vim.fn.strchars(range.info_string), {
+			vim.api.nvim_buf_set_extmark(buffer, markdown.ns("code_blocks"), range.row_start, range.col_start + vim.fn.strchars(range.info_string), {
 				undo_restore = false, invalidate = true,
 
 				virt_text_pos = "right_align",
@@ -758,12 +752,12 @@ markdown.code_block = function (buffer, item)
 
 
 		--- NOTE: Don't highlight extra line after the closing ```
-		vim.api.nvim_buf_set_extmark(buffer, markdown.ns, range.row_start + 1, range.col_start, {
+		vim.api.nvim_buf_set_extmark(buffer, markdown.ns("code_blocks"), range.row_start + 1, range.col_start, {
 			line_hl_group = utils.set_hl(config.hl),
 			end_row = range.row_end - 1, end_col = range.col_end
 		});
 
-		vim.api.nvim_buf_set_extmark(buffer, markdown.ns, range.row_end - 1, range.col_start, {
+		vim.api.nvim_buf_set_extmark(buffer, markdown.ns("code_blocks"), range.row_end - 1, range.col_start, {
 			end_col = range.col_start + #item.text[#item.text],
 			conceal = "",
 			undo_restore = false, invalidate = true
@@ -785,12 +779,12 @@ markdown.code_block = function (buffer, item)
 		});
 
 		if config.language_direction == nil or config.language_direction == "left" then
-			vim.api.nvim_buf_set_extmark(buffer, markdown.ns, range.row_start, range.col_start, {
+			vim.api.nvim_buf_set_extmark(buffer, markdown.ns("code_blocks"), range.row_start, range.col_start, {
 				end_col = range.col_start + range.lang_end,
 				conceal = "",
 				undo_restore = false, invalidate = true,
 			});
-			vim.api.nvim_buf_set_extmark(buffer, markdown.ns, range.row_start, range.col_start + range.lang_end, {
+			vim.api.nvim_buf_set_extmark(buffer, markdown.ns("code_blocks"), range.row_start, range.col_start + range.lang_end, {
 				undo_restore = false, invalidate = true,
 
 				virt_text_pos = "inline",
@@ -804,7 +798,7 @@ markdown.code_block = function (buffer, item)
 				sign_hl_group = utils.set_hl(config.sign_hl or sign_hl or hl),
 			});
 
-			vim.api.nvim_buf_set_extmark(buffer, markdown.ns, range.row_start, range.col_start, {
+			vim.api.nvim_buf_set_extmark(buffer, markdown.ns("code_blocks"), range.row_start, range.col_start, {
 				end_col = range.col_start + item.text[1]:len(),
 				hl_group = utils.set_hl(config.info_hl or config.hl),
 				undo_restore = false, invalidate = true,
@@ -812,12 +806,12 @@ markdown.code_block = function (buffer, item)
 
 			if item.info_string then
 				if (preview + vim.fn.strdisplaywidth(item.info_string)) >= block_width then
-					vim.api.nvim_buf_set_extmark(buffer, markdown.ns, range.row_start, (range.col_start + range.info_start) + 1 + (block_width - (pad_amount + preview)), {
+					vim.api.nvim_buf_set_extmark(buffer, markdown.ns("code_blocks"), range.row_start, (range.col_start + range.info_start) + 1 + (block_width - (pad_amount + preview)), {
 						end_col = range.col_start + item.text[1]:len(),
 						conceal = "",
 						undo_restore = false, invalidate = true,
 					});
-					vim.api.nvim_buf_set_extmark(buffer, markdown.ns, range.row_start, range.col_start + item.text[1]:len(), {
+					vim.api.nvim_buf_set_extmark(buffer, markdown.ns("code_blocks"), range.row_start, range.col_start + item.text[1]:len(), {
 						undo_restore = false, invalidate = true,
 
 						virt_text_pos = "inline",
@@ -828,7 +822,7 @@ markdown.code_block = function (buffer, item)
 						},
 					});
 				else
-					vim.api.nvim_buf_set_extmark(buffer, markdown.ns, range.row_start, range.col_start + range.info_end, {
+					vim.api.nvim_buf_set_extmark(buffer, markdown.ns("code_blocks"), range.row_start, range.col_start + range.info_end, {
 						undo_restore = false, invalidate = true,
 
 						virt_text_pos = "inline",
@@ -840,13 +834,13 @@ markdown.code_block = function (buffer, item)
 					});
 				end
 			else
-				vim.api.nvim_buf_set_extmark(buffer, markdown.ns, range.row_start, range.col_start, {
+				vim.api.nvim_buf_set_extmark(buffer, markdown.ns("code_blocks"), range.row_start, range.col_start, {
 					undo_restore = false, invalidate = true,
 					end_col = range.col_start + item.text[1]:len(),
 					conceal = "",
 				});
 
-				vim.api.nvim_buf_set_extmark(buffer, markdown.ns, range.row_start, range.col_start + item.text[1]:len(), {
+				vim.api.nvim_buf_set_extmark(buffer, markdown.ns("code_blocks"), range.row_start, range.col_start + item.text[1]:len(), {
 					undo_restore = false, invalidate = true,
 					virt_text_pos = "inline",
 					virt_text = {
@@ -857,7 +851,7 @@ markdown.code_block = function (buffer, item)
 				});
 			end
 		elseif config.language_direction == "right" then
-			vim.api.nvim_buf_set_extmark(buffer, markdown.ns, range.row_start, range.col_start, {
+			vim.api.nvim_buf_set_extmark(buffer, markdown.ns("code_blocks"), range.row_start, range.col_start, {
 				end_col = range.col_start + (range.info_start or range.lang_end),
 				conceal = "",
 				undo_restore = false, invalidate = true,
@@ -871,7 +865,7 @@ markdown.code_block = function (buffer, item)
 				sign_hl_group = utils.set_hl(config.sign_hl or sign_hl or hl),
 			});
 
-			vim.api.nvim_buf_set_extmark(buffer, markdown.ns, range.row_start, range.col_start, {
+			vim.api.nvim_buf_set_extmark(buffer, markdown.ns("code_blocks"), range.row_start, range.col_start, {
 				end_col = range.col_start + item.text[1]:len(),
 				hl_group = utils.set_hl(config.info_hl or config.hl),
 				undo_restore = false, invalidate = true,
@@ -879,13 +873,13 @@ markdown.code_block = function (buffer, item)
 
 			if item.info_string then
 				if (preview + 1 + vim.fn.strdisplaywidth(item.info_string)) >= block_width then
-					vim.api.nvim_buf_set_extmark(buffer, markdown.ns, range.row_start, (range.col_start + range.info_start) + 1 + (block_width - (pad_amount + preview)), {
+					vim.api.nvim_buf_set_extmark(buffer, markdown.ns("code_blocks"), range.row_start, (range.col_start + range.info_start) + 1 + (block_width - (pad_amount + preview)), {
 						undo_restore = false, invalidate = true,
 						end_col = range.col_start + item.text[1]:len(),
 						conceal = "",
 					});
 
-					vim.api.nvim_buf_set_extmark(buffer, markdown.ns, range.row_start, range.col_start + range.info_end, {
+					vim.api.nvim_buf_set_extmark(buffer, markdown.ns("code_blocks"), range.row_start, range.col_start + range.info_end, {
 						undo_restore = false, invalidate = true,
 
 						virt_text_pos = "inline",
@@ -898,7 +892,7 @@ markdown.code_block = function (buffer, item)
 						},
 					});
 				else
-					vim.api.nvim_buf_set_extmark(buffer, markdown.ns, range.row_start, range.col_start + range.info_end, {
+					vim.api.nvim_buf_set_extmark(buffer, markdown.ns("code_blocks"), range.row_start, range.col_start + range.info_end, {
 						undo_restore = false, invalidate = true,
 
 						virt_text_pos = "inline",
@@ -911,13 +905,13 @@ markdown.code_block = function (buffer, item)
 					});
 				end
 			else
-				vim.api.nvim_buf_set_extmark(buffer, markdown.ns, range.row_start, range.col_start, {
+				vim.api.nvim_buf_set_extmark(buffer, markdown.ns("code_blocks"), range.row_start, range.col_start, {
 					undo_restore = false, invalidate = true,
 					end_col = range.col_start + item.text[1]:len(),
 					conceal = "",
 				});
 
-				vim.api.nvim_buf_set_extmark(buffer, markdown.ns, range.row_start, range.col_start + item.text[1]:len(), {
+				vim.api.nvim_buf_set_extmark(buffer, markdown.ns("code_blocks"), range.row_start, range.col_start + item.text[1]:len(), {
 					undo_restore = false, invalidate = true,
 					virt_text_pos = "inline",
 					virt_text = {
@@ -931,12 +925,12 @@ markdown.code_block = function (buffer, item)
 			end
 		end
 
-		vim.api.nvim_buf_set_extmark(buffer, markdown.ns, range.row_end - 1, range.col_start, {
+		vim.api.nvim_buf_set_extmark(buffer, markdown.ns("code_blocks"), range.row_end - 1, range.col_start, {
 			end_col = range.col_start + #item.text[#item.text],
 			conceal = "",
 			undo_restore = false, invalidate = true
 		});
-		vim.api.nvim_buf_set_extmark(buffer, markdown.ns, range.row_end - 1, range.col_start + #item.text[#item.text], {
+		vim.api.nvim_buf_set_extmark(buffer, markdown.ns("code_blocks"), range.row_end - 1, range.col_start + #item.text[#item.text], {
 			undo_restore = false, invalidate = true,
 			virt_text_pos = "inline",
 			virt_text = {
@@ -955,7 +949,7 @@ markdown.code_block = function (buffer, item)
 			end
 
 			--- Left padding
-			vim.api.nvim_buf_set_extmark(buffer, markdown.ns, l, range.col_start, {
+			vim.api.nvim_buf_set_extmark(buffer, markdown.ns("code_blocks"), l, range.col_start, {
 				undo_restore = false, invalidate = true,
 
 				virt_text_pos = "inline",
@@ -964,8 +958,8 @@ markdown.code_block = function (buffer, item)
 				},
 			});
 
-			--- Right padidng
-			vim.api.nvim_buf_set_extmark(buffer, markdown.ns, l, range.col_start + #line, {
+			--- Right padding
+			vim.api.nvim_buf_set_extmark(buffer, markdown.ns("code_blocks"), l, range.col_start + #line, {
 				undo_restore = false, invalidate = true,
 
 				virt_text_pos = "inline",
@@ -976,16 +970,18 @@ markdown.code_block = function (buffer, item)
 			});
 
 			--- Background color
-			vim.api.nvim_buf_set_extmark(buffer, markdown.ns, l, range.col_start, {
+			vim.api.nvim_buf_set_extmark(buffer, markdown.ns("code_blocks"), l, range.col_start, {
 				undo_restore = false, invalidate = true,
 				end_col = range.col_start + #line,
 				hl_group = utils.set_hl(config.hl)
 			});
 		end
 	end
+	---_
 end
 
 markdown.list_item = function (buffer, item)
+	---+${func, Renders List items}
 	local config = get_config("list_items");
 	local checkbox;
 	local range = item.range;
@@ -1041,7 +1037,7 @@ markdown.list_item = function (buffer, item)
 				to = from;
 			end
 
-			vim.api.nvim_buf_set_extmark(buffer, markdown.ns, range.row_start + l, from, {
+			vim.api.nvim_buf_set_extmark(buffer, markdown.ns("list_items"), range.row_start + l, from, {
 				undo_restore = false, invalidate = true,
 				end_col = to,
 				conceal = "",
@@ -1055,7 +1051,7 @@ markdown.list_item = function (buffer, item)
 	end
 
 	if checkbox and config.conceal_on_checkboxes == true then
-		vim.api.nvim_buf_set_extmark(buffer, markdown.ns, range.row_start, range.col_start, {
+		vim.api.nvim_buf_set_extmark(buffer, markdown.ns("list_items"), range.row_start, range.col_start, {
 			undo_restore = false, invalidate = true,
 			end_col = range.col_start + (item.indent + #item.marker + 1),
 			conceal = ""
@@ -1067,7 +1063,7 @@ markdown.list_item = function (buffer, item)
 
 		for l, line in ipairs(item.text) do
 			if l == 1 then
-				vim.api.nvim_buf_set_extmark(buffer, markdown.ns, range.row_start, range.col_start + (item.indent + #item.marker + 5), {
+				vim.api.nvim_buf_set_extmark(buffer, markdown.ns("list_items"), range.row_start, range.col_start + (item.indent + #item.marker + 5), {
 					undo_restore = false, invalidate = true,
 					end_col = #item.text[1],
 
@@ -1076,7 +1072,7 @@ markdown.list_item = function (buffer, item)
 			elseif line ~= "" then
 				local spaces = line:match("^([%>%s]*)");
 
-				vim.api.nvim_buf_set_extmark(buffer, markdown.ns, range.row_start + (l - 1), #spaces, {
+				vim.api.nvim_buf_set_extmark(buffer, markdown.ns("list_items"), range.row_start + (l - 1), #spaces, {
 					undo_restore = false, invalidate = true,
 					end_col = #item.text[l],
 
@@ -1085,7 +1081,7 @@ markdown.list_item = function (buffer, item)
 			end
 		end
 	elseif item.marker:match("[%+%-%*]") then
-		vim.api.nvim_buf_set_extmark(buffer, markdown.ns, range.row_start, range.col_start, {
+		vim.api.nvim_buf_set_extmark(buffer, markdown.ns("list_items"), range.row_start, range.col_start, {
 			undo_restore = false, invalidate = true,
 			end_col = range.col_start + (item.indent + 1),
 			conceal = "",
@@ -1098,13 +1094,101 @@ markdown.list_item = function (buffer, item)
 			hl_mode = "combine"
 		});
 	end
+	---_
 end
 
-markdown.checkbox = function (buffer, item)
-	inline.checkbox(buffer, item)
+markdown.metadata_minus = function (buffer, item)
+	---+${Renders, Renders YAML metadata blocks}
+	local config = get_config("metadata_minus");
+	local range = item.range;
+
+	if not config then
+		return;
+	end
+
+	vim.api.nvim_buf_set_extmark(buffer, markdown.ns("metadatas"), range.row_start, range.col_start, {
+		undo_restore = false, invalidate = true,
+		end_row = range.row_end - 1,
+		end_col = #item.text[#item.text],
+		conceal = "|",
+
+		line_hl_group = utils.set_hl(config.hl)
+	});
+	---_
+end
+
+markdown.metadata_plus = function (buffer, item)
+	---+${func, Renders TOML metadata blocks}
+	local config = get_config("metadata_minus");
+	local range = item.range;
+
+	if not config then
+		return;
+	end
+
+	vim.api.nvim_buf_set_extmark(buffer, markdown.ns("metadatas"), range.row_start, range.col_start, {
+		undo_restore = false, invalidate = true,
+		end_row = range.row_end - 1,
+		end_col = #item.text[#item.text],
+		conceal = "|",
+
+		line_hl_group = utils.set_hl(config.hl)
+	});
+	---_
+end
+
+markdown.setext_heading = function (buffer, item)
+	---+${func, Renders Setext headings}
+	local config = get_config("headings");
+	local lvl = item.marker:match("%=") and 1 or 2;
+
+	if not config then
+		return;
+	elseif not config["setext_" .. lvl] then
+		return;
+	end
+
+	local range = item.range;
+	config = config["setext_" .. lvl];
+
+	if config.style == "simple" then
+		vim.api.nvim_buf_set_extmark(buffer, markdown.ns("headings"), range.row_start, range.col_start, {
+			undo_restore = false, invalidate = true,
+			end_row = range.row_end,
+			end_col = range.col_end,
+			line_hl_group = utils.set_hl(config.hl)
+		});
+	elseif config.style == "decorated" then
+		vim.api.nvim_buf_set_extmark(buffer, markdown.ns("headings"), range.row_start, range.col_start, {
+			undo_restore = false, invalidate = true,
+			end_row = range.row_end - 1,
+			end_col = range.col_end,
+			line_hl_group = utils.set_hl(config.hl)
+		});
+
+		if config.border then
+			vim.api.nvim_buf_set_extmark(buffer, markdown.ns("headings"), range.row_end - 1, range.col_start, {
+				undo_restore = false, invalidate = true,
+				end_row = range.row_end - 1,
+				end_col = range.col_end,
+				line_hl_group = utils.set_hl(config.hl),
+				virt_text_pos = "overlay",
+				virt_text = {
+					{
+						string.rep(config.border or config.line, vim.o.columns),
+						utils.set_hl(config.border_hl or config.line_hl or config.hl)
+					}
+				},
+
+				hl_mode = "combine",
+			});
+		end
+	end
+	---_
 end
 
 markdown.table = function (buffer, item)
+	---+${func, Renders Tables}
 	local config = get_config("tables");
 	local range = item.range;
 
@@ -1222,7 +1306,7 @@ markdown.table = function (buffer, item)
 
 			table.insert(tmp, { top, utils.set_hl(top_hl) });
 
-			vim.api.nvim_buf_set_extmark(buffer, markdown.ns, range.row_start, range.col_start + part.col_start, {
+			vim.api.nvim_buf_set_extmark(buffer, markdown.ns("tables"), range.row_start, range.col_start + part.col_start, {
 				undo_restore = false, invalidate = true,
 				end_col = range.col_start + part.col_end,
 				conceal = "",
@@ -1245,7 +1329,7 @@ markdown.table = function (buffer, item)
 				end
 
 				if config.use_virt_lines == true then
-					vim.api.nvim_buf_set_extmark(buffer, markdown.ns, range.row_start, range.col_start, {
+					vim.api.nvim_buf_set_extmark(buffer, markdown.ns("tables"), range.row_start, range.col_start, {
 						undo_restore = false, invalidate = true,
 						virt_lines_above = true,
 						virt_lines = { tmp },
@@ -1253,7 +1337,7 @@ markdown.table = function (buffer, item)
 						hl_mode = "combine"
 					})
 				elseif item.top_border == true and range.row_start > 0 then
-					vim.api.nvim_buf_set_extmark(buffer, markdown.ns, range.row_start - 1, math.min(range.col_start, prev_line), {
+					vim.api.nvim_buf_set_extmark(buffer, markdown.ns("tables"), range.row_start - 1, math.min(range.col_start, prev_line), {
 						undo_restore = false, invalidate = true,
 						virt_text_pos = "inline",
 						virt_text = tmp,
@@ -1270,7 +1354,7 @@ markdown.table = function (buffer, item)
 
 			table.insert(tmp, { top, utils.set_hl(top_hl) });
 
-			vim.api.nvim_buf_set_extmark(buffer, markdown.ns, range.row_start, range.col_start + part.col_start, {
+			vim.api.nvim_buf_set_extmark(buffer, markdown.ns("tables"), range.row_start, range.col_start + part.col_start, {
 				undo_restore = false, invalidate = true,
 				end_col = range.col_start + part.col_end,
 				conceal = "",
@@ -1293,7 +1377,7 @@ markdown.table = function (buffer, item)
 				end
 
 				if config.use_virt_lines == true then
-					vim.api.nvim_buf_set_extmark(buffer, markdown.ns, range.row_start, range.col_start, {
+					vim.api.nvim_buf_set_extmark(buffer, markdown.ns("tables"), range.row_start, range.col_start, {
 						undo_restore = false, invalidate = true,
 						virt_lines_above = true,
 						virt_lines = { tmp },
@@ -1301,7 +1385,7 @@ markdown.table = function (buffer, item)
 						hl_mode = "combine"
 					})
 				elseif range.row_start > 0 and item.top_border == true then
-					vim.api.nvim_buf_set_extmark(buffer, markdown.ns, range.row_start - 1, math.min(prev_line, range.col_start), {
+					vim.api.nvim_buf_set_extmark(buffer, markdown.ns("tables"), range.row_start - 1, math.min(prev_line, range.col_start), {
 						undo_restore = false, invalidate = true,
 						virt_text_pos = "inline",
 						virt_text = tmp,
@@ -1322,7 +1406,7 @@ markdown.table = function (buffer, item)
 
 			if visible_width < column_width then
 				if item.alignments[c] == "default" or item.alignments[c] == "left" then
-					vim.api.nvim_buf_set_extmark(buffer, markdown.ns, range.row_start, range.col_start + part.col_end, {
+					vim.api.nvim_buf_set_extmark(buffer, markdown.ns("tables"), range.row_start, range.col_start + part.col_end, {
 						undo_restore = false, invalidate = true,
 						virt_text_pos = "inline",
 						virt_text = {
@@ -1332,7 +1416,7 @@ markdown.table = function (buffer, item)
 						hl_mode = "combine"
 					});
 				elseif item.alignments[c] == "right" then
-					vim.api.nvim_buf_set_extmark(buffer, markdown.ns, range.row_start, range.col_start + part.col_start, {
+					vim.api.nvim_buf_set_extmark(buffer, markdown.ns("tables"), range.row_start, range.col_start + part.col_start, {
 						undo_restore = false, invalidate = true,
 						virt_text_pos = "inline",
 						virt_text = {
@@ -1342,7 +1426,7 @@ markdown.table = function (buffer, item)
 						hl_mode = "combine"
 					});
 				else
-					vim.api.nvim_buf_set_extmark(buffer, markdown.ns, range.row_start, range.col_start + part.col_start, {
+					vim.api.nvim_buf_set_extmark(buffer, markdown.ns("tables"), range.row_start, range.col_start + part.col_start, {
 						undo_restore = false, invalidate = true,
 						virt_text_pos = "inline",
 						virt_text = {
@@ -1351,7 +1435,7 @@ markdown.table = function (buffer, item)
 
 						hl_mode = "combine"
 					});
-					vim.api.nvim_buf_set_extmark(buffer, markdown.ns, range.row_start, range.col_start + part.col_end, {
+					vim.api.nvim_buf_set_extmark(buffer, markdown.ns("tables"), range.row_start, range.col_start + part.col_end, {
 						undo_restore = false, invalidate = true,
 						virt_text_pos = "inline",
 						virt_text = {
@@ -1381,7 +1465,7 @@ markdown.table = function (buffer, item)
 				border, border_hl = get_border("separator", 3);
 			end
 
-			vim.api.nvim_buf_set_extmark(buffer, markdown.ns, range.row_start + 1, range.col_start + sep.col_start, {
+			vim.api.nvim_buf_set_extmark(buffer, markdown.ns("tables"), range.row_start + 1, range.col_start + sep.col_start, {
 				undo_restore = false, invalidate = true,
 				end_col = range.col_start + sep.col_end,
 				conceal = "",
@@ -1398,7 +1482,7 @@ markdown.table = function (buffer, item)
 			---+${custom, Handle missing last |}
 			local border, border_hl = get_border("separator", 3);
 
-			vim.api.nvim_buf_set_extmark(buffer, markdown.ns, range.row_start + 1, range.col_start + sep.col_start, {
+			vim.api.nvim_buf_set_extmark(buffer, markdown.ns("tables"), range.row_start + 1, range.col_start + sep.col_start, {
 				undo_restore = false, invalidate = true,
 				virt_text_pos = "inline",
 				virt_text = {
@@ -1414,7 +1498,7 @@ markdown.table = function (buffer, item)
 
 			if item.alignments[c] == "default" then
 				---+${custom, Normal columns}
-				vim.api.nvim_buf_set_extmark(buffer, markdown.ns, range.row_start + 1, range.col_start + sep.col_start, {
+				vim.api.nvim_buf_set_extmark(buffer, markdown.ns("tables"), range.row_start + 1, range.col_start + sep.col_start, {
 					undo_restore = false, invalidate = true,
 					end_col = range.col_start + sep.col_end,
 					conceal = "",
@@ -1432,7 +1516,7 @@ markdown.table = function (buffer, item)
 				align = parts.align_left or "";
 				align_hl = hls.align_left;
 
-				vim.api.nvim_buf_set_extmark(buffer, markdown.ns, range.row_start + 1, range.col_start + sep.col_start, {
+				vim.api.nvim_buf_set_extmark(buffer, markdown.ns("tables"), range.row_start + 1, range.col_start + sep.col_start, {
 					undo_restore = false, invalidate = true,
 					end_col = range.col_start + sep.col_end,
 					conceal = "",
@@ -1451,7 +1535,7 @@ markdown.table = function (buffer, item)
 				align = parts.align_right or "";
 				align_hl = hls.align_right;
 
-				vim.api.nvim_buf_set_extmark(buffer, markdown.ns, range.row_start + 1, range.col_start + sep.col_start, {
+				vim.api.nvim_buf_set_extmark(buffer, markdown.ns("tables"), range.row_start + 1, range.col_start + sep.col_start, {
 					undo_restore = false, invalidate = true,
 					end_col = range.col_start + sep.col_end,
 					conceal = "",
@@ -1470,7 +1554,7 @@ markdown.table = function (buffer, item)
 				align = parts.align_center or { "", "" };
 				align_hl = hls.align_center or {};
 
-				vim.api.nvim_buf_set_extmark(buffer, markdown.ns, range.row_start + 1, range.col_start + sep.col_start, {
+				vim.api.nvim_buf_set_extmark(buffer, markdown.ns("tables"), range.row_start + 1, range.col_start + sep.col_start, {
 				undo_restore = false, invalidate = true,
 					undo_restore = false, invalidate = true,
 					end_col = range.col_start + sep.col_end,
@@ -1510,7 +1594,7 @@ markdown.table = function (buffer, item)
 					border, border_hl = get_border("row", 3);
 				end
 
-				vim.api.nvim_buf_set_extmark(buffer, markdown.ns, range.row_start + 1 + r, range.col_start + part.col_start, {
+				vim.api.nvim_buf_set_extmark(buffer, markdown.ns("tables"), range.row_start + 1 + r, range.col_start + part.col_start, {
 					undo_restore = false, invalidate = true,
 					end_col = range.col_start + part.col_end,
 					conceal = "",
@@ -1527,7 +1611,7 @@ markdown.table = function (buffer, item)
 				---+${custom, Handle missing last |}
 				local border, border_hl = get_border("row", 3);
 
-				vim.api.nvim_buf_set_extmark(buffer, markdown.ns, range.row_start + 1 + r, range.col_start + part.col_start, {
+				vim.api.nvim_buf_set_extmark(buffer, markdown.ns("tables"), range.row_start + 1 + r, range.col_start + part.col_start, {
 					undo_restore = false, invalidate = true,
 					virt_text_pos = "inline",
 					virt_text = {
@@ -1544,7 +1628,7 @@ markdown.table = function (buffer, item)
 
 				if visible_width < column_width then
 					if item.alignments[c] == "default" or item.alignments[c] == "left" then
-						vim.api.nvim_buf_set_extmark(buffer, markdown.ns, range.row_start + (r + 1), range.col_start + part.col_end, {
+						vim.api.nvim_buf_set_extmark(buffer, markdown.ns("tables"), range.row_start + (r + 1), range.col_start + part.col_end, {
 							undo_restore = false, invalidate = true,
 							virt_text_pos = "inline",
 							virt_text = {
@@ -1554,7 +1638,7 @@ markdown.table = function (buffer, item)
 							hl_mode = "combine"
 						});
 					elseif item.alignments[c] == "right" then
-						vim.api.nvim_buf_set_extmark(buffer, markdown.ns, range.row_start + (r + 1), range.col_start + part.col_start, {
+						vim.api.nvim_buf_set_extmark(buffer, markdown.ns("tables"), range.row_start + (r + 1), range.col_start + part.col_start, {
 							undo_restore = false, invalidate = true,
 							virt_text_pos = "inline",
 							virt_text = {
@@ -1564,7 +1648,7 @@ markdown.table = function (buffer, item)
 							hl_mode = "combine"
 						});
 					else
-						vim.api.nvim_buf_set_extmark(buffer, markdown.ns, range.row_start + (r + 1), range.col_start + part.col_start, {
+						vim.api.nvim_buf_set_extmark(buffer, markdown.ns("tables"), range.row_start + (r + 1), range.col_start + part.col_start, {
 							undo_restore = false, invalidate = true,
 							virt_text_pos = "inline",
 							virt_text = {
@@ -1573,7 +1657,7 @@ markdown.table = function (buffer, item)
 
 							hl_mode = "combine"
 						});
-						vim.api.nvim_buf_set_extmark(buffer, markdown.ns, range.row_start + (r + 1), range.col_start + part.col_end, {
+						vim.api.nvim_buf_set_extmark(buffer, markdown.ns("tables"), range.row_start + (r + 1), range.col_start + part.col_end, {
 							undo_restore = false, invalidate = true,
 							virt_text_pos = "inline",
 							virt_text = {
@@ -1610,7 +1694,7 @@ markdown.table = function (buffer, item)
 
 			table.insert(tmp, { bottom, utils.set_hl(bottom_hl) });
 
-			vim.api.nvim_buf_set_extmark(buffer, markdown.ns, range.row_end - 1, range.col_start + part.col_start, {
+			vim.api.nvim_buf_set_extmark(buffer, markdown.ns("tables"), range.row_end - 1, range.col_start + part.col_start, {
 				undo_restore = false, invalidate = true,
 				end_col = range.col_start + part.col_end,
 				conceal = "",
@@ -1633,14 +1717,14 @@ markdown.table = function (buffer, item)
 				end
 
 				if config.use_virt_lines == true then
-					vim.api.nvim_buf_set_extmark(buffer, markdown.ns, range.row_end, math.min(next_line, range.col_start), {
+					vim.api.nvim_buf_set_extmark(buffer, markdown.ns("tables"), range.row_end, math.min(next_line, range.col_start), {
 						virt_lines_above = true,
 						virt_lines = { tmp },
 
 						hl_mode = "combine"
 					})
 				elseif range.row_end <= vim.api.nvim_buf_line_count(buffer) and item.bottom_border == true then
-					vim.api.nvim_buf_set_extmark(buffer, markdown.ns, range.row_end, math.min(next_line, range.col_start), {
+					vim.api.nvim_buf_set_extmark(buffer, markdown.ns("tables"), range.row_end, math.min(next_line, range.col_start), {
 						virt_text_pos = "inline",
 						virt_text = tmp,
 
@@ -1656,7 +1740,7 @@ markdown.table = function (buffer, item)
 
 			table.insert(tmp, { bottom, utils.set_hl(bottom_hl) });
 
-			vim.api.nvim_buf_set_extmark(buffer, markdown.ns, range.row_end - 1, range.col_start + part.col_start, {
+			vim.api.nvim_buf_set_extmark(buffer, markdown.ns("tables"), range.row_end - 1, range.col_start + part.col_start, {
 				undo_restore = false, invalidate = true,
 				end_col = range.col_start + part.col_end,
 				conceal = "",
@@ -1679,14 +1763,14 @@ markdown.table = function (buffer, item)
 				end
 
 				if config.use_virt_lines == true then
-					vim.api.nvim_buf_set_extmark(buffer, markdown.ns, range.row_end, math.min(next_line, range.col_start), {
+					vim.api.nvim_buf_set_extmark(buffer, markdown.ns("tables"), range.row_end, math.min(next_line, range.col_start), {
 						virt_lines_above = true,
 						virt_lines = { tmp },
 
 						hl_mode = "combine"
 					})
 				elseif range.row_end <= vim.api.nvim_buf_line_count(buffer) and item.bottom_border == true then
-					vim.api.nvim_buf_set_extmark(buffer, markdown.ns, range.row_end, math.min(next_line, range.col_start), {
+					vim.api.nvim_buf_set_extmark(buffer, markdown.ns("tables"), range.row_end, math.min(next_line, range.col_start), {
 						virt_text_pos = "inline",
 						virt_text = tmp,
 
@@ -1706,7 +1790,7 @@ markdown.table = function (buffer, item)
 
 			if visible_width < column_width then
 				if item.alignments[c] == "default" or item.alignments[c] == "left" then
-					vim.api.nvim_buf_set_extmark(buffer, markdown.ns, range.row_end - 1, range.col_start + part.col_end, {
+					vim.api.nvim_buf_set_extmark(buffer, markdown.ns("tables"), range.row_end - 1, range.col_start + part.col_end, {
 						undo_restore = false, invalidate = true,
 						virt_text_pos = "inline",
 						virt_text = {
@@ -1716,7 +1800,7 @@ markdown.table = function (buffer, item)
 						hl_mode = "combine"
 					});
 				elseif item.alignments[c] == "right" then
-					vim.api.nvim_buf_set_extmark(buffer, markdown.ns, range.row_end - 1, range.col_start + part.col_start, {
+					vim.api.nvim_buf_set_extmark(buffer, markdown.ns("tables"), range.row_end - 1, range.col_start + part.col_start, {
 						undo_restore = false, invalidate = true,
 						virt_text_pos = "inline",
 						virt_text = {
@@ -1726,7 +1810,7 @@ markdown.table = function (buffer, item)
 						hl_mode = "combine"
 					});
 				else
-					vim.api.nvim_buf_set_extmark(buffer, markdown.ns, range.row_end - 1, range.col_start + part.col_start, {
+					vim.api.nvim_buf_set_extmark(buffer, markdown.ns("tables"), range.row_end - 1, range.col_start + part.col_start, {
 						undo_restore = false, invalidate = true,
 						virt_text_pos = "inline",
 						virt_text = {
@@ -1735,7 +1819,7 @@ markdown.table = function (buffer, item)
 
 						hl_mode = "combine"
 					});
-					vim.api.nvim_buf_set_extmark(buffer, markdown.ns, range.row_end - 1, range.col_start + part.col_end, {
+					vim.api.nvim_buf_set_extmark(buffer, markdown.ns("tables"), range.row_end - 1, range.col_start + part.col_end, {
 						undo_restore = false, invalidate = true,
 						virt_text_pos = "inline",
 						virt_text = {
@@ -1802,55 +1886,30 @@ markdown.hr = function (buffer, item)
 		end
 	end
 
-	vim.api.nvim_buf_set_extmark(buffer, markdown.ns, range.row_start, 0, {
+	vim.api.nvim_buf_set_extmark(buffer, markdown.ns("tables"), range.row_start, 0, {
 		undo_restore = false, invalidate = true,
 		virt_text_pos = "overlay",
 		virt_text = virt_text,
 
 		hl_mode = "combine"
-	})
-end
-
-markdown.metadata_minus = function (buffer, item)
-	local config = get_config("metadata_minus");
-	local range = item.range;
-
-	if not config then
-		return;
-	end
-
-	vim.api.nvim_buf_set_extmark(buffer, markdown.ns, range.row_start, range.col_start, {
-		undo_restore = false, invalidate = true,
-		end_row = range.row_end - 1,
-		end_col = #item.text[#item.text],
-		conceal = "|",
-
-		line_hl_group = utils.set_hl(config.hl)
-	})
-end
-
-markdown.metadata_plus = function (buffer, item)
-	local config = get_config("metadata_minus");
-	local range = item.range;
-
-	if not config then
-		return;
-	end
-
-	vim.api.nvim_buf_set_extmark(buffer, markdown.ns, range.row_start, range.col_start, {
-		undo_restore = false, invalidate = true,
-		end_row = range.row_end - 1,
-		end_col = #item.text[#item.text],
-		conceal = "|",
-
-		line_hl_group = utils.set_hl(config.hl)
-	})
+	});
+	---_
 end
 
 markdown.render = function (buffer, content)
+	markdown.set_ns()
+
 	for _, item in ipairs(content or {}) do
 		-- pcall(markdown[item.class:gsub("^markdown_", "")], buffer, item);
 		markdown[item.class:gsub("^markdown_", "")](buffer, item);
+	end
+end
+
+markdown.clear = function (buffer, ignore_ns, from, to)
+	for name, ns in pairs(markdown.ns) do
+		if ignore_ns and vim.list_contains(ignore_ns, name) == false then
+			vim.api.nvim_buf_clear_namespace(buffer, ns, from or 0, to or -1);
+		end
 	end
 end
 
