@@ -49,7 +49,7 @@ vim.api.nvim_create_autocmd({ "BufAdd", "BufEnter" }, {
 			vim.list_contains(markview.get_config("filetypes", {}), ft) and
 			not vim.list_contains(markview.get_config("buf_ignore", {}), bt)
 		then
-			vim.uv.new_timer():start(5, 0, vim.schedule_wrap(function ()
+			vim.uv.new_timer():start(0, 0, vim.schedule_wrap(function ()
 				markview.attach(event);
 			end));
 		end
