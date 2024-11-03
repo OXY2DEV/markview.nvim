@@ -12,10 +12,18 @@ renderer.render = function (buffer, parsed_content)
 	ltx.render(buffer, parsed_content.latex)
 end
 
-renderer.clear = function (buffer, from, to)
-	vim.api.nvim_buf_clear_namespace(buffer, inl.ns, from or 0, to or -1);
-	vim.api.nvim_buf_clear_namespace(buffer, mkd.ns, from or 0, to or -1);
-	vim.api.nvim_buf_clear_namespace(buffer, ltx.ns, from or 0, to or -1);
+renderer.clear = function (buffer, ignore, from, to)
+	ignore = vim.tbl_extend("force", {
+		markdown = {},
+		markdown_inline = {},
+		html = {},
+		latex = {},
+		typst = {}
+	}, ignore or {});
+
+	mkd.clear(buffer, ignore.markdown, from, to);
+	inl.clear(buffer, ignore.markdown_inline, from, to);
+	ltx.clear(buffer, ignore.latex, from, to);
 end
 
 renderer.range = function (content)
