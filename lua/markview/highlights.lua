@@ -703,6 +703,28 @@ highlights.dynamic = {
 		};
 		---@diagnostic enable
 	end,
+	["CodeFg"] = function ()
+		local vim_bg = highlights.hsl(highlights.color(
+			"bg",
+			{ "Normal" },
+			"#FFFFFF",
+			"#000000"
+		));
+
+		if vim_bg[3] > 0.5 then
+			vim_bg[3] = clamp(vim_bg[3] - 0.05, 0.1, 0.9);
+		else
+			vim_bg[3] = clamp(vim_bg[3] + 0.05, 0.1, 0.9);
+		end
+
+		---@diagnostic disable
+		vim_bg = highlights.rgb(vim_bg);
+
+		return {
+			fg = highlights.hex(vim_bg)
+		};
+		---@diagnostic enable
+	end,
 	["InlineCode"] = function ()
 		local vim_bg = highlights.hsl(highlights.color(
 			"bg",

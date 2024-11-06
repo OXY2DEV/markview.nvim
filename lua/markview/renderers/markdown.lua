@@ -1116,11 +1116,49 @@ markdown.metadata_minus = function (buffer, item)
 		return;
 	end
 
-	vim.api.nvim_buf_set_extmark(buffer, markdown.ns("metadatas"), range.row_start, range.col_start, {
+	vim.api.nvim_buf_set_extmark(buffer, markdown.ns("metadatas"), range.row_start, 0, {
+		undo_restore = false, invalidate = true,
+		end_col = #item.text[1],
+		conceal = "",
+
+		virt_text_pos = "overlay",
+		virt_text = config.border_top and {
+			{
+				string.rep(
+					config.border_top,
+					vim.api.nvim_win_get_width(
+						utils.buf_getwin(buffer)
+					)
+				),
+				utils.set_hl(config.border_top_hl or config.border_hl or config.hl)
+			}
+		} or nil
+	});
+
+	vim.api.nvim_buf_set_extmark(buffer, markdown.ns("metadatas"), range.row_end - 1, 0, {
+		undo_restore = false, invalidate = true,
+		end_col = #item.text[#item.text],
+		conceal = "",
+
+		virt_text_pos = "overlay",
+		virt_text = config.border_bottom and {
+			{
+				string.rep(
+					config.border_bottom,
+					vim.api.nvim_win_get_width(
+						utils.buf_getwin(buffer)
+					)
+				),
+				utils.set_hl(config.border_bottom_hl or config.border_hl or config.hl)
+			}
+		} or nil
+	});
+
+	if not config.hl then return; end
+
+	vim.api.nvim_buf_set_extmark(buffer, markdown.ns("metadatas"), range.row_start + 1, 0, {
 		undo_restore = false, invalidate = true,
 		end_row = range.row_end - 1,
-		end_col = #item.text[#item.text],
-		conceal = "|",
 
 		line_hl_group = utils.set_hl(config.hl)
 	});
@@ -1129,18 +1167,56 @@ end
 
 markdown.metadata_plus = function (buffer, item)
 	---+${func, Renders TOML metadata blocks}
-	local config = get_config("metadata_minus");
+	local config = get_config("metadata_plus");
 	local range = item.range;
 
 	if not config then
 		return;
 	end
 
-	vim.api.nvim_buf_set_extmark(buffer, markdown.ns("metadatas"), range.row_start, range.col_start, {
+	vim.api.nvim_buf_set_extmark(buffer, markdown.ns("metadatas"), range.row_start, 0, {
+		undo_restore = false, invalidate = true,
+		end_col = #item.text[1],
+		conceal = "",
+
+		virt_text_pos = "overlay",
+		virt_text = config.border_top and {
+			{
+				string.rep(
+					config.border_top,
+					vim.api.nvim_win_get_width(
+						utils.buf_getwin(buffer)
+					)
+				),
+				utils.set_hl(config.border_top_hl or config.border_hl or config.hl)
+			}
+		} or nil
+	});
+
+	vim.api.nvim_buf_set_extmark(buffer, markdown.ns("metadatas"), range.row_end - 1, 0, {
+		undo_restore = false, invalidate = true,
+		end_col = #item.text[#item.text],
+		conceal = "",
+
+		virt_text_pos = "overlay",
+		virt_text = config.border_bottom and {
+			{
+				string.rep(
+					config.border_bottom,
+					vim.api.nvim_win_get_width(
+						utils.buf_getwin(buffer)
+					)
+				),
+				utils.set_hl(config.border_bottom_hl or config.border_hl or config.hl)
+			}
+		} or nil
+	});
+
+	if not config.hl then return; end
+
+	vim.api.nvim_buf_set_extmark(buffer, markdown.ns("metadatas"), range.row_start + 1, 0, {
 		undo_restore = false, invalidate = true,
 		end_row = range.row_end - 1,
-		end_col = #item.text[#item.text],
-		conceal = "|",
 
 		line_hl_group = utils.set_hl(config.hl)
 	});

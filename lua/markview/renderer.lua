@@ -1,15 +1,18 @@
 local renderer = {};
 
-local mkd = require("markview.renderers.markdown")
-local inl = require("markview.renderers.markdown_inline")
-local ltx = require("markview.renderers.latex")
+renderer.markdown = require("markview.renderers.markdown")
+renderer.markdown_inline = require("markview.renderers.markdown_inline")
+renderer.latex = require("markview.renderers.latex")
+renderer.yaml = require("markview.renderers.yaml")
 
 --- Renders things
 ---@param buffer integer
 renderer.render = function (buffer, parsed_content)
-	inl.render(buffer, parsed_content.markdown_inline)
-	mkd.render(buffer, parsed_content.markdown)
-	ltx.render(buffer, parsed_content.latex)
+	for lang, content in pairs(parsed_content) do
+		if renderer[lang] then
+			renderer[lang].render(buffer, content);
+		end
+	end
 end
 
 renderer.clear = function (buffer, ignore, from, to)
@@ -18,12 +21,15 @@ renderer.clear = function (buffer, ignore, from, to)
 		markdown_inline = {},
 		html = {},
 		latex = {},
-		typst = {}
+		typst = {},
+		yaml = {}
 	}, ignore or {});
 
-	mkd.clear(buffer, ignore.markdown, from, to);
-	inl.clear(buffer, ignore.markdown_inline, from, to);
-	ltx.clear(buffer, ignore.latex, from, to);
+	for lang, content in pairs(ignore) do
+		if renderer[lang] then
+			renderer[lang].clear(buffer, content, from, to);
+		end
+	end
 end
 
 renderer.range = function (content)

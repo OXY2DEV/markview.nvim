@@ -6,6 +6,7 @@ parser.markdown_inline = require("markview.parsers.markdown_inline");
 parser.html = require("markview.parsers.html");
 parser.latex = require("markview.parsers.latex");
 parser.typst = require("markview.parsers.typst");
+parser.yaml = require("markview.parsers.yaml");
 
 parser.ignore_ranges = {};
 

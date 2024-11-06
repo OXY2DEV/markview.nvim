@@ -551,7 +551,19 @@ spec.default = {
 		},
 
 		metadata_minus = {
-			hl = "Code"
+			hl = "Code",
+			border_hl = "CodeFg",
+
+			border_top = "▄",
+			border_bottom = "▀"
+		},
+
+		metadata_plus = {
+			hl = "Code",
+			border_hl = "CodeFg",
+
+			border_top = "▄",
+			border_bottom = "▀"
 		},
 
 		tables = {
@@ -841,7 +853,38 @@ spec.default = {
 			pad_char = " "
 		},
 	},
-	typst = {}
+	typst = {},
+	yaml = {
+		properties = {
+			enable = true,
+			hl = {
+				["aliases"]    = "MarkviewIcon3",
+				["cssclasses"] = "MarkviewIcon5",
+				["checkbox"]   = "MarkviewIcon6",
+				["date"]       = "MarkviewIcon2",
+				["list"]       = "MarkviewIcon5",
+				["number"]     = "MarkviewIcon6",
+				["nil"]        = "MarkviewIcon1",
+				["string"]     = "MarkviewIcon4",
+				["tags"]       = "MarkviewIcon6",
+				["time"]       = "MarkviewIcon3",
+				["unknown"]    = "MarkviewIcon2"
+			},
+			text = {
+				["aliases"]    = " 󱞫 ",
+				["cssclasses"] = "  ",
+				["checkbox"]   = " 󰄵 ",
+				["date"]       = " 󰃭 ",
+				["list"]       = " 󱉯 ",
+				["number"]     = "  ",
+				["nil"]        = "  ",
+				["string"]     = "  ",
+				["tags"]       = " 󰓻 ",
+				["time"]       = " 󱑂 ",
+				["unknown"]    = "  "
+			}
+		}
+	}
 };
 
 spec.config = spec.default;

@@ -113,6 +113,16 @@ utils.find_attached_wins = function (buf)
 	return attached_wins;
 end
 
+utils.buf_getwin = function (buffer)
+	local wins = vim.fn.win_findbuf(buffer);
+
+	if vim.list_contains(wins, vim.api.nvim_get_current_win()) then
+		return vim.api.nvim_get_current_win();
+	end
+
+	return wins[1];
+end
+
 --- Gets the start & stop line for a range from the cursor
 ---@param buffer integer
 ---@param window integer
