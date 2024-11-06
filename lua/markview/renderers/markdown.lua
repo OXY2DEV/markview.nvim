@@ -999,20 +999,21 @@ markdown.list_item = function (buffer, item)
 		return;
 	end
 
-	if not item.checkbox or not inline.config or not inline.config.checkboxes then
+	if not item.checkbox or not spec.get("markdown_inline", "checkboxes") then
 		goto continue;
-	elseif inline.config.checkboxes.enable == false then
+	elseif spec.get("markdown_inline", "checkboxes", "enable") == false then
 		goto continue;
 	end
 
 	if item.checkbox == "X" or item.checkbox == "x" then
-		checkbox = inline.config.checkboxes.checked;
+		checkbox = spec.get("markdown_inline", "checkboxes", "checked");
 	elseif item.checkbox == " " then
-		checkbox = inline.config.checkboxes.checked;
+		checkbox = spec.get("markdown_inline", "checkboxes", "unchecked");
 	else
-		for _, conf in ipairs(inline.config.checkboxes.custom or {}) do
+		---@diagnostic disable-next-line
+		for _, conf in ipairs(spec.get("markdown_inline", "checkboxes", "custom") or {}) do
 			if conf.match_string == item.checkbox then
-				checkbox = vim.tbl_extend("keep", conf, inline.config.checkboxes);
+				checkbox = conf;
 				break;
 			end
 		end
