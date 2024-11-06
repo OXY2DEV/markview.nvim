@@ -188,3 +188,17 @@ end, {
 	end
 })
 
+
+
+
+
+
+
+vim.api.nvim_create_autocmd({ "Colorscheme" }, {
+	group = markview.augroup,
+	callback = function ()
+		require("markview.highlights").create(require("markview.spec").get("highlight_groups"));
+	end
+})
+
+
