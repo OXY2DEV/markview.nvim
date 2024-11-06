@@ -29,7 +29,7 @@ end
 ---@param input string
 ---@return string
 utils.escape_string = function (input)
-	input = input:gsub("%%", "%%%");
+	input = input:gsub("%%", "%%%%");
 
 	input = input:gsub("%(", "%%(");
 	input = input:gsub("%)", "%%)");
