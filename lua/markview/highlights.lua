@@ -1,15 +1,29 @@
---- Highlight group related helpers
+--- *Dynamic* highlight group related methods
+--- for `markview.nvim`.
+--- 
 local highlights = {};
 local utils = require("markview.utils");
 
-local exists = utils.hl_exists;
 local lerp = utils.lerp;
 local clamp = utils.clamp;
 
---- Returns RGB value from the provided input
+---+${func, Helper functions}
+
+--- Returns RGB value from the provided input.
+--- Supported input types,
+---     • Hexadecimal values(`#FFFFFF` & `FFFFFF`).
+---     • Number value of the hexadecimal color(from `nvim_get_hl()`).
+---     • Color name(e.g. `red`, `green`).
+--- 
 ---@param input string | number[]
 ---@return number[]?
 highlights.rgb = function (input)
+	--- Lookup table for the regular color names.
+	--- For example,
+	---     • `red` → `#FF0000`.
+	---     • `green` → `#00FF00`.
+	--- 
+	---@type { [string]: string }
 	local lookup = {
 		---+ ${class, Color name lookup table}
 		["red"] = "#FF0000",        ["lightred"] = "#FFBBBB",      ["darkred"] = "#8B0000",
@@ -25,6 +39,12 @@ highlights.rgb = function (input)
 		---_
 	};
 
+	--- Lookup table for the Neovim-specific color names.
+	--- For example,
+	---     • `nvimdarkblue` → `#004C73`.
+	---     • `nvimdarkred` → `#590008`.
+	--- 
+	---@type { [string]: string }
 	local lookup_nvim = {
 		---+ ${class, Neovim's color lookup table}
 		["nvimdarkblue"] = "#004C73",    ["nvimlightblue"] = "#A6DBFF",
@@ -45,8 +65,23 @@ highlights.rgb = function (input)
 	};
 
 	if type(input) == "string" then
-		if input:match("%x%x%x%x%x%x$") then
-			local r, g, b = input:match("(%x%x)(%x%x)(%x%x)$");
+		--- Match cases,
+		---     • RR GG BB, # is optional.
+		---     • R G B, # is optional.
+		---     • Color name.
+		---     • HSL values(as `{ h, s, l }`)
+
+		if input:match("^%#?(%x%x?)(%x%x?)(%x%x?)$") then
+			--- Pattern explanation:
+			---     #? RR? GG? BB?
+			--- String should have **3** parts & each part
+			--- should have a minimum of *1* & a maximum
+			--- of *2* characters.
+			---
+			--- # is optional.
+			---
+			---@type string, string, string
+			local r, g, b = input:match("^%#?(%x%x?)(%x%x?)(%x%x?)$");
 
 			return { tonumber(r, 16), tonumber(g, 16), tonumber(b, 16) };
 		elseif lookup[input] then
@@ -59,10 +94,22 @@ highlights.rgb = function (input)
 			return { tonumber(r, 16), tonumber(g, 16), tonumber(b, 16) };
 		end
 	elseif type(input) == "number" then
+		--- Format the number into a hexadecimal string.
+		--- Then get the **r**, **g**, **b** parts.
+		--- 
+		---@type string, string, string
 		local r, g, b = string.format("%06x", input):match("(%x%x)(%x%x)(%x%x)$");
 
 		return { tonumber(r, 16), tonumber(g, 16), tonumber(b, 16) };
 	elseif vim.islist(input) then
+		--- Uses the adjusted hue to get the R, G, B values.
+		--- This function simply interpolates between
+		--- *p* & *q* based on **t**.
+		--- 
+		---@param p number Min value of RGB.
+		---@param q number Max value of RGB.
+		---@param t number Adjusted hue value.
+		---@return number
 		local hue2rgb = function (p, q, t)
 			if t < 0 then t = t + 1; end
 			if t > 1 then t = t - 1; end
@@ -74,6 +121,7 @@ highlights.rgb = function (input)
 			return p;
 		end
 
+		---@type number, number, number
 		local r, g, b = input[3], input[3], input[3];
 
 		if input[2] ~= 0 then
@@ -85,11 +133,21 @@ highlights.rgb = function (input)
 			b = hue2rgb(p, q, input[1] - (1 / 3));
 		end
 
-		return { math.floor(r * 255), math.floor(g * 255), math.floor(b * 255) };
+		return {
+			math.floor(r * 255),
+			math.floor(g * 255),
+			math.floor(b * 255)
+		};
 	end
 end
 
---- Gets a value from a list of highlight groups
+--- Gets a highlight group from a list of
+--- potential highlight groups.
+---
+--- Used for handling *complex fallbacks*
+--- where the value may come from any of
+--- the possible given highlight groups.
+--- 
 ---@param value string
 ---@param array table
 ---@return any?
@@ -101,7 +159,12 @@ highlights.get = function (value, array)
 	end
 end
 
---- Mixes 2 colors RGB values
+--- Simple RGB *color-mixer* function.
+--- Supports mixing colors by % values.
+---
+--- NOTE: `per_1` & `per_2` are between
+--- **0** & **1**.
+--- 
 ---@param c_1 number[]
 ---@param c_2 number[]
 ---@param per_1 number
@@ -115,14 +178,17 @@ highlights.mix = function (c_1, c_2, per_1, per_2)
 	return { math.floor(_r), math.floor(_g), math.floor(_b) };
 end
 
---- Turns an RGB value to its hexadecimal string
----@param color any
+--- RGB to hexadecimal string converter.
+---
+---@param color number[]
 ---@return string
 highlights.hex = function (color)
 	return string.format("#%02x%02x%02x", math.floor(color[1]), math.floor(color[2]), math.floor(color[3]))
 end
 
---- RGB to HSL converter
+--- RGB to HSL converter.
+--- Input should be a list (as `{ R, G, B }`).
+--- Returns a list(as `{ H, S, L }`).
 ---@param color number[]
 ---@return number[]
 highlights.hsl = function (color)
@@ -156,21 +222,26 @@ highlights.hsl = function (color)
 	return { hue, sature, lumen };
 end
 
---- Gets the luminosity of a RGB value
----@param color number[]
+--- Gets the luminosity of a RGB value.
+---
+---@param input number[]
 ---@return number
-highlights.lumen = function (color)
-	for c, val in ipairs(color) do
+highlights.lumen = function (input)
+	local rgb = vim.deepcopy(input);
+
+	for c, val in ipairs(rgb) do
 		if val > 1 then
-			color[c] = val / 255;
+			rgb[c] = val / 255;
 		end
 	end
 
-	local min, max = math.min(color[1], color[2], color[3]), math.max(color[1], color[2], color[3]);
+	local min, max = math.min(rgb[1], rgb[2], rgb[3]), math.max(rgb[1], rgb[2], rgb[3]);
 	return (min + max) / 2;
 end
 
---- Mixes 2 colors to fake opacity
+--- Mixes a color with it's background based on
+--- the provided `alpha`(between 0 & 1).
+---
 ---@param fg number[]
 ---@param bg number[]
 ---@param alpha number
@@ -183,1609 +254,802 @@ highlights.opacify = function (fg, bg, alpha)
 	}
 end
 
+highlights.gamma_correction = function (val)
+	if val > 0.04045 then
+		return ((val + 0.055) / 1.055) ^ 2.4;
+	end
 
+	return val / 12.92;
+end
+
+highlights.rgb2xyz = function (color)
+	local _c = vim.deepcopy(color);
+
+	for i, channel in ipairs(_c) do
+		if channel > 1 then
+			_c[i] = channel / 255;
+		end
+
+		_c[i] = highlights.gamma_correction(_c[i]);
+	end
+
+	return {
+		(_c[1] * 0.4124564) + (_c[2] * 0.3575761) + (_c[3] * 0.1804375),
+		(_c[1] * 0.2126729) + (_c[2] * 0.7151522) + (_c[3] * 0.0721750),
+		(_c[1] * 0.0193339) + (_c[2] * 0.1191920) + (_c[3] * 0.9503041),
+	}
+end
+
+highlights.__gamma_correction = function (val)
+	if val <= 0.0031308 then
+		return 12.92 * val;
+	end
+
+	return 1.055 * (val^(1 / 2.4)) - 0.055;
+end
+
+highlights.xyz2rgb = function (color)
+	local _c = vim.deepcopy(color);
+
+	local lRGB = {
+		(_c[1] *  3.2404542) + (_c[2] * -1.5371385) + (_c[3] * -0.4985314),
+		(_c[1] * -0.9692660) + (_c[2] *  1.8760108) + (_c[3] *  0.0415560),
+		(_c[1] *  0.0556434) + (_c[2] * -0.2040259) + (_c[3] *  1.0572252),
+	};
+
+	return {
+		clamp(highlights.__gamma_correction(lRGB[1]) * 255, 0, 255),
+		clamp(highlights.__gamma_correction(lRGB[2]) * 255, 0, 255),
+		clamp(highlights.__gamma_correction(lRGB[3]) * 255, 0, 255),
+	}
+end
+
+highlights.xyz2lab = function (color)
+	local ref = { 0.95047, 1.0000, 1.08883 };
+	local _c = vim.deepcopy(color);
+
+	for i, channel in ipairs(_c) do
+		_c[i] = channel / ref[i];
+	end
+
+	local function transform (t)
+		if t > 0.008856 then
+			return t^(1 / 3);
+		end
+
+		return (7.787 * t) + (16 / 116);
+	end
+
+	return {
+		(116 * transform(_c[2])) - 16,
+		500 * (transform(_c[1]) - transform(_c[2])),
+		200 * (transform(_c[2]) - transform(_c[3]))
+	}
+end
+
+highlights.lab2xyz = function (color)
+	local ref = { 0.95047, 1.0000, 1.08883 };
+
+	local fy = (color[1] + 16) / 116;
+	local fx = fy + (color[2] / 500);
+	local fz = fy - (color[3] / 200);
+
+	local function inv_transform (t)
+		if t^3 > 0.008856 then
+			return t^3;
+		end
+
+		return (t - (16 / 116)) / 7.787;
+	end
+
+	return {
+		ref[1] * inv_transform(fx),
+		ref[2] * inv_transform(fy),
+		ref[3] * inv_transform(fz),
+	}
+end
+
+highlights.rgb2lab = function (color)
+	return highlights.xyz2lab(highlights.rgb2xyz(color));
+end
+
+highlights.lab2rgb = function (color)
+	return highlights.xyz2rgb(highlights.lab2xyz(color));
+end
+---_
+
+--- Holds info about highlight groups.
 ---@type string[]
 highlights.created = {};
 
---- Checks if the background is dark or not
----@param light any?
----@param dark any?
----@return boolean | any
-local isDark = function (light, dark)
-	if light and dark then
-		return vim.o.background == "dark" and dark or light;
-	end
-
-	return vim.o.background == "dark";
-end
-
 --- Creates highlight groups from an array of tables
----@param array markview.conf.hl[]
----@param list? "text" | "table"
-highlights.create = function (array, list)
-	local _c = {};
-
+---@param array { [string]: table }
+highlights.create = function (array)
 	if type(array) == "string" then
-		if highlights[array] then
-			array = highlights[array];
-		else
+		if not highlights[array] then
 			return;
 		end
+
+		array = highlights[array];
 	end
 
-	--- Create an array of usable tables
-	for _, config in ipairs(array) do
-		if type(config) ~= "table" then
-			goto ignore;
+	local hls = vim.tbl_keys(array) or {};
+	table.sort(hls);
+
+	for _, hl in ipairs(hls) do
+		local value = array[hl];
+
+		if not hl:match("^Markview") then
+			hl = "Markview" .. hl;
 		end
 
-		if config.group_name and config.value then
-			table.insert(_c, config);
-		elseif config.output then
-			local _o = config.output(highlights);
+		if type(value) == "table" then
+			vim.api.nvim_set_hl(0, hl, value);
+		else
+			local val = value();
 
-			if vim.islist(_o) then
-				_c = vim.list_extend(_o, _c);
-			elseif type(_o) == "table" and _o.group_name and _o.value then
-				table.insert(_c, _o);
-			end
-		end
-
-		::ignore::
-	end
-
-	local log_file;
-
-	if list then
-		log_file = io.open("mkvhl.txt", "w");
-
-		if log_file and list == "table" then
-			log_file:write("{", "\n");
-		end
-	end
-
-	-- Apply the new highlight groups
-	for _, color in ipairs(_c) do
-		if type(color.group_name) == "string" and type(color.value) == "table" then
-			-- Add the prefix
-			if not color.group_name:match("^Markview") then
-				color.group_name = "Markview" .. color.group_name;
-			end
-
-			vim.api.nvim_set_hl(0, color.group_name, color.value);
-			table.insert(highlights.created, color.group_name)
-
-			if log_file and list == "text" then
-				log_file:write(color.group_name, "\n");
-			elseif log_file and list == "table" then
-				log_file:write("	{\n");
-				log_file:write("		group_name = ", '"', color.group_name, '",', "\n");
-				log_file:write("		value = {", "\n");
-
-				for opt, value in pairs(color.value) do
-					if type(value) == "string" then
-						log_file:write("			", opt, " = ", '"', value, '"', ",", "\n");
-					else
-						log_file:write("			", opt, " = ", tostring(value), ",", "\n");
-					end
+			if vim.islist(val) then
+				for _, item in ipairs(val) do
+					vim.api.nvim_set_hl(0, item.group_name, item.value);
 				end
-
-				log_file:write("		}", "\n");
-				log_file:write("	},", "\n");
-			end
-		end
-	end
-
-	if log_file then
-		if log_file and list == "table" then
-			log_file:write("}");
-		end
-
-		log_file:close();
-	end
-end
-
---- Removes highlight groups
-highlights.remove = function ()
-	for index, item in ipairs(highlights.created) do
-		vim.api.nvim_set_hl(0, item, {});
-		table.remove(highlights.created, index);
-	end
-end
-
-highlights.color = function (property, list, light, dark)
-	return highlights.rgb(highlights.get(property, list) or isDark(light, dark));
-end
-
-local headingGenerator = function (checks, light, dark, group_name, suffix)
-	local fg = highlights.color("fg", checks, light, dark);
-	local l = highlights.lumen(highlights.color("fg", { "Normal" }, "#FFFFFF", "#000000"));
-
-	local nr = highlights.rgb(highlights.get("bg", { "LineNr" }));
-	local bg;
-
-	if l < 0.5 then
-		bg = highlights.opacify(fg, highlights.rgb("#FFFFFF") --[=[@as number[]]=], 0.25)
-	else
-		bg = highlights.opacify(fg, highlights.rgb("#1e1e2e") --[=[@as number[]]=], 0.25)
-
-	end
-
-	return {
-		{
-			group_name = group_name,
-			value = {
-				default = true,
-				fg = highlights.hex(fg),
-				bg = highlights.hex(bg)
-			}
-		},
-		{
-			group_name = group_name .. suffix,
-			value = {
-				default = true,
-				fg = highlights.hex(fg),
-				bg = nr and highlights.hex(nr) or nil
-			}
-		}
-	};
-end
-
-local hlGenerator = function (checks, light, dark, group_name)
-	local fg = highlights.color("fg", checks, light, dark);
-
-	return {
-		{
-			group_name = group_name,
-			value = {
-				default = true,
-				fg = highlights.hex(fg),
-			}
-		}
-	};
-end
-
----@type markview.conf.hl[]
-highlights.dynamic = {
-	---+ ${hl, Block quotes}
-	{
-		output = function ()
-			return hlGenerator({ "Comment" }, "#9ca0b0", "#6c7086", "BlockQuoteDefault");
-		end
-	},
-	{
-		output = function ()
-			return hlGenerator({ "DiagnosticError" }, "#D20F39", "#F38BA8", "BlockQuoteError");
-		end
-	},
-	{
-		output = function ()
-			local fg = highlights.color("bg", { "@comment.note" }, nil, nil) or highlights.color("fg", { "@comment.note" }, "#1e66f5", "#89b4fa");
-
-			return {
-				{
-					group_name = "BlockQuoteNote",
-					value = {
-						default = true,
-						fg = highlights.hex(fg),
-					}
-				}
-			};
-		end
-	},
-	{
-		output = function ()
-			return hlGenerator({ "DiagnosticOk" }, "#40a02b", "#a6e3a1", "BlockQuoteOk");
-		end
-	},
-	{
-		output = function ()
-			return hlGenerator({ "Conditional", "Keyword" }, "#8839ef", "#cba6f7", "BlockQuoteSpecial");
-		end
-	},
-	{
-		output = function ()
-			return hlGenerator({ "DiagnosticWarn" }, "#DF8E1D", "#F9E3AF", "BlockQuoteWarn");
-		end
-	},
-	---_
-
-	---+ ${hl, Checkbox}
-	{
-		output = function ()
-			return hlGenerator({ "Comment" }, "#9ca0b0", "#6c7086", "CheckboxCancelled");
-		end
-	},
-	{
-		output = function ()
-			return hlGenerator({ "DiagnosticOk" }, "#40a02b", "#a6e3a1", "CheckboxChecked");
-		end
-	},
-	{
-		output = function ()
-			return hlGenerator({ "DiagnosticWarn" }, "#DF8E1D", "#F9E3AF", "CheckboxPending");
-		end
-	},
-	{
-		output = function ()
-			return hlGenerator({ "Conditional", "Keyword" }, "#8839ef", "#cba6f7", "CheckboxProgress");
-		end
-	},
-	{
-		output = function ()
-			return hlGenerator({ "DiagnosticError" }, "#D20F39", "#F38BA8", "CheckboxUnchecked");
-		end
-	},
-	{
-		output = function (util)
-			local fg = util.color("fg", { "Comment" }, "#9ca0b0", "#6c7086");
-
-			return {
-				group_name = "CheckboxStriked",
-				value = {
-					fg = util.hex(fg),
-					strikethrough = true
-				}
-			};
-		end
-	},
-	---_
-
-	---+ ${hl, Code blocks}
-	{
-		output = function (util)
-			local bg = util.hsl(util.color("bg", { "Normal" }, "#CDD6F4", "#1E1E2E"));
-			local fg = util.color("fg", { "Comment" }, "#9ca0b0", "#6c7086");
-
-			local nr = util.get("bg", { "LineNr" });
-			local inl = vim.deepcopy(bg);
-
-			local c1 = highlights.color("fg", {
-				"markdownH1", "@markup.heading.1.markdown", "@markup.heading"
-			}, "#F38BA8", "#D20F39")
-			local c2 = highlights.color("fg", {
-				"markdownH2", "@markup.heading.2.markdown", "@markup.heading"
-			}, "#FAB387", "#FE640B")
-			local c3 = highlights.color("fg", {
-				"markdownH3", "@markup.heading.3.markdown", "@markup.heading"
-			}, "#F9E2AF", "#DF8E1D")
-			local c4 = highlights.color("fg", {
-				"markdownH4", "@markup.heading.4.markdown", "@markup.heading"
-			}, "#A6E3A1", "#40A02B")
-			local c5 = highlights.color("fg", {
-				"markdownH5", "@markup.heading.5.markdown", "@markup.heading"
-			}, "#74C7EC", "#209FB5")
-			local c6 = highlights.color("fg", {
-				"markdownH6", "@markup.heading.6.markdown", "@markup.heading"
-			}, "#B4BEFE", "#7287FD")
-
-			if bg[3] > 0.5 then
-				bg[3] = clamp(bg[3] - 0.05, 0.1, 0.9);
-				inl[3] = clamp(inl[3] - 0.10, 0.1, 0.9);
 			else
-				bg[3] = clamp(bg[3] + 0.05, 0.1, 0.9);
-				inl[3] = clamp(inl[3] + 0.10, 0.1, 0.9);
+				vim.api.nvim_set_hl(0, hl, val);
 			end
+		end
+	end
+end
 
-			bg = util.hex(util.rgb(bg));
+local is_dark = function (on_light, on_dark)
+	return vim.o.background == "dark" and (on_dark or true) or (on_light or false);
+end
 
-			return {
-				{
-					group_name = "Code",
-					value = {
-						default = true,
-						bg = bg,
-					}
-				},
-				{
-					group_name = "CodeInfo",
-					value = {
-						default = true,
-						bg = bg,
-						fg = util.hex(fg),
-					}
-				},
+highlights.color = function (opt, fallbacks, on_light, on_dark)
+	local val = highlights.get(opt, fallbacks);
+	if val then return highlights.rgb(val); end
 
-				{
-					group_name = "InlineCode",
-					value = {
-						default = true,
-						bg = util.hex(util.rgb(inl)),
-					}
-				},
+	return highlights.rgb(is_dark(on_light, on_dark));
+end
 
-				{
-					group_name = "Icon1",
-					value = { default = true, bg = bg, fg = util.hex(c1) }
-				},
-				{
-					group_name = "Icon1Sign",
-					value = { default = true, bg = nr, fg = util.hex(c1) }
-				},
-				{
-					group_name = "Icon1Fg",
-					value = { default = true, fg = util.hex(c1) }
-				},
-				{ group_name = "Icon2", value = { default = true, bg = bg, fg = util.hex(c2) } },
-				{ group_name = "Icon2Sign", value = { default = true, bg = nr, fg = util.hex(c2) } },
-				{ group_name = "Icon2Fg", value = { default = true, fg = util.hex(c2) } },
-				{ group_name = "Icon3", value = { default = true, bg = bg, fg = util.hex(c3) } },
-				{ group_name = "Icon3Sign", value = { default = true, bg = nr, fg = util.hex(c3) } },
-				{ group_name = "Icon3Fg", value = { default = true, fg = util.hex(c3) } },
-				{ group_name = "Icon4", value = { default = true, bg = bg, fg = util.hex(c4) } },
-				{ group_name = "Icon4Sign", value = { default = true, bg = nr, fg = util.hex(c4) } },
-				{ group_name = "Icon4Fg", value = { default = true, fg = util.hex(c4) } },
-				{ group_name = "Icon5", value = { default = true, bg = bg, fg = util.hex(c5) } },
-				{ group_name = "Icon5Sign", value = { default = true, bg = nr, fg = util.hex(c5) } },
-				{ group_name = "Icon5Fg", value = { default = true, fg = util.hex(c5) } },
-				{ group_name = "Icon6", value = { default = true, bg = bg, fg = util.hex(c6) } },
-				{ group_name = "Icon6Sign", value = { default = true, bg = nr, fg = util.hex(c6) } },
-				{ group_name = "Icon6Fg", value = { default = true, fg = util.hex(c6) } },
+--- Generates a heading
+highlights.generate_heading = function (opts)
+	local vim_bg = highlights.rgb2lab(highlights.color(
+		"bg",
+		opts.bg_fallbacks or { "Normal" },
+		opts.light_bg or "#FFFFFF",
+		opts.dark_bg or "#000000"
+	));
+	local h_fg = highlights.rgb2lab(highlights.color(
+		"fg",
+		opts.fallbacks,
+		opts.light_fg or "#000000",
+		opts.dark_fg or "#FFFFFF"
+	));
+
+	local l_bg = highlights.lumen(highlights.lab2rgb(vim_bg));
+	local alpha = opts.alpha or (l_bg > 0.5 and 0.25 or 0.5);
+
+	local res_bg = highlights.lab2rgb(highlights.opacify(h_fg, vim_bg, alpha));
+
+	vim_bg = highlights.lab2rgb(vim_bg);
+	h_fg = highlights.lab2rgb(h_fg);
+
+	return {
+		bg = highlights.hex(res_bg),
+		fg = highlights.hex(h_fg)
+	};
+end
+
+highlights.hl_generator = function (opts)
+	local hi = highlights.color(
+		opts.source_opt or "fg",
+		opts.source or { "Normal" },
+		opts.fallback_light or "#000000",
+		opts.fallback_dark or "#FFFFFF"
+	);
+
+	return vim.tbl_extend("force", {
+		[opts.output_opt or "fg"] = highlights.hex(hi)
+	}, opts.hl_opts or {})
+end
+
+highlights.dynamic = {
+	---+${hl, Block quotes}
+	["BlockQuoteDefault"] = function ()
+		return highlights.hl_generator({
+			source = { "Comment" },
+			fallback_light = "#9CA0B0",
+			fallback_dark = "#6C7086"
+		})
+	end,
+
+	["BlockQuoteError"] = function ()
+		return highlights.hl_generator({
+			source = { "DiagnosticError" },
+			fallback_light = "#D20F39",
+			fallback_dark = "#F38BA8"
+		})
+	end,
+
+	["BlockQuoteNote"] = function ()
+		local fg = highlights.color("bg", { "@comment.note" }, nil, nil) or
+				   highlights.color("fg", { "@comment.note" }, "#1e66f5", "#89b4fa")
+		;
+
+		return {
+			fg = highlights.hex(fg),
+		};
+	end,
+
+	["BlockQuoteOk"] = function ()
+		return highlights.hl_generator({
+			source = { "DiagnosticOk" },
+			fallback_light = "#40A02B",
+			fallback_dark = "#A6E3A1"
+		})
+	end,
+
+	["BlockQuoteSpecial"] = function ()
+		return highlights.hl_generator({
+			source = { "Conditional", "Keyword" },
+			fallback_light = "#8839EF",
+			fallback_dark = "#CBA6F7"
+		})
+	end,
+
+	["BlockQuoteWarn"] = function ()
+		return highlights.hl_generator({
+			source = { "DiagnosticWarn" },
+			fallback_light = "#DF8E1D",
+			fallback_dark = "#F9E3AF"
+		})
+	end,
+	---_
+	---+${hl, Checkboxes}
+	["CheckboxCancelled"] = function ()
+		return highlights.hl_generator({
+			source = { "Comment" },
+			fallback_light = "#9CA0B0",
+			fallback_dark = "#6C7086"
+		})
+	end,
+	["CheckboxChecked"] = function ()
+		return highlights.hl_generator({
+			source = { "DiagnosticOk" },
+			fallback_light = "#40A02B",
+			fallback_dark = "#A6E3A1"
+		})
+	end,
+	["CheckboxPending"] = function ()
+		return highlights.hl_generator({
+			source = { "DiagnosticWarn" },
+			fallback_light = "#DF8E1D",
+			fallback_dark = "#F9E3AF"
+		})
+	end,
+	["CheckboxProgress"] = function ()
+		return highlights.hl_generator({
+			source = { "Conditional", "Keyword" },
+			fallback_light = "#8839EF",
+			fallback_dark = "#CBA6F7"
+		})
+	end,
+	["CheckboxUnchecked"] = function ()
+		return highlights.hl_generator({
+			source = { "DiagnosticError" },
+			fallback_light = "#D20F39",
+			fallback_dark = "#F38BA8"
+		})
+	end,
+	["CheckboxStriked"] = function ()
+		return highlights.hl_generator({
+			source = { "Comment" },
+			fallback_light = "#9CA0B0",
+			fallback_dark = "#6C7086",
+
+			hl_opts = { strikethrough = true }
+		})
+	end,
+	---_
+	---+${hl, Headings}
+	["Heading1"] = function ()
+		return highlights.generate_heading({
+			group_name = "MarkviewHeading1",
+			sign_name = "MarkviewHeading1Sign",
+
+			fallbacks = { "markdownH1", "@markup.heading.1.markdown", "@markup.heading" },
+			light_fg = "#F38BA8",
+			dark_fg = "#D20F39",
+		})
+	end,
+	["Heading2"] = function ()
+		return highlights.generate_heading({
+			group_name = "MarkviewHeading2",
+			sign_name = "MarkviewHeading2Sign",
+
+			fallbacks = { "markdownH2", "@markup.heading.2.markdown", "@markup.heading" },
+			light_fg = "#FE640B",
+			dark_fg = "#FAB387",
+		})
+	end,
+	["Heading3"] = function ()
+		return highlights.generate_heading({
+			group_name = "MarkviewHeading3",
+			sign_name = "MarkviewHeading3Sign",
+
+			fallbacks = { "markdownH3", "@markup.heading.3.markdown", "@markup.heading" },
+			light_fg = "#F9E2AF",
+			dark_fg = "#DF8E1D",
+		})
+	end,
+	["heading4"] = function ()
+		return highlights.generate_heading({
+			group_name = "MarkviewHeading4",
+			sign_name = "MarkviewHeading4Sign",
+
+			fallbacks = { "markdownH4", "@markup.heading.4.markdown", "@markup.heading" },
+			light_fg = "#A6E3A1",
+			dark_fg = "#40A02B",
+		})
+	end,
+	["Heading5"] = function ()
+		return highlights.generate_heading({
+			group_name = "MarkviewHeading5",
+			sign_name = "MarkviewHeading5Sign",
+
+			fallbacks = { "markdownH5", "@markup.heading.5.markdown", "@markup.heading" },
+			light_fg = "#74C7EC",
+			dark_fg = "#209FB5",
+		})
+	end,
+	["Heading6"] = function ()
+		return highlights.generate_heading({
+			group_name = "MarkviewHeading6",
+			sign_name = "MarkviewHeading6Sign",
+
+			fallbacks = { "markdownH6", "@markup.heading.6.markdown", "@markup.heading" },
+			light_fg = "#B4BEFE",
+			dark_fg = "#7287FD",
+		})
+	end,
+
+
+	["Heading1Sign"] = function ()
+		return highlights.hl_generator({
+			source = { "MarkviewHeading1", "markdownH1", "@markup.heading.1.markdown", "@markup.heading" },
+			light_fg = "#F38BA8",
+			dark_fg = "#D20F39",
+
+			hl_opts = {
+				bg = vim.api.nvim_get_hl(0, { name = "LineNr", link = false }).bg
 			}
+		});
+	end,
+	["Heading2Sign"] = function ()
+		return highlights.hl_generator({
+			source = { "MarkviewHeading2", "markdownH2", "@markup.heading.2.markdown", "@markup.heading" },
+			light_fg = "#FE640B",
+			dark_fg = "#FAB387",
+
+			hl_opts = {
+				bg = vim.api.nvim_get_hl(0, { name = "LineNr", link = false }).bg
+			}
+		});
+	end,
+	["Heading3Sign"] = function ()
+		return highlights.hl_generator({
+			source = { "MarkviewHeading3", "markdownH3", "@markup.heading.3.markdown", "@markup.heading" },
+			light_fg = "#F9E2AF",
+			dark_fg = "#DF8E1D",
+
+			hl_opts = {
+				bg = vim.api.nvim_get_hl(0, { name = "LineNr", link = false }).bg
+			}
+		});
+	end,
+	["heading4Sign"] = function ()
+		return highlights.hl_generator({
+			source = { "MarkviewHeading4", "markdownH4", "@markup.heading.4.markdown", "@markup.heading" },
+			light_fg = "#A6E3A1",
+			dark_fg = "#40A02B",
+
+			hl_opts = {
+				bg = vim.api.nvim_get_hl(0, { name = "LineNr", link = false }).bg
+			}
+		});
+	end,
+	["Heading5Sign"] = function ()
+		return highlights.hl_generator({
+			source = { "MarkviewHeading5", "markdownH5", "@markup.heading.5.markdown", "@markup.heading" },
+			light_fg = "#74C7EC",
+			dark_fg = "#209FB5",
+
+			hl_opts = {
+				bg = vim.api.nvim_get_hl(0, { name = "LineNr", link = false }).bg
+			}
+		});
+	end,
+	["Heading6Sign"] = function ()
+		return highlights.hl_generator({
+			source = { "MarkviewHeading6", "markdownH6", "@markup.heading.6.markdown", "@markup.heading" },
+			light_fg = "#B4BEFE",
+			dark_fg = "#7287FD",
+
+			hl_opts = {
+				bg = vim.api.nvim_get_hl(0, { name = "LineNr", link = false }).bg
+			}
+		});
+	end,
+	---_
+	---+${hl, Code blocks & Inline codes/Injections}
+	["Code"] = function ()
+		local vim_bg = highlights.hsl(highlights.color(
+			"bg",
+			{ "Normal" },
+			"#FFFFFF",
+			"#000000"
+		));
+
+		if vim_bg[3] > 0.5 then
+			vim_bg[3] = clamp(vim_bg[3] - 0.05, 0.1, 0.9);
+		else
+			vim_bg[3] = clamp(vim_bg[3] + 0.05, 0.1, 0.9);
 		end
-	},
+
+		---@diagnostic disable
+		vim_bg = highlights.rgb(vim_bg);
+
+		return {
+			bg = highlights.hex(vim_bg)
+		};
+		---@diagnostic enable
+	end,
+	["InlineCode"] = function ()
+		local vim_bg = highlights.hsl(highlights.color(
+			"bg",
+			{ "Normal" },
+			"#FFFFFF",
+			"#000000"
+		));
+
+		if vim_bg[3] > 0.5 then
+			vim_bg[3] = clamp(vim_bg[3] - 0.1, 0.1, 0.9);
+		else
+			vim_bg[3] = clamp(vim_bg[3] + 0.1, 0.1, 0.9);
+		end
+
+		---@diagnostic disable
+		vim_bg = highlights.rgb(vim_bg);
+
+		return {
+			bg = highlights.hex(vim_bg)
+		};
+		---@diagnostic enable
+	end,
+
+
+	["Icon1"] = function ()
+		return highlights.hl_generator({
+			source = { "MarkviewHeading1", "markdownH1", "@markup.heading.1.markdown", "@markup.heading" },
+			light_fg = "#F38BA8",
+			dark_fg = "#D20F39",
+
+			hl_opts = {
+				bg = vim.api.nvim_get_hl(0, { name = "MarkviewCode", link = false }).bg
+			}
+		});
+	end,
+	["Icon1Sign"] = function ()
+		return highlights.hl_generator({
+			source = { "MarkviewIcon1", "MarkviewHeading1", "markdownH1", "@markup.heading.1.markdown", "@markup.heading" },
+			light_fg = "#F38BA8",
+			dark_fg = "#D20F39",
+
+			hl_opts = {
+				bg = vim.api.nvim_get_hl(0, { name = "LineNr", link = false }).bg
+			}
+		});
+	end,
+	["Icon1Fg"] = function ()
+		return highlights.hl_generator({
+			source = { "MarkviewIcon1", "MarkviewHeading1", "markdownH1", "@markup.heading.1.markdown", "@markup.heading" },
+			light_fg = "#F38BA8",
+			dark_fg = "#D20F39"
+		});
+	end,
+
+	["Icon2"] = function ()
+		return highlights.hl_generator({
+			source = { "MarkviewHeading2", "markdownH2", "@markup.heading.2.markdown", "@markup.heading" },
+			light_fg = "#FE640B",
+			dark_fg = "#FAB387",
+
+			hl_opts = {
+				bg = vim.api.nvim_get_hl(0, { name = "MarkviewCode", link = false }).bg
+			}
+		});
+	end,
+	["Icon2Sign"] = function ()
+		return highlights.hl_generator({
+			source = { "MarkviewIcon2", "MarkviewHeading2", "markdownH2", "@markup.heading.2.markdown", "@markup.heading" },
+			light_fg = "#FE640B",
+			dark_fg = "#FAB387",
+
+			hl_opts = {
+				bg = vim.api.nvim_get_hl(0, { name = "LineNr", link = false }).bg
+			}
+		});
+	end,
+	["Icon2Fg"] = function ()
+		return highlights.hl_generator({
+			source = { "MarkviewIcon2", "MarkviewHeading2", "markdownH2", "@markup.heading.2.markdown", "@markup.heading" },
+			light_fg = "#FE640B",
+			dark_fg = "#FAB387"
+		});
+	end,
+
+	["Icon3"] = function ()
+		return highlights.hl_generator({
+			source = { "MarkviewHeading3", "markdownH3", "@markup.heading.3.markdown", "@markup.heading" },
+			light_fg = "#F9E2AF",
+			dark_fg = "#DF8E1D",
+
+			hl_opts = {
+				bg = vim.api.nvim_get_hl(0, { name = "MarkviewCode", link = false }).bg
+			}
+		});
+	end,
+	["Icon3Sign"] = function ()
+		return highlights.hl_generator({
+			source = { "MarkviewIcon3", "MarkviewHeading3", "markdownH3", "@markup.heading.3.markdown", "@markup.heading" },
+			light_fg = "#F9E2AF",
+			dark_fg = "#DF8E1D",
+
+			hl_opts = {
+				bg = vim.api.nvim_get_hl(0, { name = "LineNr", link = false }).bg
+			}
+		});
+	end,
+	["Icon3Fg"] = function ()
+		return highlights.hl_generator({
+			source = { "MarkviewIcon3", "MarkviewHeading3", "markdownH3", "@markup.heading.3.markdown", "@markup.heading" },
+			light_fg = "#F9E2AF",
+			dark_fg = "#DF8E1D"
+		});
+	end,
+
+	["Icon4"] = function ()
+		return highlights.hl_generator({
+			source = { "MarkviewHeading4", "markdownH4", "@markup.heading.4.markdown", "@markup.heading" },
+			light_fg = "#A6E3A1",
+			dark_fg = "#40A02B",
+
+			hl_opts = {
+				bg = vim.api.nvim_get_hl(0, { name = "MarkviewCode", link = false }).bg
+			}
+		});
+	end,
+	["Icon4Sign"] = function ()
+		return highlights.hl_generator({
+			source = { "MarkviewIcon4", "MarkviewHeading4", "markdownH4", "@markup.heading.4.markdown", "@markup.heading" },
+			light_fg = "#A6E3A1",
+			dark_fg = "#40A02B",
+
+			hl_opts = {
+				bg = vim.api.nvim_get_hl(0, { name = "LineNr", link = false }).bg
+			}
+		});
+	end,
+	["Icon4Fg"] = function ()
+		return highlights.hl_generator({
+			source = { "MarkviewIcon4", "MarkviewHeading4", "markdownH4", "@markup.heading.4.markdown", "@markup.heading" },
+			light_fg = "#A6E3A1",
+			dark_fg = "#40A02B"
+		});
+	end,
+
+	["Icon5"] = function ()
+		return highlights.hl_generator({
+			source = { "MarkviewHeading5", "markdownH5", "@markup.heading.5.markdown", "@markup.heading" },
+			light_fg = "#74C7EC",
+			dark_fg = "#209FB5",
+
+			hl_opts = {
+				bg = vim.api.nvim_get_hl(0, { name = "MarkviewCode", link = false }).bg
+			}
+		});
+	end,
+	["Icon5Sign"] = function ()
+		return highlights.hl_generator({
+			source = { "MarkviewIcon5", "MarkviewHeading5", "markdownH5", "@markup.heading.5.markdown", "@markup.heading" },
+			light_fg = "#74C7EC",
+			dark_fg = "#209FB5",
+
+			hl_opts = {
+				bg = vim.api.nvim_get_hl(0, { name = "LineNr", link = false }).bg
+			}
+		});
+	end,
+	["Icon5Fg"] = function ()
+		return highlights.hl_generator({
+			source = { "MarkviewIcon5", "MarkviewHeading5", "markdownH5", "@markup.heading.5.markdown", "@markup.heading" },
+			light_fg = "#74C7EC",
+			dark_fg = "#209FB5"
+		});
+	end,
+
+	["Icon6"] = function ()
+		return highlights.hl_generator({
+			source = { "MarkviewHeading6", "markdownH6", "@markup.heading.6.markdown", "@markup.heading" },
+			light_fg = "#B4BEFE",
+			dark_fg = "#7287FD",
+
+			hl_opts = {
+				bg = vim.api.nvim_get_hl(0, { name = "MarkviewCode", link = false }).bg
+			}
+		});
+	end,
+	["Icon6Sign"] = function ()
+		return highlights.hl_generator({
+			source = { "MarkviewIcon6", "MarkviewHeading6", "markdownH6", "@markup.heading.6.markdown", "@markup.heading" },
+			light_fg = "#B4BEFE",
+			dark_fg = "#7287FD",
+
+			hl_opts = {
+				bg = vim.api.nvim_get_hl(0, { name = "LineNr", link = false }).bg
+			}
+		});
+	end,
+	["Icon6Fg"] = function ()
+		return highlights.hl_generator({
+			source = { "MarkviewIcon6", "MarkviewHeading6", "markdownH6", "@markup.heading.6.markdown", "@markup.heading" },
+			light_fg = "#B4BEFE",
+			dark_fg = "#7287FD"
+		});
+	end,
 	---_
 
-	---+ ${hl, Heading 1}
-	{
-		output = function ()
-			return headingGenerator(
-				{
-					"markdownH1", "@markup.heading.1.markdown", "@markup.heading"
-				},
-				"#F38BA8",
-				"#D20F39",
+	["Gradient"] = function ()
+		local from = highlights.color("bg", { "Normal" }, "#1E1E2E", "#CDD6F4");
+		local to   = highlights.color("fg", { "Title" }, "#1e66f5", "#89b4fa");
 
-				"Heading1",
-				"Sign"
-			);
-		end
-	},
-	---_
-	---+ ${hl, Heading 2}
-	{
-		output = function ()
-			return headingGenerator(
-				{
-					"markdownH2", "@markup.heading.2.markdown", "@markup.heading"
-				},
-				"#FAB387",
-				"#FE640B",
+		local _o = {};
 
-				"Heading2",
-				"Sign"
-			);
-		end
-	},
-	---_
-	---+ ${hl, Heading 3}
-	{
-		output = function ()
-			return headingGenerator(
-				{
-					"markdownH3", "@markup.heading.3.markdown", "@markup.heading"
-				},
-				"#F9E2AF",
-				"#DF8E1D",
+		for l = 0, 9 do
+			local _r = lerp(from[1], to[1], l / 9);
+			local _g = lerp(from[2], to[2], l / 9);
+			local _b = lerp(from[3], to[3], l / 9);
 
-				"Heading3",
-				"Sign"
-			);
-		end
-	},
-	---_
-	---+ ${hl, Heading 4}
-	{
-		output = function ()
-			return headingGenerator(
-				{
-					"markdownH4", "@markup.heading.4.markdown", "@markup.heading"
-				},
-				"#A6E3A1",
-				"#40A02B",
-
-				"Heading4",
-				"Sign"
-			);
-		end
-	},
-	---_
-	---+ ${hl, Heading 5}
-	{
-		output = function ()
-			return headingGenerator(
-				{
-					"markdownH5", "@markup.heading.5.markdown", "@markup.heading"
-				},
-				"#74C7EC",
-				"#209FB5",
-
-				"Heading5",
-				"Sign"
-			);
-		end
-	},
-	---_
-	---+ ${hl, Heading 6}
-	{
-		output = function ()
-			return headingGenerator(
-				{
-					"markdownH6", "@markup.heading.6.markdown", "@markup.heading"
-				},
-				"#B4BEFE",
-				"#7287FD",
-
-				"Heading6",
-				"Sign"
-			);
-		end
-	},
-	---_
-
-	---+ ${hl, Horizontal rule}
-	{
-		output = function (util)
-			local from = util.color("bg", { "Normal" }, "#1E1E2E", "#CDD6F4");
-			local to   = util.color("fg", { "Title" }, "#1e66f5", "#89b4fa");
-
-			local _o = {};
-
-			for l = 0, 9 do
-				local _r = lerp(from[1], to[1], l / 9);
-				local _g = lerp(from[2], to[2], l / 9);
-				local _b = lerp(from[3], to[3], l / 9);
-
-				table.insert(_o, {
-					group_name = "Gradient" .. (l + 1),
-					value = {
-						default = true,
-						fg = util.hex({ _r, _g, _b })
-					}
-				});
-			end
-
-			return _o;
-		end
-	},
-	---_
-
-	---+ ${hl, Links}
-	{
-		output = function (util)
-			return {
-				group_name = "Hyperlink",
+			table.insert(_o, {
+				group_name = "MarkviewGradient" .. (l + 1),
 				value = {
 					default = true,
-					link = "@markup.link.label.markdown_inline"
+					fg = highlights.hex({ _r, _g, _b })
 				}
-			}
+			});
 		end
-	},
-	{
-		output = function (util)
-			return {
-				group_name = "ImageLink",
-				value = {
-					default = true,
-					link = "@markup.link.label.markdown_inline"
-				}
-			}
-		end
-	},
-	{
-		output = function (util)
-			return {
-				group_name = "Email",
-				value = {
-					default = true,
-					link = "@markup.link.url.markdown_inline"
-				}
-			}
-		end
-	},
+
+		return _o;
+	end,
+
+	---+${hl, Links}
+	["Hyperlink"] = function ()
+		return {
+			default = true,
+			link = "@markup.link.label.markdown_inline"
+		}
+	end,
+
+	["ImageLink"] = function ()
+		return {
+			default = true,
+			link = "@markup.link.label.markdown_inline"
+		}
+	end,
+
+	["Email"] = function ()
+		return {
+			default = true,
+			link = "@markup.link.url.markdown_inline"
+		}
+	end,
 	---_
-
-	---+ ${hl, Latex}
-	{
-		output = function (util)
-			local sub = util.color("bg", { "DiagnosticWarn" }, "#DF8E1D", "#F9E3AF");
-			local sup = util.color("bg", { "DiagnosticOk" }, "#40a02b", "#a6e3a1");
-
-			local bg = util.color("bg", { "Normal" }, "#CDD6F4", "#1E1E2E");
-
-			return {
-				{
-					group_name = "LatexSubscript",
-					value = {
-						default = true,
-						fg = util.hex(util.opacify(sub, bg, 0.6)),
-						italic = true
-					}
-				},
-				{
-					group_name = "LatexSuperscript",
-					value = {
-						default = true,
-						fg = util.hex(util.opacify(sup, bg, 0.6)),
-						italic = true
-					}
-				}
-			}
-		end
-	},
+	---+${hl, Latex}
+	["LatexSubscript"] = function ()
+		return {
+			default = true,
+			fg = highlights.get("fg", { "Conditional", "Keyword" })
+		};
+	end,
+	["LatexSuperscript"] = function ()
+		return {
+			default = true,
+			fg = highlights.get("fg", { "Character" })
+		};
+	end,
 	---_
+	---+${hl, List Items}
+	["ListItemMinus"] = function ()
+		return highlights.hl_generator({
+			source = { "DiagnosticWarn" },
+			fallback_light = "#DF8E1D",
+			fallback_dark = "#F9E3AF"
+		})
+	end,
+	["ListItemPlus"] = function ()
+		return highlights.hl_generator({
+			source = { "DiagnosticOk" },
+			fallback_light = "#40A02B",
+			fallback_dark = "#A6E3A1"
+		})
+	end,
+	["ListItemStar"] = function ()
+		local fg  = highlights.color("bg", { "@comment.note" }, nil, nil) or
+					highlights.color("fg", { "@comment.note" }, "#1E66F5", "#89B4FA")
+		;
 
-	---+ ${hl, List items}
-	{
-		output = function ()
-			return hlGenerator({ "DiagnosticWarn" }, "#DF8E1D", "#F9E3AF", "ListItemMinus");
-		end
-	},
-	{
-		output = function ()
-			return hlGenerator({ "DiagnosticOk" }, "#40a02b", "#a6e3a1", "ListItemPlus");
-		end
-	},
-	{
-		output = function ()
-			local fg = highlights.color("bg", { "@comment.note" }, nil, nil) or highlights.color("fg", { "@comment.note" }, "#1e66f5", "#89b4fa");
-
-			return {
-				{
-					group_name = "MarkviewListItemStar",
-					value = {
-						default = true,
-						fg = highlights.hex(fg),
-					}
-				}
-			};
-		end
-	},
+		return {
+			default = true,
+			fg = highlights.hex(fg),
+		};
+	end,
 	---_
+	---+${hl, Tables}
+	["TableHeader"] = function ()
+		local header_fg =   highlights.color("fg", { "DiagnosticInfo" }, nil, nil) or
+							highlights.color("bg", { "@comment.note" }, nil, nil) or
+							highlights.color("fg", { "@comment.note" }, "#179299",  "#94e2d5")
+		;
 
-	---+ ${hl, Tables}
-	{
-		output = function ()
-			local fg = highlights.color("bg", { "@comment.note" }, nil, nil) or highlights.color("fg", { "@comment.note" }, "#1e66f5", "#89b4fa");
-			local headerFg = highlights.color("fg", { "DiagnosticInfo" }, nil, nil) or highlights.color("fg", { "@comment.note" }, "#179299",  "#94e2d5");
+		return {
+			default = true,
+			fg = highlights.hex(header_fg),
+		};
+	end,
 
-			return {
-				{
-					group_name = "TableHeader",
-					value = {
-						default = true,
-						fg = highlights.hex(headerFg),
-					}
-				},
-				{
-					group_name = "TableBorder",
-					value = {
-						default = true,
-						fg = highlights.hex(fg),
-					}
-				},
-				{
-					group_name = "TableAlignCenter",
-					value = {
-						default = true,
-						fg = highlights.hex(headerFg),
-					}
-				},
-				{
-					group_name = "TableAlignLeft",
-					value = {
-						default = true,
-						fg = highlights.hex(headerFg),
-					}
-				},
-				{
-					group_name = "TableAlignRight",
-					value = {
-						default = true,
-						fg = highlights.hex(headerFg),
-					}
-				}
-			};
-		end
-	},
+	["TableBorder"] = function ()
+		local fg =  highlights.color("bg", { "@comment.note" }, nil, nil) or
+					highlights.color("fg", { "@comment.note" }, "#1e66f5", "#89b4fa")
+		;
+
+		return {
+			default = true,
+			fg = highlights.hex(fg),
+		};
+	end,
+
+	["TableAlignLeft"] = function ()
+		local fg =  highlights.color("bg", { "@comment.note" }, nil, nil) or
+					highlights.color("fg", { "@comment.note" }, "#1e66f5", "#89b4fa")
+		;
+
+		return {
+			default = true,
+			fg = highlights.hex(fg),
+		};
+	end,
+
+	["TableAlignCenter"] = function ()
+		local fg =  highlights.color("bg", { "@comment.note" }, nil, nil) or
+					highlights.color("fg", { "@comment.note" }, "#1e66f5", "#89b4fa")
+		;
+
+		return {
+			default = true,
+			fg = highlights.hex(fg),
+		};
+	end,
+
+	["TableAlignRight"] = function ()
+		local fg =  highlights.color("bg", { "@comment.note" }, nil, nil) or
+					highlights.color("fg", { "@comment.note" }, "#1e66f5", "#89b4fa")
+		;
+
+		return {
+			default = true,
+			fg = highlights.hex(fg),
+		};
+	end,
 	---_
 };
-
----@type markview.conf.hl[]
-highlights.dark = {
-	---+ ${hl, Dark static highlight group}
-	{
-		group_name = "MarkviewTableHeader",
-		value = {
-			default = true,
-			fg = "#89dceb",
-		}
-	},
-	{
-		group_name = "MarkviewTableBorder",
-		value = {
-			default = true,
-			fg = "#89b4fa",
-		}
-	},
-	{
-		group_name = "MarkviewTableAlignCenter",
-		value = {
-			default = true,
-			fg = "#89dceb",
-		}
-	},
-	{
-		group_name = "MarkviewTableAlignLeft",
-		value = {
-			default = true,
-			fg = "#89dceb",
-		}
-	},
-	{
-		group_name = "MarkviewTableAlignRight",
-		value = {
-			default = true,
-			fg = "#89dceb",
-		}
-	},
-	{
-		group_name = "MarkviewListItemStar",
-		value = {
-			default = true,
-			fg = "#89b4fa",
-		}
-	},
-	{
-		group_name = "MarkviewListItemPlus",
-		value = {
-			default = true,
-			fg = "#a6e3a1",
-		}
-	},
-	{
-		group_name = "MarkviewListItemMinus",
-		value = {
-			default = true,
-			fg = "#f9e2af",
-		}
-	},
-	{
-		group_name = "MarkviewLatexSubscript",
-		value = {
-			fg = "#a1947b",
-			default = true,
-			italic = true,
-		}
-	},
-	{
-		group_name = "MarkviewLatexSuperscript",
-		value = {
-			fg = "#6f9473",
-			default = true,
-			italic = true,
-		}
-	},
-	{
-		group_name = "MarkviewGradient1",
-		value = {
-			default = true,
-			fg = "#1e1e2e",
-		}
-	},
-	{
-		group_name = "MarkviewGradient2",
-		value = {
-			default = true,
-			fg = "#292e44",
-		}
-	},
-	{
-		group_name = "MarkviewGradient3",
-		value = {
-			default = true,
-			fg = "#353f5b",
-		}
-	},
-	{
-		group_name = "MarkviewGradient4",
-		value = {
-			default = true,
-			fg = "#415072",
-		}
-	},
-	{
-		group_name = "MarkviewGradient5",
-		value = {
-			default = true,
-			fg = "#4d6088",
-		}
-	},
-	{
-		group_name = "MarkviewGradient6",
-		value = {
-			default = true,
-			fg = "#59719f",
-		}
-	},
-	{
-		group_name = "MarkviewGradient7",
-		value = {
-			default = true,
-			fg = "#6582b6",
-		}
-	},
-	{
-		group_name = "MarkviewGradient8",
-		value = {
-			default = true,
-			fg = "#7192cc",
-		}
-	},
-	{
-		group_name = "MarkviewGradient9",
-		value = {
-			default = true,
-			fg = "#7da3e3",
-		}
-	},
-	{
-		group_name = "MarkviewGradient10",
-		value = {
-			default = true,
-			fg = "#89b4fa",
-		}
-	},
-	{
-		group_name = "MarkviewHeading6",
-		value = {
-			bg = "#434662",
-			default = true,
-			fg = "#b4befe",
-		}
-	},
-	{
-		group_name = "MarkviewHeading6Sign",
-		value = {
-			default = true,
-			fg = "#b4befe",
-		}
-	},
-	{
-		group_name = "MarkviewHeading5",
-		value = {
-			bg = "#33485d",
-			default = true,
-			fg = "#74c7ec",
-		}
-	},
-	{
-		group_name = "MarkviewHeading5Sign",
-		value = {
-			default = true,
-			fg = "#74c7ec",
-		}
-	},
-	{
-		group_name = "MarkviewHeading4",
-		value = {
-			bg = "#404f4a",
-			default = true,
-			fg = "#a6e3a1",
-		}
-	},
-	{
-		group_name = "MarkviewHeading4Sign",
-		value = {
-			default = true,
-			fg = "#a6e3a1",
-		}
-	},
-	{
-		group_name = "MarkviewHeading3",
-		value = {
-			bg = "#544f4e",
-			default = true,
-			fg = "#f9e2af",
-		}
-	},
-	{
-		group_name = "MarkviewHeading3Sign",
-		value = {
-			default = true,
-			fg = "#f9e2af",
-		}
-	},
-	{
-		group_name = "MarkviewHeading2",
-		value = {
-			bg = "#554344",
-			default = true,
-			fg = "#fab387",
-		}
-	},
-	{
-		group_name = "MarkviewHeading2Sign",
-		value = {
-			default = true,
-			fg = "#fab387",
-		}
-	},
-	{
-		group_name = "MarkviewHeading1",
-		value = {
-			bg = "#53394c",
-			default = true,
-			fg = "#f38ba8",
-		}
-	},
-	{
-		group_name = "MarkviewHeading1Sign",
-		value = {
-			default = true,
-			fg = "#f38ba8",
-		}
-	},
-	{
-		group_name = "MarkviewCode",
-		value = {
-			default = true,
-			bg = "#28283d",
-		}
-	},
-	{
-		group_name = "MarkviewCodeInfo",
-		value = {
-			bg = "#28283d",
-			default = true,
-			fg = "#9399b2",
-		}
-	},
-	{
-		group_name = "MarkviewInlineCode",
-		value = {
-			default = true,
-			bg = "#32324c",
-		}
-	},
-	{
-		group_name = "MarkviewIcon1",
-		value = {
-			bg = "#28283d",
-			default = true,
-			fg = "#f38ba8",
-		}
-	},
-	{
-		group_name = "MarkviewIcon1Sign",
-		value = {
-			default = true,
-			fg = "#f38ba8",
-		}
-	},
-	{
-		group_name = "MarkviewIcon1Fg",
-		value = {
-			default = true,
-			fg = "#f38ba8",
-		}
-	},
-	{
-		group_name = "MarkviewIcon2",
-		value = {
-			bg = "#28283d",
-			default = true,
-			fg = "#fab387",
-		}
-	},
-	{
-		group_name = "MarkviewIcon2Sign",
-		value = {
-			default = true,
-			fg = "#fab387",
-		}
-	},
-	{
-		group_name = "MarkviewIcon2Fg",
-		value = {
-			default = true,
-			fg = "#fab387",
-		}
-	},
-	{
-		group_name = "MarkviewIcon3",
-		value = {
-			bg = "#28283d",
-			default = true,
-			fg = "#f9e2af",
-		}
-	},
-	{
-		group_name = "MarkviewIcon3Sign",
-		value = {
-			default = true,
-			fg = "#f9e2af",
-		}
-	},
-	{
-		group_name = "MarkviewIcon3Fg",
-		value = {
-			default = true,
-			fg = "#f9e2af",
-		}
-	},
-	{
-		group_name = "MarkviewIcon4",
-		value = {
-			bg = "#28283d",
-			default = true,
-			fg = "#a6e3a1",
-		}
-	},
-	{
-		group_name = "MarkviewIcon4Sign",
-		value = {
-			default = true,
-			fg = "#a6e3a1",
-		}
-	},
-	{
-		group_name = "MarkviewIcon4Fg",
-		value = {
-			default = true,
-			fg = "#a6e3a1",
-		}
-	},
-	{
-		group_name = "MarkviewIcon5",
-		value = {
-			bg = "#28283d",
-			default = true,
-			fg = "#74c7ec",
-		}
-	},
-	{
-		group_name = "MarkviewIcon5Sign",
-		value = {
-			default = true,
-			fg = "#74c7ec",
-		}
-	},
-	{
-		group_name = "MarkviewIcon5Fg",
-		value = {
-			default = true,
-			fg = "#74c7ec",
-		}
-	},
-	{
-		group_name = "MarkviewIcon6",
-		value = {
-			bg = "#28283d",
-			default = true,
-			fg = "#b4befe",
-		}
-	},
-	{
-		group_name = "MarkviewIcon6Sign",
-		value = {
-			default = true,
-			fg = "#b4befe",
-		}
-	},
-	{
-		group_name = "MarkviewIcon6Fg",
-		value = {
-			default = true,
-			fg = "#b4befe",
-		}
-	},
-	{
-		group_name = "MarkviewCheckboxUnchecked",
-		value = {
-			default = true,
-			fg = "#f38ba8",
-		}
-	},
-	{
-		group_name = "MarkviewCheckboxProgress",
-		value = {
-			default = true,
-			fg = "#cba6f7",
-		}
-	},
-	{
-		group_name = "MarkviewCheckboxPending",
-		value = {
-			default = true,
-			fg = "#f9e2af",
-		}
-	},
-	{
-		group_name = "MarkviewCheckboxChecked",
-		value = {
-			default = true,
-			fg = "#a6e3a1",
-		}
-	},
-	{
-		group_name = "MarkviewCheckboxCancelled",
-		value = {
-			default = true,
-			fg = "#9399b2",
-		}
-	},
-	{
-		group_name = "MarkviewCheckboxStriked",
-		value = {
-			default = true,
-			strikethrough = true,
-			bg = "#28283d",
-		}
-	},
-	{
-		group_name = "MarkviewBlockQuoteWarn",
-		value = {
-			default = true,
-			fg = "#f9e2af",
-		}
-	},
-	{
-		group_name = "MarkviewBlockQuoteSpecial",
-		value = {
-			default = true,
-			fg = "#cba6f7",
-		}
-	},
-	{
-		group_name = "MarkviewBlockQuoteOk",
-		value = {
-			default = true,
-			fg = "#a6e3a1",
-		}
-	},
-	{
-		group_name = "MarkviewBlockQuoteNote",
-		value = {
-			default = true,
-			fg = "#89b4fa",
-		}
-	},
-	{
-		group_name = "MarkviewBlockQuoteError",
-		value = {
-			default = true,
-			fg = "#f38ba8",
-		}
-	},
-	{
-		group_name = "MarkviewBlockQuoteDefault",
-		value = {
-			default = true,
-			fg = "#9399b2",
-		}
-	},
-	{
-		group_name = "MarkviewHyperlink",
-		value = {
-			link = "@markup.link.label.markdown_inline",
-			default = true,
-		}
-	},
-	{
-		group_name = "MarkviewImageLink",
-		value = {
-			link = "@markup.link.label.markdown_inline",
-			default = true,
-		}
-	},
-	{
-		group_name = "MarkviewEmail",
-		value = {
-			link = "@markup.link.url.markdown_inline",
-			default = true,
-		}
-	},
-	---_
-};
-
----@type markview.conf.hl[]
-highlights.light = {
-	---+ ${hl, Light static highlight groups}
-	{
-		group_name = "MarkviewTableHeader",
-		value = {
-			fg = "#04a5e5",
-			default = true,
-		}
-	},
-	{
-		group_name = "MarkviewTableBorder",
-		value = {
-			fg = "#1e66f5",
-			default = true,
-		}
-	},
-	{
-		group_name = "MarkviewTableAlignCenter",
-		value = {
-			fg = "#04a5e5",
-			default = true,
-		}
-	},
-	{
-		group_name = "MarkviewTableAlignLeft",
-		value = {
-			fg = "#04a5e5",
-			default = true,
-		}
-	},
-	{
-		group_name = "MarkviewTableAlignRight",
-		value = {
-			fg = "#04a5e5",
-			default = true,
-		}
-	},
-	{
-		group_name = "MarkviewListItemStar",
-		value = {
-			fg = "#1e66f5",
-			default = true,
-		}
-	},
-	{
-		group_name = "MarkviewListItemPlus",
-		value = {
-			fg = "#40a02b",
-			default = true,
-		}
-	},
-	{
-		group_name = "MarkviewListItemMinus",
-		value = {
-			fg = "#df8e1d",
-			default = true,
-		}
-	},
-	{
-		group_name = "MarkviewLatexSubscript",
-		value = {
-			italic = true,
-			fg = "#e5b573",
-			default = true,
-		}
-	},
-	{
-		group_name = "MarkviewLatexSuperscript",
-		value = {
-			italic = true,
-			fg = "#86c07b",
-			default = true,
-		}
-	},
-	{
-		group_name = "MarkviewGradient1",
-		value = {
-			fg = "#eff1f5",
-			default = true,
-		}
-	},
-	{
-		group_name = "MarkviewGradient2",
-		value = {
-			fg = "#d7e1f5",
-			default = true,
-		}
-	},
-	{
-		group_name = "MarkviewGradient3",
-		value = {
-			fg = "#c0d2f5",
-			default = true,
-		}
-	},
-	{
-		group_name = "MarkviewGradient4",
-		value = {
-			fg = "#a9c2f5",
-			default = true,
-		}
-	},
-	{
-		group_name = "MarkviewGradient5",
-		value = {
-			fg = "#92b3f5",
-			default = true,
-		}
-	},
-	{
-		group_name = "MarkviewGradient6",
-		value = {
-			fg = "#7aa3f5",
-			default = true,
-		}
-	},
-	{
-		group_name = "MarkviewGradient7",
-		value = {
-			fg = "#6394f5",
-			default = true,
-		}
-	},
-	{
-		group_name = "MarkviewGradient8",
-		value = {
-			fg = "#4c84f5",
-			default = true,
-		}
-	},
-	{
-		group_name = "MarkviewGradient9",
-		value = {
-			fg = "#3575f5",
-			default = true,
-		}
-	},
-	{
-		group_name = "MarkviewGradient10",
-		value = {
-			fg = "#1e66f5",
-			default = true,
-		}
-	},
-	{
-		group_name = "MarkviewHeading6",
-		value = {
-			bg = "#dbe1fe",
-			fg = "#7287fd",
-			default = true,
-		}
-	},
-	{
-		group_name = "MarkviewHeading6Sign",
-		value = {
-			fg = "#7287fd",
-			default = true,
-		}
-	},
-	{
-		group_name = "MarkviewHeading5",
-		value = {
-			bg = "#c7e7ec",
-			fg = "#209fb5",
-			default = true,
-		}
-	},
-	{
-		group_name = "MarkviewHeading5Sign",
-		value = {
-			fg = "#209fb5",
-			default = true,
-		}
-	},
-	{
-		group_name = "MarkviewHeading4",
-		value = {
-			bg = "#cfe7ca",
-			fg = "#40a02b",
-			default = true,
-		}
-	},
-	{
-		group_name = "MarkviewHeading4Sign",
-		value = {
-			fg = "#40a02b",
-			default = true,
-		}
-	},
-	{
-		group_name = "MarkviewHeading3",
-		value = {
-			bg = "#f7e2c6",
-			fg = "#df8e1d",
-			default = true,
-		}
-	},
-	{
-		group_name = "MarkviewHeading3Sign",
-		value = {
-			fg = "#df8e1d",
-			default = true,
-		}
-	},
-	{
-		group_name = "MarkviewHeading2",
-		value = {
-			bg = "#fed8c2",
-			fg = "#fe640b",
-			default = true,
-		}
-	},
-	{
-		group_name = "MarkviewHeading2Sign",
-		value = {
-			fg = "#fe640b",
-			default = true,
-		}
-	},
-	{
-		group_name = "MarkviewHeading1",
-		value = {
-			bg = "#f3c3cd",
-			fg = "#d20f39",
-			default = true,
-		}
-	},
-	{
-		group_name = "MarkviewHeading1Sign",
-		value = {
-			fg = "#d20f39",
-			default = true,
-		}
-	},
-	{
-		group_name = "MarkviewCode",
-		value = {
-			bg = "#dfe3eb",
-			default = true,
-		}
-	},
-	{
-		group_name = "MarkviewCodeInfo",
-		value = {
-			default = true,
-			fg = "#7c7f93",
-			bg = "#dfe3eb",
-		}
-	},
-	{
-		group_name = "MarkviewInlineCode",
-		value = {
-			bg = "#cfd5e1",
-			default = true,
-		}
-	},
-	{
-		group_name = "MarkviewIcon1",
-		value = {
-			default = true,
-			fg = "#d20f39",
-			bg = "#dfe3eb",
-		}
-	},
-	{
-		group_name = "MarkviewIcon1Sign",
-		value = {
-			default = true,
-			fg = "#d20f39",
-		}
-	},
-	{
-		group_name = "MarkviewIcon1Fg",
-		value = {
-			fg = "#d20f39",
-			default = true,
-		}
-	},
-	{
-		group_name = "MarkviewIcon2",
-		value = {
-			default = true,
-			fg = "#fe640b",
-			bg = "#dfe3eb",
-		}
-	},
-	{
-		group_name = "MarkviewIcon2Sign",
-		value = {
-			default = true,
-			fg = "#fe640b",
-		}
-	},
-	{
-		group_name = "MarkviewIcon2Fg",
-		value = {
-			fg = "#fe640b",
-			default = true,
-		}
-	},
-	{
-		group_name = "MarkviewIcon3",
-		value = {
-			default = true,
-			fg = "#df8e1d",
-			bg = "#dfe3eb",
-		}
-	},
-	{
-		group_name = "MarkviewIcon3Sign",
-		value = {
-			default = true,
-			fg = "#df8e1d",
-		}
-	},
-	{
-		group_name = "MarkviewIcon3Fg",
-		value = {
-			fg = "#df8e1d",
-			default = true,
-		}
-	},
-	{
-		group_name = "MarkviewIcon4",
-		value = {
-			default = true,
-			fg = "#40a02b",
-			bg = "#dfe3eb",
-		}
-	},
-	{
-		group_name = "MarkviewIcon4Sign",
-		value = {
-			default = true,
-			fg = "#40a02b",
-		}
-	},
-	{
-		group_name = "MarkviewIcon4Fg",
-		value = {
-			fg = "#40a02b",
-			default = true,
-		}
-	},
-	{
-		group_name = "MarkviewIcon5",
-		value = {
-			default = true,
-			fg = "#209fb5",
-			bg = "#dfe3eb",
-		}
-	},
-	{
-		group_name = "MarkviewIcon5Sign",
-		value = {
-			default = true,
-			fg = "#209fb5",
-		}
-	},
-	{
-		group_name = "MarkviewIcon5Fg",
-		value = {
-			fg = "#209fb5",
-			default = true,
-		}
-	},
-	{
-		group_name = "MarkviewIcon6",
-		value = {
-			default = true,
-			fg = "#7287fd",
-			bg = "#dfe3eb",
-		}
-	},
-	{
-		group_name = "MarkviewIcon6Sign",
-		value = {
-			default = true,
-			fg = "#7287fd",
-		}
-	},
-	{
-		group_name = "MarkviewIcon6Fg",
-		value = {
-			fg = "#7287fd",
-			default = true,
-		}
-	},
-	{
-		group_name = "MarkviewCheckboxUnchecked",
-		value = {
-			fg = "#d20f39",
-			default = true,
-		}
-	},
-	{
-		group_name = "MarkviewCheckboxProgress",
-		value = {
-			fg = "#8839ef",
-			default = true,
-		}
-	},
-	{
-		group_name = "MarkviewCheckboxPending",
-		value = {
-			fg = "#df8e1d",
-			default = true,
-		}
-	},
-	{
-		group_name = "MarkviewCheckboxChecked",
-		value = {
-			fg = "#40a02b",
-			default = true,
-		}
-	},
-	{
-		group_name = "MarkviewCheckboxCancelled",
-		value = {
-			fg = "#7c7f93",
-			default = true,
-		}
-	},
-	{
-		group_name = "MarkviewCheckboxStriked",
-		value = {
-			bg = "#dfe3eb",
-			strikethrough = true,
-			default = true,
-		}
-	},
-	{
-		group_name = "MarkviewBlockQuoteWarn",
-		value = {
-			fg = "#df8e1d",
-			default = true,
-		}
-	},
-	{
-		group_name = "MarkviewBlockQuoteSpecial",
-		value = {
-			fg = "#8839ef",
-			default = true,
-		}
-	},
-	{
-		group_name = "MarkviewBlockQuoteOk",
-		value = {
-			fg = "#40a02b",
-			default = true,
-		}
-	},
-	{
-		group_name = "MarkviewBlockQuoteNote",
-		value = {
-			fg = "#1e66f5",
-			default = true,
-		}
-	},
-	{
-		group_name = "MarkviewBlockQuoteError",
-		value = {
-			fg = "#d20f39",
-			default = true,
-		}
-	},
-	{
-		group_name = "MarkviewBlockQuoteDefault",
-		value = {
-			fg = "#7c7f93",
-			default = true,
-		}
-	},
-	{
-		group_name = "MarkviewHyperlink",
-		value = {
-			link = "@markup.link.label.markdown_inline",
-			default = true,
-		}
-	},
-	{
-		group_name = "MarkviewImageLink",
-		value = {
-			link = "@markup.link.label.markdown_inline",
-			default = true,
-		}
-	},
-	{
-		group_name = "MarkviewEmail",
-		value = {
-			link = "@markup.link.url.markdown_inline",
-			default = true,
-		}
-	},
-	---_
-}
 
 return highlights;
