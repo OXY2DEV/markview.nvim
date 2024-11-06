@@ -595,7 +595,7 @@ spec.default = {
 	markdown_inline = {
 		inline_codes = {
 			enable = true,
-			hl = "Code",
+			hl = "InlineCode",
 
 			padding_left = " ",
 			padding_right = " "
@@ -829,7 +829,7 @@ spec.default = {
 			padding_left = " ",
 			padding_right = " ",
 
-			hl = "Code"
+			hl = "InlineCode"
 		},
 		blocks = {
 			enable = true,
