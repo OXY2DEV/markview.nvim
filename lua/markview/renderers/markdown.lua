@@ -86,6 +86,17 @@ markdown.output = function (str)
 	local esc = config("escapes");
 	local ent = config("entities");
 
+	for escaped in str:gmatch("\\(%$)") do
+		if not esc then
+			break;
+		end
+
+		str = str:gsub(concat({
+			"\\",
+			escaped
+		}), " ");
+	end
+
 	for latex in str:gmatch("%$([^%$]*)%$") do
 		---+${custom, Handle LaTeX blocks}
 		str = str:gsub(concat({
@@ -108,9 +119,7 @@ markdown.output = function (str)
 		str = str:gsub(concat({
 			"\\",
 			escaped
-		}), concat({
-			escaped
-		}));
+		}), " ");
 	end
 
 	for inline_code in str:gmatch("`(.-)`") do
