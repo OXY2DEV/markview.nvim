@@ -978,6 +978,10 @@ spec.get = function (...)
 
 	for _, key in ipairs({ ... }) do
 		if _o[key] then
+			if _o.enable == false then
+				return;
+			end
+
 			_o = _o[key];
 		else
 			return;
