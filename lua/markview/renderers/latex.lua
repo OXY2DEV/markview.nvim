@@ -409,14 +409,16 @@ latex.inline = function (buffer, item)
 		hl_mode = "combine"
 	});
 
-	vim.api.nvim_buf_set_extmark(buffer, latex.ns("injections"), range.row_start, #item.text[1], {
-		undo_restore = false, invalidate = true,
+	if #item.text > 1 then
+		vim.api.nvim_buf_set_extmark(buffer, latex.ns("injections"), range.row_start, range.col_start + #item.text[1], {
+			undo_restore = false, invalidate = true,
 
-		virt_text_pos = "inline",
-		virt_text = {
-			{ config.padding_right or "", utils.set_hl(config.padding_right_hl or config.hl) }
-		}
-	});
+			virt_text_pos = "inline",
+			virt_text = {
+				{ config.padding_right or "", utils.set_hl(config.padding_right_hl or config.hl) }
+			}
+		});
+	end
 
 	vim.api.nvim_buf_set_extmark(buffer, latex.ns("injections"), range.row_start, range.col_start, {
 		undo_restore = false, invalidate = true,
@@ -440,17 +442,19 @@ latex.inline = function (buffer, item)
 		hl_mode = "combine"
 	});
 
-	vim.api.nvim_buf_set_extmark(buffer, latex.ns("injections"), range.row_end, math.min(#item.text[#item.text], range.col_start), {
-		undo_restore = false, invalidate = true,
+	if #item.text > 1 then
+		vim.api.nvim_buf_set_extmark(buffer, latex.ns("injections"), range.row_end, 0, {
+			undo_restore = false, invalidate = true,
 
-		virt_text_pos = "inline",
-		virt_text = {
-			{ config.padding_left or "", utils.set_hl(config.padding_left_hl or config.hl) },
-		}
-	});
+			virt_text_pos = "inline",
+			virt_text = {
+				{ config.padding_left or "", utils.set_hl(config.padding_left_hl or config.hl) },
+			}
+		});
+	end
 
 	for l = 1, #item.text - 2 do
-		vim.api.nvim_buf_set_extmark(buffer, latex.ns("injections"), range.row_start + l, math.min(#item.text[l + 1], range.col_start), {
+		vim.api.nvim_buf_set_extmark(buffer, latex.ns("injections"), range.row_start + l, 0, {
 			undo_restore = false, invalidate = true,
 
 			virt_text_pos = "inline",
