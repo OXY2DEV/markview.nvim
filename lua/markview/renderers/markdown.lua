@@ -111,17 +111,6 @@ markdown.output = function (str)
 		---_
 	end
 
-	for escaped in str:gmatch("\\(.)") do
-		if not esc then
-			break;
-		end
-
-		str = str:gsub(concat({
-			"\\",
-			escaped
-		}), " ");
-	end
-
 	for inline_code in str:gmatch("`(.-)`") do
 		---+${custom, Handle inline codes}
 		if not codes or codes.enable == false then
