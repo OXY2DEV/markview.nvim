@@ -22,5 +22,626 @@
 │ {                                   │ \mathsfbfit{Hello, Neovim▎           │
 ╰─────────────────────────────────────┴──────────────────────────────────────╯
 
+==============================================================================
+Overview                                              *markview.nvim-overview*
 
-vim:ft=help:bt=help:textwidth=78:ts=4:spell:
+A powerful markdown, typst, latex, HTML(inline), YAML renderer for *nvim*.
+
+------------------------------------------------------------------------------
+Features                        *markview.nvim-features* *markview.nvim-feats*
+
+Markdown ~
+
+    • Supports a ton of markdown syntax such as,
+        • Block quotes(+ callouts/alerts).
+        • Code blocks.
+        • Checkboxex(+ custom states).
+        • Escaped characters.
+        • Headings(atx & setext).
+        • Horizontal rules.
+        • Entities(entity number & entity name).
+        • Inline codes.
+        • List items,
+            • Minus(-) list items.
+            • Plus(+) list items.
+            • Star(*) list items.
+            • Dot(1.) list items.
+            • Parenthasis[1)] list items.
+        • Links,
+            • Block references¹.
+            • Emails.
+            • Embed files¹.
+            • Hyperlinks.
+            • Image links.
+            • Internal links¹.
+            • Uri autolinks.
+        • Metadata(yaml & toml).
+        • Tables.
+    • Stylized code blocks(with icons!).
+    • Auto resized table renders.
+    • Indented list items.
+    • Custom horizontal rules.
+
+¹ => From Obsidian.
+
+Typst ~
+
+    • Supports various typst syntax such as,
+        • Escaoed characters.
+        • Embedded codes.
+        • Headings.
+        • Labels.
+        • Links.
+        • List items(-, +, n.).
+        • Math sections.
+        • Raw spans.
+        • Raw blocks.
+        • References.
+        • Terminologies.
+    • Stylized codes, math sections & raw blocks.
+    • Inline & block rendering of math sections.
+    • Indented & auto numbered list items(suports custom text formats too).
+
+LaTeX ~
+
+    • Supoorts various LaTeX math syntaxes such as,
+        • Block maths.
+        • Inline maths.
+        • Math fonts.
+        • Math symbols.
+        • Parenthasis({,}).
+        • Subscripts & Superscripts.
+        • Text blocks.
+    • Inline & block rendering of maths.
+    • Font rendering.
+    • Wide variety of symbols support.
+    • Custom operator rendering support.
+
+HTML ~
+
+    • HTML tag name based preview.
+
+YAML ~
+
+    • Property name based icon preview.
+
+Previewing ~
+
+    • Hybrid mode for editing & previewing together.
+    • Split view for previewing in a separate window.
+    • Ability to only conceal specific preview types.
+    • Various callbacks and autocmd events to use.
+    • Full & partial rendering of buffer based on line count.
+
+Others ~
+
+    • Ability to configure at any time!
+    • Extra modulues,
+        • checkbox.lua,
+          Checkbox state changer & toggler.
+        • editor.lua,
+          Code block creator and editor.
+        • headings.lua
+          Heading level changer.
+        • lsp_hover.lua
+          Custom LSP hover via `markview.nvim`.
+
+------------------------------------------------------------------------------
+Requirements                                      *markview.nvim-requirements*
+
+    • Neovim >= 0.10.1
+    • Nerd font.
+    • Tree-sitter parsers,
+        • markdown.
+        • markdown_inline.
+        • html².
+        • latex².
+        • yaml².
+        • typst².
+    • Tree-sitter supported colorscheme.
+
+² => Optional requirement.
+
+------------------------------------------------------------------------------
+Installation                                           *markview.nvim-install*
+
+💤 Lazy.nvim ~
+>lua
+    {
+        "OXY2DEV/markview.nvim",
+        lazy = false,
+
+        dependencies = {
+            --- In case you installed the parsers via
+            --- `nvim-treesitter` and are lazy loading.
+            "nvim-treesitter/nvim-treesitter",
+
+            --- Icon provider(for code blocks)
+            --- "nvim-tree/nvim-web-devicons"
+            --- "echasnovski/mini.icons"
+        }
+    }
+<
+🦠 Mini.deps ~
+>lua
+    local MiniDeps = require("mini.deps");
+
+    MiniDeps.add({
+        source = "OXY2DEV/markview.nvim",
+
+        depends = {
+            "nvim-treesitter/nvim-treesitter",
+
+            --- Icon provider(for code blocks)
+            --- "nvim-tree/nvim-web-devicons"
+            --- "echasnovski/mini.icons"
+        }
+    });
+<
+🌒 Rocks.nvim ~
+>vim
+    :Rocks install markview.nvim
+<
+📦 Vim plug ~
+>lua
+    Plug "OXY2DEV/markview.nvim"
+<
+------------------------------------------------------------------------------
+Configuration             *markview.nvim-configuration* *markview.nvim-config*
+
+▌ 📝 Note
+▌ As `markview.nvim` foucses on customisation, there are many options as such
+▌ these options are grouped based on what they do.
+>txt
+               ├──────╸level 1╺───────╂──────╸level 2╺──────╂───╸level 3╺───┤
+    markview ────┬─ highlight groups
+                 ┆
+                 ├─ experimental
+                 ├─ preview                                  ╭─ enable
+                 ├─ renderers                                ├─ default
+                 ┆                      ╭─ block_quotes ─────┴─ callouts
+                 ├─ html                ├─ code_blocks
+                 ├─ latex               ├─ headings
+                 ├─ markdown ───────────┼─ horizontal rules
+                 ├─ markdown_inline     ├─ list_items
+                 ├─ typst               ├─ metadata_minus
+                 ╰─ yaml                ├─ metadata_plus
+                                        ╰─ tables
+<
+Basic configuration table,
+>lua
+    {
+        --- Highlight group customisation.
+        ---@type { [string]: table }
+        highlight_groups = {},
+
+        --- Experimental options.
+        ---@type markview.config.experimental
+        experimental = {},
+        --- Preview configuration.
+        ---@type markview.config.preview
+        preview = {},
+        --- Custom renderers.
+        ---@type markview.renderer.custom
+        renderers = {},
+
+        --- Language specific preview options.
+
+        ---@type markview.config.html
+        html = {},
+        ---@type markview.config.latex
+        latex = {},
+        ---@type markview.config.markdown
+        markdown = {},
+        ---@type markview.config.markdown_inline
+        markdown_inline = {},
+        ---@type markview.config.typst
+        typst = {},
+        ---@type markview.config.yaml
+        yaml = {}
+    }
+<
+==============================================================================
+Highlight groups                                            *markview.nvim-hl*
+                                              *markview.nvim-highlight_groups*
+
+The plugin comes with these highlight groups,
+
+ Highlight group                        Option name ~
+ -------------------------------------- ------------------------------------
+ $MarkviewBlockQuoteDefault$              BlockQuoteDefault
+ $MarkviewBlockQuoteError$                BlockQuoteError
+ $MarkviewBlockQuoteNote$                 BlockQuoteNote
+ $MarkviewBlockQuoteOk$                   BlockQuoteOk
+ $MarkviewBlockQuoteSpecial$              BlockQuoteSpecial
+ $MarkviewBlockQuoteWarn$                 BlockQuoteWarn
+
+ $MarkviewCheckboxCancelled$              CheckboxCancelled
+ $MarkviewCheckboxChecked$                CheckboxChecked
+ $MarkviewCheckboxPending$                CheckboxPending
+ $MarkviewCheckboxProgress$               CheckboxProgress
+ $MarkviewCheckboxStriked$                CheckboxStriked
+ $MarkviewCheckboxUnchecked$              CheckboxUnchecked
+
+ $MarkviewCode$                           Code
+ $MarkviewCodeFg$                         CodeFg
+
+ $MarkviewIcon1$                          Icon1
+ $MarkviewIcon1Fg$                        Icon1Fg
+ $MarkviewIcon1Sign$                      Icon1Sign
+ $MarkviewIcon2$                          Icon2
+ $MarkviewIcon2Fg$                        Icon2Fg
+ $MarkviewIcon2Sign$                      Icon2Sign
+ $MarkviewIcon3$                          Icon3
+ $MarkviewIcon3Fg$                        Icon3Fg
+ $MarkviewIcon3Sign$                      Icon3Sign
+ $MarkviewIcon4$                          Icon4
+ $MarkviewIcon4Fg$                        Icon4Fg
+ $MarkviewIcon4Sign$                      Icon4Sign
+ $MarkviewIcon5$                          Icon5
+ $MarkviewIcon5Fg$                        Icon5Fg
+ $MarkviewIcon5Sign$                      Icon5Sign
+ $MarkviewIcon6$                          Icon6
+ $MarkviewIcon6Fg$                        Icon6Fg
+ $MarkviewIcon6Sign$                      Icon6Sign
+
+ $MarkviewHeading1$                       Heading1
+ $MarkviewHeading1Sign$                   Heading1Sign
+ $MarkviewHeading2$                       Heading2
+ $MarkviewHeading2Sign$                   Heading2Sign
+ $MarkviewHeading3$                       Heading3
+ $MarkviewHeading3Sign$                   Heading3Sign
+ $MarkviewHeading4$                       Heading4
+ $MarkviewHeading4Sign$                   Heading4Sign
+ $MarkviewHeading5$                       Heading5
+ $MarkviewHeading5Sign$                   Heading5Sign
+ $MarkviewHeading6$                       Heading6
+ $MarkviewHeading6Sign$                   Heading6Sign
+
+ $MarkviewGradient1$                      Gradient1
+ $MarkviewGradient2$                      Gradient2
+ $MarkviewGradient3$                      Gradient3
+ $MarkviewGradient4$                      Gradient4
+ $MarkviewGradient5$                      Gradient5
+ $MarkviewGradient6$                      Gradient6
+ $MarkviewGradient7$                      Gradient7
+ $MarkviewGradient8$                      Gradient8
+ $MarkviewGradient9$                      Gradient9
+
+ $MarkviewEmail$                          Email
+ $MarkviewHyperlink$                      Hyperlink
+ $MarkviewImage$                          Image
+
+ $MarkviewLatexSubscript$                 LatexSubscript
+ $MarkviewLatexSuperscript$               LatexSuperscript
+
+ $MarkviewListItemMinus$                  ListItemMinus
+ $MarkviewListItemPlus$                   ListItemPlus
+ $MarkviewListItemStar$                   ListItemStar
+
+ $MarkviewTableHeader$                    TableHeader
+ $MarkviewTableBorder$                    TableBorder
+ $MarkviewTableAlignLeft$                 TableAlignLeft
+ $MarkviewTableAlignCenter$               TableAlignCenter
+ $MarkviewTableAlignRight$                TableAlignRight
+
+Fg   => Used for the window border for code block editor.
+Sign => Used for the sign column(uses $LineNr$ for the background).
+
+------------------------------------------------------------------------------
+Modifying highlight groups                  *markview.nvim-o-highlight_groups*
+
+Highlight groups can be either modified via normal method(s).
+>lua
+    vim.api.nvim_set_hl(0, "MarkviewHeading1", {
+        fg = "#1E1E2E", bg = "#CDD6F4"
+    });
+<
+Or via the configuration table.
+>lua
+    require("markview").setup({
+        highlight_groups = {
+            --- In this case adding `Markview` before the name
+            --- is optional.
+            ["Heading1"] = {
+                fg = "#1E1E2E", bg = "#CDD6F4"
+            }
+        }
+    });
+<
+------------------------------------------------------------------------------
+
+There are a few ways to set highlight groups via the configuration table.
+>lua
+    --- As literal values
+    ["Hyperlinks"] = {
+        default = true,
+        link = "@markup.link.label.markdown_inline"
+    },
+
+    --- Function based/dynamic values
+    ["Code"] = function ()
+        return {
+            bg = vim.o.background == "dark" and "#313244" or "#CCD0DA"
+        };
+    end,
+
+    --- Group of highlight groups
+    ["Gradient"] = function ()
+        return {
+            {
+                --- Note: In this case you MUST add "Markview"
+                --- before the highlight groups name.
+                ---
+                --- This is intentional.
+                group_name = "MarkviewGradient1",
+                value = { fg = "#1E1E2E" }
+            },
+            {
+                group_name = "MarkviewGradient2",
+                value = { fg = "#2B3047" }
+            },
+        };
+    end
+<
+▌Note:
+▌These group names are first sorted(via `table.sort()`) and they applied.
+▌This means that you can use a value from a previously applied group.
+
+------------------------------------------------------------------------------
+Helper functions                                    *markview.nvim-hl-helpers*
+
+There are a few Helper functions to make the process of creating dynamic
+highlight easier such as,
+
+highlights.create({hls})                            *markview.nvim-hls.create*
+                                             *markview.nvim-highlights.create*
+
+    Creates highlight groups from the provided table.
+
+    Parameters: ~
+        • {hls} Table where the key is the highlight group's name & the value
+          is the value of the highlight group.
+
+    Usage: ~
+    >lua
+        highlights.create({
+            --- As literal values
+            ["Hyperlinks"] = {
+                default = true,
+                link = "@markup.link.label.markdown_inline"
+            },
+
+            --- Function based/dynamic values
+            ["Code"] = function ()
+                return {
+                    bg = vim.o.background == "dark" and "#313244" or "#CCD0DA"
+                };
+            end,
+
+            --- Group of highlight groups
+            ["Gradient"] = function ()
+                return {
+                    {
+                        --- Note: In this case you MUST add "Markview"
+                        --- before the highlight groups name.
+                        ---
+                        --- This is intentional.
+                        group_name = "MarkviewGradient1",
+                        value = { fg = "#1E1E2E" }
+                    },
+                    {
+                        group_name = "MarkviewGradient2",
+                        value = { fg = "#2B3047" }
+                    },
+                };
+            end
+        });
+<
+highlights.mix({c_1}, {c_2}, {per_1}, {per_2})
+                                                       *markview.nvim-hls.mix*
+                                                *markview.nvim-highlights.mix*
+
+    Mixes 2 color values based on the peecentage.
+
+    Parameters: ~
+        • {c_1}   A list containing the color(in RGB or HSL or XYZ or LAB).
+        • {c_2}   Same as {c_1}.
+        • {per_1} The % of {c_1} to use. 0 <= {per_1} <= 1.
+        • {per_2} The % of {c_2} to use.
+
+    Return: ~
+        {r/h/x/l, g/s/y/a, b/l/z/b} List containing the 3 channels.
+
+    Usage: ~
+    >lua
+        highlights.mix(
+            { 30, 34, 40 }
+            { 205, 214, 244 },
+            0.25,
+            0.50
+        );
+<
+highlights.get_property({property}, {groups}, {light}, {dark})
+                                              *markview.nvim-hls.get_property*
+                                       *markview.nvim-highlights.get_property*
+
+    A wrapper for `nvim_get_hl()` that gets a property from a list of
+    highlight groups.
+
+    Mainly used when a group may not exist and fallback group(s) are used
+    instead. Can also return a default value based on the 'background'.
+
+    Parameters: ~
+        • {property} Property to get. See `nvim_set_hl()`.
+        • {groups}   List of highlight groups to check into.
+        • {light}    Fallback value when 'background' is "light".
+        • {dark}     Fallback value when 'background' is "dark".
+
+    Return: ~
+        {value}    The value of the property.
+
+                   Note: If {property} is "fg", "bg" or "sp" then the
+                         value will be a list containing the RGB vlaues
+                         instead of the integer value.
+
+    Usage: ~
+    >lua
+        highlights.get_property(
+            "fg",
+            { "LineNr", "Normal" },
+            "#1E1E2E",
+            "#CDD6F4"
+        );
+<
+highlights.hex({rgb})
+                                                       *markview.nvim-hls.hex*
+                                                *markview.nvim-highlights.hex*
+
+    Turns RGB value into hex color code.
+
+    Parameters: ~
+        • {rgb} List containing the r, g, b channels. The values are between
+                0 & 255.
+
+    Return: ~
+        {string} Hex color value.
+
+    Usags: ~
+    >lua
+        highlights.hex({ 30, 34, 40 });
+<
+highlights.lab2rgb({lab})
+                                                   *markview.nvim-hls.lab2rgb*
+                                            *markview.nvim-highlights.lab2rgb*
+    Turns RGB to LAB.
+
+    Parameters: ~
+        • {lab} List containing the l, a, b channels.
+
+    Return: ~
+        {r, g, b} RGB color value.
+
+    Usage: ~
+    >lua
+        highlights.lab2rgb({ 11, 4, -10 });
+<
+highlights.lumen({rgb})
+                                                     *markview.nvim-hls.lumen*
+                                              *markview.nvim-highlights.lumen*
+
+    Gets the luminosity of the RGB value.
+
+    Parameters: ~
+        • {rgb}, List containing r, g, b channels. Values are between 0 & 255.
+
+    Return: ~
+        {number} The luminosity. The value is between 0 & 1.
+
+    Usage: ~
+    >lua
+        highlights.lumen({ 30, 34, 44 })
+<
+
+highlights.rgb({color})
+                                                       *markview.nvim-hls.rgb*
+                                                *markview.nvim-highlights.rgb*
+
+    Gets the RGB value from a {color}.
+
+    Parameters: ~
+        • {color} A string, number or list.
+            • {string}, If string and the color is a name(e.g. red, nvimgrey)
+              then the RGB value of that color is returned.
+            • {string}, If string and is a hexadecimal number than it's
+              computed RGB value is returned.
+            • {number}, If number then it's turned into a hexadecimal value
+              and the resulting RGB value is returned.
+            • {list},   If list then it's used as an HSL value and it's
+              computed RGB value is returned.
+              Note: The values should be between 0 & 1;
+
+    Return: ~
+        {r, g, b} RGB color value.
+
+    Usage: ~
+    >lua
+        highlights.rgb("red");
+        highlights.rgb("#1E1E2E");
+        highlights.rgb(1973806);
+        highlights.rgb({ 226, 64, 88 });
+<
+highlights.rgb2hsl({rgb})
+                                                   *markview.nvim-hls.rgb2hsl*
+                                            *markview.nvim-highlights.rgb2hsl*
+
+    Turns RGB to HSL.
+
+    Parameters: ~
+        • {rgb} List containing r, g, b values.
+
+    Return: ~
+        {h, s, l} HSL color value.
+
+        Warning: The values are between 0 & 1.
+
+    Usage: ~
+    >lua
+        highlights.hsl({ 226, 64, 88 });
+<
+highlights.rgb2lab({rgb})
+                                                   *markview.nvim-hls.rgb2lab*
+                                            *markview.nvim-highlights.rgb2lab*
+    Turns RGB to LAB.
+
+    Parameters: ~
+        • {rgb} List containing the r, g, b channels.
+
+    Return: ~
+        {l, a, b} RGB color value.
+
+    Usage: ~
+    >lua
+        highlights.lab2rgb({ 30, 30, 46 });
+<
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+vim:ft=help:colorcolumn=78:textwidth=78:ts=4:spell:expandtab:

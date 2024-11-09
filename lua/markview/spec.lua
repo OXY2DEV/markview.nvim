@@ -30,7 +30,9 @@ spec.default = {
 		edit_distance = 1,
 		debounce = 25,
 
-		filetypes = { "markdown" },
+		filetypes = { "markdown", "typst" },
+		-- ignore_buftypes = { "nofile" },
+		buf_ignore = { "nofile" },
 
 		callbacks = {
 			on_attach = function (_, wins)
@@ -634,7 +636,7 @@ spec.default = {
 			__emoji_link_compatability = true,
 
 			icon = "󰥶 ",
-			hl = "MarkviewImageLink",
+			hl = "MarkviewImage",
 
 			custom = {
 				{ match_string = "%.svg$", icon = "󰜡 " },
@@ -853,7 +855,145 @@ spec.default = {
 			pad_char = " "
 		},
 	},
-	typst = {},
+	typst = {
+		headings = {
+			---+ ${class, Headings}
+			enable = true,
+			shift_width = 1,
+
+			heading_1 = {
+				---+ ${conf, Heading 1}
+				style = "icon",
+				sign = "󰌕 ", sign_hl = "MarkviewHeading1Sign",
+
+				icon = "󰼏  ", hl = "MarkviewHeading1",
+				---_
+			},
+			heading_2 = {
+				---+ ${conf, Heading 2}
+				style = "icon",
+				sign = "󰌖 ", sign_hl = "MarkviewHeading2Sign",
+	
+				icon = "󰎨  ", hl = "MarkviewHeading2",
+				---_
+			},
+			heading_3 = {
+				---+ ${conf, Heading 3}
+				style = "icon",
+	
+				icon = "󰼑  ", hl = "MarkviewHeading3",
+				---_
+			},
+			heading_4 = {
+				---+ ${conf, Heading 4}
+				style = "icon",
+	
+				icon = "󰎲  ", hl = "MarkviewHeading4",
+				---_
+			},
+			heading_5 = {
+				---+ ${conf, Heading 5}
+				style = "icon",
+	
+				icon = "󰼓  ", hl = "MarkviewHeading5",
+				---_
+			},
+			heading_6 = {
+				---+ ${conf, Heading 6}
+				style = "icon",
+	
+				icon = "󰎴  ", hl = "MarkviewHeading6",
+				---_
+			},
+
+			setext_1 = {
+				---+ ${conf, Setext heading 1}
+				style = "decorated",
+	
+				sign = "󰌕 ", sign_hl = "MarkviewHeading1Sign",
+				icon = "  ", hl = "MarkviewHeading1",
+				line = "▂"
+				---_
+			},
+			setext_2 = {
+				---+ ${conf, Setext heading 2}
+				style = "decorated",
+
+				sign = "󰌖 ", sign_hl = "MarkviewHeading2Sign",
+				icon = "  ", hl = "MarkviewHeading2",
+				line = "▁"
+				---_
+			}
+			---_
+		},
+
+		codes = {
+			style = "block",
+			text_direction = "right",
+			min_width = 60,
+
+			text = "󰣖 Code",
+
+			hl = "Code",
+			text_hl = "Icon5"
+		},
+
+		escapes = { enable = true },
+
+		list_items = {
+			---+${conf, List items}
+			enable = true,
+
+			indent_size = 2,
+			shift_width = 4,
+
+			marker_minus = {
+				add_padding = true,
+
+				text = "",
+				hl = "MarkviewListItemMinus"
+			},
+
+			marker_plus = {
+				add_padding = true,
+
+				text = "%d)",
+				hl = "MarkviewListItemPlus"
+			},
+
+			marker_dot = {
+				add_padding = true,
+			}
+			---_
+		},
+
+		inlines = {
+			enable = true,
+
+			padding_left = " ",
+			padding_right = " ",
+
+			hl = "InlineCode"
+		},
+		blocks = {
+			enable = true,
+			hl = "Code",
+			text = "  LaTeX ",
+			text_hl = "CodeInfo",
+
+			pad_amount = 3,
+			pad_char = " "
+		},
+
+		url_links = {
+			enable = true,
+			__emoji_link_compatability = true,
+
+			icon = " ",
+			hl = "MarkviewEmail"
+		},
+
+	},
 	yaml = {
 		properties = {
 			enable = true,

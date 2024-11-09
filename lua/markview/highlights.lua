@@ -141,24 +141,6 @@ highlights.rgb = function (input)
 	end
 end
 
---- Gets a highlight group from a list of
---- potential highlight groups.
----
---- Used for handling *complex fallbacks*
---- where the value may come from any of
---- the possible given highlight groups.
---- 
----@param value string
----@param array table
----@return any?
-highlights.get = function (value, array)
-	for _, item in ipairs(array) do
-		if vim.fn.hlexists(item) and vim.api.nvim_get_hl(0, { name = item, link = false })[value] then
-			return vim.api.nvim_get_hl(0, { name = item, link = false })[value];
-		end
-	end
-end
-
 --- Simple RGB *color-mixer* function.
 --- Supports mixing colors by % values.
 ---
@@ -171,9 +153,9 @@ end
 ---@param per_2 number
 ---@return number[]
 highlights.mix = function (c_1, c_2, per_1, per_2)
-	local _r = clamp((c_1[1] * per_1) + (c_2[1] * per_2), 0, 255);
-	local _g = clamp((c_1[2] * per_1) + (c_2[2] * per_2), 0, 255);
-	local _b = clamp((c_1[3] * per_1) + (c_2[3] * per_2), 0, 255);
+	local _r = (c_1[1] * per_1) + (c_2[1] * per_2);
+	local _g = (c_1[2] * per_1) + (c_2[2] * per_2);
+	local _b = (c_1[3] * per_1) + (c_2[3] * per_2);
 
 	return { math.floor(_r), math.floor(_g), math.floor(_b) };
 end
@@ -191,7 +173,7 @@ end
 --- Returns a list(as `{ H, S, L }`).
 ---@param color number[]
 ---@return number[]
-highlights.hsl = function (color)
+highlights.rgb2hsl = function (color)
 	for c, val in ipairs(color) do
 		if val > 1 then
 			color[c] = val / 255;
@@ -222,6 +204,11 @@ highlights.hsl = function (color)
 	return { hue, sature, lumen };
 end
 
+highlights.hsl = function (rgb)
+	vim.notify("[ markview.nvim ]: highlights.hsl is deprecated. Use 'highlights.rgb2hsl' instead", vim.log.levels.WARN);
+	highlights.rgb2hsl(rgb);
+end
+
 --- Gets the luminosity of a RGB value.
 ---
 ---@param input number[]
@@ -246,7 +233,9 @@ end
 ---@param bg number[]
 ---@param alpha number
 ---@return number[]
+---@deprecated
 highlights.opacify = function (fg, bg, alpha)
+	vim.notify("[ markview.nvim ]: highlights.opacify is deprecated. Use 'highlights.mix' instead", vim.log.levels.WARN);
 	return {
 		math.floor((fg[1] * alpha) + (bg[1] * (1 - alpha))),
 		math.floor((fg[2] * alpha) + (bg[2] * (1 - alpha))),
@@ -403,22 +392,41 @@ local is_dark = function (on_light, on_dark)
 	return vim.o.background == "dark" and (on_dark or true) or (on_light or false);
 end
 
-highlights.color = function (opt, fallbacks, on_light, on_dark)
-	local val = highlights.get(opt, fallbacks);
-	if val then return highlights.rgb(val); end
+highlights.get_property = function (property, groups, light, dark)
+	local val;
 
-	return highlights.rgb(is_dark(on_light, on_dark));
+	for _, item in ipairs(groups) do
+		if
+			vim.fn.hlexists(item) and
+			vim.api.nvim_get_hl(0, { name = item, link = false })[property]
+		then
+			val = vim.api.nvim_get_hl(0, { name = item, link = false })[property];
+			break;
+		end
+	end
+
+	if val then
+		return vim.list_contains({ "fg", "bg", "sp" }, property) and highlights.rgb(val) or val;
+	end
+
+	return vim.list_contains({ "fg", "bg", "sp" }, property) and highlights.rgb(is_dark(light, dark)) or is_dark(light, dark);
+end
+
+---@deprecated
+highlights.color = function (opt, fallback, on_light, on_dark)
+	vim.notify("[ markview.nvim ]: highlights.color is deprecated. Use 'highlights.get_property' instead", vim.log.levels.WARN);
+	highlights.get_property(opt, fallback, on_light, on_dark);
 end
 
 --- Generates a heading
 highlights.generate_heading = function (opts)
-	local vim_bg = highlights.rgb2lab(highlights.color(
+	local vim_bg = highlights.rgb2lab(highlights.get_property(
 		"bg",
 		opts.bg_fallbacks or { "Normal" },
 		opts.light_bg or "#FFFFFF",
 		opts.dark_bg or "#000000"
 	));
-	local h_fg = highlights.rgb2lab(highlights.color(
+	local h_fg = highlights.rgb2lab(highlights.get_property(
 		"fg",
 		opts.fallbacks,
 		opts.light_fg or "#000000",
@@ -428,7 +436,7 @@ highlights.generate_heading = function (opts)
 	local l_bg = highlights.lumen(highlights.lab2rgb(vim_bg));
 	local alpha = opts.alpha or (l_bg > 0.5 and 0.25 or 0.5);
 
-	local res_bg = highlights.lab2rgb(highlights.opacify(h_fg, vim_bg, alpha));
+	local res_bg = highlights.lab2rgb(highlights.mix(h_fg, vim_bg, alpha, 1 - alpha));
 
 	vim_bg = highlights.lab2rgb(vim_bg);
 	h_fg = highlights.lab2rgb(h_fg);
@@ -440,7 +448,7 @@ highlights.generate_heading = function (opts)
 end
 
 highlights.hl_generator = function (opts)
-	local hi = highlights.color(
+	local hi = highlights.get_property(
 		opts.source_opt or "fg",
 		opts.source or { "Normal" },
 		opts.fallback_light or "#000000",
@@ -471,8 +479,8 @@ highlights.dynamic = {
 	end,
 
 	["BlockQuoteNote"] = function ()
-		local fg = highlights.color("bg", { "@comment.note" }, nil, nil) or
-				   highlights.color("fg", { "@comment.note" }, "#1e66f5", "#89b4fa")
+		local fg = highlights.get_property("bg", { "@comment.note" }, nil, nil) or
+				   highlights.get_property("fg", { "@comment.note" }, "#1e66f5", "#89b4fa")
 		;
 
 		return {
@@ -550,139 +558,9 @@ highlights.dynamic = {
 		})
 	end,
 	---_
-	---+${hl, Headings}
-	["Heading1"] = function ()
-		return highlights.generate_heading({
-			group_name = "MarkviewHeading1",
-			sign_name = "MarkviewHeading1Sign",
-
-			fallbacks = { "markdownH1", "@markup.heading.1.markdown", "@markup.heading" },
-			light_fg = "#F38BA8",
-			dark_fg = "#D20F39",
-		})
-	end,
-	["Heading2"] = function ()
-		return highlights.generate_heading({
-			group_name = "MarkviewHeading2",
-			sign_name = "MarkviewHeading2Sign",
-
-			fallbacks = { "markdownH2", "@markup.heading.2.markdown", "@markup.heading" },
-			light_fg = "#FE640B",
-			dark_fg = "#FAB387",
-		})
-	end,
-	["Heading3"] = function ()
-		return highlights.generate_heading({
-			group_name = "MarkviewHeading3",
-			sign_name = "MarkviewHeading3Sign",
-
-			fallbacks = { "markdownH3", "@markup.heading.3.markdown", "@markup.heading" },
-			light_fg = "#F9E2AF",
-			dark_fg = "#DF8E1D",
-		})
-	end,
-	["heading4"] = function ()
-		return highlights.generate_heading({
-			group_name = "MarkviewHeading4",
-			sign_name = "MarkviewHeading4Sign",
-
-			fallbacks = { "markdownH4", "@markup.heading.4.markdown", "@markup.heading" },
-			light_fg = "#A6E3A1",
-			dark_fg = "#40A02B",
-		})
-	end,
-	["Heading5"] = function ()
-		return highlights.generate_heading({
-			group_name = "MarkviewHeading5",
-			sign_name = "MarkviewHeading5Sign",
-
-			fallbacks = { "markdownH5", "@markup.heading.5.markdown", "@markup.heading" },
-			light_fg = "#74C7EC",
-			dark_fg = "#209FB5",
-		})
-	end,
-	["Heading6"] = function ()
-		return highlights.generate_heading({
-			group_name = "MarkviewHeading6",
-			sign_name = "MarkviewHeading6Sign",
-
-			fallbacks = { "markdownH6", "@markup.heading.6.markdown", "@markup.heading" },
-			light_fg = "#B4BEFE",
-			dark_fg = "#7287FD",
-		})
-	end,
-
-
-	["Heading1Sign"] = function ()
-		return highlights.hl_generator({
-			source = { "MarkviewHeading1", "markdownH1", "@markup.heading.1.markdown", "@markup.heading" },
-			light_fg = "#F38BA8",
-			dark_fg = "#D20F39",
-
-			hl_opts = {
-				bg = vim.api.nvim_get_hl(0, { name = "LineNr", link = false }).bg
-			}
-		});
-	end,
-	["Heading2Sign"] = function ()
-		return highlights.hl_generator({
-			source = { "MarkviewHeading2", "markdownH2", "@markup.heading.2.markdown", "@markup.heading" },
-			light_fg = "#FE640B",
-			dark_fg = "#FAB387",
-
-			hl_opts = {
-				bg = vim.api.nvim_get_hl(0, { name = "LineNr", link = false }).bg
-			}
-		});
-	end,
-	["Heading3Sign"] = function ()
-		return highlights.hl_generator({
-			source = { "MarkviewHeading3", "markdownH3", "@markup.heading.3.markdown", "@markup.heading" },
-			light_fg = "#F9E2AF",
-			dark_fg = "#DF8E1D",
-
-			hl_opts = {
-				bg = vim.api.nvim_get_hl(0, { name = "LineNr", link = false }).bg
-			}
-		});
-	end,
-	["heading4Sign"] = function ()
-		return highlights.hl_generator({
-			source = { "MarkviewHeading4", "markdownH4", "@markup.heading.4.markdown", "@markup.heading" },
-			light_fg = "#A6E3A1",
-			dark_fg = "#40A02B",
-
-			hl_opts = {
-				bg = vim.api.nvim_get_hl(0, { name = "LineNr", link = false }).bg
-			}
-		});
-	end,
-	["Heading5Sign"] = function ()
-		return highlights.hl_generator({
-			source = { "MarkviewHeading5", "markdownH5", "@markup.heading.5.markdown", "@markup.heading" },
-			light_fg = "#74C7EC",
-			dark_fg = "#209FB5",
-
-			hl_opts = {
-				bg = vim.api.nvim_get_hl(0, { name = "LineNr", link = false }).bg
-			}
-		});
-	end,
-	["Heading6Sign"] = function ()
-		return highlights.hl_generator({
-			source = { "MarkviewHeading6", "markdownH6", "@markup.heading.6.markdown", "@markup.heading" },
-			light_fg = "#B4BEFE",
-			dark_fg = "#7287FD",
-
-			hl_opts = {
-				bg = vim.api.nvim_get_hl(0, { name = "LineNr", link = false }).bg
-			}
-		});
-	end,
-	---_
 	---+${hl, Code blocks & Inline codes/Injections}
 	["Code"] = function ()
-		local vim_bg = highlights.hsl(highlights.color(
+		local vim_bg = highlights.rgb2hsl(highlights.get_property(
 			"bg",
 			{ "Normal" },
 			"#FFFFFF",
@@ -704,7 +582,7 @@ highlights.dynamic = {
 		---@diagnostic enable
 	end,
 	["CodeFg"] = function ()
-		local vim_bg = highlights.hsl(highlights.color(
+		local vim_bg = highlights.rgb2hsl(highlights.get_property(
 			"bg",
 			{ "Normal" },
 			"#FFFFFF",
@@ -726,7 +604,7 @@ highlights.dynamic = {
 		---@diagnostic enable
 	end,
 	["InlineCode"] = function ()
-		local vim_bg = highlights.hsl(highlights.color(
+		local vim_bg = highlights.rgb2hsl(highlights.get_property(
 			"bg",
 			{ "Normal" },
 			"#FFFFFF",
@@ -929,28 +807,256 @@ highlights.dynamic = {
 		});
 	end,
 	---_
+	---+${hl, Headings}
+	["Heading1"] = function ()
+		return highlights.generate_heading({
+			group_name = "MarkviewHeading1",
+			sign_name = "MarkviewHeading1Sign",
 
-	["Gradient"] = function ()
-		local from = highlights.color("bg", { "Normal" }, "#1E1E2E", "#CDD6F4");
-		local to   = highlights.color("fg", { "Title" }, "#1e66f5", "#89b4fa");
+			fallbacks = { "markdownH1", "@markup.heading.1.markdown", "@markup.heading" },
+			light_fg = "#F38BA8",
+			dark_fg = "#D20F39",
+		})
+	end,
+	["Heading2"] = function ()
+		return highlights.generate_heading({
+			group_name = "MarkviewHeading2",
+			sign_name = "MarkviewHeading2Sign",
 
-		local _o = {};
+			fallbacks = { "markdownH2", "@markup.heading.2.markdown", "@markup.heading" },
+			light_fg = "#FE640B",
+			dark_fg = "#FAB387",
+		})
+	end,
+	["Heading3"] = function ()
+		return highlights.generate_heading({
+			group_name = "MarkviewHeading3",
+			sign_name = "MarkviewHeading3Sign",
 
-		for l = 0, 9 do
-			local _r = lerp(from[1], to[1], l / 9);
-			local _g = lerp(from[2], to[2], l / 9);
-			local _b = lerp(from[3], to[3], l / 9);
+			fallbacks = { "markdownH3", "@markup.heading.3.markdown", "@markup.heading" },
+			light_fg = "#F9E2AF",
+			dark_fg = "#DF8E1D",
+		})
+	end,
+	["heading4"] = function ()
+		return highlights.generate_heading({
+			group_name = "MarkviewHeading4",
+			sign_name = "MarkviewHeading4Sign",
 
-			table.insert(_o, {
-				group_name = "MarkviewGradient" .. (l + 1),
-				value = {
-					default = true,
-					fg = highlights.hex({ _r, _g, _b })
-				}
+			fallbacks = { "markdownH4", "@markup.heading.4.markdown", "@markup.heading" },
+			light_fg = "#A6E3A1",
+			dark_fg = "#40A02B",
+		})
+	end,
+	["Heading5"] = function ()
+		return highlights.generate_heading({
+			group_name = "MarkviewHeading5",
+			sign_name = "MarkviewHeading5Sign",
+
+			fallbacks = { "markdownH5", "@markup.heading.5.markdown", "@markup.heading" },
+			light_fg = "#74C7EC",
+			dark_fg = "#209FB5",
+		})
+	end,
+	["Heading6"] = function ()
+		return highlights.generate_heading({
+			group_name = "MarkviewHeading6",
+			sign_name = "MarkviewHeading6Sign",
+
+			fallbacks = { "markdownH6", "@markup.heading.6.markdown", "@markup.heading" },
+			light_fg = "#B4BEFE",
+			dark_fg = "#7287FD",
+		})
+	end,
+
+
+	["Heading1Sign"] = function ()
+		return highlights.hl_generator({
+			source = { "MarkviewHeading1", "markdownH1", "@markup.heading.1.markdown", "@markup.heading" },
+			light_fg = "#F38BA8",
+			dark_fg = "#D20F39",
+
+			hl_opts = {
+				bg = vim.api.nvim_get_hl(0, { name = "LineNr", link = false }).bg
+			}
+		});
+	end,
+	["Heading2Sign"] = function ()
+		return highlights.hl_generator({
+			source = { "MarkviewHeading2", "markdownH2", "@markup.heading.2.markdown", "@markup.heading" },
+			light_fg = "#FE640B",
+			dark_fg = "#FAB387",
+
+			hl_opts = {
+				bg = vim.api.nvim_get_hl(0, { name = "LineNr", link = false }).bg
+			}
+		});
+	end,
+	["Heading3Sign"] = function ()
+		return highlights.hl_generator({
+			source = { "MarkviewHeading3", "markdownH3", "@markup.heading.3.markdown", "@markup.heading" },
+			light_fg = "#F9E2AF",
+			dark_fg = "#DF8E1D",
+
+			hl_opts = {
+				bg = vim.api.nvim_get_hl(0, { name = "LineNr", link = false }).bg
+			}
+		});
+	end,
+	["heading4Sign"] = function ()
+		return highlights.hl_generator({
+			source = { "MarkviewHeading4", "markdownH4", "@markup.heading.4.markdown", "@markup.heading" },
+			light_fg = "#A6E3A1",
+			dark_fg = "#40A02B",
+
+			hl_opts = {
+				bg = vim.api.nvim_get_hl(0, { name = "LineNr", link = false }).bg
+			}
+		});
+	end,
+	["Heading5Sign"] = function ()
+		return highlights.hl_generator({
+			source = { "MarkviewHeading5", "markdownH5", "@markup.heading.5.markdown", "@markup.heading" },
+			light_fg = "#74C7EC",
+			dark_fg = "#209FB5",
+
+			hl_opts = {
+				bg = vim.api.nvim_get_hl(0, { name = "LineNr", link = false }).bg
+			}
+		});
+	end,
+	["Heading6Sign"] = function ()
+		return highlights.hl_generator({
+			source = { "MarkviewHeading6", "markdownH6", "@markup.heading.6.markdown", "@markup.heading" },
+			light_fg = "#B4BEFE",
+			dark_fg = "#7287FD",
+
+			hl_opts = {
+				bg = vim.api.nvim_get_hl(0, { name = "LineNr", link = false }).bg
+			}
+		});
+	end,
+	---_
+
+	["Gradient0"] = function ()
+		local from = highlights.get_property("bg", { "Normal" }, "#1E1E2E", "#CDD6F4");
+
+		return {
+			default = true,
+			fg = highlights.hex(from);
+		};
+	end,
+	["Gradient1"] = function ()
+		local from = highlights.get_property("bg", { "Normal" }, "#1E1E2E", "#CDD6F4");
+		local to   = highlights.get_property("fg", { "Title" }, "#1e66f5", "#89b4fa");
+
+		return {
+			default = true,
+			fg = highlights.hex({
+				lerp(from[1], to[1], 1 / 9),
+				lerp(from[2], to[2], 1 / 9),
+				lerp(from[3], to[3], 1 / 9),
 			});
-		end
+		};
+	end,
+	["Gradient2"] = function ()
+		local from = highlights.get_property("bg", { "Normal" }, "#1E1E2E", "#CDD6F4");
+		local to   = highlights.get_property("fg", { "Title" }, "#1e66f5", "#89b4fa");
 
-		return _o;
+		return {
+			default = true,
+			fg = highlights.hex({
+				lerp(from[1], to[1], 2 / 9),
+				lerp(from[2], to[2], 2 / 9),
+				lerp(from[3], to[3], 2 / 9),
+			});
+		};
+	end,
+	["Gradient3"] = function ()
+		local from = highlights.get_property("bg", { "Normal" }, "#1E1E2E", "#CDD6F4");
+		local to   = highlights.get_property("fg", { "Title" }, "#1e66f5", "#89b4fa");
+
+		return {
+			default = true,
+			fg = highlights.hex({
+				lerp(from[1], to[1], 3 / 9),
+				lerp(from[2], to[2], 3 / 9),
+				lerp(from[3], to[3], 3 / 9),
+			});
+		};
+	end,
+	["Gradient4"] = function ()
+		local from = highlights.get_property("bg", { "Normal" }, "#1E1E2E", "#CDD6F4");
+		local to   = highlights.get_property("fg", { "Title" }, "#1e66f5", "#89b4fa");
+
+		return {
+			default = true,
+			fg = highlights.hex({
+				lerp(from[1], to[1], 4 / 9),
+				lerp(from[2], to[2], 4 / 9),
+				lerp(from[3], to[3], 4 / 9),
+			});
+		};
+	end,
+	["Gradient5"] = function ()
+		local from = highlights.get_property("bg", { "Normal" }, "#1E1E2E", "#CDD6F4");
+		local to   = highlights.get_property("fg", { "Title" }, "#1e66f5", "#89b4fa");
+
+		return {
+			default = true,
+			fg = highlights.hex({
+				lerp(from[1], to[1], 5 / 9),
+				lerp(from[2], to[2], 5 / 9),
+				lerp(from[3], to[3], 5 / 9),
+			});
+		};
+	end,
+	["Gradient6"] = function ()
+		local from = highlights.get_property("bg", { "Normal" }, "#1E1E2E", "#CDD6F4");
+		local to   = highlights.get_property("fg", { "Title" }, "#1e66f5", "#89b4fa");
+
+		return {
+			default = true,
+			fg = highlights.hex({
+				lerp(from[1], to[1], 6 / 9),
+				lerp(from[2], to[2], 6 / 9),
+				lerp(from[3], to[3], 6 / 9),
+			});
+		};
+	end,
+	["Gradient7"] = function ()
+		local from = highlights.get_property("bg", { "Normal" }, "#1E1E2E", "#CDD6F4");
+		local to   = highlights.get_property("fg", { "Title" }, "#1e66f5", "#89b4fa");
+
+		return {
+			default = true,
+			fg = highlights.hex({
+				lerp(from[1], to[1], 7 / 9),
+				lerp(from[2], to[2], 7 / 9),
+				lerp(from[3], to[3], 7 / 9),
+			});
+		};
+	end,
+	["Gradient8"] = function ()
+		local from = highlights.get_property("bg", { "Normal" }, "#1E1E2E", "#CDD6F4");
+		local to   = highlights.get_property("fg", { "Title" }, "#1e66f5", "#89b4fa");
+
+		return {
+			default = true,
+			fg = highlights.hex({
+				lerp(from[1], to[1], 8 / 9),
+				lerp(from[2], to[2], 8 / 9),
+				lerp(from[3], to[3], 8 / 9),
+			});
+		};
+	end,
+	["Gradient9"] = function ()
+		local to   = highlights.get_property("fg", { "Title" }, "#1e66f5", "#89b4fa");
+
+		return {
+			default = true,
+			fg = highlights.hex(to);
+		};
 	end,
 
 	---+${hl, Links}
@@ -961,7 +1067,7 @@ highlights.dynamic = {
 		}
 	end,
 
-	["ImageLink"] = function ()
+	["Image"] = function ()
 		return {
 			default = true,
 			link = "@markup.link.label.markdown_inline"
@@ -979,13 +1085,17 @@ highlights.dynamic = {
 	["LatexSubscript"] = function ()
 		return {
 			default = true,
-			fg = highlights.get("fg", { "Conditional", "Keyword" })
+			fg = highlights.hex(
+				highlights.get_property("fg", { "Conditional", "Keyword" }, "#8839EF", "#CBA6F7")
+			)
 		};
 	end,
 	["LatexSuperscript"] = function ()
 		return {
 			default = true,
-			fg = highlights.get("fg", { "Character" })
+			fg = highlights.hex(
+				highlights.get_property("fg", { "Character" }, "#179299", "#94E2D5")
+			)
 		};
 	end,
 	---_
@@ -1005,8 +1115,8 @@ highlights.dynamic = {
 		})
 	end,
 	["ListItemStar"] = function ()
-		local fg  = highlights.color("bg", { "@comment.note" }, nil, nil) or
-					highlights.color("fg", { "@comment.note" }, "#1E66F5", "#89B4FA")
+		local fg  = highlights.get_property("bg", { "@comment.note" }, nil, nil) or
+					highlights.get_property("fg", { "@comment.note" }, "#1E66F5", "#89B4FA")
 		;
 
 		return {
@@ -1017,9 +1127,9 @@ highlights.dynamic = {
 	---_
 	---+${hl, Tables}
 	["TableHeader"] = function ()
-		local header_fg =   highlights.color("fg", { "DiagnosticInfo" }, nil, nil) or
-							highlights.color("bg", { "@comment.note" }, nil, nil) or
-							highlights.color("fg", { "@comment.note" }, "#179299",  "#94e2d5")
+		local header_fg =   highlights.get_property("fg", { "DiagnosticInfo" }, nil, nil) or
+							highlights.get_property("bg", { "@comment.note" }, nil, nil) or
+							highlights.get_property("fg", { "@comment.note" }, "#179299",  "#94e2d5")
 		;
 
 		return {
@@ -1029,8 +1139,8 @@ highlights.dynamic = {
 	end,
 
 	["TableBorder"] = function ()
-		local fg =  highlights.color("bg", { "@comment.note" }, nil, nil) or
-					highlights.color("fg", { "@comment.note" }, "#1e66f5", "#89b4fa")
+		local fg =  highlights.get_property("bg", { "@comment.note" }, nil, nil) or
+					highlights.get_property("fg", { "@comment.note" }, "#1e66f5", "#89b4fa")
 		;
 
 		return {
@@ -1040,8 +1150,8 @@ highlights.dynamic = {
 	end,
 
 	["TableAlignLeft"] = function ()
-		local fg =  highlights.color("bg", { "@comment.note" }, nil, nil) or
-					highlights.color("fg", { "@comment.note" }, "#1e66f5", "#89b4fa")
+		local fg =  highlights.get_property("bg", { "@comment.note" }, nil, nil) or
+					highlights.get_property("fg", { "@comment.note" }, "#1e66f5", "#89b4fa")
 		;
 
 		return {
@@ -1051,8 +1161,8 @@ highlights.dynamic = {
 	end,
 
 	["TableAlignCenter"] = function ()
-		local fg =  highlights.color("bg", { "@comment.note" }, nil, nil) or
-					highlights.color("fg", { "@comment.note" }, "#1e66f5", "#89b4fa")
+		local fg =  highlights.get_property("bg", { "@comment.note" }, nil, nil) or
+					highlights.get_property("fg", { "@comment.note" }, "#1e66f5", "#89b4fa")
 		;
 
 		return {
@@ -1062,8 +1172,8 @@ highlights.dynamic = {
 	end,
 
 	["TableAlignRight"] = function ()
-		local fg =  highlights.color("bg", { "@comment.note" }, nil, nil) or
-					highlights.color("fg", { "@comment.note" }, "#1e66f5", "#89b4fa")
+		local fg =  highlights.get_property("bg", { "@comment.note" }, nil, nil) or
+					highlights.get_property("fg", { "@comment.note" }, "#1e66f5", "#89b4fa")
 		;
 
 		return {
