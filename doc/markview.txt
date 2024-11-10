@@ -35,7 +35,7 @@ Markdown ~
     • Supports a ton of markdown syntax such as,
         • Block quotes(+ callouts/alerts).
         • Code blocks.
-        • Checkboxex(+ custom states).
+        • Checkboxes(+ custom states).
         • Escaped characters.
         • Headings(atx & setext).
         • Horizontal rules.
@@ -46,7 +46,7 @@ Markdown ~
             • Plus(+) list items.
             • Star(*) list items.
             • Dot(1.) list items.
-            • Parenthasis[1)] list items.
+            • Parenthesis[1)] list items.
         • Links,
             • Block references¹.
             • Emails.
@@ -67,7 +67,7 @@ Markdown ~
 Typst ~
 
     • Supports various typst syntax such as,
-        • Escaoed characters.
+        • Escaped characters.
         • Embedded codes.
         • Headings.
         • Labels.
@@ -80,16 +80,16 @@ Typst ~
         • Terminologies.
     • Stylized codes, math sections & raw blocks.
     • Inline & block rendering of math sections.
-    • Indented & auto numbered list items(suports custom text formats too).
+    • Indented & auto numbered list items(supports custom text formats too).
 
 LaTeX ~
 
-    • Supoorts various LaTeX math syntaxes such as,
+    • Supports various LaTeX math syntaxes such as,
         • Block maths.
         • Inline maths.
         • Math fonts.
         • Math symbols.
-        • Parenthasis({,}).
+        • Parenthesis({,}).
         • Subscripts & Superscripts.
         • Text blocks.
     • Inline & block rendering of maths.
@@ -116,9 +116,9 @@ Previewing ~
 Others ~
 
     • Ability to configure at any time!
-    • Extra modulues,
+    • Extra modules,
         • checkbox.lua,
-          Checkbox state changer & toggler.
+          Checkbox state changer & toggle.
         • editor.lua,
           Code block creator and editor.
         • headings.lua
@@ -190,7 +190,7 @@ Installation                                           *markview.nvim-install*
 Configuration             *markview.nvim-configuration* *markview.nvim-config*
 
 ▌ 📝 Note
-▌ As `markview.nvim` foucses on customisation, there are many options as such
+▌ As `markview.nvim` focuses on customisation, there are many options as such
 ▌ these options are grouped based on what they do.
 >txt
                ├──────╸level 1╺───────╂──────╸level 2╺──────╂───╸level 3╺───┤
@@ -442,7 +442,7 @@ highlights.mix({c_1}, {c_2}, {per_1}, {per_2})
                                                        *markview.nvim-hls.mix*
                                                 *markview.nvim-highlights.mix*
 
-    Mixes 2 color values based on the peecentage.
+    Mixes 2 color values based on the percentage.
 
     Parameters: ~
         • {c_1}   A list containing the color(in RGB or HSL or XYZ or LAB).
@@ -482,7 +482,7 @@ highlights.get_property({property}, {groups}, {light}, {dark})
         {value}    The value of the property.
 
                    Note: If {property} is "fg", "bg" or "sp" then the
-                         value will be a list containing the RGB vlaues
+                         value will be a list containing the RGB values
                          instead of the integer value.
 
     Usage: ~
@@ -604,13 +604,44 @@ highlights.rgb2lab({rgb})
     >lua
         highlights.lab2rgb({ 30, 30, 46 });
 <
+==============================================================================
+Experimental Options                            *markview.nvim-o-experimental*
 
+Experimental options are meant for testing purposes as they can on some
+occasions break other things.
 
+                                            *markview.nvim-exp.file_byte_read*
+                                   *markview.nvim-experimental.file_byte_read*
+    • file_byte_read, {integer}
+      Default: 1000
 
+      Number of bytes to read from a file.
 
+      Used by the internal link opener to determine whether to open the file
+      inside Neovim or not.
 
+      Note: Not used when filetypes are specified in the config.
 
+                                 *markview.nvim-exp.list_empty_line_tolerance*
+                        *markview.nvim-experimental.list_empty_line_tolerance*
+    • list_empty_line_tolerance, {integer}
+      Default: 3
 
+      Amount of empty lines a list_item can have between it's lines. >txt
+        - list items     ┐ ╭╸ Lines to include in the list item.
+                         │ │
+          A single line. │ │
+                         │ │
+                         │ ┘
+                         │
+          Another line.  ╰╸ Lines tree-sitter includes in the list item.
+<
+                                            *markview.nvim-exp.text_filetypes*
+                                   *markview.nvim-experimental.text_filetypes*
+    • text_filetypes, {list?}
+      Default: nil
+
+      Filetypes that should be opened inside Neovim.
 
 
 
