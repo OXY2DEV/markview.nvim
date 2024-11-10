@@ -938,7 +938,24 @@ spec.default = {
 			text_hl = "Icon5"
 		},
 
+		raw_blocks = {
+			style = "block",
+			icons = "internal",
+			language_direction = "right",
+
+			min_width = 60,
+			pad_amount = 3,
+
+			hl = "Code"
+		},
+
 		escapes = { enable = true },
+
+		labels = {
+			hl = "InlineCode",
+			padding_left = " ",
+			padding_right = " "
+		},
 
 		list_items = {
 			---+${conf, List items}
@@ -967,7 +984,7 @@ spec.default = {
 			---_
 		},
 
-		inlines = {
+		raw_spans = {
 			enable = true,
 
 			padding_left = " ",
@@ -993,6 +1010,14 @@ spec.default = {
 			hl = "MarkviewEmail"
 		},
 
+		reference_links = {
+			icon = " ",
+			hl = "Hyperlink"
+		},
+
+		terms = {
+			text = " ",
+		}
 	},
 	yaml = {
 		properties = {
