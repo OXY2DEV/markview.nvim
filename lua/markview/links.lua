@@ -53,7 +53,7 @@ links.__open = function (address)
 
 	local extension = vim.fn.fnamemodify(address, ":e");
 
-	if spec.get("links", "open_in_nvim") then
+	if spec.get("experimental", "text_filetypes") then
 		---+${default, Configuration for filetypes to open in nvim exists}
 		local in_nvim = spec.get("links", "open_in_nvim");
 

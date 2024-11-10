@@ -187,7 +187,7 @@ markdown.list_item = function (buffer, TSNode, text, range)
 
 	range.col_start = before:len();
 
-	local tolarence = spec.get("options", "list_empty_lines_tolerance") or 3; ---@diagnostic disable-line
+	local tolerance = spec.get("experimental", "list_empty_line_tolerance") or 3; ---@diagnostic disable-line
 
 	local candidates = {};
 	local inside_code = false;
@@ -197,7 +197,7 @@ markdown.list_item = function (buffer, TSNode, text, range)
 		--- end
 		if line ~= "" and #line < range.col_start then
 			break;
-		elseif tolarence == 0 then
+		elseif tolerance == 0 then
 			break;
 		end
 
@@ -231,7 +231,7 @@ markdown.list_item = function (buffer, TSNode, text, range)
 		end
 
 		if line == "" then
-			tolarence = tolarence - 1;
+			tolerance = tolerance - 1;
 		elseif line:match("^%s*[%-%+%*]%s") then
 			break;
 		elseif line:match("^%s*%d[%.%)]%s") then
