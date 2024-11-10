@@ -449,7 +449,7 @@ markview.setup = function (config)
 	local highlights = require("markview.highlights");
 
 	spec.setup(config);
-	highlights.create(spec.config.highlight_groups);
+	highlights.create(spec.get("highlight_groups"));
 end
 
 return markview;
