@@ -19,8 +19,8 @@ local function tbl_clamp(value, index)
 	return value[index];
 end
 
-local get_config = function (opt)
-	return spec.get("markdown", opt);
+local get_config = function (...)
+	return spec.get({ "markdown", ... });
 end
 
 markdown.custom_config = function (config, value)
@@ -55,7 +55,7 @@ end
 
 markdown.output = function (str)
 	local function config(opt)
-		local conf = spec.get("markdown_inline");
+		local conf = spec.get({ "markdown_inline" });
 
 		if not conf or conf.enable == false then
 			return;
@@ -988,19 +988,19 @@ markdown.list_item = function (buffer, item)
 		return;
 	end
 
-	if not item.checkbox or not spec.get("markdown_inline", "checkboxes") then
+	if not item.checkbox or not spec.get({ "markdown_inline", "checkboxes" }) then
 		goto continue;
-	elseif spec.get("markdown_inline", "checkboxes", "enable") == false then
+	elseif spec.get({ "markdown_inline", "checkboxes", "enable" }) == false then
 		goto continue;
 	end
 
 	if item.checkbox == "X" or item.checkbox == "x" then
-		checkbox = spec.get("markdown_inline", "checkboxes", "checked");
+		checkbox = spec.get({ "markdown_inline", "checkboxes", "checked" });
 	elseif item.checkbox == " " then
-		checkbox = spec.get("markdown_inline", "checkboxes", "unchecked");
+		checkbox = spec.get({ "markdown_inline", "checkboxes", "unchecked" });
 	else
 		---@diagnostic disable-next-line
-		for _, conf in ipairs(spec.get("markdown_inline", "checkboxes", "custom") or {}) do
+		for _, conf in ipairs(spec.get({ "markdown_inline", "checkboxes", "custom" }) or {}) do
 			if conf.match_string == item.checkbox then
 				checkbox = conf;
 				break;

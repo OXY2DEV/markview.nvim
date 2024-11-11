@@ -187,7 +187,7 @@ markdown.list_item = function (buffer, TSNode, text, range)
 
 	range.col_start = before:len();
 
-	local tolerance = spec.get("experimental", "list_empty_line_tolerance") or 3; ---@diagnostic disable-line
+	local tolerance = spec.get({ "experimental", "list_empty_line_tolerance" }) or 3; ---@diagnostic disable-line
 
 	local candidates = {};
 	local inside_code = false;
@@ -472,13 +472,20 @@ markdown.parse = function (buffer, TSTree, from, to)
 			end
 		end
 
-		markdown[capture_name:gsub("^markdown%.", "")](buffer, capture_node, capture_text, {
-			row_start = r_start,
-			col_start = c_start,
+		pcall(
+			markdown[capture_name:gsub("^markdown%.", "")],
 
-			row_end = r_end,
-			col_end = c_end
-		});
+			buffer,
+			capture_node,
+			capture_text,
+			{
+				row_start = r_start,
+				col_start = c_start,
+
+				row_end = r_end,
+				col_end = c_end
+			}
+		);
 	end
 
 	return markdown.content, markdown.sorted;

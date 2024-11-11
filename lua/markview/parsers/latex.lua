@@ -133,7 +133,7 @@ end
 
 ---@type markview.parsers.function
 latex.block = function (buffer, _, text, range)
-	local from, to = vim.api.nvim_buf_get_lines(buffer, range.row_start, range.row_start + 1, false)[1]:sub(0, range.col_start), vim.api.nvim_buf_get_lines(buffer, range.row_end, range.row_end + 1, false)[1]:sub(0, range.col_end);
+	local from, to = vim.api.nvim_buf_get_lines(buffer, range.row_start, range.row_start + 1, false)[1]:sub(0, range.col_start), vim.api.nvim_buf_get_lines(buffer, range.row_end, range.row_end + 1, true)[1]:sub(0, range.col_end);
 	local inline, closed = false, true;
 
 	if
@@ -389,15 +389,22 @@ latex.parse = function (buffer, TSTree, from, to)
 			table.insert(lines, line);
 		end
 
-		latex[capture_name:gsub("^latex%.", "")](buffer, capture_node, lines, {
-			row_start = r_start,
-			col_start = c_start,
+		pcall(
+			latex[capture_name:gsub("^latex%.", "")],
 
-			row_end = r_end,
-			col_end = c_end
-		});
+			buffer,
+			capture_node,
+			lines,
+			{
+				row_start = r_start,
+				col_start = c_start,
 
-	    ::continue::
+				row_end = r_end,
+				col_end = c_end
+			}
+		);
+
+		::continue::
 	end
 
 	return latex.content, latex.sorted;

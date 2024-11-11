@@ -327,13 +327,20 @@ typst.parse = function (buffer, TSTree, from, to)
 			table.insert(lines, line);
 		end
 
-		typst[capture_name:gsub("^typst%.", "")](buffer, capture_node, lines, {
-			row_start = r_start,
-			col_start = c_start,
+		pcall(
+			typst[capture_name:gsub("^typst%.", "")],
 
-			row_end = r_end,
-			col_end = c_end
-		});
+			buffer,
+			capture_node,
+			lines,
+			{
+				row_start = r_start,
+				col_start = c_start,
+
+				row_end = r_end,
+				col_end = c_end
+			}
+		);
 
 	    ::continue::
 	end

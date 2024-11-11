@@ -23,12 +23,12 @@ spec.default = {
 			-- markdown = { "code_blocks" }
 		},
 
-		auto_start = true,
+		enable_preview_on_attach = true,
 
 		max_file_length = 1000,
 		render_distance = 20,
-		edit_distance = 1,
-		debounce = 25,
+		edit_distance = { 1, 0 },
+		debounce_delay = 25,
 
 		filetypes = { "markdown", "typst" },
 		-- ignore_buftypes = { "nofile" },
@@ -36,8 +36,8 @@ spec.default = {
 
 		callbacks = {
 			on_attach = function (_, wins)
-				local preview_modes = spec.get("preview", "modes") or {};
-				local hybrid_modes = spec.get("preview", "hybrid_modes") or {};
+				local preview_modes = spec.get({ "preview", "modes" }) or {};
+				local hybrid_modes = spec.get({ "preview", "hybrid_modes" }) or {};
 
 				local concealcursor = "";
 
@@ -63,8 +63,8 @@ spec.default = {
 			end,
 
 			on_mode_change = function (_, wins, mode)
-				local preview_modes = spec.get("preview", "modes") or {};
-				local hybrid_modes = spec.get("preview", "hybrid_modes") or {};
+				local preview_modes = spec.get({ "preview", "modes" }) or {};
+				local hybrid_modes = spec.get({ "preview", "hybrid_modes" }) or {};
 
 				local concealcursor = "";
 
@@ -80,7 +80,7 @@ spec.default = {
 				for _, win in ipairs(wins) do
 					if
 						vim.list_contains(preview_modes, mode) and
-						require("markview").state.enable == true
+						require("markview").__state.enable == true
 					then
 						vim.wo[win].conceallevel = 3;
 						vim.wo[win].concealcursor = concealcursor;
@@ -92,6 +92,7 @@ spec.default = {
 			end
 		}
 	},
+
 	experimental = {
 		list_empty_line_tolarance = 3
 	};
@@ -1138,10 +1139,10 @@ spec.setup = function (config)
 	-- vim.print(config)
 end
 
-spec.get = function (...)
+spec.get = function (opts, func, ...)
 	local _o = spec.config;
 
-	for _, key in ipairs({ ... }) do
+	for _, key in ipairs(opts or {}) do
 		if _o[key] then
 			if _o.enable == false then
 				return;
@@ -1153,7 +1154,14 @@ spec.get = function (...)
 		end
 	end
 
+	if func and pcall(_o, ...) then
+		return _o(...);
+	end
+
 	return _o;
 end
 
+-- local k = vim.tbl_keys(spec.default.preview);
+-- table.sort(k)
+-- vim.print(k)
 return spec;

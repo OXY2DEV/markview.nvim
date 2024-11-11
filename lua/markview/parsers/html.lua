@@ -167,13 +167,20 @@ html.parse = function (buffer, TSTree, from, to)
 			table.insert(lines, line);
 		end
 
-		html[capture_name:gsub("^html%.", "")](buffer, capture_node, lines, {
-			row_start = r_start,
-			col_start = c_start,
+		pcall(
+			html[capture_name:gsub("^html%.", "")],
 
-			row_end = r_end,
-			col_end = c_end
-		});
+			buffer,
+			capture_node,
+			lines,
+			{
+				row_start = r_start,
+				col_start = c_start,
+
+				row_end = r_end,
+				col_end = c_end
+			}
+		);
 
 	    ::continue::
 	end

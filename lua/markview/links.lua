@@ -30,7 +30,7 @@ end
 --- Opens a file inside **Neovim**.
 ---@param address string
 links.__open_in_nvim = function (address)
-	local method = spec.get("links", "nvim_open_method") or "tab";
+	local method = spec.get({ "links", "nvim_open_method" }) or "tab";
 
 	if method == "tab" then
 		vim.cmd("tabnew " .. address);
@@ -53,9 +53,9 @@ links.__open = function (address)
 
 	local extension = vim.fn.fnamemodify(address, ":e");
 
-	if spec.get("experimental", "text_filetypes") then
+	if spec.get({ "experimental", "text_filetypes" }) then
 		---+${default, Configuration for filetypes to open in nvim exists}
-		local in_nvim = spec.get("links", "open_in_nvim");
+		local in_nvim = spec.get({ "experimental", "text_filetypes" });
 
 		if
 			not address:match("^http") and
@@ -78,7 +78,7 @@ links.__open = function (address)
 		return;
 	end
 
-	local read_bytes = spec.get("experimental", "file_byte_read") or 1024;
+	local read_bytes = spec.get({ "experimental", "file_byte_read" }) or 1024;
 	local bytes = file:read(read_bytes);
 	file:close();
 

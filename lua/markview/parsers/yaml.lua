@@ -93,13 +93,20 @@ yaml.parse = function (buffer, TSTree, from, to)
 			table.insert(lines, line);
 		end
 
-		yaml[capture_name:gsub("^yaml%.", "")](buffer, capture_node, lines, {
-			row_start = r_start,
-			col_start = c_start,
+		pcall(
+			yaml[capture_name:gsub("^yaml%.", "")],
 
-			row_end = r_end,
-			col_end = c_end
-		});
+			buffer,
+			capture_node,
+			lines,
+			{
+				row_start = r_start,
+				col_start = c_start,
+
+				row_end = r_end,
+				col_end = c_end
+			}
+		);
 
 	    ::continue::
 	end

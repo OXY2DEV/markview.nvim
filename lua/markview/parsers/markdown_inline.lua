@@ -325,6 +325,7 @@ inline.parse = function (buffer, TSTree, from, to)
 	]]);
 
 	for capture_id, capture_node, _, _ in scanned_queries:iter_captures(TSTree:root(), buffer, from, to) do
+		if capture_node:has_changes() then break; end
 		local capture_name = scanned_queries.captures[capture_id];
 
 		if not capture_name:match("^markdown_inline") then
@@ -337,13 +338,20 @@ inline.parse = function (buffer, TSTree, from, to)
 
 		capture_text = vim.api.nvim_buf_get_lines(buffer, r_start, r_start == r_end and r_end + 1 or r_end, false);
 
-		inline[capture_name:gsub("^markdown_inline%.", "")](buffer, capture_node, capture_text, {
-			row_start = r_start,
-			col_start = c_start,
+		pcall(
+			inline[capture_name:gsub("^markdown_inline%.", "")],
+			buffer,
+			capture_node,
+			capture_text,
 
-			row_end = r_end,
-			col_end = c_end
-		});
+			{
+				row_start = r_start,
+				col_start = c_start,
+
+				row_end = r_end,
+				col_end = c_end
+			}
+		);
 
 	    ::continue::
 	end

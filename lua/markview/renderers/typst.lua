@@ -7,7 +7,7 @@ local devicons_loaded, devicons = pcall(require, "nvim-web-devicons");
 local mini_loaded, MiniIcons = pcall(require, "mini.icons");
 
 local get_config = function (...)
-	local _c = spec.get("typst", ...);
+	local _c = spec.get({ "typst", ... });
 
 	if
 		not _c or

@@ -13,7 +13,7 @@ latex.cache = {
 };
 
 local get_config = function (...)
-	local _c = spec.get("latex", ...);
+	local _c = spec.get({ "latex", ... });
 
 	if not _c or _c.enable == false then
 		return;

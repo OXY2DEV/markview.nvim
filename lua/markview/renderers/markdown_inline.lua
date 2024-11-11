@@ -4,8 +4,8 @@ local spec = require("markview.spec");
 local utils = require("markview.utils");
 local entities = require("markview.entities");
 
-local get_config = function (opt)
-	return spec.get("markdown_inline", opt);
+local get_config = function (...)
+	return spec.get({ "markdown_inline", ... });
 end
 
 inline.__ns = {
