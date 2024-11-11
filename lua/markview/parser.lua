@@ -79,10 +79,12 @@ parser.init = function (buffer, from, to, cache)
 		return parser.content, parser.sorted;
 	end
 
-    vim.treesitter.get_parser(buffer):parse();
+    vim.treesitter.get_parser(buffer):parse(true);
 	local root_parser = vim.treesitter.get_parser(buffer);
 
 	root_parser:for_each_tree(function (TSTree, language_tree)
+		language_tree:parse(true);
+
 		local language = language_tree:lang();
 		local content, sorted = {}, {};
 
@@ -101,5 +103,7 @@ parser.init = function (buffer, from, to, cache)
 
 	return parser.content, parser.sorted;
 end
+
+parser.parse = parser.init;
 
 return parser;
