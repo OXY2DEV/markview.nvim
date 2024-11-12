@@ -56,7 +56,7 @@ vim.api.nvim_create_autocmd({ "BufAdd", "BufEnter" }, {
 				ft
 			) and
 			not vim.list_contains(
-				spec.get({ "preview", "buftype_ignore" }) or {},
+				spec.get({ "preview", "ignore_buftypes" }) or {},
 				bt
 			)
 		then
