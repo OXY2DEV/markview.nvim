@@ -26,7 +26,7 @@ spec.default = {
 		enable_preview_on_attach = true,
 
 		max_file_length = 1000,
-		render_distance = 20,
+		render_distance = vim.o.lines,
 		edit_distance = { 1, 0 },
 		debounce_delay = 25,
 
@@ -80,7 +80,7 @@ spec.default = {
 				for _, win in ipairs(wins) do
 					if
 						vim.list_contains(preview_modes, mode) and
-						require("markview").__state.enable == true
+						require("markview").state.enable == true
 					then
 						vim.wo[win].conceallevel = 3;
 						vim.wo[win].concealcursor = concealcursor;
@@ -824,7 +824,7 @@ spec.default = {
 	},
 	html = {},
 	latex = {
-		brackets = {
+		parenthesis = {
 			enable = true,
 			left = "(",
 			right = "(",

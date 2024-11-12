@@ -39,7 +39,7 @@ latex.set_ns = function ()
 
 	local available = vim.api.nvim_get_namespaces();
 	local ns_list = {
-		["brackets"] = "markview/latex/brackets",
+		["parenthesis"] = "markview/latex/parenthesis",
 		["commands"] = "markview/latex/commands",
 		["styles"] = "markview/latex/styles",
 		["fonts"] = "markview/latex/fonts",
@@ -71,7 +71,8 @@ latex.custom_config = function (config, value)
 end
 
 latex.bracket = function (buffer, item)
-	local config = get_config("brackets");
+	---+${func}
+	local config = get_config("parenthesis");
 
 	if not config then
 		return;
@@ -80,21 +81,23 @@ latex.bracket = function (buffer, item)
 	local range = item.range;
 
 	--- Left parenthesis
-	vim.api.nvim_buf_set_extmark(buffer, latex.ns("brackets"), range.row_start, range.col_start, {
+	vim.api.nvim_buf_set_extmark(buffer, latex.ns("parenthesis"), range.row_start, range.col_start, {
 		undo_restore = false, invalidate = true,
 		end_col = range.col_start + 1,
 		conceal = ""
 	});
 
 	--- Right parenthesis
-	vim.api.nvim_buf_set_extmark(buffer, latex.ns("brackets"), range.row_end, range.col_end - 1, {
+	vim.api.nvim_buf_set_extmark(buffer, latex.ns("parenthesis"), range.row_end, range.col_end - 1, {
 		undo_restore = false, invalidate = true,
 		end_col = range.col_end,
 		conceal = ""
 	});
+	---_
 end
 
 latex.escaped = function (buffer, item)
+	---+${func}
 	local config = get_config("escapes");
 
 	if not config then
@@ -120,9 +123,11 @@ latex.escaped = function (buffer, item)
 
 		hl_group = utils.set_hl(config.hl)
 	});
+	---_
 end
 
 latex.symbol = function (buffer, item)
+	---+${func}
 	local config = get_config("symbols");
 
 	if not config then
@@ -172,9 +177,11 @@ latex.symbol = function (buffer, item)
 		virt_text = { { _o, utils.set_hl(_h) } },
 		hl_mode = "combine"
 	});
+	---_
 end
 
 latex.font = function (buffer, item)
+	---+${func}
 	local config = get_config("fonts");
 
 	if not config then
@@ -197,9 +204,11 @@ latex.font = function (buffer, item)
 		end_col = range.col_end,
 		conceal = "",
 	});
+	---_
 end
 
 latex.word = function (buffer, item)
+	---+${func}
 	local config = get_config("fonts");
 
 	if not config then
@@ -277,9 +286,11 @@ latex.word = function (buffer, item)
 		virt_text = { { _o, utils.set_hl(_h) } },
 		hl_mode = "combine"
 	});
+	---_
 end
 
 latex.subscript = function (buffer, item)
+	---+${func}
 	local config = get_config("subscripts");
 
 	if not config then
@@ -331,9 +342,11 @@ latex.subscript = function (buffer, item)
 			hl_mode = "combine"
 		});
 	end
+	---_
 end
 
 latex.superscript = function (buffer, item)
+	---+${func}
 	local config = get_config("superscripts");
 
 	if not config then
@@ -385,9 +398,11 @@ latex.superscript = function (buffer, item)
 			hl_mode = "combine"
 		});
 	end
+	---_
 end
 
 latex.inline = function (buffer, item)
+	---+${func}
 	local range = item.range;
 	local config = get_config("inlines");
 
@@ -472,9 +487,11 @@ latex.inline = function (buffer, item)
 			}
 		});
 	end
+	---_
 end
 
 latex.block = function (buffer, item)
+	---+${func}
 	local range = item.range;
 	local config;
 
@@ -590,9 +607,11 @@ latex.block = function (buffer, item)
 			});
 		end
 	end
+	---_
 end
 
 latex.text = function (buffer, item)
+	---+${func}
 	local config = get_config("texts");
 
 	if not config then
@@ -601,17 +620,18 @@ latex.text = function (buffer, item)
 
 	local range = item.range;
 
-	vim.api.nvim_buf_set_extmark(buffer, latex.ns("injections"), range.row_start, range.col_start, {
+	vim.api.nvim_buf_set_extmark(buffer, latex.ns("fonts"), range.row_start, range.col_start, {
 		undo_restore = false, invalidate = true,
 		end_col = range.col_start + #"\\text{",
 		conceal = ""
 	});
 
-	vim.api.nvim_buf_set_extmark(buffer, latex.ns("injections"), range.row_end, range.col_end - 1, {
+	vim.api.nvim_buf_set_extmark(buffer, latex.ns("fonts"), range.row_end, range.col_end - 1, {
 		undo_restore = false, invalidate = true,
 		end_col = range.col_end,
 		conceal = ""
 	});
+	---_
 end
 
 latex.render = function (buffer, content)

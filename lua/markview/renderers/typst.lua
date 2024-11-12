@@ -798,7 +798,7 @@ typst.raw_span = function (buffer, item)
 end
 
 typst.term = function (buffer, item)
-	local config = get_config("terms") or {};
+	local config = get_config("terms");
 
 	if not config then
 		return;

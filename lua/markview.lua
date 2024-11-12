@@ -294,7 +294,7 @@ markview.commands = {
 				call = get_config({ "callbacks", "on_detach" }, false)
 			end
 
-			if call then call(buffer, vim.fn.win_findbuf(buffer)); end
+			if call and pcall(call, buffer, vim.fn.win_findbuf(buffer)) then call(buffer, vim.fn.win_findbuf(buffer)); end
 		end));
 
 		markview.state.autocmds[buffer].redraw = vim.api.nvim_create_autocmd(events, {
@@ -326,7 +326,7 @@ markview.commands = {
 		markview.state.buffer_states[buffer] = nil;
 		markview.state.hybrid_states[buffer] = nil;
 
-		if call then call(buffer, vim.fn.win_findbuf(buffer)); end
+		if call and pcall(call, buffer, vim.fn.win_findbuf(buffer)) then call(buffer, vim.fn.win_findbuf(buffer)); end
 		---_
 	end,
 
@@ -348,6 +348,18 @@ markview.commands = {
 				markview.draw(buf);
 			end
 		end
+
+		local call = get_config({ "callbacks", "on_state_change" });
+
+		if
+			call and
+			pcall(
+				call,
+				vim.tbl_keys(markview.state.buffer_states), markview.state.enable
+			)
+		then
+			call(vim.tbl_keys(markview.state.buffer_states), markview.state.enable);
+		end
 		---_
 	end,
 	["disableAll"] = function ()
@@ -358,6 +370,18 @@ markview.commands = {
 			if buf_is_safe(buf) then
 				markview.clear(buf);
 			end
+		end
+
+		local call = get_config({ "callbacks", "on_state_change" });
+
+		if
+			call and
+			pcall(
+				call,
+				vim.tbl_keys(markview.state.buffer_states), markview.state.enable
+			)
+		then
+			call(vim.tbl_keys(markview.state.buffer_states), markview.state.enable);
 		end
 		---_
 	end,
@@ -390,7 +414,7 @@ markview.commands = {
 		markview.state.buffer_states[buffer] = true;
 		markview.draw(buffer);
 
-		if call then call(buffer, vim.fn.win_findbuf(buffer)); end
+		if call and pcall(call, buffer, vim.fn.win_findbuf(buffer)) then call(buffer, vim.fn.win_findbuf(buffer)); end
 		---_
 	end,
 	["disable"] = function (buffer)
@@ -407,7 +431,7 @@ markview.commands = {
 		markview.state.buffer_states[buffer] = false;
 		markview.clear(buffer);
 
-		if call then call(buffer, vim.fn.win_findbuf(buffer)); end
+		if call and pcall(call, buffer, vim.fn.win_findbuf(buffer)) then call(buffer, vim.fn.win_findbuf(buffer)); end
 		---_
 	end,
 
@@ -524,9 +548,18 @@ markview.commands = {
 			)
 		);
 
-		local call = get_config({ "callbacks", "split_enable" }, false)
+		local call = get_config({ "callbacks", "splitview_enable" }, false)
 
-		if call then
+		if
+			call and
+			pcall(
+				call,
+
+				buffer,
+				markview.state.splitview_buffer,
+				markview.state.splitview_window
+			)
+		then
 			call(
 				buffer,
 				markview.state.splitview_buffer,
@@ -550,6 +583,9 @@ markview.commands = {
 		markview.draw(markview.state.splitview_source);
 
 		markview.state.splitview_source = nil;
+
+		local call = get_config({ "callbacks", "splitview_disable" });
+		if call and pcall(call) then call(); end
 		---_
 	end
 	---_
