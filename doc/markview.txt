@@ -622,6 +622,17 @@ occasions break other things.
 
       Note: Not used when filetypes are specified in the config.
 
+                                          *markview.nvim-exp.nvim_open_method*
+                                 *markview.nvim-experimental.nvim_open_method*
+    • nvim_open_method, {string}
+      Default: tab
+
+      Changes how files are opened in Neovim. Possible values are,
+        • edit, Opens using ":edit"
+        • split, Opens using ":sp"
+        • tab, Opens using ":tabnew"
+        • vsplit, Opens using ":vsp"
+
                                  *markview.nvim-exp.list_empty_line_tolerance*
                         *markview.nvim-experimental.list_empty_line_tolerance*
     • list_empty_line_tolerance, {integer}
@@ -643,22 +654,230 @@ occasions break other things.
 
       Filetypes that should be opened inside Neovim.
 
+==============================================================================
+Preview Options                                     *markview.nvim-o-previews*
 
+Preview options change how/where the plugin shows the preview. This is
+different compared to language-specific options as they change how things are
+parsed and what is shown(& not shown) in the preview.
 
+                                   *markview.nvim-pre.enable_preview_on_start*
+                               *markview.nvim-preview.enable_preview_on_start*
+    • enable_preview_on_start, {boolean}
+      Default: true
 
+      When {true}, previews are enabled.
 
+      When {false}, attached buffers do not show preview and commands has to
+      be used to show the previews.
 
+                                                 *markview.nvim-pre.callbacks*
+                                             *markview.nvim-preview.callbacks*
+    • callbacks, {table}
 
+      Callback functions to run on specific scenarios.
 
+        • on_attach, {function}
 
+          Called when attaching to a buffer.
 
+          Parameters: ~
 
+            • {buf},  Buffer ID.
+            • {wins}, List of attached windows.
 
+        • on_detach, {function}
 
+          Called when detaching from a buffer.
 
+          Parameters: ~
 
+            • {buf},  Buffer ID.
+            • {wins}, List of attached windows.
 
+        • on_enable, {function}
 
+          Called when enabling preview on a buffer.
+
+          Parameters: ~
+
+            • {buf},  Buffer ID.
+            • {wins}, List of attached windows.
+
+        • on_disable, {function}
+
+          Called when disabling preview on a buffer.
+
+          Parameters: ~
+
+            • {buf},  Buffer ID.
+            • {wins}, List of attached windows.
+
+        • on_mode_change, {function}
+
+          Called when changing VIM modes. You can also use the `ModeChanged`
+          autocmd.
+
+          Parameters: ~
+
+            • {buf},  Buffer ID.
+            • {wins}, List of attached windows.
+            • {mode}, VIM mode shorthand.
+
+        • on_state_change, {function}
+
+          Called when the plugins global state changes. Invoked by commands
+          that end with 'All'.
+
+          Parameters: ~
+
+            • {bufs},  Buffer IDs for the attached buffers.
+            • {state}, `true` when plugin is active, otherwise `false`.
+
+        • splitview_enable, {function}
+
+          Called when entering splitview mode.
+
+          Parameters: ~
+
+            • {sp_buf}, The buffer where the preview will be shown.
+            • {sp_win}, The window where the preview will be shown.
+
+        • splitview_disable, {function}
+
+          Called when exiting splitview mode.
+
+                                                  *markview.nvim-pre.debounce*
+                                              *markview.nvim-preview.debounce*
+    • debounce, {integer}
+      Default: 25
+
+      Time(in milliseconds) to wait before redrawing the preview. Can affect
+      performance.
+
+      Higher values are recommended on smaller buffers(& powerful machines).
+
+                                             *markview.nvim-pre.edit_distance*
+                                         *markview.nvim-preview.edit_distance*
+    • edit_distance, {tuple}
+      Default: { 0, 1 }
+
+      Distance from the cursor that will be considered being edited. Nodes
+      that are inside these ranges will mot be rendered on hybrid_mode.
+
+      The first value is the number of lines above the cursor position, the
+      second value is the number of lines below the cursor position.
+
+                                              *markview.nvim-pre.hybrid_modes*
+                                          *markview.nvim-preview.hybrid_modes*
+    • hybrid_modes, {list}
+      Default: {}
+
+      VIM modes where hybrid mode is enabled. Modes short-names are used for
+      this,
+        • n → normal mode
+        • v → visual mode
+        • c → command mode
+
+                                           *markview.nvim-pre.ignore_buftypes*
+                                       *markview.nvim-preview.ignore_buftypes*
+    • ignore_buftypes, {list},
+      Default: { "nofile" }
+
+      List of 'buftype''s to ignore.
+
+                                       *markview.nvim-pre.ignore_node_classes*
+                                   *markview.nvim-preview.ignore_node_classes*
+    • ignore_node_classes, {table}
+      Default: {}
+
+      Node classes that aren't removed in hybrid mode even if they are inside
+      `edit_distance`.
+
+      Note:
+      "Affected options" is the option name for that node inside it's language
+      option.
+
+      It can be configured for different languages,
+
+        • latex, {list} ← `markview.nvim-latex`
+
+          Node class                        Affected options
+          --------------------------------- ------------------------
+          commands                             commands
+          fonts                                fonts
+                                               texts
+          injections                           blocks
+                                               inlines
+          parenthesis                          parenthesis
+          styles                               subscripts
+                                               superscripts
+          symbols                              escapes
+                                               symbols
+
+        • markdown, {list} ← `markview.nvim-markdown`
+
+          Node class                        Affected options
+          --------------------------------- ------------------------
+          block_quotes                      block_quotes
+          code_blocks                       code_blocks
+          headings                          headings
+          list_items                        list_items
+          metadatas                         metadata_minus
+                                            metadata_plus
+          tables                            tables
+
+        • markdown_inline, {list} ← `markview.nvim-markdown_inline`
+
+          Node class                        Affected options
+          --------------------------------- ------------------------
+          checkboxes                        checkboxes
+          inline_codes                      inline_codes
+          links                             emails
+                                            images
+                                            hyperlinks
+                                            uri_autolinks
+          obsidian                          internal_links
+                                            embed_files
+                                            block_references
+          symbols                           escapes
+                                            entities
+
+        • typst, {list} ← `markview.nvim-typst`
+
+          Node class                        Affected options
+          --------------------------------- ------------------------
+          headings                          headings
+          injections                        raw_blocks
+                                            raw_spans
+          links                             reference_links
+                                            url_links
+          symbols                           terms
+
+        • yaml, {list} ← `markview.nvim-yaml`
+
+          Node class                        Affected options
+          --------------------------------- ------------------------
+          properties                        properties
+
+                                           *markview.nvim-pre.max_file_length*
+                                       *markview.nvim-preview.max_file_length*
+    • max_file_length, {integer}
+      Default: 1000
+
+      Number of lines a file/buffer can have for the entire buffer to be
+      previewed.
+
+      If the length exceeds this value then only the nodes within
+      `render_distance` will be previewed.
+
+                                           *markview.nvim-pre.render_distance*
+                                       *markview.nvim-preview.render_distance*
+    • render_distance, {integer}
+      Default: vim.o.lines
+
+      Number of lines around the cursor to preview when the buffers line count
+      is larger then `max_file_length`.
 
 
 
