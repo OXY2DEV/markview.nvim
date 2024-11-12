@@ -96,6 +96,106 @@ latex.bracket = function (buffer, item)
 	---_
 end
 
+latex.command = function (buffer, item)
+	local config = get_config("commands");
+
+	if not config then
+		return;
+	elseif not config[item.command.name] then
+		return;
+	end
+
+	config = config[item.command.name];
+
+	if
+		config.condition and
+		pcall(config.condition, item) and
+		config.condition(item) == false
+	then
+		return;
+	end
+
+	if config.on_command then
+		local range = item.command.range;
+		local extmark = config.on_command;
+
+		if type(extmark) == "function" then
+			if pcall(extmark, item.command) then
+				extmark = extmark(item.command);
+			else
+				goto invalid_extmark;
+			end
+		end
+
+		if pcall(config.command_offset, range) then range = config.command_offset(range) end
+
+		vim.api.nvim_buf_set_extmark(buffer, latex.ns("commands"), range[1], range[2], vim.tbl_extend("force", {
+			undo_restore = false, invalidate = true,
+			end_row = range[3],
+			end_col = range[4]
+		}, extmark));
+
+		::invalid_extmark::
+	end
+
+	if not config.on_args then return; end
+
+	local eval = function (val, ...)
+		if type(val) ~= "function" then
+			return;
+		elseif not pcall(val, ...) then
+			return;
+		end
+
+		return val(...)
+	end
+
+	for a, arg in ipairs(item.args) do
+		if not config.on_args[a] then
+			goto continue;
+		end
+
+		local arg_conf = config.on_args[a];
+
+		if arg_conf.before then
+			local b_conf = eval(arg_conf.before, arg) or {};
+			local range = arg.range;
+
+			if pcall(arg_conf.before_offset, range) then range = arg_conf.before_offset(range) end
+
+			vim.api.nvim_buf_set_extmark(buffer, latex.ns("commands"), range[1], range[2], vim.tbl_extend("force", {
+				undo_restore = false, invalidate = true,
+			}, b_conf));
+		end
+
+		if arg_conf.content then
+			local c_conf = eval(arg_conf.content, arg) or {};
+			local range = arg.range;
+
+			if pcall(arg_conf.content_offset, range) then range = arg_conf.content_offset(range) end
+
+			vim.api.nvim_buf_set_extmark(buffer, latex.ns("commands"), range[1], range[2], vim.tbl_extend("force", {
+				undo_restore = false, invalidate = true,
+				end_row = arg.range[3],
+				end_col = arg.range[4]
+			}, c_conf));
+		end
+
+		if arg_conf.after then
+			local a_conf = eval(arg_conf.after, arg) or {};
+			local range = arg.range;
+
+			if pcall(arg_conf.after_offset, range) then range = arg_conf.after_offset(range) end
+
+			vim.api.nvim_buf_set_extmark(buffer, latex.ns("commands"), range[3], range[4], vim.tbl_extend("force", {
+				undo_restore = false, invalidate = true,
+			}, a_conf));
+		end
+
+	    ::continue::
+	end
+end
+
 latex.escaped = function (buffer, item)
 	---+${func}
 	local config = get_config("escapes");
@@ -644,8 +744,8 @@ latex.render = function (buffer, content)
 	};
 
 	for _, item in ipairs(content or {}) do
-		pcall(latex[item.class:gsub("^latex_", "")], buffer, item);
-		-- latex[item.class:gsub("^latex_", "")](buffer, item);
+		-- pcall(latex[item.class:gsub("^latex_", "")], buffer, item);
+		latex[item.class:gsub("^latex_", "")](buffer, item);
 	end
 end
 

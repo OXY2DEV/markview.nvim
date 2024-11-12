@@ -109,9 +109,18 @@ end
 latex.command = function (buffer, TSNode, text, range)
 	local args = {};
 	local nodes = TSNode:field("arg");
-	local command = text[1]:match("^\\([^%{%s]+)");
 
-	if within_text_mode(TSNode) then return; end
+	local command_node = TSNode:field("command")[1];
+	local command_name = vim.treesitter.get_node_text(command_node, buffer);
+
+	if within_text_mode(TSNode) then
+		return;
+	elseif
+		command_name:len() == 2 or
+		command_name:match("^\\math")
+	then
+		return;
+	end
 
 	for _, arg in ipairs(nodes) do
 		table.insert(args, {
@@ -124,11 +133,14 @@ latex.command = function (buffer, TSNode, text, range)
 		class = "latex_command",
 
 		text = text,
-		command = command,
+		command = {
+			name = (command_name or ""):sub(2),
+			range = command_node and { command_node:range() }
+		},
 		args = args,
 
 		range = range
-	})
+	});
 end
 
 ---@type markview.parsers.function

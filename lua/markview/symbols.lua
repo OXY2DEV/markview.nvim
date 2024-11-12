@@ -3333,4 +3333,18 @@ symbols.fonts = {
 	}
 }
 
+symbols.tostring = function (font, text)
+	local _o = "";
+
+	for letter in string.gmatch(text, ".") do
+		if symbols.fonts and symbols.fonts[font] and symbols.fonts[font][letter] then
+			_o = _o .. symbols.fonts[font][letter];
+		else
+			_o = _o .. letter;
+		end
+	end
+
+	return _o;
+end
+
 return symbols;

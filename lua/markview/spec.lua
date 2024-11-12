@@ -1,4 +1,64 @@
 local spec = {};
+local symbols = require("markview.symbols");
+
+local operator = function (name, text_pos, cmd_conceal, cmd_hl)
+	---+${func}
+	return {
+		condition = function (item)
+			return #item.args == 1;
+		end,
+
+
+		on_command = function (item)
+			return {
+				end_col = item.range[2] + (cmd_conceal or 1),
+				conceal = "",
+
+				virt_text_pos = text_pos or "overlay",
+				virt_text = {
+					{ symbols.tostring("default", name), cmd_hl }
+				},
+
+				hl_mode = "combine"
+			}
+		end,
+
+		on_args = {
+			{
+				before = function (item)
+					return {
+						end_col = item.range[2] + 1,
+
+						virt_text_pos = "overlay",
+						virt_text = {
+							{ "(", "italic" }
+						},
+
+						hl_mode = "combine"
+					}
+				end,
+
+				after_offset = function (range)
+					return { range[1], range[2], range[3], range[4] - 1 };
+				end,
+
+				after = function (item)
+					return {
+						end_col = item.range[4],
+
+						virt_text_pos = "overlay",
+						virt_text = {
+							{ ")", "italic" }
+						},
+
+						hl_mode = "combine"
+					}
+				end
+			}
+		}
+	};
+	---_
+end
 
 spec.cache = {
 	winopts = {}
@@ -824,6 +884,93 @@ spec.default = {
 	},
 	html = {},
 	latex = {
+		commands = {
+			["frac"] = {
+				condition = function (item)
+					return #item.args == 2;
+				end,
+				on_command = {
+					conceal = ""
+				},
+
+				on_args = {
+					{
+						before = function (item)
+							return {
+								end_col = item.range[2] + 1,
+								conceal = "",
+
+								virt_text_pos = "inline",
+								virt_text = {
+									{ "(" }
+								}
+							}
+						end,
+
+						after_offset = function (range)
+							return { range[1], range[2], range[3], range[4] - 1 };
+						end,
+						after = function (item)
+							return {
+								end_col = item.range[4],
+								conceal = "",
+
+								virt_text_pos = "inline",
+								virt_text = {
+									{ ")" },
+									{ " ÷ " }
+								}
+							}
+						end
+					}
+				}
+			},
+
+			["sin"] = operator("sin"),
+			["cos"] = operator("cos"),
+			["tan"] = operator("tan"),
+
+			["sinh"] = operator("sinh"),
+			["cosh"] = operator("cosh"),
+			["tanh"] = operator("tanh"),
+
+			["csc"] = operator("csc"),
+			["sec"] = operator("sec"),
+			["cot"] = operator("cot"),
+
+			["csch"] = operator("csch"),
+			["sech"] = operator("sech"),
+			["coth"] = operator("coth"),
+
+			["arcsin"] = operator("arcsin"),
+			["arccos"] = operator("arccos"),
+			["arctan"] = operator("arctan"),
+
+			["arg"] = operator("arg"),
+			["deg"] = operator("deg"),
+			["det"] = operator("det"),
+			["dim"] = operator("dim"),
+			["exp"] = operator("exp"),
+			["gcd"] = operator("gcd"),
+			["hom"] = operator("hom"),
+			["inf"] = operator("inf"),
+			["ker"] = operator("ker"),
+			["lg"] = operator("lg"),
+
+			["lim"] = operator("lim"),
+			["liminf"] = operator("lim inf", "inline", 7, "@markup.math.latex"),
+			["limsup"] = operator("lim sup", "inline", 7, "@markup.math.latex"),
+
+			["ln"] = operator("ln"),
+			["log"] = operator("log"),
+			["min"] = operator("min"),
+			["max"] = operator("max"),
+			["Pr"] = operator("Pr"),
+			["sup"] = operator("sup"),
+			["sqrt"] = operator(symbols.entries.sqrt, "inline", 5, "@markup.math.latex"),
+			["lvert"] = operator(symbols.entries.vert, "inline", 6, "@markup.math.latex"),
+			["lVert"] = operator(symbols.entries.Vert, "inline", 6, "@markup.math.latex"),
+		},
 		parenthesis = {
 			enable = true,
 			left = "(",
