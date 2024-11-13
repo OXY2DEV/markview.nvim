@@ -252,10 +252,19 @@ inline.escaped = function (_, TSNode, text, range)
 end
 
 inline.internal_link = function (_, TSNode, text, range)
-	local alias;
+	local class, alias = "inline_link_internal", nil;
+	local label = nil;
 	text = text[1]:gsub("[%[%]]", "");
 
-	if text:match("%|([^%|]+)$") then
+	if text:match("%#%^(.+)$") then
+		local tmp;
+
+		class = "inline_link_block_ref";
+		tmp, label = text:match("^(.*)%#%^(.+)$");
+
+		range.label_start = range.col_start + #tmp + 2;
+		range.label_end = range.col_end - 2;
+	elseif text:match("%|([^%|]+)$") then
 		range.alias_start, range.alias_end, alias = text:find("%|([^%|]+)$");
 
 		range.alias_start = range.alias_start + range.col_start + 2;
@@ -263,11 +272,12 @@ inline.internal_link = function (_, TSNode, text, range)
 	end
 
 	inline.insert({
-		class = "inline_link_internal",
+		class = class,
 		node = TSNode,
 
 		text = text,
 		alias = alias,
+		label = label,
 
 		range = range
 	});
