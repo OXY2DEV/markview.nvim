@@ -581,6 +581,35 @@ highlights.dynamic = {
 		};
 		---@diagnostic enable
 	end,
+	["CodeInfo"] = function ()
+		local vim_bg = highlights.rgb2hsl(highlights.get_property(
+			"bg",
+			{ "Normal" },
+			"#FFFFFF",
+			"#000000"
+		));
+		local code_fg = highlights.get_property(
+			"fg",
+			{ "Comment" },
+			"#9CA0B0",
+			"#6C7086"
+		);
+
+		if vim_bg[3] > 0.5 then
+			vim_bg[3] = clamp(vim_bg[3] - 0.05, 0.1, 0.9);
+		else
+			vim_bg[3] = clamp(vim_bg[3] + 0.05, 0.1, 0.9);
+		end
+
+		---@diagnostic disable
+		vim_bg = highlights.rgb(vim_bg);
+
+		return {
+			bg = highlights.hex(vim_bg),
+			fg = highlights.hex(code_fg)
+		};
+		---@diagnostic enable
+	end,
 	["CodeFg"] = function ()
 		local vim_bg = highlights.rgb2hsl(highlights.get_property(
 			"bg",

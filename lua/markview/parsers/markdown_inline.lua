@@ -325,7 +325,6 @@ inline.parse = function (buffer, TSTree, from, to)
 	]]);
 
 	for capture_id, capture_node, _, _ in scanned_queries:iter_captures(TSTree:root(), buffer, from, to) do
-		if capture_node:has_changes() then break; end
 		local capture_name = scanned_queries.captures[capture_id];
 
 		if not capture_name:match("^markdown_inline") then

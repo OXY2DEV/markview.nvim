@@ -60,22 +60,10 @@ local operator = function (name, text_pos, cmd_conceal, cmd_hl)
 	---_
 end
 
-spec.cache = {
-	winopts = {}
-};
-
 spec.default = {
 	highlight_groups = "dynamic",
 	renderers = {},
 
-	splitview = {
-		window = function ()
-			return {
-				split = "above",
-				height = math.floor(vim.o.lines * 0.25)
-			}
-		end
-	},
 	preview = {
 		modes = { "n", "no", "c" },
 		hybrid_modes = {},
@@ -158,6 +146,44 @@ spec.default = {
 	};
 
 	markdown = {
+		tables = {
+			---+ ${class, Tables}
+			enable = true,
+
+			parts = {
+				top = { "╭", "─", "╮", "┬" },
+				header = { "│", "│", "│" },
+				separator = { "├", "─", "┤", "┼" },
+				row = { "│", "│", "│" },
+				bottom = { "╰", "─", "╯", "┴" },
+
+				overlap = { "┝", "━", "┥", "┿" },
+
+				align_left = "╼",
+				align_right = "╾",
+				align_center = { "╴", "╶" }
+			},
+
+			hl = {
+				top = { "TableHeader", "TableHeader", "TableHeader", "TableHeader" },
+				header = { "TableHeader", "TableHeader", "TableHeader" },
+				separator = { "TableHeader", "TableHeader", "TableHeader", "TableHeader" },
+				row = { "TableBorder", "TableBorder", "TableBorder" },
+				bottom = { "TableBorder", "TableBorder", "TableBorder", "TableBorder" },
+
+				overlap = { "TableBorder", "TableBorder", "TableBorder", "TableBorder" },
+
+				align_left = "TableAlignLeft",
+				align_right = "TableAlignRight",
+				align_center = { "TableAlignCenter", "TableAlignCenter" }
+			},
+
+			col_min_width = 10,
+			block_decorator = true,
+			use_virt_lines = false
+			---_
+		},
+
 		block_quotes = {
 			enable = true,
 
@@ -513,10 +539,10 @@ spec.default = {
 			setext_1 = {
 				---+ ${conf, Setext heading 1}
 				style = "decorated",
-	
+
 				sign = "󰌕 ", sign_hl = "MarkviewHeading1Sign",
 				icon = "  ", hl = "MarkviewHeading1",
-				line = "▂"
+				border = "▂"
 				---_
 			},
 			setext_2 = {
@@ -525,7 +551,7 @@ spec.default = {
 
 				sign = "󰌖 ", sign_hl = "MarkviewHeading2Sign",
 				icon = "  ", hl = "MarkviewHeading2",
-				line = "▁"
+				border = "▁"
 				---_
 			}
 			---_
@@ -539,35 +565,60 @@ spec.default = {
 				{
 					---+ ${conf, Left portion}
 					type = "repeating",
-					repeat_amount = function () --[[@as function]]
-						local textoff = vim.fn.getwininfo(vim.api.nvim_get_current_win())[1].textoff;
+					repeat_amount = function (buffer) --[[@as function]]
+						local utils = require("markview.utils");
+						local window = utils.buf_getwin(buffer)
 
-						return math.floor((vim.o.columns - textoff - 3) / 2);
+						local width = vim.api.nvim_win_get_width(window)
+						local textoff = vim.fn.getwininfo(window)[1].textoff;
+
+						return math.floor((width - textoff - 3) / 2);
 					end,
 
 					text = "─",
 					hl = {
-						"MarkviewGradient1", "MarkviewGradient2", "MarkviewGradient3", "MarkviewGradient4", "MarkviewGradient5", "MarkviewGradient6", "MarkviewGradient7", "MarkviewGradient8", "MarkviewGradient9", "MarkviewGradient10"
+						"MarkviewGradient1", "MarkviewGradient1",
+						"MarkviewGradient2", "MarkviewGradient2",
+						"MarkviewGradient3", "MarkviewGradient3",
+						"MarkviewGradient4", "MarkviewGradient4",
+						"MarkviewGradient5", "MarkviewGradient5",
+						"MarkviewGradient6", "MarkviewGradient6",
+						"MarkviewGradient7", "MarkviewGradient7",
+						"MarkviewGradient8", "MarkviewGradient8",
+						"MarkviewGradient9", "MarkviewGradient9"
 					}
 					---_
 				},
 				{
 					type = "text",
 					text = "  ",
+					hl = "MarkviewIcon3Fg"
 				},
 				{
 					---+ ${conf, Right portion}
 					type = "repeating",
-					repeat_amount = function () --[[@as function]]
-						local textoff = vim.fn.getwininfo(vim.api.nvim_get_current_win())[1].textoff;
+					repeat_amount = function (buffer) --[[@as function]]
+						local utils = require("markview.utils");
+						local window = utils.buf_getwin(buffer)
 
-						return math.ceil((vim.o.columns - textoff - 3) / 2);
+						local width = vim.api.nvim_win_get_width(window)
+						local textoff = vim.fn.getwininfo(window)[1].textoff;
+
+						return math.ceil((width - textoff - 3) / 2);
 					end,
 
 					direction = "right",
 					text = "─",
 					hl = {
-						"MarkviewGradient1", "MarkviewGradient2", "MarkviewGradient3", "MarkviewGradient4", "MarkviewGradient5", "MarkviewGradient6", "MarkviewGradient7", "MarkviewGradient8", "MarkviewGradient9", "MarkviewGradient10"
+						"MarkviewGradient1", "MarkviewGradient1",
+						"MarkviewGradient2", "MarkviewGradient2",
+						"MarkviewGradient3", "MarkviewGradient3",
+						"MarkviewGradient4", "MarkviewGradient4",
+						"MarkviewGradient5", "MarkviewGradient5",
+						"MarkviewGradient6", "MarkviewGradient6",
+						"MarkviewGradient7", "MarkviewGradient7",
+						"MarkviewGradient8", "MarkviewGradient8",
+						"MarkviewGradient9", "MarkviewGradient9"
 					}
 					---_
 				}
@@ -609,6 +660,11 @@ spec.default = {
 			marker_dot = {
 				add_padding = true,
 				conceal_on_checkboxes = true,
+			},
+
+			marker_parenthesis = {
+				add_padding = true,
+				conceal_on_checkboxes = true,
 			}
 			---_
 		},
@@ -627,44 +683,6 @@ spec.default = {
 
 			border_top = "▄",
 			border_bottom = "▀"
-		},
-
-		tables = {
-			---+ ${class, Tables}
-			enable = true,
-    
-			parts = {
-				top = { "╭", "─", "╮", "┬" },
-				header = { "│", "│", "│" },
-				separator = { "├", "─", "┤", "┼" },
-				row = { "│", "│", "│" },
-				bottom = { "╰", "─", "╯", "┴" },
-    
-				overlap = { "┝", "━", "┥", "┿" },
-    
-				align_left = "╼",
-				align_right = "╾",
-				align_center = { "╴", "╶" }
-			},
-    
-			hl = {
-				top = { "TableHeader", "TableHeader", "TableHeader", "TableHeader" },
-				header = { "TableHeader", "TableHeader", "TableHeader" },
-				separator = { "TableHeader", "TableHeader", "TableHeader", "TableHeader" },
-				row = { "TableBorder", "TableBorder", "TableBorder" },
-				bottom = { "TableBorder", "TableBorder", "TableBorder", "TableBorder" },
-    
-				overlap = { "TableBorder", "TableBorder", "TableBorder", "TableBorder" },
-    
-				align_left = "TableAlignLeft",
-				align_right = "TableAlignRight",
-				align_center = { "TableAlignCenter", "TableAlignCenter" }
-			},
-    
-			col_min_width = 10,
-			block_decorator = true,
-			use_virt_lines = true
-			---_
 		},
 	},
 	markdown_inline = {

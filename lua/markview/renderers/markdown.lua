@@ -678,7 +678,7 @@ markdown.code_block = function (buffer, item)
 	local ft = languages.get_ft(item.language);
 	local icon, hl, sign_hl = markdown.get_icon(config.icons, ft);
 
-	local sign = (config.icon or icon);
+	local sign = icon;
 	sign_hl = utils.set_hl(config.sign_hl or sign_hl)
 
 	if icon and not icon:match("(%s)$") then
@@ -1097,7 +1097,7 @@ markdown.list_item = function (buffer, item)
 end
 
 markdown.metadata_minus = function (buffer, item)
-	---+${Renders, Renders YAML metadata blocks}
+	---+${func, Renders YAML metadata blocks}
 	local config = get_config("metadata_minus");
 	local range = item.range;
 
@@ -1234,12 +1234,44 @@ markdown.setext_heading = function (buffer, item)
 			line_hl_group = utils.set_hl(config.hl)
 		});
 	elseif config.style == "decorated" then
-		vim.api.nvim_buf_set_extmark(buffer, markdown.ns("headings"), range.row_start, range.col_start, {
-			undo_restore = false, invalidate = true,
-			end_row = range.row_end - 1,
-			end_col = range.col_end,
-			line_hl_group = utils.set_hl(config.hl)
-		});
+		if config.icon then
+			for l = 1, (range.row_end - range.row_start) - 1 do
+				local line = item.text[l];
+
+				if
+					math.floor((range.row_end - range.row_start) / 2) == 0 or
+					l == math.floor((range.row_end - range.row_start) / 2)
+				then
+					vim.api.nvim_buf_set_extmark(buffer, markdown.ns("headings"), range.row_start + (l - 1), math.min(#line, range.col_start), {
+						undo_restore = false, invalidate = true,
+						line_hl_group = utils.set_hl(config.hl),
+						virt_text_pos = "inline",
+						virt_text = {
+							{
+								config.icon,
+								utils.set_hl(config.icon_hl or config.hl)
+							}
+						},
+
+						hl_mode = "combine",
+					});
+				else
+					vim.api.nvim_buf_set_extmark(buffer, markdown.ns("headings"), range.row_start + (l - 1), math.min(#line, range.col_start), {
+						undo_restore = false, invalidate = true,
+						line_hl_group = utils.set_hl(config.hl),
+						virt_text_pos = "inline",
+						virt_text = {
+							{
+								string.rep(" ", vim.fn.strdisplaywidth(config.icon)),
+								utils.set_hl(config.icon_hl or config.hl)
+							}
+						},
+
+						hl_mode = "combine",
+					});
+				end
+			end
+		end
 
 		if config.border then
 			vim.api.nvim_buf_set_extmark(buffer, markdown.ns("headings"), range.row_end - 1, range.col_start, {
@@ -1250,8 +1282,8 @@ markdown.setext_heading = function (buffer, item)
 				virt_text_pos = "overlay",
 				virt_text = {
 					{
-						string.rep(config.border or config.line, vim.o.columns),
-						utils.set_hl(config.border_hl or config.line_hl or config.hl)
+						string.rep(config.border, vim.o.columns),
+						utils.set_hl(config.border_hl or config.hl)
 					}
 				},
 
@@ -1910,9 +1942,11 @@ markdown.table = function (buffer, item)
 			---_
 		end
 	end
+	---_
 end
 
 markdown.hr = function (buffer, item)
+	---+${func, Horizontal rules}
 	local config = get_config("horizontal_rules");
 	local range = item.range;
 
