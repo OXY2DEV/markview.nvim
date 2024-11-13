@@ -92,6 +92,7 @@ LaTeX ~
         • Parenthesis({,}).
         • Subscripts & Superscripts.
         • Text blocks.
+        • Commands(e.g. frac & allows user defined ones too!).
     • Inline & block rendering of maths.
     • Font rendering.
     • Wide variety of symbols support.
@@ -265,6 +266,7 @@ The plugin comes with these highlight groups,
 
  $MarkviewCode$                           Code
  $MarkviewCodeFg$                         CodeFg
+ $MarkviewCodeInfo$                       CodeInfo
 
  $MarkviewIcon1$                          Icon1
  $MarkviewIcon1Fg$                        Icon1Fg
@@ -878,6 +880,855 @@ parsed and what is shown(& not shown) in the preview.
 
       Number of lines around the cursor to preview when the buffers line count
       is larger then `max_file_length`.
+
+                                         *markview.nvim-pre.splitview_winopts*
+                                     *markview.nvim-preview.splitview_winopts*
+    • splitview_winopts, {table}
+      Default: nil
+
+      Window options(see `vim.api.nvim_open_win()`) for the preview window in
+      splitview.
+
+==============================================================================
+Markdown options                                    *markview.nvim-o-markdown*
+
+Changes the appearance of various markdown block elements.
+
+                                               *markview.nvim-md.block_quotes*
+                                         *markview.nvim-markdown.block_quotes*
+    • block_quotes, {table}
+
+      Changes how block quotes, callouts/alerts are shown.
+
+        • enable, {boolean}
+          Default: true
+
+          Enables/Disables preview of this node.
+
+        --------------------------------------------------------------
+
+        • default, {table}
+          Default: { hl = "MarkviewBlockQuoteDefault", border = "▋" }
+
+          Changes how normal block quotes & unknown callouts/alerts are shown.
+
+          Properties: ~
+
+            • border, {string}
+              Text used as the border.
+
+            • hl, {string?}
+              Highlight group for the border.
+
+        • callouts, {list}
+          Default: { ... }
+
+          List of configuration tables for different type of callouts. Each
+          configuration is a table.
+
+          Properties: ~
+
+          Each configuration table has the following properties,
+
+            • match_string, {string}
+
+              Callout identifier `[!...]` string. It is NOT case-sensitive.
+
+            --------------------------------------------------------
+
+            • preview, {string}
+
+              Text to show as preview.
+
+            • title, {boolean?}
+
+              When `true`, the callout can use a custom title.
+
+            • icon, {string?}
+
+              Icon to show when custom titles are used.
+
+            --------------------------------------------------------
+
+            • hl, {string?}
+
+              Default highlight group for the callout.
+
+              Warning:
+              This will be used by other properties that have `_hl` in their
+              name.
+
+            • preview_hl, {string?}
+
+              Highlight group for preview.
+
+            • icon_hl, {string?}
+
+              Highlight group for icon.
+
+            • border_hl, {string?}
+
+              Highlight group for border.
+
+          Example: ~
+          >lua
+            {
+                match_string = "ABSTRACT",
+                preview = "󱉫 Abstract",
+                hl = "MarkviewBlockQuoteNote",
+
+                title = true,
+                icon = "󱉫",
+
+                border = "▋"
+            },
+<
+                                                *markview.nvim-md.code_blocks*
+                                          *markview.nvim-markdown.code_blocks*
+    • code_blocks, {table}
+
+      Changes appearance of `fenced code blocks`.
+
+        • enable, {boolean}
+          Default: true
+
+          Enables/Disables preview of this node.
+
+        --------------------------------------------------------------
+
+        • icons, {string}
+          Default: "internal"
+
+          Changes the icon provider for code blocks. Currently supported
+          providers are,
+
+            • "devicons", uses `nvim-tree/nvim-web-devicons`.
+            • "mini", uses `echasnovski/mini.icons`.
+            • "internal", uses the internal icon provider.
+
+          Note:
+          You can do `icons = ""` to disable icons!
+
+        • language_direction, {left} or {right}
+          Default: "left"
+
+          Direction of the language name & icon.
+
+        • language_names, {table}
+          Default: {}
+
+          Table where the keys are the `language string` and the values are
+          the `preview string`.
+
+          Example: ~
+          >lua
+          {
+              ["cpp"] = "C++"
+          }
+<
+        • min_width, {integer}, style: `block`
+          Default: 60
+
+          Minimum width of code block.
+
+        • style, {simple} or {block}
+          Default: "block"
+
+          Changes how code blocks are rendered,
+
+            • "simple",
+              Highlights the lines of the code blocks.
+
+            • "block",
+              Creates a box around the code block.
+
+              Note:
+              This doesn't work with <tab> indentation. Use 'expandtab' for
+              this and run `:retab` if you want to turn all the tabs into
+              spaces.
+
+        • sign, {boolean}
+          Default: true
+
+          When `true`, signs are shown.
+
+        • pad_amount, {integer}, style: `block`
+          Default: 3
+
+          Amount of padding added around the text.
+
+        • pad_char, {string?}
+          Default: " "
+
+          Character used for padding.
+
+        --------------------------------------------------------------
+
+        • hl, {string?}
+          Default: "MarkviewCode"
+
+          Default highlight group for the code block.
+
+          Warning:
+          This will be used by other properties that have `_hl` in their
+          name.
+
+        • info_hl, {string?}
+          Default: "MarkCodeInfo"
+
+          Highlight group for the info string.
+
+        • language_hl, {string?}
+          Default: nil
+
+          Highlight group for the language string.
+
+        • sign_hl, {string?}
+          Default: nil
+
+          Highlight group for the sign.
+
+                                                   *markview.nvim-md.headings*
+                                             *markview.nvim-markdown.headings*
+    • headings, {table}
+
+      Changes how headings are shown.
+
+        • enable, {boolean}
+          Default: true
+
+          Enables/Disables preview of this node.
+
+        --------------------------------------------------------------
+
+        • heading_1, {table}
+
+          Changes how level 1 atx heading is shown.
+
+          Properties: ~
+
+            • style, {simple}, {label} or {icon}
+              Default; "icon"
+
+              Preview style for the heading. Possible values,
+
+                • "simple", Only highlights the line.
+                • "label", `Glow`-like labels.
+                • "icon", Adds icon to the heading.
+
+            ------------------------------------------------------
+
+            • align, {left}, {center} or {right}, style: `label`
+              Default: nil
+
+              Changes the alignment of label styled headings.
+
+              Warning:
+              This is affected by the window size. It doesn't update itself
+              on window resize events.
+
+            • corner_left, {string?}, style: `label`
+              Default: nil
+
+              Text used as the left corner of the label.
+
+            • corner_right, {string?}, style: `label`
+              Default: nil
+
+              Text used as the right corner of the label.
+
+            • padding_left, {string?}, style: `label`
+              Default: nil
+
+              Text used as the left padding of the label. Added after the
+              left corner.
+
+            • padding_right, {string?}, style: `label`
+              Default: nil
+
+              Text used as the right padding of the label. Added before the
+              right corner.
+
+            • icon, {string?}, style: `label`, `icon`
+              Default: "󰼏  "
+
+              Icon for the heading. It is added after the left padding if the
+              style is `label` and is added before the heading text if the
+              style is `icon`.
+
+            • sign, {string?}
+              Default: "󰌕 "
+
+              Sign for the heading.
+
+            ------------------------------------------------------
+
+            • corner_left_hl, {string?}, style: `label`
+              Default: nil
+
+              Highlight group for the left corner of the label.
+
+            • corner_right_hl, {string?}, style: `label`
+              Default: nil
+
+              Highlight group for the right corner of the label.
+
+            • hl, {string?}
+              Default: "MarkviewHeading1"
+
+              Default highlight group for this heading.
+
+              Warning:
+              This will be used by other properties that have `_hl` in their
+              name.
+
+            • icon_hl, {string?}, style: `label`, `icon`
+              Default: nil
+
+              Highlight group for the icon.
+
+            • padding_left_hl, {string?}, style: `label`
+              Default: nil
+
+              Highlight group for the left padding of the label.
+
+            • padding_right_hl, {string?}, style: `label`
+              Default: nil
+
+              Highlight group for the right padding of the label.
+
+            • sign_hl, {string?}
+              Default: "MarkviewHeading1Sign"
+
+              Highlight group for the sign.
+
+          Example: ~
+          >lua
+            --- Simple style example
+            heading_1 = {
+                style = "simple",
+                sign = "󰌕 ", sign_hl = "MarkviewHeading1Sign",
+
+                hl = "MarkviewHeading1"
+            },
+
+            --- Label style example
+            heading_1 = {
+                style = "label",
+                sign = "󰌕 ", sign_hl = "MarkviewHeading1Sign",
+
+                padding_left = " ", padding_right = " ",
+                icon = "󰼏  ", hl = "MarkviewHeading1",
+            },
+
+            --- Icon style example
+            heading_1 = {
+                style = "icon",
+                sign = "󰌕 ", sign_hl = "MarkviewHeading1Sign",
+
+                icon = "󰼏  ", hl = "MarkviewHeading1",
+            }
+<
+        • heading_2, {table}
+
+          Changes how level 2 atx heading is shown. See `heading_1`.
+
+        • heading_3, {table}
+
+          Changes how level 3 atx heading is shown. See `heading_1.`
+
+        • heading_4, {table}
+
+          Changes how level 4 atx heading is shown. See `heading_1`.
+
+        • heading_5, {table}
+
+          Changes how level 5 atx heading is shown. See `heading_1`.
+
+        • heading_6, {table}
+
+          Changes how level 6 atx heading is shown. See `heading_1`.
+
+        --------------------------------------------------------------
+
+        • setext_1, {table}
+
+          Changes the appearance of level 1 setext headings.
+
+          Properties: ~
+
+            • style, {simple} or {decorated}
+              Default: "decorated"
+
+              Preview style for the setext headings. Possible values,
+
+                • "simple", Highlights the heading lines.
+                • "decorated", Adds decorations to the heading.
+
+            ------------------------------------------------------
+
+            • border, {string}, style: `decorated`
+              Default: "▂"
+
+              Text to use as the bottom border of the heading.
+
+            • icon, {string}, style: `decorated`
+              Default: "  "
+
+              Icon for the heading.
+
+            • sign, {string?}
+              Default: "󰌕 "
+
+              Sign for the heading.
+
+            ------------------------------------------------------
+
+            • border_hl, {string?}, style: `decorated`
+              Default: nil
+
+              Highlight group for the border.
+
+            • hl, {string}
+              Default: "MarkviewHeading1"
+
+              Default highlight group for the heading.
+
+              Warning:
+              This will be used by other properties that have `_hl` in their
+              name.
+
+            • sign_hl, {string?}, style: `decorated`
+              Default: "MarkviewHeading1Sign"
+
+              Highlight group for the sign.
+
+        • setext_2, {table}
+
+          Changes how level 2 setext heading is shown. See `setext_1.`
+
+                                           *markview.nvim-md.horizontal_rules*
+                                     *markview.nvim-markdown.horizontal_rules*
+    • horizontal_rules, {table}
+
+      Changes how horizontal rules/line breaks are shown.
+
+        • enable, {boolean}
+          Default: true
+
+          Enables/Disables preview of this node.
+
+        --------------------------------------------------------------
+
+        • parts, {list}
+          Default: { ... }
+
+          Parts to build the horizontal rule.
+
+          Parts: ~
+
+                                                 *markview.nvim-hrs.repeating*
+                                    *markview.nvim-horizontal_rules.repeating*
+            • repeating,
+
+              Repeats the given text by the specified amount.
+
+              Properties: ~
+
+                • type, {repeating}
+
+                  Part type name.
+
+                ----------------------------------------------
+
+                • direction, {left} or {right}
+
+                  The direction from where highlights are applied.
+                  >txt
+                    ◀───────────── direction = "right"
+                    Hello, Neovim.
+                    ─────────────▶ direction = "left"
+<
+                • hl, {string} or {list}
+
+                  Highlight group for the resulting text.
+
+                  If it's a string then it's used as a `solid color`. But if
+                  it's a list of strings then it's used as a `gradient`.
+
+                • repeat_amount, {integer} or {function}
+
+                  The number of times to repeat text.
+
+                  Parameters: ~
+
+                  If it's a function it receives the following parameters,
+
+                    • {buf}, Buffer ID where it's being drawn.
+
+                  Return: ~
+
+                    • {integer}, Number of times to repeat the text.
+
+                ----------------------------------------------
+
+                • text, {string}
+
+                  Text to repeat.
+
+              Example: ~
+              >lua
+                {
+                    type = "repeating",
+                    repeat_amount = function (buffer) --[[@as function]]
+                        local utils = require("markview.utils");
+                        local window = utils.buf_getwin(buffer)
+
+                        local width = vim.api.nvim_win_get_width(window)
+                        local textoff = vim.fn.getwininfo(window)[1].textoff;
+
+                        return math.floor((width - textoff - 3) / 2);
+                    end,
+
+                    text = "─",
+
+                    direction = "left",
+                    hl = {
+                        "MarkviewGradient1", "MarkviewGradient1",
+                        "MarkviewGradient2", "MarkviewGradient2",
+                        "MarkviewGradient3", "MarkviewGradient3",
+                        "MarkviewGradient4", "MarkviewGradient4",
+                        "MarkviewGradient5", "MarkviewGradient5",
+                        "MarkviewGradient6", "MarkviewGradient6",
+                        "MarkviewGradient7", "MarkviewGradient7",
+                        "MarkviewGradient8", "MarkviewGradient8",
+                        "MarkviewGradient9", "MarkviewGradient9"
+                    }
+                },
+<
+                                                      *markview.nvim-hrs.text*
+                                         *markview.nvim-horizontal_rules.text*
+            • text,
+
+              Shows some text literally.
+
+              Properties: ~
+
+                • type, {text}
+
+                  Part type name.
+
+                ----------------------------------------------
+
+                • text, {string}
+
+                  Text to show.
+
+                • hl, {string?}
+
+                  Highlight group for the text.
+
+              Example: ~
+              >lua
+                {
+                    type = "text",
+                    text = "  ",
+                    hl = "MarkviewIcon3Fg"
+                }
+<
+                                                 *markview.nvim-md.list_items*
+                                           *markview.nvim-markdown.list_items*
+    • list_items, {table}
+
+      Changes how list items are shown.
+
+        • enable, {boolean}
+          Default: true
+
+          Enables/Disables preview of this node.
+
+        --------------------------------------------------------------
+
+        • indent_size, {integer}
+          Default: 2
+
+          Number of spaces between each level of list item.
+
+        • shift_width, {integer}
+          Default: 4
+
+          Number of spaces between each level of previewed list item.
+
+        --------------------------------------------------------------
+
+        • marker_minus, {table}
+
+          Changes how `-` list items are shown.
+
+          Properties: ~
+
+            • add_padding, {boolean}
+              Default: true
+
+              When `true`, list items are indented based on their level.
+
+            • conceal_on_checkboxes, {boolean}
+              Default: true
+
+              When `true`, list items that contain checkboxes won't render
+              their marker.
+
+            • hl, {string?}
+              Default: "MarkviewListItemMinus"
+
+              Highlight group for the marker.
+
+            • text, {string}
+              Default: ""
+
+              Text used as the marker.
+
+        • marker_plus, {table}
+
+          Changes how `+` list items are shown. See `marker_minus`.
+
+        • marker_star, {table}
+
+          Changes how `*` list items are shown. See `marker_minus`.
+
+        --------------------------------------------------------------
+
+        • marker_dot, {table}
+
+          Changes how `n.` list items are shown.
+
+          Parameters: ~
+
+            • add_padding, {boolean}
+              Default: true
+
+              When `true`, list items are indented based on their level.
+
+            • conceal_on_checkboxes, {boolean}
+              Default: true
+
+              When `true`, list items that contain checkboxes won't render
+              their marker.
+
+        • marker_parenthesis, {table}
+
+          Changes how `n)` list items are shown. See `marker_dot`.
+
+                                             *markview.nvim-md.metadata_minus*
+                                       *markview.nvim-markdown.metadata_minus*
+    • metadata_minus, {table}
+
+      Changes how YAML metadata sections are shown.
+
+        • enable, {boolean}
+          Default: true
+
+          Enables/Disables preview of this node.
+
+        --------------------------------------------------------------
+
+        • border_bottom, {string}
+          Default: "▀"
+
+          Text to use for the bottom border.
+
+        • border_top, {string}
+          Default: "▄"
+
+          Text to use for the top border.
+
+        --------------------------------------------------------------
+
+        • hl, {string}
+          Default: "MarkviewCode"
+
+          Default highlight group for the metadata section.
+
+          Warning:
+          This will be used by other properties that have `_hl` in their
+          name.
+
+        • border_bottom_hl, {string?}
+          Default: nil
+
+          Highlight group for the bottom border.
+
+        • border_hl {string?}
+          Default: "MarkviewCodeFg"
+
+          Default highlight group for the metadata section.
+
+          Note:
+          This will be used by `border_top_hl` & `border_bottom_hl` if their
+          values are `nil`.
+
+        • border_top_hl, {string?}
+          Default: nil
+
+          Highlight group for the top border.
+
+                                              *markview.nvim-md.metadata_plus*
+                                        *markview.nvim-markdown.metadata_plus*
+    • metadata_plus, {table}
+
+      Changes how TOML metadata sections are shown. Same as `metadata_minus`.
+
+    • tables, {table}
+
+      Changes how tables look.
+
+        • enable, {boolean}
+          Default: true
+
+          Enables/Disables preview of this node.
+
+        --------------------------------------------------------------
+
+        • block_decorator, {boolean}
+          Default: true
+
+          When `true`, top & bottom borders are added to the table.
+
+        • use_virt_lines, {boolean}
+          Default: true
+
+          When `true`, top & bottom borders are made with virtual lines.
+
+        --------------------------------------------------------------
+
+        • parts, {table}
+          Default: { ... }
+
+          Table containing various parts for drawing the table.
+
+          Properties: ~
+
+            • top, {list}
+              Default: { ... }
+
+              List of parts to create the top border. These parts are,
+
+                • Top left corner
+                • Top border
+                • Top right corner
+                • Column separator
+
+            • header, {list}
+              Default: { ... }
+
+              List of parts to create the header borders. These parts are,
+
+                • Header left
+                • Column separator
+                • Header right
+
+            • separator, {list}
+              Default: { ... }
+
+              List of parts to create the separator between the header & the
+              rows. These parts are,
+
+                • Left separator
+                • Normal border
+                • Right separator
+                • Column separator
+
+            • row, {list}
+              Default: { ... }
+
+              List of parts to create the row borders. These parts are,
+
+                • Row left
+                • Column separator
+                • Row right
+
+            • bottom, {list}
+              Default: { ... }
+
+              List of parts to create the bottom border. These parts are,
+
+                • Bottom left corner
+                • Bottom border
+                • Bottom right corner
+                • Column separator
+
+            ------------------------------------------------------
+
+            • overlap, {list}
+              Default: { ... }
+
+              List of parts to create the bottom border when
+              `use_virt_lines = false` and 2 adjacent tables only have a
+              single line between them.
+
+                • Bottom left corner
+                • Bottom border
+                • Bottom right corner
+                • Column separator
+
+        --------------------------------------------------------------
+
+        • align_center, {tuple}
+          Default: { "╴", "╶" }
+
+          Alignment indicators for center aligned columns. The first item is
+          placed on the left side of the column & the second item on the
+          right side of the column.
+
+        • align_left, {string}
+          Default: "╼"
+
+          Alignment indicator for left aligned columns
+
+        • align_right, {string}
+          Default: "╾"
+
+          Alignment indicator for right aligned columns
+
+          Example: ~
+          >lua
+            parts = {
+                top = { "╭", "─", "╮", "┬" },
+                header = { "│", "│", "│" },
+                separator = { "├", "─", "┤", "┼" },
+                row = { "│", "│", "│" },
+                bottom = { "╰", "─", "╯", "┴" },
+
+                overlap = { "┝", "━", "┥", "┿" },
+
+                align_left = "╼",
+                align_right = "╾",
+                align_center = { "╴", "╶" }
+            },
+<
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
