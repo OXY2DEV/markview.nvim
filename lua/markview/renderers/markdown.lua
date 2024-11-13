@@ -990,22 +990,22 @@ markdown.list_item = function (buffer, item)
 
 	if not item.checkbox or not spec.get({ "markdown_inline", "checkboxes" }) then
 		goto continue;
-	elseif spec.get({ "markdown_inline", "checkboxes", "enable" }) == false then
-		goto continue;
 	end
 
-	if item.checkbox == "X" or item.checkbox == "x" then
+	if
+		item.checkbox == "X" or
+		item.checkbox == "x"
+	then
 		checkbox = spec.get({ "markdown_inline", "checkboxes", "checked" });
-	elseif item.checkbox == " " then
+	elseif
+		item.checkbox == " "
+	then
 		checkbox = spec.get({ "markdown_inline", "checkboxes", "unchecked" });
-	else
-		---@diagnostic disable-next-line
-		for _, conf in ipairs(spec.get({ "markdown_inline", "checkboxes", "custom" }) or {}) do
-			if conf.match_string == item.checkbox then
-				checkbox = conf;
-				break;
-			end
-		end
+	elseif
+		spec.get({ "markdown_inline", "checkboxes", "custom" }) and
+		spec.get({ "markdown_inline", "checkboxes", "custom" })[item.checkbox]
+	then
+		checkbox = spec.get({ "markdown_inline", "checkboxes", "custom" })[item.checkbox]
 	end
 
 	::continue::

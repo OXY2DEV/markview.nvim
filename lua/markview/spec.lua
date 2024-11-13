@@ -1,6 +1,18 @@
+--- Configuration specification file
+--- for `markview.nvim`.
+---
+--- It has the following tasks,
+---    • Maintain backwards compatibility
+---    • Check for issues with config
 local spec = {};
 local symbols = require("markview.symbols");
 
+--- Creates a configuration table 
+---@param name any
+---@param text_pos any
+---@param cmd_conceal any
+---@param cmd_hl any
+---@return table
 local operator = function (name, text_pos, cmd_conceal, cmd_hl)
 	---+${func}
 	return {
@@ -60,29 +72,24 @@ local operator = function (name, text_pos, cmd_conceal, cmd_hl)
 	---_
 end
 
+---@type markview.configuration
 spec.default = {
-	highlight_groups = "dynamic",
+	highlight_groups = {},
+
 	renderers = {},
 
+	experimental = {
+		---+${conf}
+		file_byte_read = 1000,
+		text_filetypes = nil,
+		list_empty_line_tolerance = 3
+		---_
+	};
+
 	preview = {
-		modes = { "n", "no", "c" },
-		hybrid_modes = {},
-		ignore_node_types = {
-			-- markdown = { "code_blocks" }
-		},
-
-		enable_preview_on_attach = true,
-
-		max_file_length = 1000,
-		render_distance = vim.o.lines,
-		edit_distance = { 1, 0 },
-		debounce_delay = 25,
-
-		filetypes = { "markdown", "typst" },
-		-- ignore_buftypes = { "nofile" },
-		buf_ignore = { "nofile" },
-
+		---+${conf}
 		callbacks = {
+			---+${func}
 			on_attach = function (_, wins)
 				local preview_modes = spec.get({ "preview", "modes" }) or {};
 				local hybrid_modes = spec.get({ "preview", "hybrid_modes" }) or {};
@@ -138,12 +145,25 @@ spec.default = {
 					end
 				end
 			end
-		}
-	},
+			---_
+		},
 
-	experimental = {
-		list_empty_line_tolarance = 3
-	};
+		debounce = 50,
+		edit_distance = { 1, 0 },
+		enable_preview_on_attach = true,
+
+		filetypes = { "markdown", "typst" },
+		hybrid_modes = {},
+		ignore_buftypes = { "nofile" },
+		ignore_node_classes = {
+			-- markdown = { "code_blocks" }
+		},
+		max_file_length = 1000,
+		modes = { "n", "no", "c" },
+		render_distance = vim.o.lines,
+		splitview_winopts = {}
+		---_
+	},
 
 	markdown = {
 		tables = {
@@ -686,6 +706,51 @@ spec.default = {
 		},
 	},
 	markdown_inline = {
+		block_references = {
+			enable = true,
+
+			icon = "󰿨 ",
+			hl = "Comment"
+		},
+
+		checkboxes = {
+			---+ ${conf, Minimal style checkboxes}
+			enable = true,
+
+			checked = { text = "󰗠", hl = "MarkviewCheckboxChecked" },
+			unchecked = { text = "󰄰", hl = "MarkviewCheckboxUnchecked" },
+
+			custom = {
+				["/"] = { text = "󱎖", hl = "MarkviewCheckboxPending", scope_hl = "Special" },
+				[">"] = { text = "", hl = "MarkviewCheckboxCancelled" },
+				["<"] = { text = "󰃖", hl = "MarkviewCheckboxCancelled" },
+				["-"] = { text = "󰍶", hl = "MarkviewCheckboxCancelled", scope_hl = "MarkviewCheckboxStriked" },
+
+				["?"] = { text = "󰋗", hl = "MarkviewCheckboxPending" },
+				["!"] = { text = "󰀦", hl = "MarkviewCheckboxUnchecked" },
+				["*"] = { text = "󰓎", hl = "MarkviewCheckboxPending" },
+				["'"] = { text = "󰸥", hl = "MarkviewCheckboxCancelled" },
+				["l"] = { text = "󰆋", hl = "MarkviewCheckboxProgress" },
+				["b"] = { text = "󰃀", hl = "MarkviewCheckboxProgress" },
+				["i"] = { text = "󰰄", hl = "MarkviewCheckboxChecked" },
+				["S"] = { text = "", hl = "MarkviewCheckboxChecked" },
+				["I"] = { text = "󰛨", hl = "MarkviewCheckboxPending" },
+				["p"] = { text = "", hl = "MarkviewCheckboxChecked" },
+				["c"] = { text = "", hl = "MarkviewCheckboxUnchecked" },
+				["f"] = { text = "󱠇", hl = "MarkviewCheckboxUnchecked" },
+				["k"] = { text = "", hl = "MarkviewCheckboxPending" },
+				["w"] = { text = "", hl = "MarkviewCheckboxProgress" },
+				["u"] = { text = "󰔵", hl = "MarkviewCheckboxChecked" },
+				["d"] = { text = "󰔳", hl = "MarkviewCheckboxUnchecked" },
+			}
+			---_
+		},
+
+		entities = {
+			enable = true,
+			hl = "Special"
+		},
+
 		inline_codes = {
 			enable = true,
 			hl = "InlineCode",
@@ -696,7 +761,6 @@ spec.default = {
 
 		emails = {
 			enable = true,
-			__emoji_link_compatability = true,
 
 			icon = " ",
 			hl = "MarkviewEmail"
@@ -704,7 +768,6 @@ spec.default = {
 
 		uri_autolinks = {
 			enable = true,
-			__emoji_link_compatability = true,
 
 			icon = " ",
 			hl = "MarkviewEmail"
@@ -712,7 +775,7 @@ spec.default = {
 
 		images = {
 			enable = true,
-			__emoji_link_compatability = true,
+			__emoji_link_compatibility = true,
 
 			icon = "󰥶 ",
 			hl = "MarkviewImage",
@@ -729,16 +792,9 @@ spec.default = {
 			hl = "Special"
 		},
 
-		block_references = {
-			enable = true,
-
-			icon = "󰿨 ",
-			hl = "Comment"
-		},
-
 		internal_links = {
 			enable = true,
-			__emoji_link_compatability = true,
+			__emoji_link_compatibility = true,
 
 			icon = "󰌷 ",
 			hl = "MarkviewHyperlink",
@@ -749,7 +805,7 @@ spec.default = {
 
 		hyperlinks = {
 			enable = true,
-			__emoji_link_compatability = true,
+			__emoji_link_compatibility = true,
 
 			icon = "󰌷 ",
 			hl = "MarkviewHyperlink",
@@ -775,129 +831,6 @@ spec.default = {
 
 		escapes = {
 			enable = true
-		},
-
-		entities = {
-			enable = true,
-			hl = "Special"
-		},
-
-		checkboxes = {
-			---+ ${conf, Minimal style checkboxes}
-			enable = true,
-
-			checked = {
-				text = "󰗠", hl = "MarkviewCheckboxChecked"
-			},
-			unchecked = {
-				text = "󰄰", hl = "MarkviewCheckboxUnchecked"
-			},
-			custom = {
-				{
-					match_string = "/",
-					text = "󱎖",
-					hl = "MarkviewCheckboxPending",
-					scope_hl = "Special",
-				},
-				{
-					match_string = ">",
-					text = "",
-					hl = "MarkviewCheckboxCancelled"
-				},
-				{
-					match_string = "<",
-					text = "󰃖",
-					hl = "MarkviewCheckboxCancelled"
-				},
-				{
-					match_string = "-",
-					text = "󰍶",
-					hl = "MarkviewCheckboxCancelled",
-					scope_hl = "MarkviewCheckboxStriked"
-				},
-
-				{
-					match_string = "?",
-					text = "󰋗",
-					hl = "MarkviewCheckboxPending"
-				},
-				{
-					match_string = "!",
-					text = "󰀦",
-					hl = "MarkviewCheckboxUnchecked"
-				},
-				{
-					match_string = "*",
-					text = "󰓎",
-					hl = "MarkviewCheckboxPending"
-				},
-				{
-					match_string = '"',
-					text = "󰸥",
-					hl = "MarkviewCheckboxCancelled"
-				},
-				{
-					match_string = "l",
-					text = "󰆋",
-					hl = "MarkviewCheckboxProgress"
-				},
-				{
-					match_string = "b",
-					text = "󰃀",
-					hl = "MarkviewCheckboxProgress"
-				},
-				{
-					match_string = "i",
-					text = "󰰄",
-					hl = "MarkviewCheckboxChecked"
-				},
-				{
-					match_string = "S",
-					text = "",
-					hl = "MarkviewCheckboxChecked"
-				},
-				{
-					match_string = "I",
-					text = "󰛨",
-					hl = "MarkviewCheckboxPending"
-				},
-				{
-					match_string = "p",
-					text = "",
-					hl = "MarkviewCheckboxChecked"
-				},
-				{
-					match_string = "c",
-					text = "",
-					hl = "MarkviewCheckboxUnchecked"
-				},
-				{
-					match_string = "f",
-					text = "󱠇",
-					hl = "MarkviewCheckboxUnchecked"
-				},
-				{
-					match_string = "k",
-					text = "",
-					hl = "MarkviewCheckboxPending"
-				},
-				{
-					match_string = "w",
-					text = "",
-					hl = "MarkviewCheckboxProgress"
-				},
-				{
-					match_string = "u",
-					text = "󰔵",
-					hl = "MarkviewCheckboxChecked"
-				},
-				{
-					match_string = "d",
-					text = "󰔳",
-					hl = "MarkviewCheckboxUnchecked"
-				},
-			}
-			---_
 		},
 	},
 	html = {},
@@ -1170,7 +1103,7 @@ spec.default = {
 
 		url_links = {
 			enable = true,
-			__emoji_link_compatability = true,
+			__emoji_link_compatibility = true,
 
 			icon = " ",
 			hl = "MarkviewEmail"
@@ -1326,7 +1259,7 @@ spec.get = function (opts, func, ...)
 	return _o;
 end
 
--- local k = vim.tbl_keys(spec.default.preview);
+-- local k = vim.tbl_keys(spec.default.markdown_inline);
 -- table.sort(k)
 -- vim.print(k)
 return spec;

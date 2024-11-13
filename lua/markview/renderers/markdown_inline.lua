@@ -554,29 +554,26 @@ inline.checkbox = function (buffer, item)
 	if not config then
 		return;
 	else
-		local found_state = false;
-
-		if item.text == "X" or item.text == "x" and config.checked then
+		if
+			(
+				item.text == "X" or item.text == "x"
+			) and
+			config.checked
+		then
 			config = config.checked;
-			goto continue;
-		elseif item.text == " " and config.unchecked then
+		elseif
+			item.text == " " and
+			config.unchecked
+		then
 			config = config.unchecked;
-			goto continue;
-		end
-
-		for _, state in ipairs(config.custom or {}) do
-			if item.text == state.match_string then
-				config = state;
-				found_state = true;
-				break;
-			end
-		end
-
-		if found_state == false then
+		elseif
+			config.custom and
+			config.custom[item.text]
+		then
+			config = config.custom[item.text];
+		else
 			return;
 		end
-
-		::continue::
 	end
 
 	vim.api.nvim_buf_set_extmark(buffer, inline.ns("checkboxes"), range.row_start, range.col_start, {
