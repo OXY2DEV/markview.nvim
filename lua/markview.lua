@@ -228,7 +228,12 @@ markview.draw = function (buffer)
 		local clear_from, clear_to = renderer.range(content);
 
 		if clear_from and clear_to then
-			renderer.clear(buffer, nil, clear_from, clear_to);
+			renderer.clear(
+				buffer,
+				get_config({ "ignore_node_classes" }),
+				clear_from,
+				clear_to
+			);
 		end
 	end
 	---_
@@ -280,7 +285,7 @@ markview.commands = {
 			table.insert(events, "TextChangedI");
 		end
 
-		local debounce_delay = get_config({ "debounce_delay" }) or 25;
+		local debounce_delay = get_config({ "debounce" }) or 50;
 		local debounce = vim.uv.new_timer();
 
 		debounce:start(debounce_delay, 0, vim.schedule_wrap(function ()
