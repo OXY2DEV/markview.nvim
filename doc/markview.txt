@@ -657,15 +657,15 @@ occasions break other things.
       Filetypes that should be opened inside Neovim.
 
 ==============================================================================
-Preview Options                                     *markview.nvim-o-previews*
+Preview Options                                      *markview.nvim-o-preview*
 
 Preview options change how/where the plugin shows the preview. This is
 different compared to language-specific options as they change how things are
 parsed and what is shown(& not shown) in the preview.
 
-                                   *markview.nvim-pre.enable_preview_on_start*
-                               *markview.nvim-preview.enable_preview_on_start*
-    • enable_preview_on_start, {boolean}
+                                  *markview.nvim-pre.enable_preview_on_attach*
+                              *markview.nvim-preview.enable_preview_on_attach*
+    • enable_preview_on_attach, {boolean}
       Default: true
 
       When {true}, previews are enabled.
@@ -956,7 +956,7 @@ Changes the appearance of various markdown block elements.
 
               Warning:
               This will be used by other properties that have `_hl` in their
-              name.
+              name if their value is nil.
 
             • preview_hl, {string?}
 
@@ -1071,7 +1071,7 @@ Changes the appearance of various markdown block elements.
 
           Warning:
           This will be used by other properties that have `_hl` in their
-          name.
+          name if their value is nil.
 
         • info_hl, {string?}
           Default: "MarkCodeInfo"
@@ -1180,7 +1180,7 @@ Changes the appearance of various markdown block elements.
 
               Warning:
               This will be used by other properties that have `_hl` in their
-              name.
+              name if their value is nil.
 
             • icon_hl, {string?}, style: `label`, `icon`
               Default: nil
@@ -1296,7 +1296,7 @@ Changes the appearance of various markdown block elements.
 
               Warning:
               This will be used by other properties that have `_hl` in their
-              name.
+              name if their value is nil.
 
             • sign_hl, {string?}, style: `decorated`
               Default: "MarkviewHeading1Sign"
@@ -1305,7 +1305,8 @@ Changes the appearance of various markdown block elements.
 
         • setext_2, {table}
 
-          Changes how level 2 setext heading is shown. See `setext_1.`
+          Changes how level 2 setext heading is shown. For available
+          properties see `setext_1.`
 
                                            *markview.nvim-md.horizontal_rules*
                                      *markview.nvim-markdown.horizontal_rules*
@@ -1490,11 +1491,13 @@ Changes the appearance of various markdown block elements.
 
         • marker_plus, {table}
 
-          Changes how `+` list items are shown. See `marker_minus`.
+          Changes how `+` list items are shown. For available properties
+          see `marker_minus`.
 
         • marker_star, {table}
 
-          Changes how `*` list items are shown. See `marker_minus`.
+          Changes how `*` list items are shown. For available properties
+          see `marker_minus`.
 
         --------------------------------------------------------------
 
@@ -1517,7 +1520,8 @@ Changes the appearance of various markdown block elements.
 
         • marker_parenthesis, {table}
 
-          Changes how `n)` list items are shown. See `marker_dot`.
+          Changes how `n)` list items are shown. For available properties
+          see `marker_dot`.
 
                                              *markview.nvim-md.metadata_minus*
                                        *markview.nvim-markdown.metadata_minus*
@@ -1551,7 +1555,7 @@ Changes the appearance of various markdown block elements.
 
           Warning:
           This will be used by other properties that have `_hl` in their
-          name.
+          name if their value is nil.
 
         • border_bottom_hl, {string?}
           Default: nil
@@ -1671,24 +1675,24 @@ Changes the appearance of various markdown block elements.
                 • Bottom right corner
                 • Column separator
 
-        --------------------------------------------------------------
+            ------------------------------------------------------
 
-        • align_center, {tuple}
-          Default: { "╴", "╶" }
+            • align_center, {tuple}
+              Default: { "╴", "╶" }
 
-          Alignment indicators for center aligned columns. The first item is
-          placed on the left side of the column & the second item on the
-          right side of the column.
+              Alignment indicators for center aligned columns. The first item
+              is placed on the left side of the column & the second item on
+              the right side of the column.
 
-        • align_left, {string}
-          Default: "╼"
+            • align_left, {string}
+              Default: "╼"
 
-          Alignment indicator for left aligned columns
+              Alignment indicator for left aligned columns
 
-        • align_right, {string}
-          Default: "╾"
+            • align_right, {string}
+              Default: "╾"
 
-          Alignment indicator for right aligned columns
+              Alignment indicator for right aligned columns
 
           Example: ~
           >lua
@@ -1706,8 +1710,236 @@ Changes the appearance of various markdown block elements.
                 align_center = { "╴", "╶" }
             },
 <
+        • hl, {table}
+          Default: { ... }
 
+          Table containing highlight groups for various parts of the table.
+          Has the same structure as `parts`.
 
+==============================================================================
+Inline markdown options                      *markview.nvim-o-markdown_inline*
+
+Changes how inline markdown elements are shown.
+
+                                          *markview.nvim-inl.block_references*
+                              *markview.nvim-markdown_inline.block_references*
+    • block_references, {table}, `Obsidian`
+
+      Changes how block reference links are shown.
+
+        • enable, {boolean}
+          Default: true
+
+          Enables/Disables preview of this node.
+
+        --------------------------------------------------------------
+
+        • corner_left, {string?}
+          Default: nil
+
+          Text to use as the left corner.
+
+        • corner_right, {string?}
+          Default: nil
+
+          Text to use as the right corner. Added after the right padding.
+
+        • icon, {string?}
+          Default: "󰿨 "
+
+          Text to use as the icon. Added after the left padding.
+
+        • padding_left, {string?}
+          Default: nil
+
+          Text to use as the left padding. Added after the left corner.
+
+        • padding_right, {string?}
+          Default: nil
+
+          Text to use as the right padding. Added after the text.
+
+        --------------------------------------------------------------
+
+        • hl, {string}
+          Default: "Comment"
+
+          Default highlight group..
+
+          Warning:
+          This will be used by other properties that have `_hl` in their
+          name if their value is nil.
+
+        • corner_left, {string?}
+          Default: nil
+
+          Text to use as the left corner.
+
+        • corner_right, {string?}
+          Default: nil
+
+          Text to use as the right corner. Added after the right padding.
+
+        • icon, {string?}
+          Default: "󰿨 "
+
+          Text to use as the icon. Added after the left padding.
+
+        • padding_left, {string?}
+          Default: nil
+
+          Text to use as the left padding. Added after the left corner.
+
+        • padding_right, {string?}
+          Default: nil
+
+          Text to use as the right padding. Added after the text.
+
+                                                *markview.nvim-inl.checkboxes*
+                                    *markview.nvim-markdown_inline.checkboxes*
+    • checkboxes, {string?}
+
+      Changes how checkboxes look.
+
+        • enable, {boolean}
+          Default: true
+
+          Enables/Disables preview of this node.
+
+        --------------------------------------------------------------
+
+        • checked, {table}
+          Default: { ... }
+
+          Changes how checked checkboxes look.
+
+          Properties: ~
+
+            • text, {string}
+              Default: "󰗠"
+
+              Text to show for the checkbox.
+
+            • hl, {string?}
+              Default: "MarkviewCheckboxChecked"
+
+              Highlight group for text.
+
+            • scope_hl, {string?}
+              Default: nil 
+
+              Highlight group for the list item.
+
+        • unchecked, {table}
+          Default: { ... }
+
+          Changes how unchecked checkboxes look. Has the same structure as
+          `checked`.
+
+        --------------------------------------------------------------
+
+        • custom, {list}
+          Default: { ... }
+
+          A table where the {key}s are the text inside the checkbox and the
+          {value}s are the configuration table for that checkbox.
+
+          See `checked` for available properties.
+
+          Example: ~
+          >lua
+            custom = {
+                ["/"] = {
+                    text = "󱎖",
+                    hl = "MarkviewCheckboxPending",
+
+                    scope_hl = "Special"
+                },
+
+                [">"] = {
+                    text = "",
+                    hl = "MarkviewCheckboxCancelled"
+                }
+            }
+<
+                                                    *markview.nvim-inl.emails*
+                                        *markview.nvim-markdown_inline.emails*
+    • emails, {table}
+
+      Changes how emails are shown. See `block_references` for available
+      properties.
+
+                                               *markview.nvim-inl.embed_files*
+                                   *markview.nvim-markdown_inline.embed_files*
+    • embed_files, {table}, `Obsidian`
+
+      Changes how embed files are shown. For available properties see
+      |markview.nvim-nil.block_references|.
+
+                                                  *markview.nvim-inl.entities*
+                                      *markview.nvim-markdown_inline.entities*
+    • entities, {table}
+
+      Allows previewing of entity references.
+
+        • enable, {boolean}
+          Default: true
+
+          Enables/Disables preview of this node.
+
+        • hl, {string?}
+          Default: "Special"
+
+          Highlight group for text.
+
+      Usage: ~
+      >md
+        &#8847; → ⊏
+        &and; → ∧
+<
+                                                   *markview.nvim-inl.escapes*
+                                       *markview.nvim-markdown_inline.escapes*
+    • escapes, {table}
+
+      Changes how escaped characters are shown.
+
+        • enable, {boolean}
+          Default: true
+
+          Enables/Disables preview of this node.
+
+                                                *markview.nvim-inl.hyperlinks*
+                                    *markview.nvim-markdown_inline.hyperlinks*
+    • hyperlinks, {table}
+
+      Changes how normal links/hyperlinks are shown. For available properties
+      see |markview.nvim-nil.block_references|.
+
+                                                    *markview.nvim-inl.images*
+                                        *markview.nvim-markdown_inline.images*
+    • images, {table}
+
+      Changes how image links are shown. For available properties
+      see |markview.nvim-nil.block_references|.
+                                              *markview.nvim-inl.inline_codes*
+                                  *markview.nvim-markdown_inline.inline_codes*
+    • inline_codes, {table}
+
+      Changes how inline codes links are shown. For available properties
+      see |markview.nvim-nil.block_references|.
+
+                                            *markview.nvim-inl.internal_links*
+                                *markview.nvim-markdown_inline.internal_links*
+    • internal_links, {table}, `Obsidian`
+
+      Changes how internal links links are shown. For available properties
+      see |markview.nvim-nil.block_references|.
+                                             *markview.nvim-inl.uri_autolinks*
+                                 *markview.nvim-markdown_inline.uri_autolinks*
+    • uri_autolinks, {table}
+
+      Changes how inline codes links are shown. For available properties see
+      |markview.nvim-nil.block_references|.
 
 
 
