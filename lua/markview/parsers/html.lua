@@ -32,76 +32,54 @@ html.heading = function (buffer, TSNode, text, range)
 end
 
 ---@type markview.parsers.function
-html.image = function (buffer, TSNode, text, range)
-	local src, alt;
+html.element = function (buffer, TSNode, text, range)
+	local opening_tag, closing_tag;
 
-	for child in TSNode:named_child(0):iter_children() do
-		if child:type() == "attribute" and child:child_count() == 3 then
-			local attr, value = child:named_child(0), child:named_child(1);
-
-			local attr_text = vim.treesitter.get_node_text(attr, buffer);
-			local value_text = vim.treesitter.get_node_text(value, buffer);
-
-			local _, c_s, _, c_e = child:range();
-
-			if attr_text == "src" then
-				src = value_text;
-				range.src_start = c_s;
-				range.src_end = c_e;
-			elseif attr_text == "alt" then
-				alt = value_text;
-				range.alt_start = c_s;
-				range.alt_end = c_e;
+	for child in TSNode:iter_children() do
+		if child:type() == "start_tag" then
+			if
+				vim.treesitter.get_node_text(child, buffer):match("^%<h%d%>$")
+			then
+				return;
 			end
+
+			opening_tag = child;
+		elseif child:type() == "end_tag" then
+			closing_tag = child;
 		end
 	end
 
+	if not opening_tag then return; end
+
 	html.insert({
-		class = "html_link_image",
+		class = "html_container_element",
+		name = vim.treesitter.get_node_text(opening_tag:child(1), buffer),
+
+		opening_tag = {
+			text = vim.treesitter.get_node_text(opening_tag, buffer),
+			range = { opening_tag:range() }
+		},
+		closing_tag = closing_tag and {
+			text = vim.treesitter.get_node_text(closing_tag, buffer),
+			range = { closing_tag:range() }
+		} or nil,
 
 		text = text,
-		description = alt,
-		destination = src,
 
 		range = range
-	})
+	});
 end
 
----@type markview.parsers.function
-html.element = function (buffer, TSNode, text, range)
-	local src, alt;
-
-	for child in TSNode:named_child(0):iter_children() do
-		if child:type() == "attribute" and child:child_count() == 3 then
-			local attr, value = child:named_child(0), child:named_child(1);
-
-			local attr_text = vim.treesitter.get_node_text(attr, buffer);
-			local value_text = vim.treesitter.get_node_text(value, buffer);
-
-			local _, c_s, _, c_e = child:range();
-
-			if attr_text == "src" then
-				src = value_text;
-				range.src_start = c_s;
-				range.src_end = c_e;
-			elseif attr_text == "alt" then
-				alt = value_text;
-				range.alt_start = c_s;
-				range.alt_end = c_e;
-			end
-		end
-	end
+html.element_void = function (buffer, TSNode, text, range)
+	local opening_tag = TSNode:child(0);
 
 	html.insert({
-		class = "html_anchor_links",
+		class = "html_void_element",
+		name = vim.treesitter.get_node_text(opening_tag:child(1), buffer),
 
 		text = text,
-		description = alt,
-		destination = src,
-
 		range = range
-	})
-
+	});
 end
 
 html.parse = function (buffer, TSTree, from, to)
@@ -123,23 +101,10 @@ html.parse = function (buffer, TSTree, from, to)
 			(#eq? @heading.start @heading.end)
 			) @html.heading)
 
-		((element
-			(start_tag
-				(
-					((tag_name) @image.tag)
-					(#eq? @image.tag "img")
-				)
-			)) @html.image)
-
-		((element
-			(start_tag
-				((tag_name) @anchor.start)
-				(#eq? @anchor.start "a")
-			)
-			(end_tag
-				((tag_name) @anchor.end)
-				(#match? @anchor.start @anchor.end)
-			)) @html.anchor)
+		((element 
+			.
+			(start_tag)
+			.) @html.element_void)
 
 		(((element
 			(start_tag ((tag_name) @element.start))

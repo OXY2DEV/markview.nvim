@@ -1,5 +1,6 @@
 local renderer = {};
 
+renderer.html = require("markview.renderers.html");
 renderer.markdown = require("markview.renderers.markdown");
 renderer.markdown_inline = require("markview.renderers.markdown_inline");
 renderer.latex = require("markview.renderers.latex");

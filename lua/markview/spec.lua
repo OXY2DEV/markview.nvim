@@ -833,7 +833,39 @@ spec.default = {
 			enable = true
 		},
 	},
-	html = {},
+	html = {
+		headings = {
+			heading_1 = {
+				hl_group = "MarkviewHeading1"
+			},
+			heading_2 = {
+				hl_group = "MarkviewHeading2"
+			},
+			heading_3 = {
+				hl_group = "MarkviewHeading3"
+			},
+			heading_4 = {
+				hl_group = "MarkviewHeading4"
+			},
+			heading_5 = {
+				hl_group = "MarkviewHeading5"
+			},
+			heading_6 = {
+				hl_group = "MarkviewHeading6"
+			},
+		},
+		container_elements = {
+			-- ["i"] = {
+			-- 	on_opening_tag = { conceal = "" },
+			-- 	on_closing_tag = { conceal = "" },
+			-- }
+		},
+		void_elements = {
+			-- ["img"] = {
+			-- 	on_node = { conceal = "" }
+			-- }
+		}
+	},
 	latex = {
 		commands = {
 			["frac"] = {

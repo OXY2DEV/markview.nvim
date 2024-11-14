@@ -1,6 +1,6 @@
 local parser = {};
-local lang = require("markview.languages")
 
+parser.html = require("markview.parsers.html");
 parser.markdown = require("markview.parsers.markdown");
 parser.markdown_inline = require("markview.parsers.markdown_inline");
 parser.html = require("markview.parsers.html");
