@@ -42,7 +42,11 @@ html.set_ns = function ()
 	end
 end
 
+--- Renders headings.
+---@param buffer integer
+---@param item __html.heading_item
 html.heading = function (buffer, item)
+	---+${func}
 	local config = get_config("headings");
 
 	if not config then
@@ -63,13 +67,18 @@ html.heading = function (buffer, item)
 		vim.tbl_extend("force", {
 			undo_restore = false, invalidate = true,
 
-			end_row = range.row_end + 1,
-			end_col = range.end_col,
+			end_row = range.row_end,
+			end_col = range.col_end,
 		}, config)
-	)
+	);
+	---_
 end
 
+--- Renders container elements
+---@param buffer integer
+---@param item __html.container_item
 html.container_element = function (buffer, item)
+	---+${func}
 	local config = get_config("container_elements");
 	local keys = vim.tbl_keys(config);
 
@@ -85,6 +94,7 @@ html.container_element = function (buffer, item)
 		return;
 	end
 
+	---@type html.container_opts
 	config = config[string.lower(item.name)] or config[string.upper(item.name)] or config[item.name];
 
 	local eval = function (val, ...)
@@ -165,9 +175,14 @@ html.container_element = function (buffer, item)
 			}, close_conf)
 		)
 	end
+	---_
 end
 
+--- Renders void elements
+---@param buffer integer
+---@param item __html.void_item
 html.void_element = function (buffer, item)
+	---+${func}
 	local config = get_config("void_elements");
 	local keys = vim.tbl_keys(config);
 
@@ -183,6 +198,7 @@ html.void_element = function (buffer, item)
 		return;
 	end
 
+	---@type html.void_opts
 	config = config[string.lower(item.name)] or config[string.upper(item.name)] or config[item.name];
 
 	local eval = function (val, ...)
@@ -217,9 +233,14 @@ html.void_element = function (buffer, item)
 			}, node_conf)
 		)
 	end
+	---_
 end
 
+--- Renders HTML elements
+---@param buffer integer
+---@param content table[]
 html.render = function (buffer, content)
+	---+${func}
 	html.cache = {
 		font_regions = {},
 		style_regions = {
@@ -234,8 +255,14 @@ html.render = function (buffer, content)
 			-- html[item.class:gsub("^html_", "")](buffer, item);
 		end
 	end
+	---_
 end
 
+--- Clears decorations of HTML elements
+---@param buffer integer
+---@param ignore_ns string[]?
+---@param from integer
+---@param to integer
 html.clear = function (buffer, ignore_ns, from, to)
 	for name, ns in pairs(html.ns) do
 		if ignore_ns and vim.list_contains(ignore_ns, name) == false then

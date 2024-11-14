@@ -1,4 +1,4 @@
---- HTML parser for `markview.nvim`
+--- HTML parser for `markview.nvim`.
 local html = {};
 
 --- Queried contents
@@ -6,9 +6,13 @@ local html = {};
 html.content = {};
 
 --- Queried contents, but sorted
+---@type { [string]: table }
 html.sorted = {}
 
+--- Wrapper for `table.insert()`.
+---@param data table
 html.insert = function (data)
+	---+${func}
 	table.insert(html.content, data);
 
 	if not html.sorted[data.class] then
@@ -16,9 +20,16 @@ html.insert = function (data)
 	end
 
 	table.insert(html.sorted[data.class], data);
+	---_
 end
 
+--- Heading element parser
+---@param buffer integer
+---@param TSNode table
+---@param text string[]
+---@param range table
 html.heading = function (buffer, TSNode, text, range)
+	---+${func}
 	local tag = vim.treesitter.get_node_text(TSNode:named_child(0):named_child(0), buffer);
 
 	html.insert({
@@ -26,13 +37,18 @@ html.heading = function (buffer, TSNode, text, range)
 		level = tonumber(tag:match("^h(%d)$")),
 
 		text = text,
-
 		range = range
-	})
+	});
+	---_
 end
 
----@type markview.parsers.function
+--- Container element parser
+---@param buffer integer
+---@param TSNode table
+---@param text string[]
+---@param range table
 html.element = function (buffer, TSNode, text, range)
+	---+${func}
 	local opening_tag, closing_tag;
 
 	for child in TSNode:iter_children() do
@@ -65,12 +81,18 @@ html.element = function (buffer, TSNode, text, range)
 		} or nil,
 
 		text = text,
-
 		range = range
 	});
+	---_
 end
 
+--- Void element parser
+---@param buffer integer
+---@param TSNode table
+---@param text string[]
+---@param range table
 html.element_void = function (buffer, TSNode, text, range)
+	---+${func}
 	local opening_tag = TSNode:child(0);
 
 	html.insert({
@@ -80,9 +102,18 @@ html.element_void = function (buffer, TSNode, text, range)
 		text = text,
 		range = range
 	});
+	---_
 end
 
+--- HTML parser
+---@param buffer integer
+---@param TSTree table
+---@param from integer?
+---@param to integer?
+---@return table[]
+---@return table
 html.parse = function (buffer, TSTree, from, to)
+	---+${func}
 	-- Clear the previous contents
 	html.sorted = {};
 	html.content = {};
@@ -151,6 +182,7 @@ html.parse = function (buffer, TSTree, from, to)
 	end
 
 	return html.content, html.sorted;
+	---_
 end
 
 return html;

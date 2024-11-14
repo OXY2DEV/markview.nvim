@@ -835,6 +835,8 @@ spec.default = {
 	},
 	html = {
 		headings = {
+			enable = true,
+
 			heading_1 = {
 				hl_group = "MarkviewHeading1"
 			},
@@ -855,12 +857,14 @@ spec.default = {
 			},
 		},
 		container_elements = {
+			enable = true,
 			-- ["i"] = {
 			-- 	on_opening_tag = { conceal = "" },
 			-- 	on_closing_tag = { conceal = "" },
 			-- }
 		},
 		void_elements = {
+			enable = true,
 			-- ["img"] = {
 			-- 	on_node = { conceal = "" }
 			-- }
