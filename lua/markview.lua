@@ -605,7 +605,7 @@ markview.exec = function (cmd)
 	if
 		#args == 0
 	then
-		markview.commands.toggle(vim.api.nvim_get_current_buf())
+		markview.commands.toggleAll()
 	elseif
 		vim.list_contains(
 			vim.tbl_keys(markview.commands),
