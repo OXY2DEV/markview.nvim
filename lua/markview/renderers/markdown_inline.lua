@@ -41,17 +41,17 @@ inline.set_ns = function ()
 end
 
 inline.custom_config = function (config, value)
-	if not config.custom or not value then
-		return config;
+	if not config.patterns or not value then
+		return config.default;
 	end
 
-	for _, custom in ipairs(config.custom) do
-		if custom.match_string and value:match(custom.match_string) then
-			return vim.tbl_deep_extend("force", config, custom);
+	for _, pattern in ipairs(config.patterns) do
+		if pattern.match_string and value:match(pattern.match_string) then
+			return vim.tbl_deep_extend("force", config.default or {}, pattern);
 		end
 	end
 
-	return config;
+	return config.default;
 end
 
 inline.code_span = function (buffer, item)
@@ -96,6 +96,57 @@ inline.code_span = function (buffer, item)
 
 		hl_mode = "combine"
 	});
+	---_
+end
+
+inline.highlight = function (buffer, item)
+	---+${func, Render Email links}
+	local config = get_config("highlights");
+	local range = item.range;
+
+	if not config then
+		return;
+	end
+
+	config = inline.custom_config(config, item.text);
+
+	---+${custom, Draw the parts for the email}
+	vim.api.nvim_buf_set_extmark(buffer, inline.ns("links"), range.row_start, range.col_start, {
+		undo_restore = false, invalidate = true,
+		end_col = range.col_start + 3,
+		conceal = "",
+
+		virt_text_pos = "inline",
+		virt_text = {
+			{ config.corner_left or "", utils.set_hl(config.corner_left_hl or config.hl) },
+			{ config.padding_left or "", utils.set_hl(config.padding_left_hl or config.hl) },
+
+			{ config.icon or "", utils.set_hl(config.icon_hl or config.hl) }
+		},
+
+		hl_mode = "combine"
+	});
+
+	vim.api.nvim_buf_set_extmark(buffer, inline.ns("links"), range.row_start, range.col_start + 3, {
+		undo_restore = false, invalidate = true,
+		end_col = range.col_end - 3,
+		hl_group = utils.set_hl(config.hl)
+	});
+
+	vim.api.nvim_buf_set_extmark(buffer, inline.ns("links"), range.row_start, range.col_end - 3, {
+		undo_restore = false, invalidate = true,
+		end_col = range.col_end,
+		conceal = "",
+
+		virt_text_pos = "inline",
+		virt_text = {
+			{ config.corner_right or "", utils.set_hl(config.corner_right_hl or config.hl) },
+			{ config.padding_right or "", utils.set_hl(config.padding_right_hl or config.hl) }
+		},
+
+		hl_mode = "combine"
+	});
+	---_
 	---_
 end
 
@@ -546,6 +597,55 @@ inline.entity = function (buffer, item)
 	---_
 end
 
+inline.footnote = function (buffer, item)
+	local config = get_config("footnotes");
+	local range = item.range;
+
+	if not config then
+		return;
+	end
+
+	config = inline.custom_config(config, item.label);
+
+	---+${custom, Draw the parts for the autolinks}
+	vim.api.nvim_buf_set_extmark(buffer, inline.ns("links"), range.row_start, range.col_start, {
+		undo_restore = false, invalidate = true,
+		end_col = range.col_start + 2,
+		conceal = "",
+
+		virt_text_pos = "inline",
+		virt_text = {
+			{ config.corner_left or "", utils.set_hl(config.corner_left_hl or config.hl) },
+			{ config.padding_left or "", utils.set_hl(config.padding_left_hl or config.hl) },
+
+			{ config.icon or "", utils.set_hl(config.icon_hl or config.hl) }
+		},
+
+		hl_mode = "combine"
+	});
+
+	vim.api.nvim_buf_set_extmark(buffer, inline.ns("links"), range.row_start, range.col_start, {
+		undo_restore = false, invalidate = true,
+		end_col = range.col_end,
+		hl_group = utils.set_hl(config.hl)
+	});
+
+	vim.api.nvim_buf_set_extmark(buffer, inline.ns("links"), range.row_start, range.col_end - 1, {
+		undo_restore = false, invalidate = true,
+		end_col = range.col_end,
+		conceal = "",
+
+		virt_text_pos = "inline",
+		virt_text = {
+			{ config.padding_right or "", utils.set_hl(config.padding_right_hl or config.hl) },
+			{ config.corner_right or "", utils.set_hl(config.corner_right_hl or config.hl) }
+		},
+
+		hl_mode = "combine"
+	});
+	---_
+end
+
 inline.checkbox = function (buffer, item)
 	---+${func, Renders Checkboxes}
 	local config = get_config("checkboxes");
@@ -567,10 +667,9 @@ inline.checkbox = function (buffer, item)
 		then
 			config = config.unchecked;
 		elseif
-			config.custom and
-			config.custom[item.text]
+			config[item.text]
 		then
-			config = config.custom[item.text];
+			config = config[item.text];
 		else
 			return;
 		end

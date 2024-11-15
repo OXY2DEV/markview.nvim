@@ -484,18 +484,24 @@ markdown.set_ns = function ()
 	end
 end
 
+--- Renders atx headings
+---@param buffer integer
+---@param item table
 markdown.atx_heading = function (buffer, item)
 	---+${func, Renders ATX headings}
-	local config = get_config("headings");
 
-	if not config then
+	---@type markdown.headings?
+	local main_config = get_config("headings");
+
+	if not main_config then
 		return;
-	elseif not config["heading_" .. #item.marker] then
+	elseif not main_config["heading_" .. #item.marker] then
 		return;
 	end
 
+	---@type headings.atx
+	local config = main_config["heading_" .. #item.marker];
 	local range = item.range;
-	config = config["heading_" .. #item.marker];
 
 	if config.style == "simple" then
 		vim.api.nvim_buf_set_extmark(buffer, markdown.ns("headings"), range.row_start, range.col_start, {
@@ -589,23 +595,34 @@ markdown.atx_heading = function (buffer, item)
 	---_
 end
 
+--- Renders block quotes, callouts & alerts.
+---@param buffer integer
+---@param item table
 markdown.block_quote = function (buffer, item)
 	---+${func, Renders Block quotes & Callouts/Alerts}
-	local config = get_config("block_quotes");
+
+	---@type markdown.block_quotes?
+	local main_config = get_config("block_quotes");
+	---@type string[]
+	local keys = vim.tbl_keys(main_config);
 	local range = item.range;
 
-	if not config then
+	if
+		not main_config or
+		not main_config.default
+	then
+		return;
+	elseif
+		item.callout and
+		not vim.list_contains(keys, string.lower(item.callout)) and
+		not vim.list_contains(keys, string.upper(item.callout)) and
+		not vim.list_contains(keys, item.callout)
+	then
 		return;
 	end
 
-	config = config.default or {};
-
-	for _, callout in ipairs(get_config("block_quotes").callouts or {}) do
-		if item.callout and callout.match_string:lower() == item.callout:lower() then
-			config = callout;
-			break;
-		end
-	end
+	---@type block_quotes.opts
+	local config = item.callout and (main_config[string.lower(item.callout)] or main_config[string.upper(item.callout)] or main_config[item.callout]) or main_config.default;
 
 	if item.callout then
 		if item.title and config.title == true then
@@ -666,8 +683,13 @@ markdown.checkbox = function (buffer, item)
 	inline.checkbox(buffer, item)
 end
 
+--- Renders fenced code blocks.
+---@param buffer integer
+---@param item table
 markdown.code_block = function (buffer, item)
 	---+${func, Renders Code blocks}
+
+	---@type markdown.code_blocks?
 	local config = get_config("code_blocks");
 	local range = item.range;
 
@@ -978,13 +1000,83 @@ markdown.code_block = function (buffer, item)
 	---_
 end
 
-markdown.list_item = function (buffer, item)
-	---+${func, Renders List items}
-	local config = get_config("list_items");
-	local checkbox;
+--- Renders horizontal rules/line breaks.
+---@param buffer integer
+---@param item table
+markdown.hr = function (buffer, item)
+	---+${func, Horizontal rules}
+
+	---@type markdown.horizontal_rules?
+	local config = get_config("horizontal_rules");
 	local range = item.range;
 
 	if not config then
+		return;
+	end
+
+	local virt_text = {};
+	local function val(opt, index)
+		if vim.islist(opt) == false then
+			return opt;
+		elseif #opt < index then
+			return opt[#opt];
+		elseif 0 > index then
+			return opt[1];
+		end
+
+		return opt[index];
+	end
+
+	for _, part in ipairs(config.parts) do
+		if part.type == "text" then
+			table.insert(virt_text, { part.text, utils.set_hl(part.hl) });
+		elseif part.type == "repeating" then
+			local rep = 0;
+
+			if pcall(part.repeat_amount --[[ @as function ]], buffer) then
+				rep = part.repeat_amount(buffer);
+			elseif type(part.repeat_amount) == "number" then
+				rep = part.repeat_amount --[[ @as integer ]];
+			end
+
+			for r = 1, rep, 1 do
+				if part.direction == "right" then
+					table.insert(virt_text, {
+						val(part.text, (rep - r) + 1),
+						val(part.hl, (rep - r) + 1)
+					});
+				else
+					table.insert(virt_text, {
+						val(part.text, r),
+						val(part.hl, r)
+					});
+				end
+			end
+		end
+	end
+
+	vim.api.nvim_buf_set_extmark(buffer, markdown.ns("tables"), range.row_start, 0, {
+		undo_restore = false, invalidate = true,
+		virt_text_pos = "overlay",
+		virt_text = virt_text,
+
+		hl_mode = "combine"
+	});
+	---_
+end
+
+--- Renders list items
+---@param buffer integer
+---@param item table
+markdown.list_item = function (buffer, item)
+	---+${func, Renders List items}
+
+	---@type markdown.list_items?
+	local main_config = get_config("list_items");
+	local checkbox;
+	local range = item.range;
+
+	if not main_config then
 		return;
 	end
 
@@ -1002,26 +1094,27 @@ markdown.list_item = function (buffer, item)
 	then
 		checkbox = spec.get({ "markdown_inline", "checkboxes", "unchecked" });
 	elseif
-		spec.get({ "markdown_inline", "checkboxes", "custom" }) and
-		spec.get({ "markdown_inline", "checkboxes", "custom" })[item.checkbox]
+		spec.get({ "markdown_inline", "checkboxes" })[item.checkbox]
 	then
-		checkbox = spec.get({ "markdown_inline", "checkboxes", "custom" })[item.checkbox]
+		checkbox = spec.get({ "markdown_inline", "checkboxes" })[item.checkbox]
 	end
 
 	::continue::
 
-	local shift_width, indent_size = config.shift_width, config.indent_size;
+	---@type list_items.ordered | list_items.unordered
+	local config;
+	local shift_width, indent_size = main_config.shift_width or 1, main_config.indent_size or 1;
 
 	if item.marker == "-" then
-		config = config.marker_minus;
+		config = main_config.marker_minus;
 	elseif item.marker == "+" then
-		config = config.marker_plus;
+		config = main_config.marker_plus;
 	elseif item.marker == "*" then
-		config = config.marker_star;
+		config = main_config.marker_star;
 	elseif item.marker:match("%d+%.") then
-		config = config.marker_dot;
+		config = main_config.marker_dot;
 	elseif item.marker:match("%d+%)") then
-		config = config.marker_parenthasis;
+		config = main_config.marker_parenthesis;
 	end
 
 	if not config then
@@ -1096,8 +1189,13 @@ markdown.list_item = function (buffer, item)
 	---_
 end
 
+--- Renders - metadatas.
+---@param buffer integer
+---@param item table
 markdown.metadata_minus = function (buffer, item)
 	---+${func, Renders YAML metadata blocks}
+
+	---@type markdown.metadata?
 	local config = get_config("metadata_minus");
 	local range = item.range;
 
@@ -1154,8 +1252,13 @@ markdown.metadata_minus = function (buffer, item)
 	---_
 end
 
+--- Renders + metadatas.
+---@param buffer integer
+---@param item table
 markdown.metadata_plus = function (buffer, item)
 	---+${func, Renders TOML metadata blocks}
+
+	---@type markdown.metadata?
 	local config = get_config("metadata_plus");
 	local range = item.range;
 
@@ -1212,19 +1315,25 @@ markdown.metadata_plus = function (buffer, item)
 	---_
 end
 
+--- Renders setext headings.
+---@param buffer integer
+---@param item table
 markdown.setext_heading = function (buffer, item)
 	---+${func, Renders Setext headings}
-	local config = get_config("headings");
+
+	---@type markdown.headings?
+	local main_config = get_config("headings");
 	local lvl = item.marker:match("%=") and 1 or 2;
 
-	if not config then
+	if not main_config then
 		return;
-	elseif not config["setext_" .. lvl] then
+	elseif not main_config["setext_" .. lvl] then
 		return;
 	end
 
+	---@type headings.setext
+	local config = main_config["setext_" .. lvl];
 	local range = item.range;
-	config = config["setext_" .. lvl];
 
 	if config.style == "simple" then
 		vim.api.nvim_buf_set_extmark(buffer, markdown.ns("headings"), range.row_start, range.col_start, {
@@ -1294,8 +1403,13 @@ markdown.setext_heading = function (buffer, item)
 	---_
 end
 
+--- Renders tables.
+---@param buffer integer
+---@param item table
 markdown.table = function (buffer, item)
 	---+${func, Renders Tables}
+
+	---@type markdown.tables?
 	local config = get_config("tables");
 	local range = item.range;
 
@@ -1366,7 +1480,9 @@ markdown.table = function (buffer, item)
 	---_
 	---_
 
+	---@type tables.parts
 	local parts = config.parts;
+	---@type tables.parts
 	local hls = config.hl;
 
 	local function get_border(from, index)
@@ -1942,66 +2058,6 @@ markdown.table = function (buffer, item)
 			---_
 		end
 	end
-	---_
-end
-
-markdown.hr = function (buffer, item)
-	---+${func, Horizontal rules}
-	local config = get_config("horizontal_rules");
-	local range = item.range;
-
-	if not config then
-		return;
-	end
-
-	local virt_text = {};
-	local function val(opt, index)
-		if vim.islist(opt) == false then
-			return opt;
-		elseif #opt < index then
-			return opt[#opt];
-		elseif 0 > index then
-			return opt[1];
-		end
-
-		return opt[index];
-	end
-
-	for _, part in ipairs(config.parts) do
-		if part.type == "text" then
-			table.insert(virt_text, { part.text, utils.set_hl(part.hl) });
-		elseif part.type == "repeating" then
-			local rep = 0;
-
-			if pcall(part.repeat_amount, buffer) then
-				rep = part.repeat_amount(buffer);
-			elseif type(part.repeat_amount) == "number" then
-				rep = part.repeat_amount;
-			end
-
-			for r = 1, rep, 1 do
-				if part.direction == "right" then
-					table.insert(virt_text, {
-						val(part.text, (rep - r) + 1),
-						val(part.hl, (rep - r) + 1)
-					});
-				else
-					table.insert(virt_text, {
-						val(part.text, r),
-						val(part.hl, r)
-					});
-				end
-			end
-		end
-	end
-
-	vim.api.nvim_buf_set_extmark(buffer, markdown.ns("tables"), range.row_start, 0, {
-		undo_restore = false, invalidate = true,
-		virt_text_pos = "overlay",
-		virt_text = virt_text,
-
-		hl_mode = "combine"
-	});
 	---_
 end
 

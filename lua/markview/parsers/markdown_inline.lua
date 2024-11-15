@@ -23,7 +23,6 @@ inline.cache = {
 	link_ref = {}
 }
 
----@type markview.parsers.function
 inline.checkbox = function (_, TSNode, text, range)
 	local before = text[1]:sub(0, range.col_start);
 	local inner = text[1]:sub(range.col_start + 1, range.col_end - 1);
@@ -44,8 +43,9 @@ inline.checkbox = function (_, TSNode, text, range)
 	inline.cache.checkbox[range.row_start] = #inline.content;
 end
 
----@type markview.parsers.function
 inline.inline_link = function (buffer, TSNode, text, range)
+	if range.row_start ~= range.row_end then return; end
+
 	local link_desc;
 	local link_label;
 
@@ -71,8 +71,9 @@ inline.inline_link = function (buffer, TSNode, text, range)
 	});
 end
 
----@type markview.parsers.function
 inline.reference_link = function (buffer, TSNode, text, range)
+	if range.row_start ~= range.row_end then return; end
+
 	local link_desc = vim.treesitter.get_node_text(TSNode:named_child(0), buffer):gsub("[%[%]]", "");
 	local link_label;
 
@@ -96,6 +97,8 @@ inline.reference_link = function (buffer, TSNode, text, range)
 end
 
 inline.embed_file = function (_, _, text, range)
+	if range.row_start ~= range.row_end then return; end
+
 	local class = "inline_link_embed_file";
 	local tmp, label;
 
@@ -118,8 +121,9 @@ inline.embed_file = function (_, _, text, range)
 	});
 end
 
----@type markview.parsers.function
 inline.shortcut_link = function (buffer, TSNode, text, range)
+	if range.row_start ~= range.row_end then return; end
+
 	local before = text[1]:sub(0, range.col_start) or "";
 	local inner = text[1]:sub(range.col_start + 1, range.col_end);
 	local after = text[1]:sub(range.col_end + 1, #text[1]);
@@ -137,6 +141,8 @@ inline.shortcut_link = function (buffer, TSNode, text, range)
 
 		inline.internal_link(buffer, TSNode, text, range)
 		return;
+	elseif text[1]:match("^%[%^") then
+		return;
 	end
 
 	inline.insert({
@@ -149,8 +155,9 @@ inline.shortcut_link = function (buffer, TSNode, text, range)
 	})
 end
 
----@type markview.parsers.function
 inline.uri_autolink = function (_, TSNode, text, range)
+	if range.row_start ~= range.row_end then return; end
+
 	range.label_start = range.col_start + 1;
 	range.label_end = range.col_end - 1;
 
@@ -165,8 +172,9 @@ inline.uri_autolink = function (_, TSNode, text, range)
 	})
 end
 
----@type markview.parsers.function
 inline.email = function (_, TSNode, text, range)
+	if range.row_start ~= range.row_end then return; end
+
 	range.label_start = range.col_start + 1;
 	range.label_end = range.col_end - 1;
 
@@ -181,8 +189,9 @@ inline.email = function (_, TSNode, text, range)
 	})
 end
 
----@type markview.parsers.function
 inline.image = function (buffer, TSNode, text, range)
+	if range.row_start ~= range.row_end then return; end
+
 	text[1] = text[1]:sub(range.col_start + 1, range.col_end);
 
 	if text[1]:match("^%!%[%[") and text[1]:match("%]%]$") then
@@ -248,10 +257,26 @@ inline.escaped = function (_, TSNode, text, range)
 		text = text[1]:sub(range.col_start + 1, range.col_end - 1),
 
 		range = range
-	})
+	});
+end
+
+inline.footnote = function (_, _, text, range)
+	if range.row_start ~= range.row_end then return; end
+
+	inline.insert({
+		class = "inline_footnote",
+		node = TSNode,
+
+		text = text[1]:sub(range.col_start + 1, range.col_end - 1),
+		label = text[1]:sub(range.col_start + 2, range.col_end - 1),
+
+		range = range
+	});
 end
 
 inline.internal_link = function (_, TSNode, text, range)
+	if range.row_start ~= range.row_end then return; end
+
 	local class, alias = "inline_link_internal", nil;
 	local label = nil;
 	text = text[1]:gsub("[%[%]]", "");
@@ -283,6 +308,36 @@ inline.internal_link = function (_, TSNode, text, range)
 	});
 end
 
+inline.highlights = function (buffer, _, _, range)
+	local utils = require("markview.utils");
+	local lines = vim.api.nvim_buf_get_lines(buffer, range.row_start, range.row_end, false);
+
+	for l, line in ipairs(lines) do
+		local _line = line;
+
+		for highlight in line:gmatch("%=%=%=([^=]+)%=%=%=") do
+			local c_s, c_e = _line:find("%=%=%=" .. utils.escape_string(highlight) .. "%=%=%=")
+
+			inline.insert({
+				class = "inline_highlight",
+				text = highlight,
+
+				range = {
+					row_start = range.row_start + (l - 1),
+					col_start = c_s - 1,
+
+					row_end = range.row_start + (l - 1),
+					col_end = c_e
+				}
+			});
+
+			_line = _line:gsub("%=%=%=" .. utils.escape_string(highlight) .. "%=%=%=", function (s)
+				return string.rep("X", vim.fn.strchars(s))
+			end, 1)
+		end
+	end
+end
+
 inline.parse = function (buffer, TSTree, from, to)
 	inline.sorted = {};
 	inline.content = {};
@@ -309,6 +364,9 @@ inline.parse = function (buffer, TSTree, from, to)
 	end
 
 	local scanned_queries = vim.treesitter.query.parse("markdown_inline", [[
+		((inline) @markdown_inline.highlights
+			(#match? @markdown_inline.highlights "\\=\\=\\=.+\\=\\=\\="))
+
 		((email_autolink) @markdown_inline.email)
 
 		((image) @markdown_inline.image)
@@ -320,6 +378,10 @@ inline.parse = function (buffer, TSTree, from, to)
 		((full_reference_link
 			(link_text)
 			(link_label)) @markdown_inline.reference_link)
+
+		((shortcut_link
+			(link_text) @footnote.text
+			(#match? @footnote.text "^\\^")) @markdown_inline.footnote)
 
 		((shortcut_link) @markdown_inline.shortcut_link)
 
