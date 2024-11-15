@@ -72,8 +72,31 @@ local operator = function (name, text_pos, cmd_conceal, cmd_hl)
 	---_
 end
 
+spec.warnings = {};
+
+spec.notify = function (chunks, opts)
+	if not opts then opts = {}; end
+
+	vim.api.nvim_echo(
+		vim.list_extend(
+			{
+				{
+					"█",
+					opts.deprecated and "DiagnosticError" or "DiagnosticWarn"
+				},
+				{ " markview: ", "Special" }
+			},
+			chunks
+		),
+		true,
+		{}
+	);
+	table.insert(spec.warnings, opts);
+end
+
 ---@type markview.configuration
 spec.default = {
+	---+${conf}
 	highlight_groups = {},
 
 	renderers = {},
@@ -211,279 +234,240 @@ spec.default = {
 				border = "▋", hl = "MarkviewBlockQuoteDefault"
 			},
 
-			callouts = {
-				---+ ${conf, From Obsidian}
-				{
-					match_string = "ABSTRACT",
-					preview = "󱉫 Abstract",
-					hl = "MarkviewBlockQuoteNote",
+			["abstract"] = {
+				preview = "󱉫 Abstract",
+				hl = "MarkviewBlockQuoteNote",
 
-					title = true,
-					icon = "󱉫",
+				title = true,
+				icon = "󱉫",
 
-					border = "▋"
-				},
-				{
-					match_string = "SUMMARY",
-					hl = "MarkviewBlockQuoteNote",
-					preview = "󱉫 Summary",
+				border = "▋"
+			},
+			["SUMMARY"] = {
+				hl = "MarkviewBlockQuoteNote",
+				preview = "󱉫 Summary",
 
-					title = true,
-					icon = "󱉫",
+				title = true,
+				icon = "󱉫",
 
-					border = "▋"
-				},
-				{
-					match_string = "TLDR",
-					hl = "MarkviewBlockQuoteNote",
-					preview = "󱉫 Tldr",
+				border = "▋"
+			},
+			["TLDR"] = {
+				hl = "MarkviewBlockQuoteNote",
+				preview = "󱉫 Tldr",
 
-					title = true,
-					icon = "󱉫",
+				title = true,
+				icon = "󱉫",
 
-					border = "▋"
-				},
-				{
-					match_string = "TODO",
-					hl = "MarkviewBlockQuoteNote",
-					preview = " Todo",
+				border = "▋"
+			},
+			["TODO"] = {
+				hl = "MarkviewBlockQuoteNote",
+				preview = " Todo",
 
-					title = true,
-					icon = "",
+				title = true,
+				icon = "",
 
-					border = "▋"
-				},
-				{
-					match_string = "INFO",
-					hl = "MarkviewBlockQuoteNote",
-					preview = " Info",
+				border = "▋"
+			},
+			["INFO"] = {
+				hl = "MarkviewBlockQuoteNote",
+				preview = " Info",
 
-					custom_title = true,
-					icon = "",
+				custom_title = true,
+				icon = "",
 
-					border = "▋"
-				},
-				{
-					match_string = "SUCCESS",
-					hl = "MarkviewBlockQuoteOk",
-					preview = "󰗠 Success",
+				border = "▋"
+			},
+			["SUCCESS"] = {
+				hl = "MarkviewBlockQuoteOk",
+				preview = "󰗠 Success",
 
-					title = true,
-					icon = "󰗠",
+				title = true,
+				icon = "󰗠",
 
-					border = "▋"
-				},
-				{
-					match_string = "CHECK",
-					hl = "MarkviewBlockQuoteOk",
-					preview = "󰗠 Check",
+				border = "▋"
+			},
+			["CHECK"] = {
+				hl = "MarkviewBlockQuoteOk",
+				preview = "󰗠 Check",
 
-					title = true,
-					icon = "󰗠",
+				title = true,
+				icon = "󰗠",
 
-					border = "▋"
-				},
-				{
-					match_string = "DONE",
-					hl = "MarkviewBlockQuoteOk",
-					preview = "󰗠 Done",
+				border = "▋"
+			},
+			["DONE"] = {
+				hl = "MarkviewBlockQuoteOk",
+				preview = "󰗠 Done",
 
-					title = true,
-					icon = "󰗠",
+				title = true,
+				icon = "󰗠",
 
-					border = "▋"
-				},
-				{
-					match_string = "QUESTION",
-					hl = "MarkviewBlockQuoteWarn",
-					preview = "󰋗 Question",
+				border = "▋"
+			},
+			["QUESTION"] = {
+				hl = "MarkviewBlockQuoteWarn",
+				preview = "󰋗 Question",
 
-					title = true,
-					icon = "󰋗",
+				title = true,
+				icon = "󰋗",
 
-					border = "▋"
-				},
-				{
-					match_string = "HELP",
-					hl = "MarkviewBlockQuoteWarn",
-					preview = "󰋗 Help",
+				border = "▋"
+			},
+			["HELP"] = {
+				hl = "MarkviewBlockQuoteWarn",
+				preview = "󰋗 Help",
 
-					title = true,
-					icon = "󰋗",
+				title = true,
+				icon = "󰋗",
 
-					border = "▋"
-				},
-				{
-					match_string = "FAQ",
-					hl = "MarkviewBlockQuoteWarn",
-					preview = "󰋗 Faq",
+				border = "▋"
+			},
+			["FAQ"] = {
+				hl = "MarkviewBlockQuoteWarn",
+				preview = "󰋗 Faq",
 
-					title = true,
-					icon = "󰋗",
+				title = true,
+				icon = "󰋗",
 
-					border = "▋"
-				},
-				{
-					match_string = "FAILURE",
-					hl = "MarkviewBlockQuoteError",
-					preview = "󰅙 Failure",
+				border = "▋"
+			},
+			["FAILURE"] = {
+				hl = "MarkviewBlockQuoteError",
+				preview = "󰅙 Failure",
 
-					title = true,
-					icon = "󰅙",
+				title = true,
+				icon = "󰅙",
 
-					border = "▋"
-				},
-				{
-					match_string = "FAIL",
-					hl = "MarkviewBlockQuoteError",
-					preview = "󰅙 Fail",
+				border = "▋"
+			},
+			["FAIL"] = {
+				hl = "MarkviewBlockQuoteError",
+				preview = "󰅙 Fail",
 
-					title = true,
-					icon = "󰅙",
+				title = true,
+				icon = "󰅙",
 
-					border = "▋"
-				},
-				{
-					match_string = "MISSING",
-					hl = "MarkviewBlockQuoteError",
-					preview = "󰅙 Missing",
+				border = "▋"
+			},
+			["MISSING"] = {
+				hl = "MarkviewBlockQuoteError",
+				preview = "󰅙 Missing",
 
-					title = true,
-					icon = "󰅙",
+				title = true,
+				icon = "󰅙",
 
-					border = "▋"
-				},
-				{
-					match_string = "DANGER",
-					hl = "MarkviewBlockQuoteError",
-					preview = " Danger",
+				border = "▋"
+			},
+			["DANGER"] = {
+				hl = "MarkviewBlockQuoteError",
+				preview = " Danger",
 
-					title = true,
-					icon = "",
+				title = true,
+				icon = "",
 
-					border = "▋"
-				},
-				{
-					match_string = "ERROR",
-					hl = "MarkviewBlockQuoteError",
-					preview = " Error",
+				border = "▋"
+			},
+			["ERROR"] = {
+				hl = "MarkviewBlockQuoteError",
+				preview = " Error",
 
-					title = true,
-					icon = "",
+				title = true,
+				icon = "",
 
-					border = "▋"
-				},
-				{
-					match_string = "BUG",
-					hl = "MarkviewBlockQuoteError",
-					preview = " Bug",
+				border = "▋"
+			},
+			["BUG"] = {
+				hl = "MarkviewBlockQuoteError",
+				preview = " Bug",
 
-					title = true,
-					icon = "",
+				title = true,
+				icon = "",
 
-					border = "▋"
-				},
-				{
-					match_string = "EXAMPLE",
-					hl = "MarkviewBlockQuoteSpecial",
-					preview = "󱖫 Example",
+				border = "▋"
+			},
+			["EXAMPLE"] = {
+				hl = "MarkviewBlockQuoteSpecial",
+				preview = "󱖫 Example",
 
-					title = true,
-					icon = "󱖫",
+				title = true,
+				icon = "󱖫",
 
-					border = "▋"
-				},
-				{
-					match_string = "QUOTE",
-					hl = "MarkviewBlockQuoteDefault",
-					preview = " Quote",
+				border = "▋"
+			},
+			["QUOTE"] = {
+				hl = "MarkviewBlockQuoteDefault",
+				preview = " Quote",
 
-					title = true,
-					icon = "",
+				title = true,
+				icon = "",
 
-					border = "▋"
-				},
-				{
-					match_string = "CITE",
-					hl = "MarkviewBlockQuoteDefault",
-					preview = " Cite",
+				border = "▋"
+			},
+			["CITE"] = {
+				hl = "MarkviewBlockQuoteDefault",
+				preview = " Cite",
 
-					title = true,
-					icon = "",
+				title = true,
+				icon = "",
 
-					border = "▋"
-				},
-				{
-					match_string = "HINT",
-					hl = "MarkviewBlockQuoteOk",
-					preview = " Hint",
+				border = "▋"
+			},
+			["HINT"] = {
+				hl = "MarkviewBlockQuoteOk",
+				preview = " Hint",
 
-					title = true,
-					icon = "",
+				title = true,
+				icon = "",
 
-					border = "▋"
-				},
-				{
-					match_string = "ATTENTION",
-					hl = "MarkviewBlockQuoteWarn",
-					preview = " Attention",
+				border = "▋"
+			},
+			["ATTENTION"] = {
+				hl = "MarkviewBlockQuoteWarn",
+				preview = " Attention",
 
-					title = true,
-					icon = "",
+				title = true,
+				icon = "",
 
-					border = "▋"
-				},
-				---_
-				---+ ${conf, From Github}
-				{
-					match_string = "NOTE",
-					hl = "MarkviewBlockQuoteNote",
-					preview = "󰋽 Note",
+				border = "▋"
+			},
 
-					border = "▋"
-				},
-				{
-					match_string = "TIP",
-					hl = "MarkviewBlockQuoteOk",
-					preview = " Tip",
 
-					border = "▋"
-				},
-				{
-					match_string = "IMPORTANT",
-					hl = "MarkviewBlockQuoteSpecial",
-					preview = " Important",
+			["NOTE"] = {
+				match_string = "NOTE",
+				hl = "MarkviewBlockQuoteNote",
+				preview = "󰋽 Note",
 
-					border = "▋"
-				},
-				{
-					match_string = "WARNING",
-					hl = "MarkviewBlockQuoteWarn",
-					preview = " Warning",
+				border = "▋"
+			},
+			["TIP"] = {
+				match_string = "TIP",
+				hl = "MarkviewBlockQuoteOk",
+				preview = " Tip",
 
-					border = "▋"
-				},
-				{
-					match_string = "CAUTION",
-					hl = "MarkviewBlockQuoteError",
-					preview = "󰳦 Caution",
+				border = "▋"
+			},
+			["IMPORTANT"] = {
+				match_string = "IMPORTANT",
+				hl = "MarkviewBlockQuoteSpecial",
+				preview = " Important",
 
-					border = "▋"
-				},
-				---_
+				border = "▋"
+			},
+			["WARNING"] = {
+				match_string = "WARNING",
+				hl = "MarkviewBlockQuoteWarn",
+				preview = " Warning",
 
-				---+ ${conf, Custom}
-				{
-					match_string = "CUSTOM",
-					hl = "MarkviewBlockQuoteWarn",
-					preview = "󰠳 Custom",
+				border = "▋"
+			},
+			["CAUTION"] = {
+				match_string = "CAUTION",
+				hl = "MarkviewBlockQuoteError",
+				preview = "󰳦 Caution",
 
-					custom_title = true,
-					custom_icon = "󰠳",
-
-					border = "▋"
-				}
-				---_
+				border = "▋"
 			}
 		},
 
@@ -709,8 +693,10 @@ spec.default = {
 		block_references = {
 			enable = true,
 
-			icon = "󰿨 ",
-			hl = "Comment"
+			default = {
+				icon = "󰿨 ",
+				hl = "Comment"
+			}
 		},
 
 		checkboxes = {
@@ -720,35 +706,48 @@ spec.default = {
 			checked = { text = "󰗠", hl = "MarkviewCheckboxChecked" },
 			unchecked = { text = "󰄰", hl = "MarkviewCheckboxUnchecked" },
 
-			custom = {
-				["/"] = { text = "󱎖", hl = "MarkviewCheckboxPending", scope_hl = "Special" },
-				[">"] = { text = "", hl = "MarkviewCheckboxCancelled" },
-				["<"] = { text = "󰃖", hl = "MarkviewCheckboxCancelled" },
-				["-"] = { text = "󰍶", hl = "MarkviewCheckboxCancelled", scope_hl = "MarkviewCheckboxStriked" },
+			["/"] = { text = "󱎖", hl = "MarkviewCheckboxPending", scope_hl = "Special" },
+			[">"] = { text = "", hl = "MarkviewCheckboxCancelled" },
+			["<"] = { text = "󰃖", hl = "MarkviewCheckboxCancelled" },
+			["-"] = { text = "󰍶", hl = "MarkviewCheckboxCancelled", scope_hl = "MarkviewCheckboxStriked" },
 
-				["?"] = { text = "󰋗", hl = "MarkviewCheckboxPending" },
-				["!"] = { text = "󰀦", hl = "MarkviewCheckboxUnchecked" },
-				["*"] = { text = "󰓎", hl = "MarkviewCheckboxPending" },
-				["'"] = { text = "󰸥", hl = "MarkviewCheckboxCancelled" },
-				["l"] = { text = "󰆋", hl = "MarkviewCheckboxProgress" },
-				["b"] = { text = "󰃀", hl = "MarkviewCheckboxProgress" },
-				["i"] = { text = "󰰄", hl = "MarkviewCheckboxChecked" },
-				["S"] = { text = "", hl = "MarkviewCheckboxChecked" },
-				["I"] = { text = "󰛨", hl = "MarkviewCheckboxPending" },
-				["p"] = { text = "", hl = "MarkviewCheckboxChecked" },
-				["c"] = { text = "", hl = "MarkviewCheckboxUnchecked" },
-				["f"] = { text = "󱠇", hl = "MarkviewCheckboxUnchecked" },
-				["k"] = { text = "", hl = "MarkviewCheckboxPending" },
-				["w"] = { text = "", hl = "MarkviewCheckboxProgress" },
-				["u"] = { text = "󰔵", hl = "MarkviewCheckboxChecked" },
-				["d"] = { text = "󰔳", hl = "MarkviewCheckboxUnchecked" },
-			}
+			["?"] = { text = "󰋗", hl = "MarkviewCheckboxPending" },
+			["!"] = { text = "󰀦", hl = "MarkviewCheckboxUnchecked" },
+			["*"] = { text = "󰓎", hl = "MarkviewCheckboxPending" },
+			["'"] = { text = "󰸥", hl = "MarkviewCheckboxCancelled" },
+			["l"] = { text = "󰆋", hl = "MarkviewCheckboxProgress" },
+			["b"] = { text = "󰃀", hl = "MarkviewCheckboxProgress" },
+			["i"] = { text = "󰰄", hl = "MarkviewCheckboxChecked" },
+			["S"] = { text = "", hl = "MarkviewCheckboxChecked" },
+			["I"] = { text = "󰛨", hl = "MarkviewCheckboxPending" },
+			["p"] = { text = "", hl = "MarkviewCheckboxChecked" },
+			["c"] = { text = "", hl = "MarkviewCheckboxUnchecked" },
+			["f"] = { text = "󱠇", hl = "MarkviewCheckboxUnchecked" },
+			["k"] = { text = "", hl = "MarkviewCheckboxPending" },
+			["w"] = { text = "", hl = "MarkviewCheckboxProgress" },
+			["u"] = { text = "󰔵", hl = "MarkviewCheckboxChecked" },
+			["d"] = { text = "󰔳", hl = "MarkviewCheckboxUnchecked" },
 			---_
 		},
 
 		entities = {
 			enable = true,
 			hl = "Special"
+		},
+
+		footnotes = {
+			enable = true,
+
+			default = {
+				icon = "󰽒",
+				hl = "MarkviewEmail"
+			}
+		},
+
+		highlights = {
+			default = {
+				hl = "MarkviewHeading1"
+			}
 		},
 
 		inline_codes = {
@@ -762,25 +761,31 @@ spec.default = {
 		emails = {
 			enable = true,
 
-			icon = " ",
-			hl = "MarkviewEmail"
+			default = {
+				icon = " ",
+				hl = "MarkviewEmail"
+			}
 		},
 
 		uri_autolinks = {
 			enable = true,
 
-			icon = " ",
-			hl = "MarkviewEmail"
+			default = {
+				icon = " ",
+				hl = "MarkviewEmail"
+			}
 		},
 
 		images = {
 			enable = true,
 			__emoji_link_compatibility = true,
 
-			icon = "󰥶 ",
-			hl = "MarkviewImage",
+			default = {
+				icon = "󰥶 ",
+				hl = "MarkviewImage",
+			},
 
-			custom = {
+			patterns = {
 				{ match_string = "%.svg$", icon = "󰜡 " },
 			}
 		},
@@ -788,18 +793,22 @@ spec.default = {
 		embed_files = {
 			enable = true,
 
-			icon = "󰠮 ",
-			hl = "Special"
+			default = {
+				icon = "󰠮 ",
+				hl = "Special"
+			}
 		},
 
 		internal_links = {
 			enable = true,
 			__emoji_link_compatibility = true,
 
-			icon = "󰌷 ",
-			hl = "MarkviewHyperlink",
+			default = {
+				icon = "󰌷 ",
+				hl = "MarkviewHyperlink",
+			},
 
-			custom = {
+			patterns = {
 			}
 		},
 
@@ -807,10 +816,12 @@ spec.default = {
 			enable = true,
 			__emoji_link_compatibility = true,
 
-			icon = "󰌷 ",
-			hl = "MarkviewHyperlink",
+			default = {
+				icon = "󰌷 ",
+				hl = "MarkviewHyperlink",
+			},
 
-			custom = {
+			patterns = {
 				---+ ${conf, Stack*}
 				{ match_string = "stackoverflow%.com", icon = " " },
 				{ match_string = "stackexchange%.com", icon = " " },
@@ -1185,19 +1196,20 @@ spec.default = {
 			}
 		}
 	}
+	---_
 };
 
 spec.config = spec.default;
 
 ---+${custom, Option maps}
-spec.splitview = { "split_conf" };
 spec.preview = {
 	"modes", "hybrid_modes",
 	"filetypes", "buf_ignore",
 	"callbacks",
 	"debounce",
 	"ignore_nodes",
-	"max_file_length", "render_distance"
+	"max_file_length", "render_distance",
+	"split_conf"
 };
 spec.experimental = {};
 
@@ -1220,6 +1232,379 @@ spec.latex = {};
 spec.typst = {};
 ---_
 
+
+spec.__preview = function (config)
+	---+${func}
+	for opt, val in pairs(config) do
+		if opt == "buf_ignore" then
+			spec.notify({
+				{ " preview.buf_ignore ", "DiagnosticVirtualTextInfo" },
+				{ " is deprecated! Use " },
+				{ " preview.ignore_buftypes ", "DiagnosticVirtualTextHint" },
+				{ " instead."},
+			}, {
+				class = "markview_opt_name_change",
+
+				old = "preview.buf_ignore",
+				new = "preview.ignore_buftypes"
+			});
+
+			config["ignore_buftypes"] = val;
+			config["buf_ignore"] = nil;
+		elseif opt == "debounce" then
+			spec.notify({
+				{ " preview.debounce ", "DiagnosticVirtualTextInfo" },
+				{ " is deprecated! Use " },
+				{ " preview.debounce_delay ", "DiagnosticVirtualTextHint" },
+				{ " instead."},
+			}, {
+				class = "markview_opt_name_change",
+
+				old = "preview.debounce",
+				new = "preview.debounce_delay"
+			});
+
+			config["debounce_delay"] = val;
+			config["debounce"] = nil;
+		elseif opt == "ignore_nodes" then
+			spec.notify({
+				{ " preview.ignore_nodes ", "DiagnosticVirtualTextError" },
+				{ " is deprecated! Use " },
+				{ " preview.ignore_node_classes ", "DiagnosticVirtualTextHint" },
+				{ " instead."},
+			}, {
+				class = "markview_opt_name_change",
+
+				old = "preview.ignore_nodes",
+				new = "preview.ignore_node_classes",
+
+				deprecated = true
+			});
+
+			config["ignore_nodes"] = nil;
+		elseif opt == "initial_state" then
+			spec.notify({
+				{ " preview.initial_state ", "DiagnosticVirtualTextInfo" },
+				{ " is deprecated! Use " },
+				{ " preview.enable_preview_on_attach ", "DiagnosticVirtualTextHint" },
+				{ " instead."},
+			}, {
+				class = "markview_opt_name_change",
+
+				old = "preview.initial_state",
+				new = "preview.enable_preview_on_attach",
+
+				deprecated = true
+			});
+
+			config["enable_preview_on_attach"] = val;
+			config["initial_state"] = nil;
+		elseif opt == "split_conf" then
+			spec.notify({
+				{ " preview.split_conf ", "DiagnosticVirtualTextInfo" },
+				{ " is deprecated! Use " },
+				{ " preview.splitview_winopts ", "DiagnosticVirtualTextHint" },
+				{ " instead."},
+			}, {
+				class = "markview_opt_name_change",
+
+				old = "preview.split_conf",
+				new = "preview.splitview_winopts"
+			});
+
+			config["splitview_winopts"] = val;
+			config["split_conf"] = nil;
+		end
+	end
+
+	return config;
+	---_
+end
+
+spec.__markdown = function (config)
+	---+${func}
+	for opt, val in pairs(config) do
+		if
+			opt == "block_quotes" and
+			vim.islist(val.callouts)
+		then
+			spec.notify({
+				{ " markdown.block_quotes.callouts ", "DiagnosticVirtualTextError" },
+				{ " is deprecated!" },
+			}, {
+				class = "markview_opt_deprecated",
+				deprecated = true,
+
+				old = "preview.buf_ignore",
+				new = "preview.ignore_buftypes"
+			});
+
+			local _n = {};
+
+			for _, item in ipairs(val.callouts) do
+				_n[string.lower(item.match_string)] = {
+					hl = item.hl,
+					preview = item.preview,
+					preview_hl = item.preview_hl,
+
+					title = item.title,
+					icon = item.icon,
+
+					border = item.border,
+					border_hl = item.border_hl
+				}
+			end
+
+			config["block_quotes"] = vim.tbl_extend("keep", {
+				enable = val.enable,
+				default = val.default or {}
+			}, _n);
+		elseif
+			opt == "tables" and
+			(
+				vim.islist(val.parts) or
+				vim.islist(val.hls)
+			)
+		then
+			local _p, _h = val.parts, val.hls;
+			local np, nh = {
+				top = {},
+				header = {},
+				separator = {},
+				row = {},
+				bottom = {},
+
+				align_left = nil,
+				align_right = nil,
+				align_center = {}
+			}, val.hl or {
+				top = {},
+				header = {},
+				separator = {},
+				row = {},
+				bottom = {},
+
+				align_left = nil,
+				align_right = nil,
+				align_center = {}
+			};
+
+			if vim.islist(_p) then
+				spec.notify({
+					{ " markdown.tables.parts ", "DiagnosticVirtualTextInfo" },
+					{ " should be a " },
+					{ "table", "DiagnosticOk" },
+					{ "! Got "},
+					{ "list", "DiagnosticWarn" },
+					{ ". "},
+				}, {
+					class = "markview_opt_invalid_type",
+
+					should_be = "table",
+					is = "list"
+				});
+
+				for p, part in ipairs(_p) do
+					if vim.list_contains({ 1, 2, 3, 4 }, p) then
+						np.top[p] = part;
+
+						if p == 2 then
+							np.separator[2] = part;
+						end
+					elseif p == 5 then
+						np.separator[1] = part;
+					elseif p == 6 then
+						np.header[1] = part;
+						np.header[2] = part;
+						np.header[3] = part;
+
+						np.row[1] = part;
+						np.row[2] = part;
+						np.row[3] = part;
+					elseif p == 7 then
+						np.separator[3] = part;
+					elseif p == 8 then
+						np.separator[4] = part;
+					elseif vim.list_contains({ 9, 10, 11, 12 }, p) then
+						np.bottom[p - 8] = part;
+					elseif vim.list_contains({ 13, 14 }, p) then
+						np.align_center[p - 12] = part;
+					elseif p == 15 then
+						np.align_left = part;
+					else
+						np.align_right = part;
+					end
+				end
+			end
+
+			if vim.islist(_h) then
+				spec.notify({
+					{ " markdown.tables.hls ", "DiagnosticVirtualTextInfo" },
+					{ " is deprecated! Use " },
+					{ " markdown.tables.hl ", "DiagnosticVirtualTextHint" },
+					{ " instead."},
+				}, {
+					class = "markview_opt_name_change",
+					deprecated = true,
+
+					old = "markdown.tables.hls",
+					new = "markdown.tables.hl"
+				});
+
+				spec.notify({
+					{ " markdown.tables.hl ", "DiagnosticVirtualTextInfo" },
+					{ " should be a " },
+					{ "table", "DiagnosticOk" },
+					{ "! Got "},
+					{ "list", "DiagnosticWarn" },
+					{ ". "},
+				}, {
+					class = "markview_opt_invalid_type",
+
+					should_be = "table",
+					is = "list"
+				});
+
+				for p, part in ipairs(_h) do
+					if vim.list_contains({ 1, 2, 3, 4 }, p) then
+						nh.top[p] = part;
+
+						if p == 2 then
+							nh.separator[2] = part;
+						end
+					elseif p == 5 then
+						nh.separator[1] = part;
+					elseif p == 6 then
+						nh.header[1] = part;
+						nh.header[2] = part;
+						nh.header[3] = part;
+
+						nh.row[1] = part;
+						nh.row[2] = part;
+						nh.row[3] = part;
+					elseif p == 7 then
+						nh.separator[3] = part;
+					elseif p == 8 then
+						nh.separator[4] = part;
+					elseif vim.list_contains({ 9, 10, 11, 12 }, p) then
+						nh.bottom[p - 8] = part;
+					elseif vim.list_contains({ 13, 14 }, p) then
+						nh.align_center[p - 12] = part;
+					elseif p == 15 then
+						nh.align_left = part;
+					else
+						nh.align_right = part;
+					end
+				end
+			end
+
+			---@type markdown.tables
+			config["tables"] = {
+				enable = val.enable,
+				hl = nh,
+				parts = np,
+				use_virt_lines = val.use_virt_lines,
+				block_decorator = val.block_decorator
+			};
+		end
+	end
+
+	return config;
+	---_
+end
+
+spec.__markdown_inline = function (config)
+	---+${func}
+	for opt, val in pairs(config) do
+		if
+			opt == "checkboxes" and
+			vim.islist(val.custom)
+		then
+			spec.notify({
+				{ " markdown_inline.checkboxes.custom ", "DiagnosticVirtualTextError" },
+				{ " is deprecated!" },
+			}, {
+				class = "markview_opt_deprecated",
+				deprecated = true,
+
+				old = "preview.buf_ignore",
+				new = "preview.ignore_buftypes"
+			});
+
+			local _n = {};
+
+			for _, item in ipairs(val.custom) do
+				_n[string.lower(item.match_string)] = {
+					hl = item.hl,
+					scope_hl = item.scope_hl,
+					text = item.text,
+				}
+			end
+
+			config["checkboxes"] = vim.tbl_extend("keep", {
+				enable = val.enable,
+				checked = val.checked,
+				unchecked = val.unchecked,
+			}, _n);
+		elseif
+			vim.list_contains({ "footnotes", "emails", "uri_autolinks", "images", "embed_files", "internal_links", "hyperlinks" }, opt) and
+			(val.text or val.hl)
+		then
+			if val.text then
+				spec.notify({
+					{ " markdown_inline." .. opt .. ".text ", "DiagnosticVirtualTextError" },
+					{ " is deprecated! Use" },
+					{ " markdown_inline." .. opt .. ".default.text ", "DiagnosticVirtualTextHint" },
+					{ "instead." },
+				}, {
+					class = "markview_opt_deprecated",
+
+					old = "preview.buf_ignore",
+					new = "preview.ignore_buftypes"
+				});
+			end
+
+			if val.hl then
+				spec.notify({
+					{ " markdown_inline." .. opt .. ".hl ", "DiagnosticVirtualTextError" },
+					{ " is deprecated! Use" },
+					{ " markdown_inline." .. opt .. ".default.hl ", "DiagnosticVirtualTextHint" },
+					{ "instead." },
+				}, {
+					class = "markview_opt_deprecated",
+
+					old = "preview.buf_ignore",
+					new = "preview.ignore_buftypes"
+				});
+			end
+
+			if val.custom then
+				spec.notify({
+					{ " markdown_inline." .. opt .. ".custom ", "DiagnosticVirtualTextError" },
+					{ " is deprecated! Use" },
+					{ " markdown_inline." .. opt .. ".patterns ", "DiagnosticVirtualTextHint" },
+					{ "instead." },
+				}, {
+					class = "markview_opt_deprecated",
+
+					old = "preview.buf_ignore",
+					new = "preview.ignore_buftypes"
+				});
+			end
+
+			config[opt] = {
+				enable = val.enable,
+				default = val.default or { text = val.text, hl = val.hl },
+
+				patterns = val.patterns or val.custom
+			};
+		end
+	end
+
+	return config;
+	---_
+end
+
 spec.fix_config = function (config)
 	if type(config) ~= "table" then
 		return {};
@@ -1240,9 +1625,7 @@ spec.fix_config = function (config)
 	};
 
 	for key, value in pairs(config) do
-		if vim.list_contains(spec.splitview, key) then
-			_o.splitview[key] = value;
-		elseif vim.list_contains(spec.preview, key) then
+		if vim.list_contains(spec.preview, key) then
 			_o.preview[key] = value;
 		elseif vim.list_contains(spec.experimental, key) then
 			_o.experimental[key] = value;
@@ -1259,9 +1642,11 @@ spec.fix_config = function (config)
 		end
 	end
 
-
-	--- Config parser functions go here!
-
+	for k, v in pairs(_o) do
+		if spec["__" .. k] then
+			_o[k] = spec["__" .. k](v);
+		end
+	end
 
 	return _o;
 end
@@ -1295,7 +1680,7 @@ spec.get = function (opts, func, ...)
 	return _o;
 end
 
--- local k = vim.tbl_keys(spec.default.markdown_inline);
+-- local k = vim.tbl_keys(spec.default.markdown);
 -- table.sort(k)
 -- vim.print(k)
 return spec;
