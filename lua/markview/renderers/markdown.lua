@@ -872,7 +872,7 @@ markdown.code_block = function (buffer, item)
 			end
 		elseif config.language_direction == "right" then
 			vim.api.nvim_buf_set_extmark(buffer, markdown.ns("code_blocks"), range.row_start, range.col_start, {
-				end_col = range.col_start + (range.info_start or range.lang_end),
+				end_col = range.col_start + (range.info_start or range.lang_end or 0),
 				conceal = "",
 				undo_restore = false, invalidate = true,
 
