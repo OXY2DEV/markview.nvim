@@ -1,5 +1,21 @@
 # Changelog
 
+## [24.1.0](https://github.com/OXY2DEV/markview.nvim/compare/v24.0.0...v24.1.0) (2024-11-23)
+
+
+### Features
+
+* Added a command to open link under cursor ([4ef3e11](https://github.com/OXY2DEV/markview.nvim/commit/4ef3e11292fdd4191e02ab865de2738d5fbeeba9)), closes [#173](https://github.com/OXY2DEV/markview.nvim/issues/173)
+
+
+### Bug Fixes
+
+* Fixed callouts rendering ([493c054](https://github.com/OXY2DEV/markview.nvim/commit/493c054c6463156f1c584cffe006b2fc9ed2d34c))
+* Fixed gx keymap rhs ([67b69cd](https://github.com/OXY2DEV/markview.nvim/commit/67b69cdaf9055bebac3682a070d7e5c8eecba29c))
+* Fixed logic for detecting neovim version ([42b57e8](https://github.com/OXY2DEV/markview.nvim/commit/42b57e8f9a0fa69f1b2937342cdd27921346c990))
+* Fixed merging of highlight groups ([b474374](https://github.com/OXY2DEV/markview.nvim/commit/b474374ba1186f8028e06b16c195b823cff492ee)), closes [#172](https://github.com/OXY2DEV/markview.nvim/issues/172)
+* Fixed merging of highlight groups ([c29cf91](https://github.com/OXY2DEV/markview.nvim/commit/c29cf91e48979c12a8c1ac1e13d064720ee251d9)), closes [#172](https://github.com/OXY2DEV/markview.nvim/issues/172)
+
 ## [24.0.0](https://github.com/OXY2DEV/markview.nvim/compare/v23.1.0...v24.0.0) (2024-10-05)
 
 
