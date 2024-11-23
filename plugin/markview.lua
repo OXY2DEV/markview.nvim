@@ -120,6 +120,10 @@ local redraw_autocmd = function (augroup, buffer, validate)
 					return;
 				end
 
+        			if not vim.api.nvim_buf_is_loaded(buffer) then
+          				return;
+        			end
+
 				if validate == false then
 					goto noValidation;
 				end
