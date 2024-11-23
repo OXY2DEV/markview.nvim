@@ -136,7 +136,7 @@ MiniDeps.add({
 >[!NOTE]
 > Releases may be slow to update as they are done after fixing potential bug(s).
 
-[Current version: v25.0.0]()
+[Current version: v24.0.0]()
 
 ### 🌃 Dev branch
 
