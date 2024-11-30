@@ -31,7 +31,7 @@ keymaps.create_command = function (buffer)
 
 			if cmd then
 				cmd:wait();
-				break;
+				return;
 			end
 
 		    ::continue::
