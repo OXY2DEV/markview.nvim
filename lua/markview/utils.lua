@@ -56,6 +56,14 @@ utils.get_cursor_range = function (buffer, window)
 	local lines = vim.api.nvim_buf_line_count(buffer);
 
 	return math.max(0, cursor[1] - 1), math.min(lines, cursor[1]);
+--- Checks if a parser is available or not
+---@param parser_name string
+---@return boolean
+utils.parser_installed = function(parser_name)
+    local ts_available, treesitter_parsers = pcall(require, "nvim-treesitter.parsers")
+
+    -- Use pcall as in nvim-treesitter's main branch, '.parsers' is a table, and has no 'has_parser' function.
+    return (ts_available and pcall(treesitter_parsers, has_parser, parser_name)) or pcall(vim.treesitter.query.get, parser_name, "highlights")
 end
 
 return utils;

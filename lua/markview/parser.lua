@@ -1,14 +1,6 @@
 local parser = {};
 local lang = require("markview.languages")
-
-local ts_available, treesitter_parsers = pcall(require, "nvim-treesitter.parsers");
-
---- Checks if a parser is available or not
----@param parser_name string
----@return boolean
-local function parser_installed(parser_name)
-	return (ts_available and treesitter_parsers.has_parser(parser_name)) or pcall(vim.treesitter.query.get, parser_name, "highlights")
-end
+local utils = require("markview.utils")
 
 ---@type markview.configuration | {}
 parser.cached_conf = {};
@@ -280,7 +272,7 @@ parser.parsed_content = {};
 ---@param buffer number
 ---@param TStree any
 parser.md = function (buffer, TStree, from, to)
-	if not parser_installed("markdown") then
+	if not utils.parser_installed("markdown") then
 		return;
 	end
 
@@ -726,7 +718,7 @@ end
 ---@param buffer number
 ---@param TStree any
 parser.md_inline = function (buffer, TStree, from, to)
-	if not parser_installed("markdown_inline") then
+	if not utils.parser_installed("markdown_inline") then
 		return;
 	end
 
@@ -753,7 +745,7 @@ parser.md_inline = function (buffer, TStree, from, to)
 			(inline_link)
 			(full_reference_link)
 		] @hyperlink)
-			
+
 		((email_autolink) @email)
 		((image) @image)
 
@@ -965,7 +957,7 @@ parser.md_inline = function (buffer, TStree, from, to)
 end
 
 parser.html = function (buffer, TStree, from, to)
-	if not parser_installed("html") then
+	if not utils.parser_installed("html") then
 		return;
 	end
 
@@ -983,7 +975,7 @@ parser.html = function (buffer, TStree, from, to)
 			local root = TStree:root();
 			local root_r_start, _, _, _ = root:range();
 
-			if root_r_start >= tbl.row_start and root_r_start <= tbl.row_end then	
+			if root_r_start >= tbl.row_start and root_r_start <= tbl.row_end then
 				return;
 			end
 
@@ -1035,7 +1027,7 @@ parser.html = function (buffer, TStree, from, to)
 end
 
 parser.latex = function (buffer, TStree, from, to)
-	if not parser_installed("latex") then
+	if not utils.parser_installed("latex") then
 		return;
 	end
 
