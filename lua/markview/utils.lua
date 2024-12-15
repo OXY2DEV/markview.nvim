@@ -56,6 +56,8 @@ utils.get_cursor_range = function (buffer, window)
 	local lines = vim.api.nvim_buf_line_count(buffer);
 
 	return math.max(0, cursor[1] - 1), math.min(lines, cursor[1]);
+end
+
 --- Checks if a parser is available or not
 ---@param parser_name string
 ---@return boolean
