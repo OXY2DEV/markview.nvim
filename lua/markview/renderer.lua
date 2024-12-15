@@ -2,13 +2,6 @@ local renderer = {};
 local devicons_loaded, devicons = pcall(require, "nvim-web-devicons");
 local mini_loaded, MiniIcons = pcall(require, "mini.icons");
 
---- Checks if a parser is available or not
----@param parser_name string
----@return boolean
-local function parser_installed(parser_name)
-	return (ts_available and treesitter_parsers.has_parser(parser_name)) or pcall(vim.treesitter.query.get, parser_name, "highlights")
-end
-
 local utils = require("markview.utils");
 local languages = require("markview.languages");
 local latex_renderer = require("markview.latex_renderer");
@@ -211,7 +204,7 @@ local display_width = function (text, config)
 	local html_conf = config.html;
 
 	--- Without inline parser inline these syntaxes shouldn't occur
-	if not parser_installed("markdown_inline") then
+	if not utils.parser_installed("markdown_inline") then
 		goto noMdInline;
 	end
 
@@ -475,7 +468,7 @@ local display_width = function (text, config)
 	::noMdInline::
 
 	--- Without HTML parser these syntaxes shouldn't occur
-	if not parser_installed("html") then
+	if not utils.parser_installed("html") then
 		return d_width, vim.fn.strdisplaywidth(text), final_string;
 	end
 
@@ -657,7 +650,7 @@ local table_header = function (buffer, content, config_table)
 			-- Extracted width of separator
 			local tbl_col_width = math.max(content.col_widths[curr_tbl_col], tbl_conf.col_min_width or 0);
 
-			-- The column number of headers must match the 
+			-- The column number of headers must match the
 			-- column number of separators
 			--
 			-- No need to add unnecessary condition
@@ -1461,7 +1454,7 @@ renderer.render_code_blocks = function (buffer, content, config_table)
 		end
 
 		-- The text on the final line
-		-- We need to get the tail section to see if it contains ``` 
+		-- We need to get the tail section to see if it contains ```
 		local block_end_line = vim.api.nvim_buf_get_lines(buffer, content.row_end - 1, content.row_end, false)[1];
 
 		vim.api.nvim_buf_set_extmark(buffer, renderer.namespace, content.row_end - 1, vim.fn.strchars(block_end_line or ""), {
@@ -2155,7 +2148,7 @@ end
 
 --- Footnote renderer
 ---@param buffer integer
----@param content table 
+---@param content table
 ---@param user_config markview.conf.footnotes
 renderer.render_footnotes = function (buffer, content, user_config)
 	if not user_config or user_config.enable == false then
