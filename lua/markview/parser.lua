@@ -34,6 +34,18 @@ parser.escape_string = function (input)
 	return input;
 end
 
+
+--- Extract fenced coode block header
+--- return a 2-tuple (fence, infostring)
+parser.get_fence = function(line)
+	for _, pattern in pairs({"```+", "~~~+"}) do
+		local fence, info = line:match("^%s*(" .. pattern .. ")%s*(.-)%s*$");
+		if fence ~= nil then
+			return fence, info;
+		end
+	end
+end
+
 parser.get_md_len = function (text)
 	local final_string = text;
 	local len = vim.fn.strdisplaywidth(text);
@@ -127,6 +139,7 @@ parser.filter_lines = function (buffer, from, to)
 
 	local code_block_indent = 0;
 	local desc_indent = 0;
+	local current_fence = "";
 
 	local start = 0;
 
@@ -181,11 +194,14 @@ parser.filter_lines = function (buffer, from, to)
 			parent_marker = line:match("^%s*(%d+[%)%.])");
 		end
 
-		if line:match("(```)") and withinCodeBlock ~= true then
+		local fence, _ = parser.get_fence(line)
+		if fence and withinCodeBlock ~= true then
 			withinCodeBlock = true;
+			current_fence = fence;
 			code_block_indent = spaces_before;
-		elseif line:match("(```)") and withinCodeBlock == true then
+		elseif withinCodeBlock == true and line:match(current_fence) then
 			withinCodeBlock = false;
+			current_fence = "";
 		elseif withinCodeBlock == true then
 			spaces_before = code_block_indent;
 			goto withinElement;
@@ -382,18 +398,27 @@ parser.md = function (buffer, TStree, from, to)
 			local block_start = vim.api.nvim_buf_get_lines(buffer, row_start, row_start + 1, false)[1];
 
 			local language_string, additional_info = "", nil;
+			local _, info = parser.get_fence(block_start);
 
-			if block_start:match("%s*```%{%{([^%}]*)%}%}") then
-				language_string = block_start:match("%s*```%{%{([^%}]*)%}%}");
-				additional_info = block_start:match("%s*```%{%{[^%}]*%}%}%s*(.*)$");
-			elseif block_start:match("%s*```%{([^%}]*)%}") then
-				language_string = block_start:match("%s*```%{([^%}]*)%}");
-				additional_info = block_start:match("%s*```%{[^%}]*%}%s*(.*)$");
-			elseif block_start:match("%s*```(%S*)$") then
-				language_string = block_start:match("%s*```(%S*)$");
-			elseif block_start:match("%s*```(%S*)%s*") then
-				language_string = block_start:match("%s*```(%S*)%s");
-				additional_info = block_start:match("%s*```%S*%s+(.*)$");
+			if info:match("%{%{([^%}]*)%}%}") then
+				language_string = info:match("%%{%{([^%}]*)%}%}");
+				additional_info = info:match("%{%{[^%}]*%}%}%s*(.*)$");
+			elseif info:match("%{code%S*%}%s*(%S+)$") then
+				-- Myst code blocks (code, code-block, code-cell)
+				-- https://mystmd.org/guide/code#code-blocks
+				language_string = info:match("%{code%S*%}%s*(%S*)$");
+			elseif info:match("%{([^%}]*)%}") then
+				-- Other {}-wrapped directive with unknown processing
+				language_string = info:match("%{([^%}]*)%}");
+				additional_info = info:match("%{[^%}]*%}%s*(.*)$");
+			elseif info:match("(%S-)%s+(.*)$") then
+				-- Language string and additional info
+				-- https://spec.commonmark.org/0.31.2/#example-143
+				language_string, additional_info = info:match("(%S-)%s+(.*)$");
+			elseif info:match("(%S*)%s*$") then
+				-- Language string without additional info
+				-- https://spec.commonmark.org/0.31.2/#example-143
+				language_string = info:match("(%S*)%s*$");
 			end
 
 			local code_lines = vim.api.nvim_buf_get_lines(buffer, row_start + 1, row_end - 1, false);
