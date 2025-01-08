@@ -52,9 +52,9 @@ HTML renderer,
 LaTeX renderer,
 
 - Inline LaTeX support.
-- LaTeX block supoort.
+- LaTeX block support.
 - LaTeX symbols support. supports 1000+ symbol names.
-- Font commamd support. Currently supports: `\mathbfit`, `\mathcal`, `\mathfrak`, `\mathbb`, `\mathsfbf`, `\mathsfit`, `\mathsfbfit`, `\mathtt`.
+- Font command support. Currently supports: `\mathbfit`, `\mathcal`, `\mathfrak`, `\mathbb`, `\mathsfbf`, `\mathsfit`, `\mathsfbfit`, `\mathtt`.
 - Subscripts & superscripts
 
 Others,
@@ -158,7 +158,7 @@ Here's all the main options,
 {
     -- Buffer types to ignore
     buf_ignore = { "nofile" },
-    -- Delay, in miliseconds
+    -- Delay, in milliseconds
     -- to wait before a redraw occurs(after an event is triggered)
     debounce = 50,
     -- Filetypes where the plugin is enabled
@@ -172,7 +172,7 @@ Here's all the main options,
     injections = {},
     -- Initial plugin state,
     -- true = show preview
-    -- falss = don't show preview
+    -- false = don't show preview
     initial_state = true,
     -- Max file size that is rendered entirely
     max_file_length = 1000,
@@ -401,7 +401,7 @@ Here's a bit of explanation on what the text does.
     (#set! fold))
 ```
 
-Optionally, you can use a foldtext plugin tp change what is shown! For example, I can use [foldtext.nvim](https://www.github.com/OXY2DEV/foldtext.nvim) for this.
+Optionally, you can use a foldtext plugin to change what is shown! For example, I can use [foldtext.nvim](https://www.github.com/OXY2DEV/foldtext.nvim) for this.
 
 ```lua
 local def = require("foldtext").configuration;
