@@ -127,6 +127,7 @@ parser.filter_lines = function (buffer, from, to)
 
 	local code_block_indent = 0;
 	local desc_indent = 0;
+	local current_fence = "";
 
 	local start = 0;
 
@@ -181,11 +182,14 @@ parser.filter_lines = function (buffer, from, to)
 			parent_marker = line:match("^%s*(%d+[%)%.])");
 		end
 
-		if line:match("(```)") and withinCodeBlock ~= true then
+		local fence = lang.get_fence(line)
+		if fence and withinCodeBlock ~= true then
 			withinCodeBlock = true;
+			current_fence = fence;
 			code_block_indent = spaces_before;
-		elseif line:match("(```)") and withinCodeBlock == true then
+		elseif withinCodeBlock == true and line:match(current_fence) then
 			withinCodeBlock = false;
+			current_fence = "";
 		elseif withinCodeBlock == true then
 			spaces_before = code_block_indent;
 			goto withinElement;
@@ -203,7 +207,7 @@ parser.filter_lines = function (buffer, from, to)
 		then
 			spaces_before = math.max(0, spaces_before - vim.fn.strchars((parent_marker or "") .. " "));
 
-			if line:match("(```)") then
+			if fence then
 				code_block_indent = spaces_before;
 			elseif insideDescription == true then
 				align_spaces[l] = 2;
@@ -381,20 +385,8 @@ parser.md = function (buffer, TStree, from, to)
 
 			local block_start = vim.api.nvim_buf_get_lines(buffer, row_start, row_start + 1, false)[1];
 
-			local language_string, additional_info = "", nil;
-
-			if block_start:match("%s*```%{%{([^%}]*)%}%}") then
-				language_string = block_start:match("%s*```%{%{([^%}]*)%}%}");
-				additional_info = block_start:match("%s*```%{%{[^%}]*%}%}%s*(.*)$");
-			elseif block_start:match("%s*```%{([^%}]*)%}") then
-				language_string = block_start:match("%s*```%{([^%}]*)%}");
-				additional_info = block_start:match("%s*```%{[^%}]*%}%s*(.*)$");
-			elseif block_start:match("%s*```(%S*)$") then
-				language_string = block_start:match("%s*```(%S*)$");
-			elseif block_start:match("%s*```(%S*)%s*") then
-				language_string = block_start:match("%s*```(%S*)%s");
-				additional_info = block_start:match("%s*```%S*%s+(.*)$");
-			end
+			local _, info = lang.get_fence(block_start);
+			local language_string, additional_info = lang.info(info)
 
 			local code_lines = vim.api.nvim_buf_get_lines(buffer, row_start + 1, row_end - 1, false);
 
