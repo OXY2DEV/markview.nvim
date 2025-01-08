@@ -1,0 +1,136 @@
+*markview.nvim-extra*                                Extra modules for markview
+
+------------------------------------------------------------------------------
+✅ Checkboxes                                 *markview.nvim-extra.checkboxes*
+
+📜 Overview ~
+
+A simple `state-aware` checkbox toggle for markdown.
+
+Features,
+
+    - Simple checkbox state cache.
+      This module can remember previous checkbox states(even after they are
+      removed) so that you can simply toggle them without needing to manually
+      change the state.
+
+    - Interactive mode.
+      Allows changing checkbox state(on the current line) via `hjkl`
+      interactively.
+
+    - Fine grained checkbox toggle.
+      Allows toggling checkboxes in various ways such as,
+
+        + disable, only removes the state(e.g. `+ [X] Text → + [ ] Text`).
+        + checkbox, removes the checkbox itself(e.g. `+ [X] Text → + Text`).
+        + list_item, removes the list item too(e.g. `+ [X] Text → Text`).
+
+    - Better visual checkbox toggle.
+      Allows toggling checkboxes based on list item markers & lines.
+
+📚 Usage ~
+
+Load the module first,
+>lua
+    require("markview.extras.checkboxes").setup({
+        --- Default checkbox state(used when adding checkboxes).
+        ---@type string
+        default = "X",
+
+        --- Changes how checkboxes are removed.
+        ---@type
+        ---| "disable" Disables the checkbox.
+        ---| "checkbox" Removes the checkbox.
+        ---| "list_item" Removes the list item markers too.
+        remove_style = "disable",
+
+        --- Various checkbox states.
+        ---
+        --- States are in sets to quickly change between them
+        --- when there are a lot of states.
+        ---@type string[][]
+        states = {
+            { " ", "/", "X" },
+            { "<", ">" },
+            { "?", "!", "*" },
+            { '"' },
+            { "l", "b", "i" },
+            { "S", "I" },
+            { "p", "c" },
+            { "f", "k", "w" },
+            { "u", "d" }
+        }
+    });
+<
+You should now have access to the `:Checkbox` command. It has the following
+sub-commands,
+
+    - `toggle`
+      Toggles checkbox state. Supports visual mode too!
+
+    - `change`
+      Changes the state of the checkbox.
+      Parameters,
+        + `x`, offset in the X-axis.
+        + `y`, offset in the Y-axis.
+
+>txt
+
+                If the current state is [/], you can visualise
+                    the states on the X & Y axis like so.
+
+                           ↑      { [u], [d] },
+                         ← O → X  { [ ], [/], [X] },
+                           ↓      { [<], [>] }
+                           Y
+
+             If you did `:Checkbox change -1 -1` you will get [u]
+                     as the items support negative index.
+<
+    - `Interactive`
+      Open up the Interactive checkbox state changer.
+      You can move between states in the current set via `h`, `l`.
+      You can also switch between sets via `j`, `k`.
+
+------------------------------------------------------------------------------
+🔖 Headings                                     *markview.nvim-extra.headings*
+
+📜 Overview ~
+
+A tree-sitter based heading level changer.
+
+▋ 📜 Note
+▋ As this is `tree-sitter` based it doesn't support `visual mode`.
+
+📚 Usage ~
+>lua
+    require("markview.extras.headings").setup();
+<
+You will get access to the `:Headings` command. It has the following sub-commands,
+
+    - `increase`
+      Increases heading level by 1.
+
+    - `decrease`
+      Decreases heading level by 1.
+
+------------------------------------------------------------------------------
+💻 Editor                                         *markview.nvim-extra.editor*
+
+📜 Overview ~
+
+A simple `syntax-aware` code block editor/creator.
+
+📚 Usage ~
+>lua
+    require("markview.extras.editor").setup();
+<
+You will get access to the `:Code` command. It has the following sub-commands,
+
+    - `create`
+      Create a code block under the cursor.
+
+    - `edit`
+      Edits the code block under the cursor.
+
+vim:ft=help:tw=78:colorcolumn=78:

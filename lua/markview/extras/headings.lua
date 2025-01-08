@@ -1,4 +1,5 @@
 local headings = {};
+local utils = require("markview.utils");
 
 --- Gets the heading under the cursor
 ---@return boolean
@@ -131,18 +132,74 @@ headings.decrease = function ()
 	end
 end
 
-headings.setup = function ()
-	vim.api.nvim_create_user_command("HeadingIncrease", function ()
-		headings.increase();
-	end, {
-		desc = "Increases heading level"
+--- Commands for this module.
+headings.__completion = utils.create_user_command_class({
+	default = {
+		completion = function (arg_lead)
+			local comp = {};
+
+			for _, item in ipairs({ "decrease", "increase" }) do
+				if item:match(arg_lead) then
+					table.insert(comp, item);
+				end
+			end
+
+			table.sort(comp);
+			return comp;
+		end,
+		action = function ()
+			headings.increase();
+		end
+	},
+	sub_commands = {
+		["decrease"] = {
+			action = function ()
+				headings.decrease();
+			end
+		},
+		["increase"] = {
+			action = function ()
+				headings.increase();
+			end
+		}
+	}
+});
+
+--- New command
+vim.api.nvim_create_user_command("Heading", function (params)
+	headings.__completion:exec(params)
+end, {
+	nargs = 1,
+	complete = function (...)
+		return headings.__completion:comp(...)
+	end
+});
+
+---+${lua, v24 commands}
+vim.api.nvim_create_user_command("HeadingIncrease", function ()
+	require("markview.health").notify("deprecation", {
+		ignore = true,
+
+		option = ":HeadingIncrease",
+		alter = ":Heading increase"
 	});
 
-	vim.api.nvim_create_user_command("HeadingDecrease", function ()
-		headings.decrease()
-	end, {
-		desc = "Decreases heading level"
+	headings.increase();
+end, {});
+
+vim.api.nvim_create_user_command("HeadingDecrease", function ()
+	require("markview.health").notify("deprecation", {
+		ignore = true,
+
+		option = ":HeadingDecrease",
+		alter = ":Heading decrease"
 	});
+
+	headings.decrease()
+end, {});
+---_
+
+headings.setup = function ()
 end
 
 return headings;
