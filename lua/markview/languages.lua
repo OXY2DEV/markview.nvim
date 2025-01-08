@@ -395,6 +395,28 @@ languages.patterns = {
 	["html"] = "HTML"
 };
 
+--- Known language info string patterns
+---@type string[]
+languages.info_patterns = {
+	-- {{ lang }} params
+	"%{%{([^%}]*)%}%}%s*(.*)$",
+	-- Myst code blocks (code, code-block, code-cell) with language
+	-- https://mystmd.org/guide/code#code-blocks
+	"%{code%S*%}%s*(%S+)$",
+	-- Other {}-wrapped directive with unknown processing
+	"%{([^%}]*)%}%s*(.*)$",
+	-- Language string and additional info
+	-- https://spec.commonmark.org/0.31.2/#example-143
+	"(%S-)%s+(.*)$",
+	-- Language string without additional info or no language
+	-- https://spec.commonmark.org/0.31.2/#example-143
+	"(%S*)%s*$",
+}
+
+--- Known code-block fences
+---@type string[]
+languages.fences = {"`", "~"}
+
 --- Gets the language name from a string
 ---@param name string
 ---@return string
@@ -432,6 +454,34 @@ languages.get_icon = function (ft)
 	local hl, sign = unpack(languages.hls[ft] or languages.hls.default);
 
 	return languages.icons[ft] or languages.icons.default, hl, sign;
+end
+
+--- Extract fenced code block header
+---@param line string
+---@return string|nil fence the matched fence string
+---@return string info the matched info string
+languages.get_fence = function(line)
+	for _, char in pairs(languages.fences) do
+		--- Match any supported fence, optionnaly indented or quoted
+		local fence, info = line:match("^>*%s*(" .. string.rep(char, 3) .. "+)%s*(.-)%s*$");
+		if fence ~= nil then
+			return fence, info;
+		end
+	end
+	return nil, ""
+end
+
+--- Extract language and parameters from an infostring
+---@param info string the info string to parse
+---@return string language the extracted language
+---@return string|nil # Some optional extra data
+languages.info = function (info)
+	for _, pattern in pairs(languages.info_patterns) do
+		local lang, extra = info:match(pattern);
+		if lang then
+			return lang, extra;
+		end
+	end
 end
 
 return languages;

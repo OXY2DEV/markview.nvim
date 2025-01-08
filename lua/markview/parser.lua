@@ -34,18 +34,6 @@ parser.escape_string = function (input)
 	return input;
 end
 
-
---- Extract fenced coode block header
---- return a 2-tuple (fence, infostring)
-parser.get_fence = function(line)
-	for _, pattern in pairs({"```+", "~~~+"}) do
-		local fence, info = line:match("^%s*(" .. pattern .. ")%s*(.-)%s*$");
-		if fence ~= nil then
-			return fence, info;
-		end
-	end
-end
-
 parser.get_md_len = function (text)
 	local final_string = text;
 	local len = vim.fn.strdisplaywidth(text);
@@ -194,7 +182,7 @@ parser.filter_lines = function (buffer, from, to)
 			parent_marker = line:match("^%s*(%d+[%)%.])");
 		end
 
-		local fence, _ = parser.get_fence(line)
+		local fence = lang.get_fence(line)
 		if fence and withinCodeBlock ~= true then
 			withinCodeBlock = true;
 			current_fence = fence;
@@ -219,7 +207,7 @@ parser.filter_lines = function (buffer, from, to)
 		then
 			spaces_before = math.max(0, spaces_before - vim.fn.strchars((parent_marker or "") .. " "));
 
-			if line:match("(```)") then
+			if fence then
 				code_block_indent = spaces_before;
 			elseif insideDescription == true then
 				align_spaces[l] = 2;
@@ -397,29 +385,8 @@ parser.md = function (buffer, TStree, from, to)
 
 			local block_start = vim.api.nvim_buf_get_lines(buffer, row_start, row_start + 1, false)[1];
 
-			local language_string, additional_info = "", nil;
-			local _, info = parser.get_fence(block_start);
-
-			if info:match("%{%{([^%}]*)%}%}") then
-				language_string = info:match("%%{%{([^%}]*)%}%}");
-				additional_info = info:match("%{%{[^%}]*%}%}%s*(.*)$");
-			elseif info:match("%{code%S*%}%s*(%S+)$") then
-				-- Myst code blocks (code, code-block, code-cell)
-				-- https://mystmd.org/guide/code#code-blocks
-				language_string = info:match("%{code%S*%}%s*(%S*)$");
-			elseif info:match("%{([^%}]*)%}") then
-				-- Other {}-wrapped directive with unknown processing
-				language_string = info:match("%{([^%}]*)%}");
-				additional_info = info:match("%{[^%}]*%}%s*(.*)$");
-			elseif info:match("(%S-)%s+(.*)$") then
-				-- Language string and additional info
-				-- https://spec.commonmark.org/0.31.2/#example-143
-				language_string, additional_info = info:match("(%S-)%s+(.*)$");
-			elseif info:match("(%S*)%s*$") then
-				-- Language string without additional info
-				-- https://spec.commonmark.org/0.31.2/#example-143
-				language_string = info:match("(%S*)%s*$");
-			end
+			local _, info = lang.get_fence(block_start);
+			local language_string, additional_info = lang.info(info)
 
 			local code_lines = vim.api.nvim_buf_get_lines(buffer, row_start + 1, row_end - 1, false);
 

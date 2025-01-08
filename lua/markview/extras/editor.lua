@@ -44,7 +44,8 @@ editor.configuraton = {
 			local start, col, stop, _ = TSNode:range();
 			local lines = vim.api.nvim_buf_get_lines(buffer, start, stop, false);
 
-			local ft = lines[1]:match("```(%S*)") or "lua";
+			local _, info = languages.get_fence(lines[1])
+			local ft = languages.info(info);
 			local _l = {};
 
 			table.remove(lines, 1);
@@ -54,7 +55,7 @@ editor.configuraton = {
 				table.insert(_l, line:sub(col, #line))
 			end
 
-			return ft:gsub("[%{%}]", ""), _l, start + 1, stop - 1;
+			return ft, _l, start + 1, stop - 1;
 		end
 	},
 	appliers = {
@@ -62,7 +63,8 @@ editor.configuraton = {
 			local start, _, _, _ = TSNode:range();
 			local delimiter = vim.api.nvim_buf_get_lines(buffer, start, start + 1, false)[1];
 
-			local before = delimiter:match("^(.-)```");
+			local fence = languages.get_fence(delimiter)
+			local before = delimiter:match("^(.-)" .. fence);
 
 			for l, line in ipairs(lines) do
 				lines[l] = (before or "") .. line
@@ -88,23 +90,6 @@ editor.configuraton = {
 		vim.bo[buf].expandtab = true;
 	end
 }
-
---- Gets the filetype from an info string
----@param delim string
----@return string
-local get_ft = function (delim)
-	local ft = "";
-
-	if delim:match("^```%{%{(.-)%}%}") then
-		ft = languages.get_ft(delim:match("^```%{%{(.-)%}%}"));
-	elseif delim:match("^```%{(.-)%}") then
-		ft = languages.get_ft(delim:match("^```%{(.-)%}"));
-	elseif delim:match("^```(%S+)") then
-		ft = languages.get_ft(delim:match("^```(%S+)"));
-	end
-
-	return ft;
-end
 
 --- Creates a new buffer when not available.
 --- Otherwise, returns the current editor buffer.
@@ -400,10 +385,11 @@ editor.create = function ()
 				end
 
 				start_delim = tostring(input);
-				vim.bo[editor.buffer].filetype = get_ft(start_delim);
-				local icon, hl = languages.get_icon(get_ft(start_delim));
-
-				ft = get_ft(start_delim);
+				local fence, info = languages.get_fence(start_delim);
+				ft = languages.info(info);
+				end_delim = fence or end_delim;
+				vim.bo[editor.buffer].filetype = ft
+				local icon, hl = languages.get_icon(ft);
 
 				hl = hl .. "Fg";
 
