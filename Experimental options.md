@@ -3,23 +3,46 @@
 Options that are still under development or don't affect core functionalities of `markview`.
 
 ```lua
+-- [ Markview | Experimental options ] ----------------------------------------------------
+
+--- Configuration for experimental options.
 ---@class config.experimental
 ---
----@field file_open_command string Command used to open files inside Neovim.
----@field read_chunk_size integer Number of `bytes` to check before opening a link. Used for detecting when to open files inside Neovim.
+---@field file_open_command? string Command used to open files inside Neovim.
+---@field read_chunk_size? integer Number of `bytes` to check before opening a link. Used for detecting when to open files inside Neovim.
 ---
----@field list_empty_line_tolerance integer Maximum number of empty lines that can stay between text of a list item.
+---@field list_empty_line_tolerance? integer Maximum number of empty lines that can stay between text of a list item.
 ---
 ---@field date_formats? string[] String formats for detecting date in YAML.
----@field date_time_formats? string[] String formats for detecting date & time in YAML
-M.experimental = {
-    file_open_command = "tabnew",
-    read_chunk_size = 1000,
+---@field date_time_formats? string[] String formats for detecting date & time in YAML.
+experimental = {
+    read_chunk_size = 1024,
 
+    file_open_command = "tabnew",
     list_empty_line_tolerance = 3,
 
-    date_formats = { "%d%d-%d%d-%d%d%d%d" },
-    date_time_formats = { "%d%d-%d%d-%d%d%d%d %d%d:%d%d [ap]?m" }
+    date_formats = {
+        "^%d%d%d%d%-%d%d%-%d%d$",                   --- YYYY-MM-DD
+        "^%d%d%-%d%d%-%d%d%d%d$",                   --- DD-MM-YYYY, MM-DD-YYYY
+        "^%d%d%-%d%d%-%d%d$",                       --- DD-MM-YY, MM-DD-YY, YY-MM-DD
+
+        "^%d%d%d%d%/%d%d%/%d%d$",                   --- YYYY/MM/DD
+        "^%d%d%/%d%d%/%d%d%d%d$",                   --- DD/MM/YYYY, MM/DD/YYYY
+
+        "^%d%d%d%d%.%d%d%.%d%d$",                   --- YYYY.MM.DD
+        "^%d%d%.%d%d%.%d%d%d%d$",                   --- DD.MM.YYYY, MM.DD.YYYY
+
+        "^%d%d %a+ %d%d%d%d$",                      --- DD Month YYYY
+        "^%a+ %d%d %d%d%d%d$",                      --- Month DD, YYYY
+        "^%d%d%d%d %a+ %d%d$",                      --- YYYY Month DD
+
+        "^%a+%, %a+ %d%d%, %d%d%d%d$",              --- Day, Month DD, YYYY
+    },
+
+    date_time_formats = {
+        "^%a%a%a %a%a%a %d%d %d%d%:%d%d%:%d%d ... %d%d%d%d$", --- UNIX date time
+        "^%d%d%d%d%-%d%d%-%d%dT%d%d%:%d%d%:%d%dZ$",           --- ISO 8601
+    }
 };
 ```
 
