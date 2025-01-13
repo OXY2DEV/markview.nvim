@@ -3,17 +3,28 @@
 Options that affect how HTML is shown in preview.
 
 ```lua
+-- [ Markview | HTML ] --------------------------------------------------------------------
+
 --- Configuration table for HTML preview.
 ---@class config.html
 ---
 ---@field container_elements html.container_elements Configuration for container elements.
 ---@field headings html.headings Configuration for headings(e.g. `<h1>`).
 ---@field void_elements html.void_elements Configuration for void elements.
-M.html = {
+html = {
     headings = {},
     void_elements = {},
     container_elements = {}
 };
+
+-- [ Markview | HTML • Static ] -----------------------------------------------------------
+
+--- Static configuration table for HTML preview.
+---@class config.html
+---
+---@field container_elements html.container_elements Configuration for container elements.
+---@field headings html.headings  Configuration for headings(e.g. `<h1>`).
+---@field void_elements html.void_elements Configuration for void elements.
 ```
 
 ---
@@ -32,13 +43,19 @@ Configuration table for container type elements.
     <summary>Expand to see default configuration</summary><!--+-->
 
 ```lua
+-- [ HTML | Container elements ] ----------------------------------------------------------
+
 --- HTML <container></container> element config.
 ---@class html.container_elements
 ---
----@field enable boolean Enables container element rendering.
----@field [string] container_elements.opts Configuration for <string></string>.
+---@field enable boolean
+---@field [string] container_elements.opts | fun(buffer: integer, item: __html.container_elements): container_elements.opts
 container_elements = {
+    ---+${lua}
+
     enable = true,
+
+    ---+${lua, Various inline elements used in markdown}
 
     ["^b$"] = {
         on_opening_tag = { conceal = "" },
@@ -46,26 +63,9 @@ container_elements = {
         on_closing_tag = { conceal = "" },
     },
     ["^code$"] = {
-        on_opening_tag = {
-            conceal = "",
-            hl_mode = "combine",
-
-            virt_text_pos = "inline",
-            virt_text = {
-                { " ", "MarkviewInlineCode" }
-            }
-        },
-        on_closing_tag = {
-            conceal = "",
-            hl_mode = "combine",
-
-            virt_text_pos = "inline",
-            virt_text = {
-                { " ", "MarkviewInlineCode" }
-            }
-        },
-
+        on_opening_tag = { conceal = "", hl_mode = "combine", virt_text_pos = "inline", virt_text = { { " ", "MarkviewInlineCode" } } },
         on_node = { hl_group = "MarkviewInlineCode" },
+        on_closing_tag = { conceal = "", hl_mode = "combine", virt_text_pos = "inline", virt_text = { { " ", "MarkviewInlineCode" } } },
     },
     ["^em$"] = {
         on_opening_tag = { conceal = "" },
@@ -101,8 +101,19 @@ container_elements = {
         on_opening_tag = { conceal = "" },
         on_node = { hl_group = "Underlined" },
         on_closing_tag = { conceal = "" },
-    }
+    },
+
+    ---_
+    ---_
 };
+
+-- [ HTML | Container elements • Static ] ----------------------------------------------------------
+
+--- Static configuration for container elements.
+---@class html.container_elements_static
+---
+---@field enable boolean Enables container element rendering.
+---@field [string] container_elements.opts Configuration for <string></string>.
 ```
 <!--_-->
 </details>
@@ -121,31 +132,10 @@ container_elements = {
 ---@field on_closing_tag? config.extmark | fun(tag: __container.data): config.extmark Extmark configuration to use on the closing </tag>.
 ---@field on_node? config.extmark | fun(item: __html.container_elements): config.extmark Extmark configuration to use on the element.
 ---@field on_opening_tag? config.extmark | fun(tag: __container.data): config.extmark Extmark configuration to use on the opening <tag>.
-["^custom"] = {
-    --- Don't highlight the `<>` & `</>` part in
-    --- the tags.
-    opening_tag_offset = function (range)
-        return { range[1], range[2] + 1, range[3], range[4] - 1 };
-    end,
-    closing_tag_offset = function (range)
-        return { range[1], range[2] + 2, range[3], range[4] - 1 };
-    end,
-
-    --- Use a different color if the tag ends with `mkv>`.
-    on_opening_tag = function (tag)
-        if tag.text:match("mkv%>$") then
-            return { hl_group = "MarkviewPalette1" };
-       else
-            return { hl_group = "MarkviewPalette5" };
-       end
-    end,
-    on_closing_tag = function (tag)
-        if tag.text:match("mkv%>$") then
-            return { hl_group = "MarkviewPalette1" };
-       else
-            return { hl_group = "MarkviewPalette5" };
-       end
-    end
+["^b$"] = {
+    on_opening_tag = { conceal = "" },
+    on_node = { hl_group = "Bold" },
+    on_closing_tag = { conceal = "" },
 };
 
 -- [ HTML | Container elements > Parameters ] ---------------------------------------------
@@ -214,6 +204,8 @@ Configuration for HTML headings(e.g. `<h1>`).
     <summary>Expand to see default configuration</summary><!--+-->
 
 ```lua
+-- [ HTML | Headings ] --------------------------------------------------------------------
+
 --- HTML heading config.
 ---@class html.headings
 ---
@@ -249,6 +241,8 @@ M.html_headings = {
     <summary>Expand to see type definition & advanced usage</summary><!--+-->
 
 ```lua
+-- [ HTML | Headings > Type definitions ] -------------------------------------------------
+
 --- HTML heading config.
 ---@class html.headings
 ---
@@ -304,13 +298,19 @@ Configuration for void type elements.
     <summary>Expand to see default configuration</summary><!--+-->
 
 ```lua
+-- [ HTML | Void elements ] ---------------------------------------------------------------
+
 --- HTML <void> element config.
 ---@class html.void_elements
 ---
----@field enable boolean Enables void element rendering.
----@field [string] void_elements.opts Configuration for <string>.
-M.html_void_elements = {
+---@field enable boolean
+---@field [string] void_elements.opts | fun(buffer: integer, item: __html.void_elements): void_elements.opts
+void_elements = {
+    ---+${lua}
+
     enable = true,
+
+    ---+${lua, Various void elements used in markdown}
 
     ["^hr$"] = {
         on_node = {
@@ -328,19 +328,31 @@ M.html_void_elements = {
                 { "─", "MarkviewGradient3" },
                 { "─", "MarkviewGradient2" },
             }
-        },
-        ["^br$"] = {
-            on_node = {
-                conceal = "",
+        }
+    },
+    ["^br$"] = {
+        on_node = {
+            conceal = "",
 
-                virt_text_pos = "inline",
-                virt_text = {
-                    { "󱞦", "Comment" },
-                }
+            virt_text_pos = "inline",
+            virt_text = {
+                { "󱞦", "Comment" },
             }
         }
-    }
-};
+    },
+
+    ---_
+
+    ---_
+}
+
+-- [ HTML | Void elements • Static ] ------------------------------------------------------
+
+--- Static configuration for void elements..
+---@class html.void_elements
+---
+---@field enable boolean Enables void element rendering.
+---@field [string] void_elements.opts Configuration for <string>.
 ```
 <!--_-->
 </details>
