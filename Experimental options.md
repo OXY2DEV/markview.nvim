@@ -8,13 +8,18 @@ Options that are still under development or don't affect core functionalities of
 --- Configuration for experimental options.
 ---@class config.experimental
 ---
----@field file_open_command? string Command used to open files inside Neovim.
----@field read_chunk_size? integer Number of `bytes` to check before opening a link. Used for detecting when to open files inside Neovim.
+--- Command used to open files inside Neovim.
+---@field file_open_command? string
+--- Number of `bytes` to check before opening a link. Used for detecting when to open files inside Neovim.
+---@field read_chunk_size? integer
 ---
----@field list_empty_line_tolerance? integer Maximum number of empty lines that can stay between text of a list item.
+--- Maximum number of empty lines that can stay between text of a list item.
+---@field list_empty_line_tolerance? integer
 ---
----@field date_formats? string[] String formats for detecting date in YAML.
----@field date_time_formats? string[] String formats for detecting date & time in YAML.
+--- String formats for detecting date in YAML.
+---@field date_formats? string[]
+--- String formats for detecting date & time in YAML.
+---@field date_time_formats? string[]
 experimental = {
     read_chunk_size = 1024,
 
@@ -46,7 +51,7 @@ experimental = {
 };
 ```
 
----
+------
 
 ### file_open_command
 
@@ -68,6 +73,8 @@ Command used for opening links inside Neovim.
 Number of **bytes** to check to determine if a file is a text file or not when opening links.
 
 If the file is a text file, it will be opened inside `Neovim`.
+
+------
 
 ### list_empty_line_tolerance
 
@@ -94,6 +101,8 @@ TSNode │  Indentation  ┃            List                ┃
    ╎                      part of the list.
 ```
 
+------
+
 ### date_formats
 
 - Type: `string[]`
@@ -107,4 +116,8 @@ List of `lua patterns` for detecting dates in YAML.
 - Dynamic: **false**
 
 List of `lua patterns` for detecting date & time in YAML.
+
+---
+
+Also available in vimdoc, `:h markview.nvim-experimental`.
 
