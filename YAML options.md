@@ -9,8 +9,8 @@ Changes how YAML metadata is shown in preview.
 ---@field enable boolean
 ---@field properties yaml.properties
 M.yaml = {
-	enable = true,
-	properties = {}
+    enable = true,
+    properties = {}
 };
 ```
 
@@ -157,10 +157,10 @@ properties = {
 ---
 ---@field use_types? boolean When `true`, the configuration table merges with the value's data type configuration.
 M.properties_opts = {
-	use_types = true,
+    use_types = true,
 
-	text = "π",
-	hl = "Title"
+    text = "π",
+    hl = "Title"
 };
 
 -- [ YAML | Properties > Parameters ] -----------------------------------------------------
@@ -174,20 +174,20 @@ M.properties_opts = {
 ---@field text string[]
 ---@field range node.range
 M.__yaml_properties = {
-	class = "yaml_property",
-	type = "checkbox",
+    class = "yaml_property",
+    type = "checkbox",
 
-	key = "key",
-	value = "value",
+    key = "key",
+    value = "value",
 
-	text = { "key: value" },
-	range = {
-		row_start = 0,
-		row_end = 0,
+    text = { "key: value" },
+    range = {
+        row_start = 0,
+        row_end = 0,
 
-		col_start = 0,
-		col_end = 10
-	}
+        col_start = 0,
+        col_end = 10
+    }
 };
 ```
 <!--_-->

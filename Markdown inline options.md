@@ -3,40 +3,67 @@
 Changes how inline markdown items are shown in preview.
 
 ```lua
+-- [ Markview | Inline ] ------------------------------------------------------------------
+
+--- Configuration for inline markdown.
 ---@class config.markdown_inline
 ---
 ---@field enable boolean
 ---
----@field block_references inline.block_references
----@field checkboxes inline.checkboxes
----@field emails inline.emails
----@field embed_files inline.embed_files
----@field entities inline.entities
----@field escapes inline.escapes
----@field footnotes inline.footnotes
----@field highlights inline.highlights
----@field hyperlinks inline.hyperlinks
----@field images inline.images
----@field inline_codes inline.inline_codes
----@field internal_links inline.internal_links
----@field uri_autolinks inline.uri_autolinks
+---@field block_references inline.block_references | fun(): inline.block_references
+---@field checkboxes inline.checkboxes | fun(): inline.checkboxes
+---@field emails inline.emails | fun(): inline.emails
+---@field embed_files inline.embed_files | fun(): inline.embed_files
+---@field emoji_shorthands inline.emojis | fun(): inline.emojis
+---@field entities inline.entities | fun(): inline.entities
+---@field escapes inline.escapes | fun(): inline.escapes
+---@field footnotes inline.footnotes | fun(): inline.footnotes
+---@field highlights inline.highlights | fun(): inline.highlights
+---@field hyperlinks inline.hyperlinks | fun(): inline.hyperlinks
+---@field images inline.images | fun(): inline.images
+---@field inline_codes inline.inline_codes | fun(): inline.inline_codes
+---@field internal_links inline.internal_links | fun(): inline.internal_links
+---@field uri_autolinks inline.uri_autolinks | fun(): inline.uri_autolinks
 M.markdown_inline = {
     enable = true,
 
-    footnotes = {},
-    checkboxes = {},
-    inline_codes = {},
-    uri_autolinks = {},
-    internal_links = {},
-    hyperlinks = {},
-    embed_files = {},
-    entities = {},
-    emails = {},
     block_references = {},
+    checkboxes = {},
+    emails = {},
+    embed_files = {},
+	emoji_shorthands = {},
+    entities = {},
     escapes = {},
+    footnotes = {},
+    highlights = {},
+    hyperlinks = {},
     images = {},
-    highlights = {}
+    inline_codes = {},
+    internal_links = {},
+    uri_autolinks = {},
 };
+
+-- [ Markview | Inline • Static ] ---------------------------------------------------------
+
+--- Static configuration for inline markdown.
+---@class config.markdown_inline_static
+---
+---@field enable boolean
+---
+---@field block_references inline.block_references Block reference link configuration.
+---@field checkboxes inline.checkboxes Checkbox configuration.
+---@field inline_codes inline.inline_codes Inline code/code span configuration.
+---@field emails inline.emails Email link configuration.
+---@field embed_files inline.embed_files Embed file link configuration.
+---@field emoji_shorthands inline.emojis Github styled emoji shorthands.
+---@field entities inline.entities HTML entities configuration.
+---@field escapes inline.escapes Escaped characters configuration.
+---@field footnotes inline.footnotes Footnotes configuration.
+---@field highlights inline.highlights Highlighted text configuration.
+---@field hyperlinks inline.hyperlinks Hyperlink configuration.
+---@field images inline.images Image link configuration.
+---@field internal_links inline.internal_links Internal link configuration.
+---@field uri_autolinks inline.uri_autolinks URI autolink configuration.
 ```
 
 >[!NOTE]
@@ -47,24 +74,26 @@ M.markdown_inline = {
     <summary>Generic options for inline markdown</summary><!--+-->
 
 ```lua
+-- [ Markview | Generic inline element ] --------------------------------------------------
+
 --- Generic configuration for inline markdown items.
 --- Note: {item} will be different based on the node this is being used by.
 ---@class config.inline_generic
 ---
----@field corner_left? string | fun(buffer: integer, item: table): string? Left corner.
----@field corner_left_hl? string | fun(buffer: integer, item: table): string? Highlight group for left corner.
----@field corner_right? string | fun(buffer: integer, item: table): string? Right corner.
----@field corner_right_hl? string | fun(buffer: integer, item: table): string? Highlight group for right corner.
----@field hl? string | fun(buffer: integer, item: table): string? Base Highlight group.
----@field icon? string | fun(buffer: integer, item: table): string? Icon.
----@field icon_hl? string | fun(buffer: integer, item: table): string? Highlight group for icon.
----@field padding_left? string | fun(buffer: integer, item: table): string? Left padding.
----@field padding_left_hl? string | fun(buffer: integer, item: table): string? Highlight group for left padding.
----@field padding_right? string | fun(buffer: integer, item: table): string? Right padding.
----@field padding_right_hl? string | fun(buffer: integer, item: table): string? Highlight group for right padding.
+---@field corner_left? string | fun(buffer: integer, item: table): string?
+---@field corner_left_hl? string | fun(buffer: integer, item: table): string?
+---@field corner_right? string | fun(buffer: integer, item: table): string?
+---@field corner_right_hl? string | fun(buffer: integer, item: table): string?
+---@field hl? string | fun(buffer: integer, item: table): string?
+---@field icon? string | fun(buffer: integer, item: table): string?
+---@field icon_hl? string | fun(buffer: integer, item: table): string?
+---@field padding_left? string | fun(buffer: integer, item: table): string?
+---@field padding_left_hl? string | fun(buffer: integer, item: table): string?
+---@field padding_right? string | fun(buffer: integer, item: table): string?
+---@field padding_right_hl? string | fun(buffer: integer, item: table): string?
 ---
----@field file_hl? string | fun(buffer: integer, item: table): string? Highlight group for block reference file name.
----@field block_hl? string | fun(buffer: integer, item: table): string? Highlight group for block reference block ID.
+---@field file_hl? string | fun(buffer: integer, item: table): string?
+---@field block_hl? string | fun(buffer: integer, item: table): string?
 M.inline_generic = {
     corner_left = "<",
     padding_left = " ",
@@ -74,6 +103,26 @@ M.inline_generic = {
 
     hl = "MarkviewCode"
 };
+
+-- [ Markview | Generic inline element • Static ] -----------------------------------------
+
+--- Static configuration for inline elements.
+---@class config.inline_generic_static
+---
+---@field corner_left? string Left corner.
+---@field corner_left_hl? string Highlight group for left corner.
+---@field corner_right? string Right corner.
+---@field corner_right_hl? string Highlight group for right corner.
+---@field hl? string Base Highlight group.
+---@field icon? string Icon.
+---@field icon_hl? string Highlight group for icon.
+---@field padding_left? string Left padding.
+---@field padding_left_hl? string Highlight group for left padding.
+---@field padding_right? string Right padding.
+---@field padding_right_hl? string Highlight group for right padding.
+---
+---@field file_hl? string Highlight group for block reference file name.
+---@field block_hl? string Highlight group for block reference block ID.
 ```
 <!--_-->
 </details>
@@ -89,21 +138,35 @@ Configuration for block reference links(from `Obsidian`).
     <summary>Expand to see default configuration</summary><!--+-->
 
 ```lua
+-- [ Inline | Block references ] ----------------------------------------------------------
+
 --- Configuration for block reference links.
 ---@class inline.block_references
 ---
 ---@field enable boolean
 ---
----@field default config.inline_generic Default configuration for block reference links.
----@field [string] config.inline_generic Configuration for block references whose label matches with the key's pattern.
+---@field default config.inline_generic | fun(buffer: integer, item: __inline.block_references): config.inline_generic
+---@field [string] config.inline_generic | fun(buffer: integer, item: __inline.block_references): config.inline_generic
 block_references = {
     enable = true,
 
     default = {
         icon = "󰿨 ",
-        hl = "Comment"
+
+        hl = "MarkviewPalette6Fg",
+        file_hl = "MarkviewPalette0Fg",
     }
 };
+
+-- [ Inline | Block references • Static ] -------------------------------------------------
+
+--- Static configuration for block reference links.
+---@class inline.block_references
+---
+---@field enable boolean
+---
+---@field default config.inline_generic_static Default configuration for block reference links.
+---@field [string] config.inline_generic_static Configuration for block references whose label matches with the key's pattern.
 ```
 <!--_-->
 </details>
@@ -112,7 +175,7 @@ block_references = {
     <summary>Expand to see type definition & advanced usage</summary><!--+-->
 
 ```lua
--- [ HTML | Block references > Parameters ] -----------------------------------------------
+-- [ Inline | Block references > Parameters ] ---------------------------------------------
 
 ---@class __inline.block_references
 ---
@@ -160,6 +223,8 @@ Configuration for checkboxes.
     <summary>Expand to see default configuration</summary><!--+-->
 
 ```lua
+-- [ Inline | Checkboxes ] ----------------------------------------------------------------
+
 --- Configuration for checkboxes.
 ---@class inline.checkboxes
 ---
@@ -205,6 +270,8 @@ checkboxes = {
     <summary>Expand to see type definition & advanced usage</summary><!--+-->
 
 ```lua
+-- [ Inline | Checkboxes > Type definitions ] ---------------------------------------------
+
 ---@class checkboxes.opts
 ---
 ---@field text string
@@ -252,21 +319,69 @@ Configuration for block reference links.
     <summary>Expand to see default configuration</summary><!--+-->
 
 ```lua
---- Configuration for block reference links.
+-- [ Inline | Emails ] --------------------------------------------------------------------
+
+--- Configuration for emails.
 ---@class inline.emails
 ---
 ---@field enable boolean
 ---
----@field default config.inline_generic Default configuration for block reference links.
----@field [string] config.inline_generic Configuration for block references whose label matches with the key's pattern.
+---@field default config.inline_generic | fun(buffer: integer, item: __inline.emails): config.inline_generic
+---@field [string] config.inline_generic | fun(buffer: integer, item: __inline.emails): config.inline_generic
 emails = {
+    ---+${lua}
+
     enable = true,
 
     default = {
-        icon = "󰿨 ",
-        hl = "Comment"
+        icon = " ",
+        hl = "MarkviewEmail"
+    },
+
+    ---+${lua, Commonly used email service providers}
+
+    ["%@gmail%.com$"] = {
+        --- user@gmail.com
+
+        icon = "󰊫 ",
+        hl = "MarkviewPalette0Fg"
+    },
+
+    ["%@outlook%.com$"] = {
+        --- user@outlook.com
+
+        icon = "󰴢 ",
+        hl = "MarkviewPalette5Fg"
+    },
+
+    ["%@yahoo%.com$"] = {
+        --- user@yahoo.com
+
+        icon = " ",
+        hl = "MarkviewPalette6Fg"
+    },
+
+    ["%@icloud%.com$"] = {
+        --- user@icloud.com
+
+        icon = "󰀸 ",
+        hl = "MarkviewPalette6Fg"
     }
+
+    ---_
+
+    ---_
 };
+
+-- [ Inline | Emails • Static ] -----------------------------------------------------------
+
+--- Static configuration for emails.
+---@class inline.emails
+---
+---@field enable boolean
+---
+---@field default config.inline_generic_static Default configuration for emails
+---@field [string] config.inline_generic_static Configuration for emails whose label(address) matches `string`.
 ```
 <!--_-->
 </details>
@@ -313,20 +428,33 @@ Configuration for embed file links(from `Obsidian`).
     <summary>Expand to see default configuration</summary><!--+-->
 
 ```lua
+-- [ Inline | Embed files ] ---------------------------------------------------------------
+
 --- Configuration for obsidian's embed files.
 ---@class inline.embed_files
 ---
 ---@field enable boolean
----@field default config.inline_generic
----@field [string] config.inline_generic
+---
+---@field default config.inline_generic | fun(buffer: integer, item: __inline.embed_files): inline.embed_files
+---@field [string] config.inline_generic | fun(buffer: integer, item: __inline.embed_files): inline.embed_files
 embed_files = {
     enable = true,
 
     default = {
         icon = "󰠮 ",
-        hl = "Palette2Fg"
+        hl = "MarkviewPalette7Fg"
     }
 };
+
+-- [ Inline | Embed files • Static ] ------------------------------------------------------
+
+--- Static configuration for obsidian's embed files.
+---@class inline.embed_files
+---
+---@field enable boolean
+---
+---@field default config.inline_generic_static Default configuration for embed file links.
+---@field [string] config.inline_generic_static Configuration for embed file links whose label matches `string`.
 ```
 <!--_-->
 </details>
@@ -362,6 +490,71 @@ M.__inline_link_embed_files = {
 <!--_-->
 </details>
 
+## emoji_shorthands
+
+- Type: `inline.emoji_shorthands`
+- Dynamic: **true**
+
+Configuration for emoji shorthands.
+
+<details>
+    <summary>Expand to see default configuration</summary><!--+-->
+
+```lua
+-- [ Inline | Emojis ] ------------------------------------------------------------------
+
+--- Configuration for emoji shorthands.
+---@class inline.emojis
+---
+---@field enable boolean
+---
+---@field hl? string | fun(buffer: integer, item: __inline.entities): inline.emojis
+M.inline_emojis = {
+	enable = true
+};
+
+-- [ Inline | Emojis • Static ] ---------------------------------------------------------
+
+--- Static configuration for emoji shorthands.
+---@class inline.emojis_static
+---
+---@field enable boolean
+---
+---@field hl? string Highlight group for the emoji.
+```
+<!--_-->
+</details>
+
+<details>
+    <summary>Expand to see type definition & advanced usage</summary><!--+-->
+
+```lua
+-- [ Inline | Emojis > Parameters ] --------------------------------------------------------
+
+---@class __inline.emojis
+---
+---@field class "inline_emoji"
+---
+---@field name string Emoji name(without `:`).
+---
+---@field text string[]
+---@field range node.range
+M.__inline_emojis = {
+	class = "inline_emoji",
+	name = "label",
+	text = { ":label:" },
+	range = {
+		row_start = 0,
+		row_end = 0,
+
+		col_start = 0,
+		col_end = 7
+	}
+};
+```
+<!--_-->
+</details>
+
 ## entities
 
 - Type: `inline.entities`
@@ -373,15 +566,27 @@ Configuration for entity references.
     <summary>Expand to see default configuration</summary><!--+-->
 
 ```lua
+-- [ Inline | Entities ] ------------------------------------------------------------------
+
 --- Configuration for HTML entities.
 ---@class inline.entities
 ---
 ---@field enable boolean
----@field hl? string
+---
+---@field hl? string | fun(buffer: integer, item: __inline.entities): inline.entities
 entities = {
     enable = true,
     hl = "Special"
 };
+
+-- [ Inline | Entities • Static ] ---------------------------------------------------------
+
+--- Static configuration for HTML entities.
+---@class inline.entities_static
+---
+---@field enable boolean
+---
+---@field hl? string Highlight group for the symbol
 ```
 <!--_-->
 </details>
@@ -433,7 +638,7 @@ Configuration for escaped characters.
 ---@field enable boolean
 escapes = {
     enable = true
-},
+};
 ```
 <!--_-->
 </details>
@@ -477,13 +682,15 @@ Configuration for footnotes.
     <summary>Expand to see default configuration</summary><!--+-->
 
 ```lua
+-- [ Inline | Footnotes ] -----------------------------------------------------------------
+
 --- Configuration for footnotes.
 ---@class inline.footnotes
 ---
 ---@field enable boolean
 ---
----@field default config.inline_generic Default configuration for footnotes.
----@field [string] config.inline_generic Configuration for footnotes whose label matches `string`.
+---@field default config.inline_generic | fun(buffer: integer, item: __inline.footnotes): inline.footnotes
+---@field [string] config.inline_generic | fun(buffer: integer, item: __inline.footnotes): inline.footnotes
 footnotes = {
     enable = true,
 
@@ -495,7 +702,17 @@ footnotes = {
         icon = "󰯓 ",
         hl = "MarkviewPalette4Fg"
     }
-}
+};
+
+-- [ Inline | Footnotes • Static ] --------------------------------------------------------
+
+--- Static configuration for footnotes.
+---@class inline.footnotes_static
+---
+---@field enable boolean
+---
+---@field default config.inline_generic_static Default configuration for footnotes.
+---@field [string] config.inline_generic_static Configuration for footnotes whose label matches `string`.
 ```
 <!--_-->
 </details>
@@ -542,12 +759,15 @@ Configuration for PKM-like highlights(`==highlights==`).
     <summary>Expand to see default configuration</summary><!--+-->
 
 ```lua
+-- [ Inline | Highlights ] ----------------------------------------------------------------
+
 --- Configuration for highlighted texts.
 ---@class inline.highlights
 ---
 ---@field enable boolean
----@field default config.inline_generic
----@field [string] config.inline_generic
+---
+---@field default config.inline_generic | fun(buffer: integer, item: __inline.highlights): inline.highlights
+---@field [string] config.inline_generic | fun(buffer: integer, item: __inline.highlights): inline.highlights
 highlights = {
     enable = true,
 
@@ -557,7 +777,17 @@ highlights = {
 
         hl = "MarkviewPalette3"
     },
-}
+};
+
+-- [ Inline | Highlights • Static ] -------------------------------------------------------
+
+--- Static configuration for highlighted texts.
+---@class inline.highlights
+---
+---@field enable boolean
+---
+---@field default config.inline_generic_static Default configuration for highlighted text.
+---@field [string] config.inline_generic_static Configuration for highlighted text that matches `string`.
 ```
 <!--_-->
 </details>
@@ -600,14 +830,18 @@ Configuration for hyperlinks.
     <summary>Expand to see default configuration</summary><!--+-->
 
 ```lua
+-- [ Inline | Hyperlinks ] ----------------------------------------------------------------
+
 --- Configuration for hyperlinks.
 ---@class inline.hyperlinks
 ---
 ---@field enable boolean
 ---
----@field default config.inline_generic Default configuration for hyperlinks.
----@field [string] config.inline_generic Configuration for links whose description matches `string`.
+---@field default config.inline_generic | fun(buffer: integer, item: __inline.hyperlinks): inline.hyperlinks
+---@field [string] config.inline_generic | fun(buffer: integer, item: __inline.hyperlinks): inline.hyperlinks
 hyperlinks = {
+    ---+${lua}
+
     enable = true,
 
     default = {
@@ -615,20 +849,194 @@ hyperlinks = {
         hl = "MarkviewHyperlink",
     },
 
-    ["stackoverflow%.com"] = { icon = " " },
-    ["stackexchange%.com"] = { icon = " " },
+    ---+${lua, Github sites}
 
-    ["neovim%.org"] = { icon = " " },
+    ["github%.com/[%a%d%-%_%.]+%/?$"] = {
+        --- github.com/<user>
 
-    ["dev%.to"] = { icon = " " },
-    ["github%.com"] = { icon = " " },
-    ["reddit%.com"] = { icon = " " },
-    ["freecodecamp%.org"] = { icon = " " },
+        icon = " ",
+        hl = "MarkviewPalette0Fg"
+    },
+    ["github%.com/[%a%d%-%_%.]+/[%a%d%-%_%.]+%/?$"] = {
+        --- github.com/<user>/<repo>
 
-    ["https://(.+)$"] = { icon = "󰞉 " },
-    ["http://(.+)$"] = { icon = "󰕑 " },
-    ["[%.]md$"] = { icon = " " }
+        icon = "󰳐 ",
+        hl = "MarkviewPalette0Fg"
+    },
+    ["github%.com/[%a%d%-%_%.]+/[%a%d%-%_%.]+/tree/[%a%d%-%_%.]+%/?$"] = {
+        --- github.com/<user>/<repo>/tree/<branch>
+
+        icon = " ",
+        hl = "MarkviewPalette0Fg"
+    },
+    ["github%.com/[%a%d%-%_%.]+/[%a%d%-%_%.]+/commits/[%a%d%-%_%.]+%/?$"] = {
+        --- github.com/<user>/<repo>/commits/<branch>
+
+        icon = " ",
+        hl = "MarkviewPalette0Fg"
+    },
+
+    ["github%.com/[%a%d%-%_%.]+/[%a%d%-%_%.]+%/releases$"] = {
+        --- github.com/<user>/<repo>/releases
+
+        icon = " ",
+        hl = "MarkviewPalette0Fg"
+    },
+    ["github%.com/[%a%d%-%_%.]+/[%a%d%-%_%.]+%/tags$"] = {
+        --- github.com/<user>/<repo>/tags
+
+        icon = " ",
+        hl = "MarkviewPalette0Fg"
+    },
+    ["github%.com/[%a%d%-%_%.]+/[%a%d%-%_%.]+%/issues$"] = {
+        --- github.com/<user>/<repo>/issues
+
+        icon = " ",
+        hl = "MarkviewPalette0Fg"
+    },
+    ["github%.com/[%a%d%-%_%.]+/[%a%d%-%_%.]+%/pulls$"] = {
+        --- github.com/<user>/<repo>/pulls
+
+        icon = " ",
+        hl = "MarkviewPalette0Fg"
+    },
+
+    ["github%.com/[%a%d%-%_%.]+/[%a%d%-%_%.]+%/wiki$"] = {
+        --- github.com/<user>/<repo>/wiki
+
+        icon = " ",
+        hl = "MarkviewPalette0Fg"
+    },
+
+    ---_
+    ---+${lua, Commonly used sites by programmers}
+
+    ["developer%.mozilla%.org"] = {
+        priority = 9999,
+
+        icon = "󰖟 ",
+        hl = "MarkviewPalette5Fg"
+    },
+
+    ["w3schools%.com"] = {
+        priority = 9999,
+
+        icon = " ",
+        hl = "MarkviewPalette4Fg"
+    },
+
+    ["stackoverflow%.com"] = {
+        priority = 9999,
+
+        icon = "󰓌 ",
+        hl = "MarkviewPalette2Fg"
+    },
+
+    ["reddit%.com"] = {
+        priority = 9999,
+
+        icon = " ",
+        hl = "MarkviewPalette2Fg"
+    },
+
+    ["github%.com"] = {
+        priority = 9999,
+
+        icon = " ",
+        hl = "MarkviewPalette6Fg"
+    },
+
+    ["gitlab%.com"] = {
+        priority = 9999,
+
+        icon = " ",
+        hl = "MarkviewPalette2Fg"
+    },
+
+    ["dev%.to"] = {
+        priority = 9999,
+
+        icon = "󱁴 ",
+        hl = "MarkviewPalette0Fg"
+    },
+
+    ["codepen%.io"] = {
+        priority = 9999,
+
+        icon = " ",
+        hl = "MarkviewPalette6Fg"
+    },
+
+    ["replit%.com"] = {
+        priority = 9999,
+
+        icon = " ",
+        hl = "MarkviewPalette2Fg"
+    },
+
+    ["jsfiddle%.net"] = {
+        priority = 9999,
+
+        icon = " ",
+        hl = "MarkviewPalette5Fg"
+    },
+
+    ["npmjs%.com"] = {
+        priority = 9999,
+
+        icon = " ",
+        hl = "MarkviewPalette0Fg"
+    },
+
+    ["pypi%.org"] = {
+        priority = 9999,
+
+        icon = "󰆦 ",
+        hl = "MarkviewPalette0Fg"
+    },
+
+    ["mvnrepository%.com"] = {
+        priority = 9999,
+
+        icon = " ",
+        hl = "MarkviewPalette1Fg"
+    },
+
+    ["medium%.com"] = {
+        priority = 9999,
+
+        icon = " ",
+        hl = "MarkviewPalette6Fg"
+    },
+
+    ["linkedin%.com"] = {
+        priority = 9999,
+
+        icon = "󰌻 ",
+        hl = "MarkviewPalette5Fg"
+    },
+
+    ["news%.ycombinator%.com"] = {
+        priority = 9999,
+
+        icon = " ",
+        hl = "MarkviewPalette2Fg"
+    },
+
+    ---_
+
+    ---_
 };
+
+-- [ Inline | Hyperlinks • Static ] -------------------------------------------------------
+
+--- Static configuration for hyperlinks.
+---@class inline.hyperlinks_static
+---
+---@field enable boolean
+---
+---@field default config.inline_generic_static Default configuration for hyperlinks.
+---@field [string] config.inline_generic_static Configuration for links whose description matches `string`.
 ```
 <!--_-->
 </details>
@@ -681,14 +1089,18 @@ Configuration for image links.
     <summary>Expand to see default configuration</summary><!--+-->
 
 ```lua
+-- [ Inline | Images ] --------------------------------------------------------------------
+
 --- Configuration for image links.
 ---@class inline.images
 ---
 ---@field enable boolean
 ---
----@field default config.inline_generic Default configuration for image links
----@field [string] config.inline_generic Configuration image links whose description matches `string`.
+---@field default config.inline_generic | fun(vuffer: integer, item: __inline.images): inline.images
+---@field [string] config.inline_generic | fun(vuffer: integer, item: __inline.images): inline.images
 images = {
+    ---+${lua}
+
     enable = true,
 
     default = {
@@ -696,8 +1108,24 @@ images = {
         hl = "MarkviewImage",
     },
 
-    ["%.svg$"] = { icon = "󰜡 " }
-}
+    ["%.svg$"] = { icon = "󰜡 " },
+    ["%.png$"] = { icon = "󰸭 " },
+    ["%.jpg$"] = { icon = "󰈥 " },
+    ["%.gif$"] = { icon = "󰵸 " },
+    ["%.pdf$"] = { icon = " " }
+
+    ---_
+};
+
+-- [ Inline | Images • Static ] -----------------------------------------------------------
+
+--- Static configuration for image links.
+---@class inline.images_static
+---
+---@field enable boolean
+---
+---@field default config.inline_generic_static Default configuration for image links
+---@field [string] config.inline_generic_static Configuration image links whose description matches `string`.
 ```
 <!--_-->
 </details>
@@ -747,6 +1175,22 @@ Configuration for inline codes.
     <summary>Expand to see default configuration</summary><!--+-->
 
 ```lua
+-- [ Inline | Inline codes ] --------------------------------------------------------------
+
+--- Configuration for inline codes.
+---@alias inline.inline_codes config.inline_generic
+inline_codes = {
+    enable = true,
+    hl = "MarkviewInlineCode",
+
+    padding_left = " ",
+    padding_right = " "
+};
+
+-- [ Inline | Inline codes • Static ] -----------------------------------------------------
+
+--- Static configuration for inline codes.
+---@alias inline.inline_codes_static config.inline_generic_static
 ```
 <!--_-->
 </details>
@@ -788,21 +1232,33 @@ Configuration for internal links(from `Obsidian`).
     <summary>Expand to see default configuration</summary><!--+-->
 
 ```lua
+-- [ Inline | Internal links ] ------------------------------------------------------------
+
 --- Configuration for obsidian's internal links.
 ---@class inline.internal_links
 ---
 ---@field enable boolean
 ---
----@field default config.inline_generic Default configuration for internal links.
----@field [string] config.inline_generic Configuration for internal links whose label match `string`.
+---@field default config.inline_generic | fun(buffer: integer, item: __inline.internal_links): config.inline_generic
+---@field [string] config.inline_generic | fun(buffer: integer, item: __inline.internal_links): config.inline_generic
 internal_links = {
     enable = true,
 
     default = {
-        icon = "󰌷 ",
-        hl = "Hyperlink",
+        icon = " ",
+        hl = "MarkviewPalette7Fg",
     }
 };
+
+-- [ Inline | Internal links • Static ] ---------------------------------------------------
+
+--- Static configuration for obsidian's internal links.
+---@class inline.internal_links_static
+---
+---@field enable boolean
+---
+---@field default config.inline_generic_static Default configuration for internal links.
+---@field [string] config.inline_generic_static Configuration for internal links whose label match `string`.
 ```
 <!--_-->
 </details>
@@ -855,13 +1311,15 @@ Configuration for URI autolinks(`<https://example.com>`).
     <summary>Expand to see default configuration</summary><!--+-->
 
 ```lua
+-- [ Inline | URI autolinks ] ------------------------------------------------------------
+
 --- Configuration for uri autolinks.
 ---@class inline.uri_autolinks
 ---
 ---@field enable boolean
 ---
----@field default config.inline_generic Default configuration for URI autolinks.
----@field [string] config.inline_generic Configuration for URI autolinks whose label match `string`.
+---@field default config.inline_generic | fun(buffer: integer, item: __inline.uri_autolinks): config.inline_generic
+---@field [string] config.inline_generic | fun(buffer: integer, item: __inline.uri_autolinks): config.inline_generic
 uri_autolinks = {
     enable = true,
 
@@ -869,7 +1327,17 @@ uri_autolinks = {
         icon = " ",
         hl = "MarkviewEmail"
     }
-}
+};
+
+-- [ Inline | URI autolinks • Static ] ---------------------------------------------------
+
+--- Static configuration for uri autolinks.
+---@class inline.uri_autolinks_static
+---
+---@field enable boolean
+---
+---@field default config.inline_generic_static Default configuration for URI autolinks.
+---@field [string] config.inline_generic_static Configuration for URI autolinks whose label match `string`.
 ```
 <!--_-->
 </details>
@@ -906,4 +1374,8 @@ M.__inline_uri_autolinks = {
 ```
 <!--_-->
 </details>
+
+---
+
+Also available in vimdoc, `:h markview.nvim-inline`.
 

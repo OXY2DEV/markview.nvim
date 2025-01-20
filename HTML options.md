@@ -8,26 +8,35 @@ Options that affect how HTML is shown in preview.
 --- Configuration table for HTML preview.
 ---@class config.html
 ---
----@field container_elements html.container_elements Configuration for container elements.
----@field headings html.headings Configuration for headings(e.g. `<h1>`).
----@field void_elements html.void_elements Configuration for void elements.
+---@field enable boolean
+---
+---@field container_elements html.container_elements | fun(): html.container_elements
+---@field headings html.headings | fun(): html.headings
+---@field void_elements html.void_elements | fun(): html.void_elements
 html = {
+    enable = true,
+
+    container_elements = {},
     headings = {},
-    void_elements = {},
-    container_elements = {}
+    void_elements = {}
 };
 
 -- [ Markview | HTML • Static ] -----------------------------------------------------------
 
 --- Static configuration table for HTML preview.
----@class config.html
+---@class config.html_static
 ---
----@field container_elements html.container_elements Configuration for container elements.
----@field headings html.headings  Configuration for headings(e.g. `<h1>`).
----@field void_elements html.void_elements Configuration for void elements.
+---@field enable boolean
+---
+--- Configuration for container elements.
+---@field container_elements html.container_elements
+---  Configuration for headings(e.g. `<h1>`).
+---@field headings html.headings
+--- Configuration for void elements.
+---@field void_elements html.void_elements
 ```
 
----
+------
 
 ## container_elements
 
@@ -51,11 +60,7 @@ Configuration table for container type elements.
 ---@field enable boolean
 ---@field [string] container_elements.opts | fun(buffer: integer, item: __html.container_elements): container_elements.opts
 container_elements = {
-    ---+${lua}
-
     enable = true,
-
-    ---+${lua, Various inline elements used in markdown}
 
     ["^b$"] = {
         on_opening_tag = { conceal = "" },
@@ -102,9 +107,6 @@ container_elements = {
         on_node = { hl_group = "Underlined" },
         on_closing_tag = { conceal = "" },
     },
-
-    ---_
-    ---_
 };
 
 -- [ HTML | Container elements • Static ] ----------------------------------------------------------
@@ -231,7 +233,7 @@ M.html_headings = {
     },
     heading_6 = {
         hl_group = "MarkviewPalette6Bg"
-    }
+    },
 };
 ```
 <!--_-->
@@ -306,11 +308,7 @@ Configuration for void type elements.
 ---@field enable boolean
 ---@field [string] void_elements.opts | fun(buffer: integer, item: __html.void_elements): void_elements.opts
 void_elements = {
-    ---+${lua}
-
     enable = true,
-
-    ---+${lua, Various void elements used in markdown}
 
     ["^hr$"] = {
         on_node = {
@@ -340,11 +338,7 @@ void_elements = {
             }
         }
     },
-
-    ---_
-
-    ---_
-}
+};
 
 -- [ HTML | Void elements • Static ] ------------------------------------------------------
 
@@ -407,4 +401,8 @@ M.__html_void_elements = {
 ```
 <!--_-->
 </details>
+
+---
+
+Also available in vimdoc, `:h markview.nvim-html`.
 

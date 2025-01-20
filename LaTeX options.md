@@ -3,33 +3,65 @@
 Options that affect how LaTeX is shown in preview.
 
 ```lua
+-- [ Markview | LaTeX ] -------------------------------------------------------------------
+
 --- Configuration for LaTeX.
 ---@class config.latex
 ---
----@field enable boolean Enable LaTeX preview.
+---@field enable boolean
 ---
----@field blocks latex.blocks | fun(): latex.blocks LaTeX blocks configuration(typically made with `$$...$$`).
----@field commands latex.commands | fun(): latex.commands LaTeX commands configuration(e.g. `\frac{x}{y}`).
----@field escapes latex.escapes | fun(): latex.escapes LaTeX escaped characters configuration.
----@field fonts latex.fonts | fun(): latex.fonts LaTeX fonts configuration(e.g. `\mathtt{}`).
----@field inlines latex.inlines | fun(): latex.inlines Inline LaTeX configuration(typically made with `$...$`).
----@field parenthesis latex.parenthesis | fun(): latex.parenthesis Configuration for hiding `{}`.
----@field subscripts latex.subscripts | fun(): latex.subscripts LaTeX subscript configuration(`_{}`, `_x`).
----@field superscripts latex.superscripts | fun(): latex.superscripts LaTeX superscript configuration(`^{}`, `^x`).
----@field symbols latex.symbols | fun(): latex.symbols TeX math symbols configuration(e.g. `\alpha`).
----@field texts latex.texts | fun(): latex.texts Text block configuration(`\text{}`).
+---@field blocks? latex.blocks | fun(): latex.blocks
+---@field commands? latex.commands | fun(): latex.commands
+---@field escapes? latex.escapes | fun(): latex.escapes
+---@field fonts? latex.fonts | fun(): latex.fonts
+---@field inlines? latex.inlines | fun(): latex.inlines
+---@field parenthesis? latex.parenthesis | fun(): latex.parenthesis
+---@field subscripts? latex.subscripts | fun(): latex.subscripts
+---@field superscripts? latex.superscripts | fun(): latex.superscripts
+---@field symbols? latex.symbols | fun(): latex.symbols
+---@field texts? latex.texts | fun(): latex.texts
 M.latex = {
-    blocks = {},
+    enable = true,
+
     commands = {},
-    escapes = {},
-    fonts = {},
     texts = {},
     symbols = {},
     subscripts = {},
     superscripts = {},
     parenthesis = {},
+    escapes = {},
     inlines = {},
+    blocks = {},
+    fonts = {}
 };
+
+-- [ Markview | LaTeX • Static ] ----------------------------------------------------------
+
+--- Static configuration for LaTeX.
+---@class config.latex_static
+---
+---@field enable boolean
+---
+--- LaTeX blocks configuration(typically made with `$$...$$`).
+---@field blocks? latex.blocks
+--- LaTeX commands configuration(e.g. `\frac{x}{y}`).
+---@field commands? latex.commands
+--- LaTeX escaped characters configuration.
+---@field escapes? latex.escapes
+--- LaTeX fonts configuration(e.g. `\mathtt{}`).
+---@field fonts? latex.fonts
+--- Inline LaTeX configuration(typically made with `$...$`).
+---@field inlines? latex.inlines
+--- Configuration for hiding `{}`.
+---@field parenthesis? latex.parenthesis
+--- LaTeX subscript configuration(`_{}`, `_x`).
+---@field subscripts? latex.subscripts
+--- LaTeX superscript configuration(`^{}`, `^x`).
+---@field superscripts? latex.superscripts
+--- TeX math symbols configuration(e.g. `\alpha`).
+---@field symbols? latex.symbols
+--- Text block configuration(`\text{}`).
+---@field texts? latex.texts
 ```
 
 ## blocks
@@ -43,17 +75,19 @@ Configuration for LaTeX blocks.
     <summary>Expand to see default configuration</summary><!--+-->
 
 ```lua
+-- [ LaTeX | LaTeX blocks ] ---------------------------------------------------------------
+
 --- Configuration table for latex math blocks.
 ---@class latex.blocks
 ---
----@field enable boolean Enables latex block preview.
+---@field enable boolean
 ---
----@field hl? string | fun(buffer: integer, item: __latex.blocks): string? Highlight group for the block.
----@field pad_amount integer | fun(buffer: integer, item: __latex.blocks): integer Number of {pad_char} to add before each line.
----@field pad_char string | fun(buffer: integer, item: __latex.blocks): string Text used for padding.
+---@field hl? string | fun(buffer: integer, item: __latex.blocks): string?
+---@field pad_amount integer | fun(buffer: integer, item: __latex.blocks): integer
+---@field pad_char string | fun(buffer: integer, item: __latex.blocks): string
 ---
----@field text string | fun(buffer: integer, item: __latex.blocks): string Text to show on the top-right of the block.
----@field text_hl? string | fun(buffer: integer, item: __latex.blocks): string? Highlight group for the {text}.
+---@field text string | fun(buffer: integer, item: __latex.blocks): string
+---@field text_hl? string | fun(buffer: integer, item: __latex.blocks): string?
 blocks = {
     enable = true,
 
@@ -61,8 +95,23 @@ blocks = {
     pad_char = " ",
     pad_amount = 3,
 
-    text = "  LaTeX "
+    text = "  LaTeX ",
+    text_hl = "MarkviewCodeInfo"
 };
+
+-- [ LaTeX | LaTeX blocks • Static ] ------------------------------------------------------
+
+--- Configuration table for latex math blocks.
+---@class latex.blocks_static
+---
+---@field enable boolean Enables rendering of LaTeX blocks.
+---
+---@field hl? string Primary highlight group for the LaTeX block.
+---@field pad_amount integer Number of `pad_char` to add before & after the text.
+---@field pad_char string Character to use for padding.
+---
+---@field text string Text to show on the top left.
+---@field text_hl? string Highlight group for the `text`.
 ```
 <!--_-->
 </details>
@@ -122,12 +171,19 @@ Configuration for LaTeX commands.
     <summary>Expand to see default configuration</summary><!--+-->
 
 ```lua
+-- [ LaTeX | LaTeX commands ] -------------------------------------------------------------
+
+--- Configuration for LaTeX commands.
 ---@class latex.commands
 ---
----@field enable boolean Enables latex command preview.
----@field [string] commands.opts Configuration table for {string}.
+---@field enable boolean
+---@field [string] commands.opts | fun(buffer: integer, item: __latex.commands): commands.opts
 commands = {
+    ---+${lua}
+
     enable = true,
+
+    ---+${lua, Various commonly used LaTeX math commands}
 
     ["frac"] = {
         condition = function (item)
@@ -250,7 +306,19 @@ commands = {
     ["sqrt"] = operator(symbols.entries.sqrt, "inline", 5),
     ["lvert"] = operator(symbols.entries.vert, "inline", 6),
     ["lVert"] = operator(symbols.entries.Vert, "inline", 6),
+
+    ---_
+
+    ---_
 };
+
+-- [ LaTeX | LaTeX commands • Static ] ----------------------------------------------------
+
+--- Static configuration for LaTeX commands.
+---@class latex.commands_static
+---
+---@field enable boolean Enables latex command preview.
+---@field [string] commands.opts Configuration table for {string}.
 
 --- [ Helper functions ] -------------------------------------------------------------------
 
@@ -504,14 +572,24 @@ Configuration for escaped LaTeX characters.
     <summary>Expand to see default configuration</summary><!--+-->
 
 ```lua
+-- [ LaTeX | LaTeX escapes ] --------------------------------------------------------------
+
 --- Configuration table for latex escaped characters.
----@class latex.escapes
+---@class latex.escapes_static
 ---
 ---@field enable boolean Enables escaped character preview.
 ---@field hl? string | fun(item: __latex.escapes): string? Highlight group for the escaped character.
 escapes = {
     enable = true
 };
+
+-- [ LaTeX | LaTeX escapes • Static ] -----------------------------------------------------
+
+--- Static configuration table for latex escaped characters.
+---@class latex.escapes
+---
+---@field enable boolean Enables escaped character preview.
+---@field hl? string | fun(item: __latex.escapes): string? Highlight group for the escaped character.
 ```
 <!--_-->
 </details>
@@ -560,17 +638,37 @@ Configuration for escaped LaTeX characters.
     <summary>Expand to see default configuration</summary><!--+-->
 
 ```lua
+-- [ LaTeX | LaTeX fonts ] ----------------------------------------------------------------
+
 --- Configuration table for latex math fonts.
----@class latex.fonts
+---@class latex.fonts_static
 ---
 ---@field enable boolean
 ---
----@field default fonts.opts | fun(buffer: integer, item: __latex.fonts): fonts.opts Default configuration for fonts
----@field [string] fonts.opts | fun(buffer: integer, item: __latex.fonts): fonts.opts Configuration for `\string{}` font.
-fonta = {
+---@field default fonts.opts | fun(buffer: integer, item: __latex.fonts): fonts.opts
+---@field [string] fonts.opts | fun(buffer: integer, item: __latex.fonts): fonts.opts
+fonts = {
+    ---+${lua}
+
     enable = true,
-    default = { enable = true }
+
+    default = {
+        enable = true
+        hl = "MarkviewSpecial"
+    },
+    -- ["^mathtt$"] = { hl = "MarkviewPalette1" }
+    ---_
 };
+
+-- [ LaTeX | LaTeX fonts • Static ] -------------------------------------------------------
+
+--- Static configuration table for latex math fonts.
+---@class latex.fonts_static
+---
+---@field enable boolean
+---
+---@field default fonts.opts Default configuration for fonts
+---@field [string] fonts.opts Configuration for `\string{}` font.
 ```
 <!--_-->
 </details>
@@ -587,7 +685,7 @@ fonta = {
 ---@field enable? boolean Whether to enable this font.
 ---@field hl? string | fun(buffer: integer, item: __latex.fonts): string? Highlight group for this font.
 M.fonts_opts = {
-	enable = true,
+    enable = true,
     hl = "Conditional"
 };
 
@@ -603,18 +701,18 @@ M.fonts_opts = {
 ---@field text string[]
 ---@field range node.range
 M.__latex_fonts = {
-	class = "latex_font",
+    class = "latex_font",
 
-	name = "mathtt",
+    name = "mathtt",
 
-	text = { "\\mathtt{abcd}" },
-	range = {
-		font = { 0, 0, 0, 7 },
-		row_start = 0,
-		row_end = 0,
-		col_start = 0,
-		col_end = 13
-	}
+    text = { "\\mathtt{abcd}" },
+    range = {
+        font = { 0, 0, 0, 7 },
+        row_start = 0,
+        row_end = 0,
+        col_start = 0,
+        col_end = 13
+    }
 };
 
 --- [ Advanced Usage ] ---------------------------------------------------------------------
@@ -664,7 +762,7 @@ Configuration for inline LaTeX.
 ---@field padding_left_hl? string | fun(buffer: integer, item: __latex.inlines): string? Highlight group for left padding.
 ---@field padding_right? string | fun(buffer: integer, item: __latex.inlines): string? Right padding.
 ---@field padding_right_hl? string | fun(buffer: integer, item: __latex.inlines): string? Highlight group for right padding.
-M.latex_inlines = {
+inlines = {
     enable = true,
 
     padding_left = " ",
@@ -690,17 +788,17 @@ M.latex_inlines = {
 ---@field text string[]
 ---@field range node.range
 M.__latex_inlines = {
-	class = "latex_inlines",
-	closed = true,
+    class = "latex_inlines",
+    closed = true,
 
-	text = { "$1 + 1 = 2$" },
-	range = {
-		row_start = 0,
-		col_start = 0,
+    text = { "$1 + 1 = 2$" },
+    range = {
+        row_start = 0,
+        col_start = 0,
 
-		row_end = 0,
-		col_end = 11
-	}
+        row_end = 0,
+        col_end = 11
+    }
 };
 ```
 <!--_-->
@@ -741,15 +839,15 @@ parenthesis = {
 ---@field text string[]
 ---@field range node.range
 M.__latex_parenthesis = {
-	class = "latex_parenthesis",
-	text = { "{1+2}" },
-	range = {
-		row_start = 0,
-		row_end = 0,
+    class = "latex_parenthesis",
+    text = { "{1+2}" },
+    range = {
+        row_start = 0,
+        row_end = 0,
 
-		col_start = 0,
-		col_end = 5
-	}
+        col_start = 0,
+        col_end = 5
+    }
 };
 ```
 <!--_-->
@@ -766,14 +864,16 @@ Configuration for subscripts(`_{}`).
     <summary>Expand to see default configuration</summary><!--+-->
 
 ```lua
+-- [ LaTeX | Subscripts ] ----------------------------------------------------------------
+
 --- Configuration for subscripts.
 ---@class latex.subscripts
 ---
 ---@field enable boolean Enables preview of subscript text.
 ---@field hl? string | string[] Highlight group for the subscript text. Can be a list to use different hl for nested subscripts.
 subscripts = {
-	enable = true,
-	hl = "MarkviewSubscript"
+    enable = true,
+    hl = "MarkviewSubscript"
 };
 ```
 <!--_-->
@@ -797,19 +897,19 @@ subscripts = {
 ---@field text string[]
 ---@field range node.range
 M.__latex_subscripts = {
-	class = "latex_subscript",
-	parenthesis = true,
-	preview = true,
-	level = 1,
+    class = "latex_subscript",
+    parenthesis = true,
+    preview = true,
+    level = 1,
 
-	text = { "_{hi}" },
-	range = {
-		row_start = 0,
-		row_end = 0,
+    text = { "_{hi}" },
+    range = {
+        row_start = 0,
+        row_end = 0,
 
-		col_start = 0,
-		col_end = 5
-	}
+        col_start = 0,
+        col_end = 5
+    }
 };
 ```
 <!--_-->
@@ -826,14 +926,16 @@ Configuration for superscripts(`^{}`).
     <summary>Expand to see default configuration</summary><!--+-->
 
 ```lua
+-- [ LaTeX | Superscripts ] ---------------------------------------------------------------
+
 --- Configuration for superscripts.
 ---@class latex.superscripts
 ---
 ---@field enable boolean Enables preview of superscript text.
 ---@field hl? string | string[] Highlight group for the superscript text. Can be a list to use different hl for nested superscripts.
 subscripts = {
-	enable = true,
-	hl = "MarkviewSuperscript"
+    enable = true,
+    hl = "MarkviewSuperscript"
 };
 ```
 <!--_-->
@@ -857,19 +959,19 @@ subscripts = {
 ---@field text string[]
 ---@field range node.range
 M.__latex_superscripts = {
-	class = "latex_superscript",
-	parenthesis = true,
-	preview = true,
-	level = 1,
+    class = "latex_superscript",
+    parenthesis = true,
+    preview = true,
+    level = 1,
 
-	text = { "^{hi}" },
-	range = {
-		row_start = 0,
-		row_end = 0,
+    text = { "^{hi}" },
+    range = {
+        row_start = 0,
+        row_end = 0,
 
-		col_start = 0,
-		col_end = 5
-	}
+        col_start = 0,
+        col_end = 5
+    }
 };
 ```
 <!--_-->
@@ -886,15 +988,25 @@ Configuration for TeX math symbols.
     <summary>Expand to see default configuration</summary><!--+-->
 
 ```lua
+-- [ LaTeX | Symbols ] --------------------------------------------------------------------
+
 --- Configuration table for TeX math symbols.
 ---@class latex.symbols
 ---
+---@field enable boolean
+---@field hl? string | fun(buffer: integer, item: __latex.symbols): string?
+symbols = {
+    enable = true,
+    hl = "MarkviewSuperscript"
+};
+
+-- [ LaTeX | Symbols • Static ] -----------------------------------------------------------
+
+--- Configuration table for TeX math symbols.
+---@class latex.symbols_static
+---
 ---@field enable boolean Enables preview of latex math symbols.
 ---@field hl? string Highlight group for the symbols.
-symbols = {
-	enable = true,
-	hl = "MarkviewSuperscript"
-};
 ```
 <!--_-->
 </details>
@@ -915,24 +1027,24 @@ symbols = {
 ---@field text string[]
 ---@field range node.range
 M.__latex_symbols = {
-	class = "latex_symbols",
-	name = "pi",
-	style = nil,
+    class = "latex_symbols",
+    name = "pi",
+    style = nil,
 
-	text = { "\\pi" },
-	range = {
-		row_start = 0,
-		row_end = 0,
+    text = { "\\pi" },
+    range = {
+        row_start = 0,
+        row_end = 0,
 
-		col_start = 0,
-		col_end = 3
-	}
+        col_start = 0,
+        col_end = 3
+    }
 };
 ```
 <!--_-->
 </details>
 
-## text
+## texts
 
 - Type: `latex.texts`
 - Dynamic: **true**
@@ -944,15 +1056,17 @@ Configuration for `\text{}`.
 
 ```lua
 --- Configuration table for `\text{}.
----@class latex.symbols
+---@class latex.texts
 ---
 ---@field enable boolean
 texts = {
-	enable = true,
+    enable = true
 };
 ```
 <!--_-->
 </details>
 
+---
 
+Also available in vimdoc, `:h markview.nvim-latex`.
 

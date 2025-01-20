@@ -3,46 +3,73 @@
 Changes how typst items are shown in preview.
 
 ```lua
+-- [ Markview | Typst ] -------------------------------------------------------------------
+
 --- Configuration for Typst.
 ---@class config.typst
 ---
 ---@field enable boolean
 ---
----@field code_blocks typst.code_blocks
----@field code_spans typst.code_spans
----@field escapes typst.escapes
----@field headings typst.headings
----@field labels typst.labels
----@field list_items typst.list_items
----@field math_blocks typst.math_blocks
----@field math_spans typst.math_spans
----@field raw_blocks typst.raw_blocks
----@field raw_spans typst.raw_spans
----@field reference_links typst.reference_links
----@field subscripts typst.subscripts
----@field superscripts typst.subscripts
----@field symbols typst.symbols
----@field terms typst.terms
----@field url_links typst.url_links
-typst = {
+---@field code_blocks typst.code_blocks | fun(): typst.code_blocks
+---@field code_spans typst.code_spans | fun(): typst.code_spans
+---@field escapes typst.escapes | fun(): typst.escapes
+---@field headings typst.headings | fun(): typst.headings
+---@field labels typst.labels | fun(): typst.labels
+---@field list_items typst.list_items | fun(): typst.list_items
+---@field math_blocks typst.math_blocks | fun(): typst.math_blocks
+---@field math_spans typst.math_spans | fun(): typst.math_spans
+---@field raw_blocks typst.raw_blocks | fun(): typst.raw_blocks
+---@field raw_spans typst.raw_spans | fun(): typst.raw_spans
+---@field reference_links typst.reference_links | fun(): typst.reference_links
+---@field subscripts typst.subscripts | fun(): typst.subscripts
+---@field superscripts typst.subscripts | fun(): typst.superscripts
+---@field symbols typst.symbols | fun(): typst.symbols
+---@field terms typst.terms | fun(): typst.terms
+---@field url_links typst.url_links | fun(): typst.url_links
+M.typst = {
     enable = true,
 
-    terms = {},
-    superscript = {},
+    code_blocks = {},
+    code_spans = {},
+    escapes = {},
+    headings = {},
+    labels = {},
+    list_items = {},
     math_spans = {},
     math_blocks = {},
     raw_spans = {},
     raw_blocks = {},
-    headings = {},
-    symbols = {},
-    list_items = {},
-    escapes = {},
-    codes = {},
-    labels = {},
-    url_links = {},
+    reference_links = {},
     subscripts = {},
-    reference_links = {}
+    superscript = {},
+    symbols = {},
+    terms = {},
+    url_links = {},
 };
+
+-- [ Markview | Typst • Static ] ----------------------------------------------------------
+
+--- Static configuration for Typst.
+---@class config.typst_static
+---
+---@field enable boolean
+---
+---@field code_blocks typst.code_blocks Configuration for block of typst code.
+---@field code_spans typst.code_spans Configuration for inline typst code.
+---@field escapes typst.escapes Configuration for escaped characters.
+---@field headings typst.headings Configuration for headings.
+---@field labels typst.labels Configuration for labels.
+---@field list_items typst.list_items Configuration for list items
+---@field math_blocks typst.math_blocks Configuration for blocks of math code.
+---@field math_spans typst.math_spans Configuration for inline math code.
+---@field raw_blocks typst.raw_blocks Configuration for raw blocks.
+---@field raw_spans typst.raw_spans Configuration for raw spans.
+---@field reference_links typst.reference_links Configuration for reference links.
+---@field subscripts typst.subscripts Configuration for subscript texts.
+---@field superscripts typst.subscripts Configuration for superscript texts.
+---@field symbols typst.symbols Configuration for typst symbols.
+---@field terms typst.terms Configuration for terms.
+---@field url_links typst.url_links Configuration for URL links.
 ```
 
 ## code_blocks
@@ -56,21 +83,23 @@ Configuration for blocks of code.
     <summary>Expand to see default configuration</summary><!--+-->
 
 ```lua
+-- [ Typst | Code blocks ] ----------------------------------------------------------------
+
 --- Configuration for code blocks.
 ---@class typst.code_blocks
 ---
 ---@field enable boolean
 ---
----@field hl? string
----@field min_width integer Minimum width of code blocks.
----@field pad_amount integer Number of paddings added around the text.
----@field pad_char? string Character to use for padding.
----@field sign? boolean Whether to add signs.
----@field sign_hl? string Highlight group for signs.
----@field style "simple" | "block"
----@field text string Text to show on top.
----@field text_direction "left" | "right"
----@field text_hl? string
+---@field hl? string | fun(buffer: integer, item: __typst.code_block): string?
+---@field min_width integer | fun(buffer: integer, item: __typst.code_block): integer
+---@field pad_amount integer | fun(buffer: integer, item: __typst.code_block): integer
+---@field pad_char? string | fun(buffer: integer, item: __typst.code_block): string?
+---@field sign? string | fun(buffer: integer, item: __typst.code_block): string
+---@field sign_hl? string | fun(buffer: integer, item: __typst.code_block): string?
+---@field style ( "simple" | "block" ) | fun(buffer: integer, item: __typst.code_block): ( "simple" | "block" )
+---@field text string | fun(buffer: integer, item: __typst.code_block): string
+---@field text_direction ( "left" | "right" ) | fun(buffer: integer, item: __typst.code_block): ( "left" | "right" )
+---@field text_hl? string | fun(buffer: integer, item: __typst.code_block): string?
 code_blocks = {
     enable = true,
 
@@ -85,6 +114,28 @@ code_blocks = {
     hl = "MarkviewCode",
     text_hl = "MarkviewIcon5"
 };
+
+-- [ Typst | Code blocks • Static ] -------------------------------------------------------
+
+--- Static configuration for code blocks.
+---@class typst.code_blocks_static
+---
+---@field enable boolean
+---
+---@field hl? string
+---@field min_width integer Minimum width of code blocks.
+---@field pad_amount integer Number of paddings added around the text.
+---@field pad_char? string Character to use for padding.
+---@field sign? string Sign for the code block.
+---@field sign_hl? string Highlight group for the sign.
+---@field style
+---| "simple" Only highlights the lines inside this block.
+---| "block" Creates a box around the code block.
+---@field text string Text to use as the label.
+---@field text_direction
+---| "left" Shows label on the top-left side of the block
+---| "right" Shows label on the top-right side of the block
+---@field text_hl? string Highlight group for the label
 ```
 <!--_-->
 </details>
@@ -130,8 +181,35 @@ Configuration for spans of code.
     <summary>Expand to see default configuration</summary><!--+-->
 
 ```lua
+-- [ Typst | Code spans ] ----------------------------------------------------------------
+
 --- Configuration for code spans.
 ---@class typst.code_spans
+---
+---@field enable boolean
+---
+---@field corner_left? string | fun(buffer: integer, item: __typst.code_spans): string?
+---@field corner_left_hl? string | fun(buffer: integer, item: __typst.code_spans): string?
+---@field corner_right? string | fun(buffer: integer, item: __typst.code_spans): string?
+---@field corner_right_hl? string | fun(buffer: integer, item: __typst.code_spans): string?
+---@field hl? string | fun(buffer: integer, item: __typst.code_spans): string?
+---@field padding_left? string | fun(buffer: integer, item: __typst.code_spans): string?
+---@field padding_left_hl? string | fun(buffer: integer, item: __typst.code_spans): string?
+---@field padding_right? string | fun(buffer: integer, item: __typst.code_spans): string?
+---@field padding_right_hl? string | fun(buffer: integer, item: __typst.code_spans): string?
+code_spans = {
+    enable = true,
+
+    padding_left = " ",
+    padding_right = " ",
+
+    hl = "MarkviewCode"
+};
+
+-- [ Typst | Code spans • Static ] -------------------------------------------------------
+
+--- Static configuration for code spans.
+---@class typst.code_spans_static
 ---
 ---@field enable boolean
 ---
@@ -144,14 +222,6 @@ Configuration for spans of code.
 ---@field padding_left_hl? string Highlight group for left padding.
 ---@field padding_right? string Right padding.
 ---@field padding_right_hl? string Highlight group for right padding.
-code_spans = {
-    enable = true,
-
-    padding_left = " ",
-    padding_right = " ",
-
-    hl = "MarkviewCode"
-};
 ```
 <!--_-->
 </details>
@@ -193,6 +263,8 @@ Configuration for escaped characters.
     <summary>Expand to see default configuration</summary><!--+-->
 
 ```lua
+-- [ Typst | Escapes ] ---------------------------------------------------------------------
+
 ---@class typst.escapes
 ---
 ---@field enable boolean
@@ -239,6 +311,8 @@ Configuration for headings.
     <summary>Expand to see default configuration</summary><!--+-->
 
 ```lua
+-- [ Typst | Headings ] -------------------------------------------------------------------
+
 --- Configuration for Typst headings.
 ---@class typst.headings
 ---
@@ -292,6 +366,8 @@ headings = {
     <summary>Expand to see type definition & advanced usage</summary><!--+-->
 
 ```lua
+-- [ Typst | Headings > Type definitions ] ------------------------------------------------
+
 --- Heading level configuration.
 ---@class headings.typst
 ---
@@ -349,13 +425,15 @@ Configuration for labels.
     <summary>Expand to see default configuration</summary><!--+-->
 
 ```lua
+-- [ Typst | Labels ] ---------------------------------------------------------------------
+
 --- Configuration for typst labels.
 ---@class typst.labels
 ---
 ---@field enable boolean
 ---
----@field default config.inline_generic Default configuration for labels.
----@field [string] config.inline_generic Configuration for labels whose text matches `string`.
+---@field default config.inline_generic | fun(buffer: integer, item: __typst.labels): config.inline_generic
+---@field [string] config.inline_generic | fun(buffer: integer, item: __typst.labels): config.inline_generic
 labels = {
     enable = true,
 
@@ -366,6 +444,16 @@ labels = {
         padding_right = " "
     },
 };
+
+-- [ Typst | Labels • Static ] ------------------------------------------------------------
+
+--- Static configuration for typst labels.
+---@class typst.labels
+---
+---@field enable boolean
+---
+---@field default config.inline_generic Default configuration for labels.
+---@field [string] config.inline_generic Configuration for labels whose text matches `string`.
 ```
 <!--_-->
 </details>
@@ -409,6 +497,8 @@ Configuration for various types of list items.
     <summary>Expand to see default configuration</summary><!--+-->
 
 ```lua
+-- [ Typst | List items ] -----------------------------------------------------------------
+
 --- Configuration for list items.
 ---@class typst.list_items
 ---
@@ -497,10 +587,6 @@ M.__typst_list_items = {
 <!--_-->
 </details>
 
-<!--
-                           Work in progress! :START:
--->
-
 ## math_blocks
 
 - Type: `typst.math_blocks`
@@ -512,6 +598,8 @@ Configuration for math blocks.
     <summary>Expand to see default configuration</summary><!--+-->
 
 ```lua
+-- [ Typst | Math blocks ] -----------------------------------------------------------------
+
 --- Configuration for math blocks.
 ---@class typst.math_blocks
 ---
@@ -524,12 +612,13 @@ Configuration for math blocks.
 ---@field text_hl? string
 math_blocks = {
     enable = true,
-    hl = "MarkviewCode",
-    text = " 󰪚 Math ",
-    text_hl = "MarkviewCodeInfo",
 
+    text = " 󰪚 Math ",
     pad_amount = 3,
-    pad_char = " "
+    pad_char = " ",
+
+    hl = "MarkviewCode",
+    text_hl = "MarkviewCodeInfo"
 };
 ```
 <!--_-->
@@ -539,6 +628,31 @@ math_blocks = {
     <summary>Expand to see type definition & advanced usage</summary><!--+-->
 
 ```lua
+-- [ Typst | Math blocks > Parameters ] ---------------------------------------------------
+
+---@class __typst.maths
+---
+---@field class "typst_math"
+---
+---@field inline boolean Should we render it inline?
+---@field closed boolean Is the node closed(ends with `$$`)?
+---
+---@field text string[]
+---@field range node.range
+M.__typst_maths = {
+    class = "typst_math",
+    inline = true,
+    closed = true,
+
+    text = { "$ 1 + 2 $" },
+    range = {
+        row_start = 0,
+        row_end = 0,
+
+        col_start = 0,
+        col_end = 9
+    }
+};
 ```
 <!--_-->
 </details>
@@ -571,13 +685,34 @@ math_spans = {
     <summary>Expand to see type definition & advanced usage</summary><!--+-->
 
 ```lua
+-- [ Typst | Math spans > Parameters ] ----------------------------------------------------
+
+---@class __typst.maths
+---
+---@field class "typst_math"
+---
+---@field inline boolean Should we render it inline?
+---@field closed boolean Is the node closed(ends with `$$`)?
+---
+---@field text string[]
+---@field range node.range
+M.__typst_maths = {
+    class = "typst_math",
+    inline = true,
+    closed = true,
+
+    text = { "$ 1 + 2 $" },
+    range = {
+        row_start = 0,
+        row_end = 0,
+
+        col_start = 0,
+        col_end = 9
+    }
+};
 ```
 <!--_-->
 </details>
-
-<!--
-                            Work in progress! :END:
--->
 
 ## raw_blocks
 
@@ -590,11 +725,64 @@ Configuration for raw blocks.
     <summary>Expand to see default configuration</summary><!--+-->
 
 ```lua
+-- [ Typst | Raw blocks ] -----------------------------------------------------------------
+
 ---@class typst.raw_blocks
 ---
 ---@field enable boolean
 ---
----@field hl? string Base highlight group for code blocks.
+---@field border_hl? string | fun(buffer: integer, item: __typst.raw_blocks): string?
+---@field label_direction? ( "left" | "right" ) | fun(buffer: integer, item: __typst.raw_blocks): ( "left" | "right" )
+---@field label_hl? string | fun(buffer: integer, item: __typst.raw_blocks): string?
+---@field min_width integer | fun(buffer: integer, item: __typst.raw_blocks): integer
+---@field pad_amount? integer | fun(buffer: integer, item: __typst.raw_blocks): integer
+---@field pad_char? string | fun(buffer: integer, item: __typst.raw_blocks): string?
+---@field sign? boolean | fun(buffer: integer, item: __typst.raw_blocks): boolean?
+---@field sign_hl? string | fun(buffer: integer, item: __typst.raw_blocks): string?
+---@field style ( "simple" | "block" ) | fun(buffer: integer, item: __typst.raw_blocks): ( "simple" | "block" )
+---
+---@field default raw_blocks.opts | fun(buffer: integer, item: __typst.raw_blocks): raw_blocks.opts
+---@field [string] raw_blocks.opts | fun(buffer: integer, item: __typst.raw_blocks): raw_blocks.opts
+raw_blocks = {
+    enable = true,
+
+    style = "block",
+    label_direction = "right",
+
+    sign = true,
+
+    min_width = 60,
+    pad_amount = 3,
+    pad_char = " ",
+
+    border_hl = "MarkviewCode",
+
+    default = {
+        block_hl = "MarkviewCode",
+        pad_hl = "MarkviewCode"
+    },
+
+    ["diff"] = {
+        block_hl = function (_, line)
+            if line:match("^%+") then
+                return "MarkviewPalette4";
+            elseif line:match("^%-") then
+                return "MarkviewPalette1";
+            else
+                return "MarkviewCode";
+            end
+        end,
+        pad_hl = "MarkviewCode"
+    }
+};
+
+-- [ Typst | Raw blocks • Static ] --------------------------------------------------------
+
+---@class typst.raw_blocks
+---
+---@field enable boolean
+---
+---@field border_hl? string Highlight group for top & bottom border of raw blocks.
 ---@field label_direction? "left" | "right" Changes where the label is shown.
 ---@field label_hl? string Highlight group for the label
 ---@field min_width? integer Minimum width of the code block.
@@ -603,19 +791,9 @@ Configuration for raw blocks.
 ---@field sign? boolean Whether to show signs for the code blocks.
 ---@field sign_hl? string Highlight group for the signs.
 ---@field style "simple" | "block" Preview style for code blocks.
-raw_blocks = {
-    enable = true,
-
-    style = "block",
-    icons = "internal",
-    label_direction = "right",
-
-    min_width = 60,
-    pad_amount = 3,
-    pad_char = " ",
-
-    hl = "MarkviewCode"
-};
+---
+---@field default raw_blocks.opts_static Default line configuration for the raw block.
+---@field [string] raw_blocks.opts_static Line configuration for the raw block whose `language` matches `string`
 ```
 <!--_-->
 </details>
@@ -624,6 +802,20 @@ raw_blocks = {
     <summary>Expand to see type definition & advanced usage</summary><!--+-->
 
 ```lua
+-- [ Typst | Raw blocks > Type definitions ] -----------------------------------------------
+
+--- Configuration for highlighting a line inside a raw block.
+---@class raw_blocks.opts
+---
+---@field block_hl string | fun(buffer: integer, line: string): string?
+---@field pad_hl string | fun(buffer: integer, line: string): string?
+
+--- Static configuration for highlighting a line inside a raw block.
+---@class raw_blocks.opts_static
+---
+---@field block_hl string? Highlight group for the background of the line.
+---@field pad_hl string? Highlight group for the padding of the line.
+
 -- [ Typst | Raw blocks > Parameters ] ----------------------------------------------------
 
 ---@class __typst.raw_blocks
@@ -633,21 +825,21 @@ raw_blocks = {
 ---@field text string[]
 ---@field range node.range
 M.__typst_raw_blocks = {
-	class = "typst_raw_block",
-	language = "lua",
+    class = "typst_raw_block",
+    language = "lua",
 
-	text = {
-		"```lua",
-		'vim.print("Hello, Neovim")',
-		"```"
-	},
-	range = {
-		row_start = 0,
-		row_end = 2,
+    text = {
+        "```lua",
+        'vim.print("Hello, Neovim")',
+        "```"
+    },
+    range = {
+        row_start = 0,
+        row_end = 2,
 
-		col_start = 0,
-		col_end = 3
-	}
+        col_start = 0,
+        col_end = 3
+    }
 };
 ```
 <!--_-->
@@ -664,6 +856,8 @@ Configuration for raw spans.
     <summary>Expand to see default configuration</summary><!--+-->
 
 ```lua
+-- [ Typst | Raw spans ] ------------------------------------------------------------------
+
 ---@alias typst.raw_spans config.inline_generic
 raw_spans = {
     enable = true,
@@ -690,16 +884,16 @@ raw_spans = {
 ---@field text string[]
 ---@field range node.range
 M.__typst_raw_spans = {
-	class = "typst_raw_span",
+    class = "typst_raw_span",
 
-	text = { "`hi`" },
-	range = {
-		row_start = 0,
-		row_end = 0,
+    text = { "`hi`" },
+    range = {
+        row_start = 0,
+        row_end = 0,
 
-		col_start = 0,
-		col_end = 4
-	}
+        col_start = 0,
+        col_end = 4
+    }
 };
 ```
 <!--_-->
@@ -749,19 +943,19 @@ reference_links = {
 ---@field text string[]
 ---@field range inline_link.range
 M.__typst_link_ref = {
-	class = "typst_link_ref",
-	label = "label",
+    class = "typst_link_ref",
+    label = "label",
 
-	text = { "@label" },
-	range = {
-		row_start = 0,
-		row_end = 0,
+    text = { "@label" },
+    range = {
+        row_start = 0,
+        row_end = 0,
 
-		col_start = 0,
-		col_end = 6,
+        col_start = 0,
+        col_end = 6,
 
-		label = { 0, 1, 0, 6 }
-	}
+        label = { 0, 1, 0, 6 }
+    }
 };
 ```
 <!--_-->
@@ -808,19 +1002,19 @@ subscripts = {
 ---@field text string[]
 ---@field range node.range
 M.__typst_subscripts = {
-	class = "typst_subscript",
-	parenthesis = true,
-	preview = true,
-	level = 1,
+    class = "typst_subscript",
+    parenthesis = true,
+    preview = true,
+    level = 1,
 
-	text = { "_{12}" },
-	range = {
-		row_start = 0,
-		row_end = 0,
+    text = { "_{12}" },
+    range = {
+        row_start = 0,
+        row_end = 0,
 
-		col_start = 0,
-		col_end = 5
-	}
+        col_start = 0,
+        col_end = 5
+    }
 };
 ```
 <!--_-->
@@ -867,19 +1061,19 @@ superscripts = {
 ---@field text string[]
 ---@field range node.range
 M.__typst_superscripts = {
-	class = "typst_superscript",
-	parenthesis = true,
-	preview = true,
-	level = 1,
+    class = "typst_superscript",
+    parenthesis = true,
+    preview = true,
+    level = 1,
 
-	text = { "^{12}" },
-	range = {
-		row_start = 0,
-		row_end = 0,
+    text = { "^{12}" },
+    range = {
+        row_start = 0,
+        row_end = 0,
 
-		col_start = 0,
-		col_end = 5
-	}
+        col_start = 0,
+        col_end = 5
+    }
 };
 ```
 <!--_-->
@@ -922,17 +1116,17 @@ symbols = {
 ---@field text string[]
 ---@field range node.range
 M.__typst_symbols = {
-	class = "typst_symbol",
-	name = "alpha",
+    class = "typst_symbol",
+    name = "alpha",
 
-	text = { "alpha" },
-	range = {
-		row_start = 0,
-		row_end = 0,
+    text = { "alpha" },
+    range = {
+        row_start = 0,
+        row_end = 0,
 
-		col_start = 0,
-		col_end = 5
-	}
+        col_start = 0,
+        col_end = 5
+    }
 };
 ```
 <!--_-->
@@ -978,8 +1172,8 @@ terms = {
 ---@field text string
 ---@field hl? string
 M.term_opts = {
-	text = "π",
-	hl = "Comment"
+    text = "π",
+    hl = "Comment"
 };
 
 -- [ Typst | Terms > Parameters ] ---------------------------------------------------------
@@ -993,19 +1187,19 @@ M.term_opts = {
 ---@field text string[]
 ---@field range inline_link.range
 M.__typst_terms = {
-	class = "typst_term",
-	label = "Term",
+    class = "typst_term",
+    label = "Term",
 
-	text = { "/ Term" },
-	range = {
-		row_start = 0,
-		row_end = 0,
+    text = { "/ Term" },
+    range = {
+        row_start = 0,
+        row_end = 0,
 
-		col_start = 0,
-		col_end = 6,
+        col_start = 0,
+        col_end = 6,
 
-		label = { 0, 2, 0, 6 }
-	}
+        label = { 0, 2, 0, 6 }
+    }
 };
 ```
 <!--_-->

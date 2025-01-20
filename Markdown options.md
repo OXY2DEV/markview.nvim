@@ -3,21 +3,23 @@
 Changes how markdown items are shown in preview.
 
 ```lua
+-- [ Markview | Markdown ] ----------------------------------------------------------------
+
 --- Configuration for markdown.
 ---@class config.markdown
 ---
 ---@field enable boolean
 ---
----@field block_quotes markdown.block_quotes
----@field code_blocks markdown.code_blocks
----@field headings markdown.headings
----@field horizontal_rules markdown.horizontal_rules
----@field list_items markdown.list_items
----@field metadata_minus markdown.metadata_minus
----@field metadata_plus markdown.metadata_plus
----@field reference_definitions markdown.reference_definitions
----@field tables markdown.tables
-markdown = {
+---@field block_quotes markdown.block_quotes | fun(): markdown.block_quotes
+---@field code_blocks markdown.code_blocks | fun(): __markdown.code_blocks
+---@field headings markdown.headings | fun(): markdown.headings
+---@field horizontal_rules markdown.horizontal_rules | fun(): markdown.horizontal_rules
+---@field list_items markdown.list_items | fun(): markdown.list_items
+---@field metadata_minus markdown.metadata_minus | fun(): markdown.metadata_minus
+---@field metadata_plus markdown.metadata_plus | fun(): markdown.metadata_plus
+---@field reference_definitions markdown.reference_definitions | fun(): markdown.reference_definitions
+---@field tables markdown.tables | fun(): markdown.tables
+M.markdown = {
     enable = true,
 
     metadata_minus = {},
@@ -27,8 +29,26 @@ markdown = {
     block_quotes = {},
     list_items = {},
     metadata_plus = {},
+    reference_definitions = {},
     tables = {}
 };
+
+-- [ Markview | Markdown • Static ] -------------------------------------------------------
+
+--- Static configuration for markdown.
+---@class config.markdown_static
+---
+---@field enable boolean
+---
+---@field block_quotes markdown.block_quotes Block quote configuration.
+---@field code_blocks markdown.code_blocks Fenced code block configuration.
+---@field headings markdown.headings Heading configuration.
+---@field horizontal_rules markdown.horizontal_rules Horizontal rules configuration.
+---@field list_items markdown.list_items List items configuration.
+---@field metadata_minus markdown.metadata_minus YAML metadata configuration.
+---@field metadata_plus markdown.metadata_plus TOML metadata configuration.
+---@field reference_definitions markdown.reference_definitions Reference link definition configuration.
+---@field tables markdown.tables Table configuration.
 ```
 
 ## block_quotes
@@ -42,15 +62,17 @@ Configuration for block quotes & callouts.
     <summary>Expand to see default configuration</summary><!--+-->
 
 ```lua
+-- [ Markdown | Block quotes ] ------------------------------------------------------------
+
 --- Configuration for block quotes.
 ---@class markdown.block_quotes
 ---
----@field enable boolean Enables preview of block quotes.
+---@field enable boolean
 ---
----@field wrap? boolean | fun(buffer: integer, item: __markdown.block_quotes): boolean? Enables basic wrap support.
+---@field wrap? boolean | fun(buffer: integer, item: __markdown.block_quotes): boolean?
 ---
----@field default block_quotes.opts | fun(buffer: integer, item: __markdown.block_quotes): boolean? Default block quote configuration.
----@field [string] block_quotes.opts | fun(buffer: integer, item: __markdown.block_quotes): boolean? Configuration for >[!{string}] callout.
+---@field default block_quotes.opts | fun(buffer: integer, item: __markdown.block_quotes): boolean?
+---@field [string] block_quotes.opts | fun(buffer: integer, item: __markdown.block_quotes): boolean?
 block_quotes = {
     enable = true,
     wrap = true,
@@ -295,6 +317,17 @@ block_quotes = {
         border = "▋"
     }
 },
+-- [ Markdown | Block quotes • Static ] ---------------------------------------------------
+
+--- Static configuration for block quotes.
+---@class markdown.block_quotes_static
+---
+---@field enable boolean
+---
+---@field wrap? boolean Enables basic wrap support.
+---
+---@field default block_quotes.opts Default block quote configuration.
+---@field [string] block_quotes.opts Configuration for >[!{string}] callout.
 ```
 <!--_-->
 </details>
@@ -308,20 +341,34 @@ block_quotes = {
 --- Configuration options for various types of block quotes.
 ---@class block_quotes.opts
 ---
----@field border string | string[] | fun(buffer: integer, item: __markdown.block_quotes): (string | string[]) Text for the border.
----@field border_hl? (string | string[]) | fun(buffer: integer, item: __markdown.block_quotes): (string | string[])? Highlight group for the border.
----@field hl? string | fun(buffer: integer, item: __markdown.block_quotes): string? Base highlight group for the block quote.
----@field icon? string | fun(buffer: integer, item: __markdown.block_quotes): string? Icon to show before the block quote title.
----@field icon_hl? string | fun(buffer: integer, item: __markdown.block_quotes): string? Highlight group for the icon.
----@field preview? string | fun(buffer: integer, item: __markdown.block_quotes): string? Callout/Alert preview string(shown where >[!{string}] was).
----@field preview_hl? string | fun(buffer: integer, item: __markdown.block_quotes): string? Highlight group for the preview.
----@field title? boolean | fun(buffer: integer, item: __markdown.block_quotes): string? Whether the block quote can have a title or not.
+---@field border string | string[] | fun(buffer: integer, item: __markdown.block_quotes): (string | string[])
+---@field border_hl? (string | string[]) | fun(buffer: integer, item: __markdown.block_quotes): (string | string[])?
+---@field hl? string | fun(buffer: integer, item: __markdown.block_quotes): string?
+---@field icon? string | fun(buffer: integer, item: __markdown.block_quotes): string?
+---@field icon_hl? string | fun(buffer: integer, item: __markdown.block_quotes): string?
+---@field preview? string | fun(buffer: integer, item: __markdown.block_quotes): string?
+---@field preview_hl? string | fun(buffer: integer, item: __markdown.block_quotes): string?
+---@field title? boolean | fun(buffer: integer, item: __markdown.block_quotes): string?
 M.block_quotes_opts = {
     border = "|",
     hl = "MarkviewBlockQuoteDefault",
     icon = "π",
     preview = "π Some text"
 };
+
+-- [ Markdown | Block quotes > Type definition • Static ] ---------------------------------
+
+--- Static configuration options for various types of block quotes.
+---@class block_quotes.opts
+---
+---@field border string | string[] Text for the border.
+---@field border_hl? string | string[] Highlight group for the border.
+---@field hl? string Base highlight group for the block quote.
+---@field icon? string Icon to show before the block quote title.
+---@field icon_hl? string Highlight group for the icon.
+---@field preview? string Callout/Alert preview string(shown where >[!{string}] was).
+---@field preview_hl? string Highlight group for the preview.
+---@field title? boolean Whether the block quote can have a title or not.
 
 -- [ Markdown | Block quotes > Parameters ] -----------------------------------------------
 
@@ -379,30 +426,74 @@ Configuration for code blocks.
 ---
 ---@field enable boolean
 ---
----@field hl? string | fun(buffer: integer, item: __markdown.code_blocks): string? Base highlight group for code blocks.
----@field info_hl? string | fun(buffer: integer, item: __markdown.code_blocks): string? Highlight group for the info string.
----@field label_direction? "left" | "right" | fun(buffer: integer, item: __markdown.code_blocks): ("left" | "right") Changes where the label is shown.
----@field label_hl? string | fun(buffer: integer, item: __markdown.code_blocks): string? Highlight group for the label
----@field min_width? integer | fun(buffer: integer, item: __markdown.code_blocks): integer Minimum width of the code block.
----@field pad_amount? integer | fun(buffer: integer, item: __markdown.code_blocks): integer Left & right padding size.
----@field pad_char? string | fun(buffer: integer, item: __markdown.code_blocks): string? Character to use for the padding.
----@field sign? boolean | fun(buffer: integer, item: __markdown.code_blocks): boolean Whether to show signs for the code blocks.
----@field sign_hl? string | fun(buffer: integer, item: __markdown.code_blocks): string? Highlight group for the signs.
----@field style "simple" | "block" | fun(buffer: integer, item: __markdown.code_blocks): ("simple" | "block") Preview style for code blocks.
+---@field border_hl? string | fun(buffer: integer, item: __markdown.code_blocks): string?
+---@field info_hl? string | fun(buffer: integer, item: __markdown.code_blocks): string?
+---@field label_direction? "left" | "right" | fun(buffer: integer, item: __markdown.code_blocks): ("left" | "right")
+---@field label_hl? string | fun(buffer: integer, item: __markdown.code_blocks): string?
+---@field min_width? integer | fun(buffer: integer, item: __markdown.code_blocks): integer
+---@field pad_amount? integer | fun(buffer: integer, item: __markdown.code_blocks): integer
+---@field pad_char? string | fun(buffer: integer, item: __markdown.code_blocks): string?
+---@field sign? boolean | fun(buffer: integer, item: __markdown.code_blocks): boolean
+---@field sign_hl? string | fun(buffer: integer, item: __markdown.code_blocks): string?
+---@field style "simple" | "block" | fun(buffer: integer, item: __markdown.code_blocks): ("simple" | "block")
+---
+---@field default code_blocks.opts | fun(buffer: integer, item: __markdown.code_blocks): code_blocks.opts
+---@field [string] code_blocks.opts | fun(buffer: integer, item: __markdown.code_blocks): code_blocks.opts
 code_blocks = {
     enable = true,
 
     style = "block",
-    hl = "MarkviewCode",
+
+    label_direction = "right",
+
+    border_hl = "MarkviewCode",
     info_hl = "MarkviewCodeInfo",
 
     min_width = 60,
-    pad_amount = 3,
+    pad_amount = 2,
     pad_char = " ",
 
-    label_direction = "right",
-    sign = true
+    sign = true,
+
+    default = {
+        block_hl = "MarkviewCode",
+        pad_hl = "MarkviewCode"
+    },
+
+    ["diff"] = {
+        block_hl = function (_, line)
+            if line:match("^%+") then
+                return "MarkviewPalette4";
+            elseif line:match("^%-") then
+                return "MarkviewPalette1";
+            else
+                return "MarkviewCode";
+            end
+        end,
+        pad_hl = "MarkviewCode"
+    }
 };
+
+-- [ Markdown | Code blocks • Static ] ----------------------------------------------------
+
+--- Configuration for code blocks.
+---@class markdown.code_blocks
+---
+---@field enable boolean
+---
+---@field hl? string Base highlight group for code blocks.
+---@field info_hl? string Highlight group for the info string.
+---@field label_direction? "left" | "right" Changes where the label is shown.
+---@field label_hl? string Highlight group for the label
+---@field min_width? integer width of the code block.
+---@field pad_amount? integer & right padding size.
+---@field pad_char? stringacter to use for the padding.
+---@field sign? booleanher to show signs for the code blocks.
+---@field sign_hl? stringlight group for the signs.
+---@field style "simple" | "block" Preview style for code blocks.
+---
+---@field default code_blocks.opts_static Default line configuration for the code block.
+---@field [string] code_blocks.opts_static Line configuration for the code block whose `language` matches `string`
 ```
 <!--_-->
 </details>
@@ -411,6 +502,20 @@ code_blocks = {
     <summary>Expand to see type definition & advanced usage</summary><!--+-->
 
 ```lua
+-- [ Markdown | Code blocks > Type definitions ] ------------------------------------------
+
+--- Configuration for highlighting a line inside a code block.
+---@class code_blocks.opts
+---
+---@field block_hl string | fun(buffer: integer, line: string): string?
+---@field pad_hl string | fun(buffer: integer, line: string): string?
+
+--- Static configuration for highlighting a line inside a code block.
+---@class code_blocks.opts_static
+---
+---@field block_hl string? Highlight group for the background of the line.
+---@field pad_hl string? Highlight group for the padding of the line.
+
 -- [ Markdown | Code blocks > Parameters ] ------------------------------------------------
 
 ---@class __markdown.code_blocks
@@ -501,6 +606,8 @@ Configuration for ATX & Setext headings.
     <summary>Expand to see default configuration</summary><!--+-->
 
 ```lua
+-- [ Markdown | Headings ] ----------------------------------------------------------------
+
 ---@class markdown.headings
 ---
 ---@field enable boolean Enables preview of headings.
@@ -716,17 +823,18 @@ Configuration for horizontal rules.
     <summary>Expand to see default configuration</summary><!--+-->
 
 ```lua
+-- [ Markdown | Horizontal rules ] --------------------------------------------------------
+
 --- Configuration for horizontal rules.
 ---@class markdown.horizontal_rules
 ---
 ---@field enable boolean Enables preview of horizontal rules.
 ---
----@field parts ( horizontal_rules.text | horizontal_rules.repeating )[] | fun(buffer: integer, item: __markdown.horizontal_rules): ( horizontal_rules.text | horizontal_rules.repeating )[] Parts for the horizontal rules.
+---@field parts ( horizontal_rules.text | horizontal_rules.repeating )[] Parts for the horizontal rules.
 horizontal_rules = {
     enable = true,
 
     parts = {
-        ---@diagnostic disable
         {
             type = "repeating",
             repeat_amount = function (buffer)
@@ -783,7 +891,6 @@ horizontal_rules = {
                 "MarkviewGradient9", "MarkviewGradient9"
             }
         }
-        ---@diagnostic enable
     }
 },
 ```
@@ -827,6 +934,8 @@ Configuration for various list items.
     <summary>Expand to see default configuration</summary><!--+-->
 
 ```lua
+-- [ Markdown | List items ] --------------------------------------------------------------
+
 --- Configuration for list items.
 ---@class markdown.list_items
 ---
@@ -962,6 +1071,8 @@ Configuration for metadata minus(YAML metadata).
     <summary>Expand to see default configuration</summary><!--+-->
 
 ```lua
+-- [ Markdown | Metadata minus ] ----------------------------------------------------------
+
 --- Configuration for YAML metadata.
 ---@class markdown.metadata_minus
 ---
@@ -982,7 +1093,22 @@ metadata_minus = {
 
     border_top = "▄",
     border_bottom = "▀"
-}
+};
+
+-- [ Markdown | Metadata minus • Static ] -------------------------------------------------
+
+--- Static configuration for YAML metadata.
+---@class markdown.metadata_minus_static
+---
+---@field enable boolean
+---
+---@field border_bottom? string Bottom border.
+---@field border_bottom_hl? string Highlight group for the bottom border.
+---@field border_hl? string Primary highlight group for the borders.
+---@field border_top? string Top border.
+---@field border_top_hl? string Highlight group for the top border.
+---
+---@field hl? string Background highlight group.
 ```
 <!--_-->
 </details>
@@ -1020,7 +1146,7 @@ M.__markdown_metadata_minus = {
 
 ## metadata_plus
 
-- Type: `markdown.metadata_minus`
+- Type: `markdown.metadata_plus`
 - Dynamic: **true**
 
 Configuration for metadata plus(TOML metadata).
@@ -1029,6 +1155,8 @@ Configuration for metadata plus(TOML metadata).
     <summary>Expand to see default configuration</summary><!--+-->
 
 ```lua
+-- [ Markdown | Metadata plus ] -----------------------------------------------------------
+
 --- Configuration for TOML metadata.
 ---@class markdown.metadata_plus
 ---
@@ -1050,6 +1178,21 @@ metadata_plus = {
     border_top = "▄",
     border_bottom = "▀"
 };
+
+-- [ Markdown | Metadata plus • Static ] --------------------------------------------------
+
+--- Static configuration for TOML metadata.
+---@class markdown.metadata_plus_static
+---
+---@field enable boolean
+---
+---@field border_bottom? string Bottom border.
+---@field border_bottom_hl? string Highlight group for the bottom border.
+---@field border_hl? string Primary highlight group for the borders.
+---@field border_top? string Top border.
+---@field border_top_hl? string Highlight group for the top border.
+---
+---@field hl? string Background highlight group.
 ```
 <!--_-->
 </details>
@@ -1096,6 +1239,8 @@ Configuration for reference definitions.
     <summary>Expand to see default configuration</summary><!--+-->
 
 ```lua
+-- [ Markdown | Reference definitions ] ---------------------------------------------------
+
 --- Configuration for reference definitions.
 ---@class markdown.reference_definitions
 ---
@@ -1165,16 +1310,18 @@ Configuration for tables.
     <summary>Expand to see default configuration</summary><!--+-->
 
 ```lua
+-- [ Markdown | Tables ] ------------------------------------------------------------------
+
 --- Configuration for tables.
 ---@class markdown.tables
 ---
 ---@field enable boolean
 ---
----@field block_decorator boolean Whether to draw top & bottom border.
----@field use_virt_lines boolean Whether to use virtual lines for the borders.
+---@field block_decorator boolean
+---@field use_virt_lines boolean
 ---
----@field hl tables.parts
----@field parts tables.parts
+---@field hl tables.parts | fun(buffer: integer, item: __markdown.tables): tables.parts
+---@field parts tables.parts | fun(buffer: integer, item: __markdown.tables): tables.parts
 tables = {
     enable = true,
 
@@ -1209,7 +1356,20 @@ tables = {
     col_min_width = 10,
     block_decorator = true,
     use_virt_lines = false
-},
+};
+
+-- [ Markdown | Tables • Static ] ---------------------------------------------------------
+
+--- Static configuration for tables.
+---@class markdown.tables_static
+---
+---@field enable boolean
+---
+---@field block_decorator boolean Whether to draw top & bottom border.
+---@field use_virt_lines boolean Whether to use virtual lines for the borders.
+---
+---@field hl tables.parts Highlight groups for the parts.
+---@field parts tables.parts Parts for the table.
 ```
 <!--_-->
 </details>
@@ -1392,4 +1552,8 @@ M.__tables_cell = {
 ```
 <!--_-->
 </details>
+
+---
+
+Also available in vimdoc, `:h markview.nvim-markdown`.
 
