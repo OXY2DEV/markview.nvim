@@ -1,12 +1,3 @@
----
-markdoc:
-    name: "markview.nvim"
-    desc: "A hackable markdown previewer for Neovim"
-
-    tags: [
-        [ "Overview$", [ "markview.nvim-overview" ] ]
-    ]
----
 <h1 align="center">☄️ markview.nvim</h1>
 
 A hackable **markdown**, <h5>HTML</h5>, $LaTeX$, `Typst` & *YAML* previewer for Neovim.
@@ -84,6 +75,10 @@ Make sure you read this to understand how the type definitions in the wiki are w
 - [🔢 LaTeX options](https://github.com/OXY2DEV/markview.nvim/wiki/LaTeX-options)
 - [📑 Typst options](https://github.com/OXY2DEV/markview.nvim/wiki/Typst-options)
 - [🔩 YAML options](https://github.com/OXY2DEV/markview.nvim/wiki/YAML-options)
+
+- [🧩 Presets](https://github.com/OXY2DEV/markview.nvim/wiki/Presets)
+- [🎁 Extra modules](https://github.com/OXY2DEV/markview.nvim/wiki/Extra-modules)
+- [💻 Advanced usage](https://github.com/OXY2DEV/markview.nvim/wiki/Advanced-usage)
 
 ## 🧭 Configuration
 
