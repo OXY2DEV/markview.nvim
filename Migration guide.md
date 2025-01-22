@@ -164,57 +164,62 @@
 - `initial_state` has been **deprecated**. Use `preview → enable` instead.
 - `max_file_length` has been **deprecated**. Use `preview → max_buf_lines` instead.
 - `modes` has been moved inside of `preview`.
--  `render_distance` has been moved inside of `preview`
-  - `render_distance` options **type has changed**(`integer → [ integer, integer]`).
+- `render_distance` has been moved inside of `preview`
+    - `render_distance` options **type has changed**(`integer → [ integer, integer]`).
 - `split_conf` has been **deprecated**. Use `preview → splitview_winopts` instead.
 
 - `injections` has been **deprecated**. Use `queries/langauge/*.scm` instead.
 
 - `block_quotes` has been moved inside of `markdown`.
-  - `callouts` has been **deprecated**. The `match_string` is used as the key for defining a new callout.
+    - `callouts` has been **deprecated**. The `match_string` is used as the key for defining a new callout.
 - `code_blocks` has been moved inside of `markdown`.
-  - `minimal` style is **deprecated** in favor of `block`.
-  - `icone` has been **deprecated**. Use `preview → icon_provider` instead.
-  - `language_names` has been **deprecated**.
+    - `minimal` style is **deprecated** in favor of `block`.
+    - `icone` has been **deprecated**. Use `preview → icon_provider` instead.
+    - `language_names` has been **deprecated**.
 - `headings` has been moved inside of `markdown`.
 - `horizontal_rules` has been moved inside of `markdown`.
 - `list_items` has been moved inside of `markdown`.
 - `tables` has been moved inside of `markdown`.
-  - `col_min_width` has been removed to reduce code complexity of the renderer.
+    - `col_min_width` has been removed to reduce code complexity of the renderer.
 
 - `inline_codes` has been moved inside of `markdown_inline`.
 - `checkboxes` has been moved inside of `markdown_inline`.
-  - `custom` has been **deprecated**. The `match_string` is used as the key for defining new checkbox states.
+    - `custom` has been **deprecated**. The `match_string` is used as the key for defining new checkbox states.
 - `links` has been **deprecated**.
-  - `hyperlinks` has been moved inside of `markdown_inline`.
-    - `icon`, `hl` has been **deprecated**. Use `default → icon`, `default → hl` instead.
-    - `custom` has been **deprecated**. The `match_string` is used as the key for defining new checkbox states.
-  - `images` has been moved inside of `markdown_inline`.
-    - `icon`, `hl` has been **deprecated**. Use `default → icon`, `default → hl` instead.
-    - `custom` has been **deprecated**. The `match_string` is used as the key for defining new checkbox states.
-  - `emails` has been moved inside of `markdown_inline`.
-    - `icon`, `hl` has been **deprecated**. Use `default → icon`, `default → hl` instead.
-    - `custom` has been **deprecated**. The `match_string` is used as the key for defining new checkbox states.
-  - `internal_links` has been moved inside of `markdown_inline`.
-    - `icon`, `hl` has been **deprecated**. Use `default → icon`, `default → hl` instead.
-    - `custom` has been **deprecated**. The `match_string` is used as the key for defining new checkbox states.
+    - `hyperlinks` has been moved inside of `markdown_inline`.
+      - `icon`, `hl` has been **deprecated**. Use `default → icon`, `default → hl` instead.
+      - `custom` has been **deprecated**. The `match_string` is used as the key for defining new checkbox states.
+    - `images` has been moved inside of `markdown_inline`.
+      - `icon`, `hl` has been **deprecated**. Use `default → icon`, `default → hl` instead.
+      - `custom` has been **deprecated**. The `match_string` is used as the key for defining new checkbox states.
+    - `emails` has been moved inside of `markdown_inline`.
+      - `icon`, `hl` has been **deprecated**. Use `default → icon`, `default → hl` instead.
+      - `custom` has been **deprecated**. The `match_string` is used as the key for defining new checkbox states.
+    - `internal_links` has been moved inside of `markdown_inline`.
+      - `icon`, `hl` has been **deprecated**. Use `default → icon`, `default → hl` instead.
+      - `custom` has been **deprecated**. The `match_string` is used as the key for defining new checkbox states.
 - `footnotes` has been moved inside of `markdown_inline`.
-  - `use_unicode` has been **deprecated** as it reduces readability.
+    - `use_unicode` has been **deprecated** as it reduces readability.
 
 - `html → tags` has been **deprecated**.
-  - Use `html → container_elements` for container elements(e.g. `<u></u>`).
-  - Use `html → headings` for headings(e.g. `<h1></h1>`).
-  - Use `html → void_elements` for void elements(e.g. `<hr>`).
+    - Use `html → container_elements` for container elements(e.g. `<u></u>`).
+    - Use `html → headings` for headings(e.g. `<h1></h1>`).
+    - Use `html → void_elements` for void elements(e.g. `<hr>`).
 - `html → entities` has been **deprecated**. Use `markdown_inline → entities` instead.
 
 - `latex → brackets` has been renamed to `latex → parenthesis`.
 - `latex → block` has been renamed to `latex → blocks`.
 - `latex → inline` has been renamed to `latex → inlines`.
 - `latex → operators` has been **deprecated**. Use `latex → commands` instead.
-  - `custom` has been **deprecated**. The `match_string` is used as the key for defining new commands.
+    - `custom` has been **deprecated**. The `match_string` is used as the key for defining new commands.
 - `latex → symbols`,
-  - `overwrite` has been **deprecated** due to lack of use cases.
-  - `groups` has been **deprecated** due to not being practical.
+    - `overwrite` has been **deprecated** due to lack of use cases.
+    - `groups` has been **deprecated** due to not being practical.
 - `latex → subscript` has been renamed to `latex → subscripts`.
 - `latex → superscript` has been renamed to `latex → superscripts`.
+
+
+------
+
+Also available in vimdoc, `:h markview.nvim-migration`
 

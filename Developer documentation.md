@@ -141,3 +141,7 @@ You can manually show previews via these functions,
 - `markview.clean()`
   Detaches `markview` from any invalid buffer.
 
+------
+
+Also available in vimdoc, `:h markview.nvim-dev`.
+

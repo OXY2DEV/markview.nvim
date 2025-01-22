@@ -491,3 +491,7 @@ These groups are then used as links by other groups responsible for various prev
 > 
 > \*\*\*\* = Linearly interpolated value between 2 highlight groups `fg`.
 
+------
+
+Also available in vimdoc, `:h markview.nvim`.
+

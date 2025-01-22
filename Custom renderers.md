@@ -99,3 +99,7 @@ Currently supported syntax items are,
 - `yaml`
     + `yaml_property`
 
+------
+
+Also available in vimdoc, `:h markview.nvim-renderers`
+

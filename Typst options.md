@@ -1260,3 +1260,7 @@ url_links = {
 <!--_-->
 </details>
 
+------
+
+Also available in vimdoc, `:h markview.nvim-typst`.
+

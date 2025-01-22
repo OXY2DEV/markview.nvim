@@ -193,3 +193,7 @@ M.__yaml_properties = {
 <!--_-->
 </details>
 
+------
+
+Also available in vimdoc, `:h markview.nvim-yaml`.
+

@@ -1,0 +1,112 @@
+# 🧩 Presets
+
+Pre-defined configurations to take inspiration from.
+
+## 🔩 Usage
+
+```lua
+local presets = require("markview.presets");
+
+require("markview").setup({
+    markdown = {
+        headings = presets.headings.glow
+    }
+});
+
+--- You can again call `setup()` to modify
+--- the options without changing the preset.
+require("markview").setup({
+    markdown = {
+        headings = { shift_width = 1 }
+    }
+});
+```
+
+## 🔖 Heading presets
+
+### 📚 Use:
+
+```lua
+local presets = require("markview.presets").headings;
+
+require("markview").setup({
+    markdown = {
+        headings = presets.glow
+    }
+});
+```
+
+### 🌟 Showcase:
+
+- glow
+
+- glow_center
+
+- slanted
+
+- arrowed
+
+- simple
+
+- marker
+
+## 🔖 Horizontal rules presets
+
+### 📚 Use:
+
+```lua
+local presets = require("markview.horizontal_rules").horizontal_rules;
+
+require("markview").setup({
+    markdown = {
+        horizontal_rules = presets.arrowed
+    }
+});
+```
+
+### 🌟 Showcase:
+
+- thin
+
+- thick
+
+- double
+
+- dashed
+
+- dotted
+
+- solid
+
+- arrowed
+
+## 🔖 Tables presets
+
+### 📚 Use:
+
+```lua
+local presets = require("markview.presets").tables;
+
+require("markview").setup({
+    markdown = {
+        tables = presets.none
+    }
+});
+```
+
+### 🌟 Showcase:
+
+- none
+
+- single
+
+- double
+
+- rounded
+
+- solid
+
+------
+
+Also available in vimdoc, `:h markview.nvim-presets`.
+
