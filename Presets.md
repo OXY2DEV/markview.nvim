@@ -40,15 +40,27 @@ require("markview").setup({
 
 - glow
 
+<img src="https://github.com/OXY2DEV/markview.nvim/blob/images/v25/wiki/presets-headings.glow.png">
+
 - glow_center
+
+<img src="https://github.com/OXY2DEV/markview.nvim/blob/images/v25/wiki/presets-headings.glow_center.png">
 
 - slanted
 
+<img src="https://github.com/OXY2DEV/markview.nvim/blob/images/v25/wiki/presets-headings.slanted.png">
+
 - arrowed
+
+<img src="https://github.com/OXY2DEV/markview.nvim/blob/images/v25/wiki/presets-headings.arrowed.png">
 
 - simple
 
+<img src="https://github.com/OXY2DEV/markview.nvim/blob/images/v25/wiki/presets-headings.simple.png">
+
 - marker
+
+<img src="https://github.com/OXY2DEV/markview.nvim/blob/images/v25/wiki/presets-headings.marker.png">
 
 ## 🔖 Horizontal rules presets
 
@@ -68,17 +80,31 @@ require("markview").setup({
 
 - thin
 
+<img src="https://github.com/OXY2DEV/markview.nvim/blob/images/v25/wiki/presets-hr.thin.png">
+
 - thick
+
+<img src="https://github.com/OXY2DEV/markview.nvim/blob/images/v25/wiki/presets-hr.thick.png">
 
 - double
 
+<img src="https://github.com/OXY2DEV/markview.nvim/blob/images/v25/wiki/presets-hr.double.png">
+
 - dashed
+
+<img src="https://github.com/OXY2DEV/markview.nvim/blob/images/v25/wiki/presets-hr.dashed.png">
 
 - dotted
 
+<img src="https://github.com/OXY2DEV/markview.nvim/blob/images/v25/wiki/presets-hr.dotted.png">
+
 - solid
 
+<img src="https://github.com/OXY2DEV/markview.nvim/blob/images/v25/wiki/presets-hr.solid.png">
+
 - arrowed
+
+<img src="https://github.com/OXY2DEV/markview.nvim/blob/images/v25/wiki/presets-hr.arrowed.png">
 
 ## 🔖 Tables presets
 
@@ -98,13 +124,23 @@ require("markview").setup({
 
 - none
 
+<img src="https://github.com/OXY2DEV/markview.nvim/blob/images/v25/wiki/presets-tables.none.png">
+
 - single
+
+<img src="https://github.com/OXY2DEV/markview.nvim/blob/images/v25/wiki/presets-tables.single.png">
 
 - double
 
+<img src="https://github.com/OXY2DEV/markview.nvim/blob/images/v25/wiki/presets-tables.double.png">
+
 - rounded
 
+<img src="https://github.com/OXY2DEV/markview.nvim/blob/images/v25/wiki/presets-tables.rounded.png">
+
 - solid
+
+<img src="https://github.com/OXY2DEV/markview.nvim/blob/images/v25/wiki/presets-tables.solid.png">
 
 ------
 
