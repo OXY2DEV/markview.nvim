@@ -617,6 +617,12 @@ preview_ignore = {};
 ---_
 ```
 
+
+| Normal hybrid mode | Hybrid mode with `ignore_previews` |
+|--------------------|------------------------------------|
+| ![hybrid_mode](https://github.com/OXY2DEV/markview.nvim/blob/images/v25/wiki/hybrid_mode.png) | ![linewise_hybrid_mode](https://github.com/OXY2DEV/markview.nvim/blob/images/v25/wiki/ignore_previews.png) |
+
+
 Controls which items get affected by `hybrid mode`.
 
 > Items that are affected by `hybrid mode` will show the raw version of them(instead of the preview) when the cursor is inside them.
@@ -701,6 +707,20 @@ Each language can have a list of `option names`.
 > -- Affects everything other than "block quotes".
 > markdown = { "!block_quotes" }
 > ```
+
+### linewise_hybrid_mode
+
+- Type: `boolean`
+- Dynamic: **false**
+- Default: false
+
+Enables linewise hybrid mode.
+
+
+| Normal hybrid mode | Linewise hybrid mode |
+|--------------------|----------------------|
+| ![hybrid_mode](https://github.com/OXY2DEV/markview.nvim/blob/images/v25/wiki/hybrid_mode.png) | ![linewise_hybrid_mode](https://github.com/OXY2DEV/markview.nvim/blob/images/v25/wiki/linewise_hybrid_mode.png) |
+
 
 ### modes
 
