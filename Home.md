@@ -223,6 +223,9 @@ It comes with the following sub-commands,
 
 | Sub-command  | Arguments           | Description                              |
 |--------------|---------------------|------------------------------------------|
+| `Start`      | none                | Allows attaching to new buffers.         |
+| `Stop`       | none                | Prevents attaching to new buffers.       |
+| ———————————— | ——————————————————— | ———————————————————————————————————————— |
 | `attach`     | **buffer**, integer | Attaches to **buffer**.                  |
 | `detach`     | **buffer**, integer | Detaches from **buffer**.                |
 | ———————————— | ——————————————————— | ———————————————————————————————————————— |
