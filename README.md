@@ -300,6 +300,9 @@ Parsers,
 > :TSInstall markdown markdown_inline html latex typst yaml
 > ```
 
+>[!IMPORTANT]
+> On windows, you might need `tree-sitter` CLI for the $LaTeX$ parser.
+
 - `markdown`
 - `markdown_inline`
 - `html`(optional)
