@@ -1,5 +1,45 @@
 # Changelog
 
+## [25.0.0](https://github.com/OXY2DEV/markview.nvim/compare/v24.0.0...v25.0.0) (2025-01-25)
+
+
+### ⚠ BREAKING CHANGES
+
+* **spec:** Complete redesign of the configuration table
+* **spec:** Dynamic configuration support
+* **extras:** Completely changed how extra modules are used via
+* **v25:** New version release
+* **v25:** New version release
+
+### Features
+
+* Added a command to open link under cursor ([4ef3e11](https://github.com/OXY2DEV/markview.nvim/commit/4ef3e11292fdd4191e02ab865de2738d5fbeeba9)), closes [#173](https://github.com/OXY2DEV/markview.nvim/issues/173)
+* **core:** Added typst support ([06f4c87](https://github.com/OXY2DEV/markview.nvim/commit/06f4c87e5499c5f192aa01a3a2bfa3bfbd4acdec))
+* **renderer_markdown:** Added diff support to code blocks ([06f4c87](https://github.com/OXY2DEV/markview.nvim/commit/06f4c87e5499c5f192aa01a3a2bfa3bfbd4acdec))
+* **spec:** Added pattern based config support for various items ([06f4c87](https://github.com/OXY2DEV/markview.nvim/commit/06f4c87e5499c5f192aa01a3a2bfa3bfbd4acdec))
+* **spec:** Dynamic configuration support ([06f4c87](https://github.com/OXY2DEV/markview.nvim/commit/06f4c87e5499c5f192aa01a3a2bfa3bfbd4acdec))
+* **v25:** New version release ([b7fca7a](https://github.com/OXY2DEV/markview.nvim/commit/b7fca7aee35108bf186260684479aa8c6bb921cf))
+* **v25:** New version release ([b88a396](https://github.com/OXY2DEV/markview.nvim/commit/b88a3968337afe58dc6806dc19ba6a6b4618f12a))
+
+
+### Bug Fixes
+
+* **code-blocks:** Fixes multiple language parsing cases (tilde, spaces before/after, directives...) ([b7521d4](https://github.com/OXY2DEV/markview.nvim/commit/b7521d444d33517bbcbe033b183f3324f57dcd18)), closes [#234](https://github.com/OXY2DEV/markview.nvim/issues/234)
+* **editor:** fixes editor for all fences format ([534dfc8](https://github.com/OXY2DEV/markview.nvim/commit/534dfc8d2beee518a3be7725dd6f7bd799cf64a4))
+* Fixed callouts rendering ([493c054](https://github.com/OXY2DEV/markview.nvim/commit/493c054c6463156f1c584cffe006b2fc9ed2d34c))
+* Fixed gx keymap rhs ([67b69cd](https://github.com/OXY2DEV/markview.nvim/commit/67b69cdaf9055bebac3682a070d7e5c8eecba29c))
+* Fixed logic for detecting neovim version ([42b57e8](https://github.com/OXY2DEV/markview.nvim/commit/42b57e8f9a0fa69f1b2937342cdd27921346c990))
+* Fixed merging of highlight groups ([b474374](https://github.com/OXY2DEV/markview.nvim/commit/b474374ba1186f8028e06b16c195b823cff492ee)), closes [#172](https://github.com/OXY2DEV/markview.nvim/issues/172)
+* Fixed merging of highlight groups ([c29cf91](https://github.com/OXY2DEV/markview.nvim/commit/c29cf91e48979c12a8c1ac1e13d064720ee251d9)), closes [#172](https://github.com/OXY2DEV/markview.nvim/issues/172)
+* Updated test ([06f4c87](https://github.com/OXY2DEV/markview.nvim/commit/06f4c87e5499c5f192aa01a3a2bfa3bfbd4acdec))
+* Various QOL fixes ([06f4c87](https://github.com/OXY2DEV/markview.nvim/commit/06f4c87e5499c5f192aa01a3a2bfa3bfbd4acdec))
+
+
+### Code Refactoring
+
+* **extras:** Completely changed how extra modules are used via ([06f4c87](https://github.com/OXY2DEV/markview.nvim/commit/06f4c87e5499c5f192aa01a3a2bfa3bfbd4acdec))
+* **spec:** Complete redesign of the configuration table ([06f4c87](https://github.com/OXY2DEV/markview.nvim/commit/06f4c87e5499c5f192aa01a3a2bfa3bfbd4acdec))
+
 ## [24.0.0](https://github.com/OXY2DEV/markview.nvim/compare/v23.1.0...v24.0.0) (2024-10-05)
 
 
