@@ -1,0 +1,120 @@
+*markview.nvim-experimental*                  Experimental options for markview
+
+        Options that are still under development or don't affect core
+                        functionalities of `markview`.
+>lua
+    -- [ Markview | Experimental options ] ----------------------------------------------------
+
+    --- Configuration for experimental options.
+    ---@class config.experimental
+    ---
+    --- Command used to open files inside Neovim.
+    ---@field file_open_command? string
+    --- Number of `bytes` to check before opening a link. Used for detecting when to open files inside Neovim.
+    ---@field read_chunk_size? integer
+    ---
+    --- Maximum number of empty lines that can stay between text of a list item.
+    ---@field list_empty_line_tolerance? integer
+    ---
+    --- String formats for detecting date in YAML.
+    ---@field date_formats? string[]
+    --- String formats for detecting date & time in YAML.
+    ---@field date_time_formats? string[]
+    experimental = {
+        read_chunk_size = 1024,
+
+        file_open_command = "tabnew",
+        list_empty_line_tolerance = 3,
+
+        date_formats = {
+            "^%d%d%d%d%-%d%d%-%d%d$",                   --- YYYY-MM-DD
+            "^%d%d%-%d%d%-%d%d%d%d$",                   --- DD-MM-YYYY, MM-DD-YYYY
+            "^%d%d%-%d%d%-%d%d$",                       --- DD-MM-YY, MM-DD-YY, YY-MM-DD
+
+            "^%d%d%d%d%/%d%d%/%d%d$",                   --- YYYY/MM/DD
+            "^%d%d%/%d%d%/%d%d%d%d$",                   --- DD/MM/YYYY, MM/DD/YYYY
+
+            "^%d%d%d%d%.%d%d%.%d%d$",                   --- YYYY.MM.DD
+            "^%d%d%.%d%d%.%d%d%d%d$",                   --- DD.MM.YYYY, MM.DD.YYYY
+
+            "^%d%d %a+ %d%d%d%d$",                      --- DD Month YYYY
+            "^%a+ %d%d %d%d%d%d$",                      --- Month DD, YYYY
+            "^%d%d%d%d %a+ %d%d$",                      --- YYYY Month DD
+
+            "^%a+%, %a+ %d%d%, %d%d%d%d$",              --- Day, Month DD, YYYY
+        },
+
+        date_time_formats = {
+            "^%a%a%a %a%a%a %d%d %d%d%:%d%d%:%d%d ... %d%d%d%d$", --- UNIX date time
+            "^%d%d%d%d%-%d%d%-%d%dT%d%d%:%d%d%:%d%dZ$",           --- ISO 8601
+        }
+    };
+<
+                                *markview.nvim-experimental.file_open_command*
+file_open_command ~
+
+    - Type: `string`
+    - Dynamic: true
+    - Default: "tabnew"
+
+Command used for opening links inside Neovim.
+
+                                  *markview.nvim-experimental.read_chunk_size*
+read_chunk_size ~
+
+    - Type: `integer`
+    - Dynamic: true
+    - Default: 1000
+
+▋ 🚨 Important
+▋ This isn't used if `text_filetypes` is set.
+
+Number of bytes to check to determine if a file is a text file or not when
+opening links.
+
+If the file is a text file, it will be opened inside `Neovim`.
+
+                        *markview.nvim-experimental.list_empty_line_tolerance*
+list_empty_line_tolerance ~
+
+    - Type: `integer`
+    - Dynamic: true
+    - Default: 3
+
+Number of empty lines a list item can have between it's lines. Useful when
+adding text directly under a list.
+
+>txt
+    TSNode │  Indentation  ┃            List                ┃
+     range │     range     ┃            Item                ┃
+
+       ╎           ║         - This is a list item.
+       ╎           ║          It has some text inside it.
+       ╎           ║         
+       ╎           ║         
+       ╎           ║          This line will be considered
+       ╎           ║          part of the list.
+       ╎                     
+       ╎                     
+       ╎                     
+       ╎                      This line won't be considered
+       ╎                      part of the list.
+<
+                                     *markview.nvim-experimental.date_formats*
+date_formats ~
+
+    - Type: `string[]`
+    - Dynamic: false
+
+List of `lua patterns` for detecting dates in YAML.
+
+                                *markview.nvim-experimental.date_time_formats*
+date_time_formats ~
+
+    - Type: `string[]`
+    - Dynamic: false
+
+List of `lua patterns` for detecting date & time in YAML.
+
+------------------------------------------------------------------------------
+vim:ft=help:tw=78:

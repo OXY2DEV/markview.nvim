@@ -1,55 +1,91 @@
 name: Bug report
-description: Report a bug in markview
-title: '🐞 Bug: '
+description: "Report a bug in markview."
+title: "🐞 Bug: "
 labels: [ "bug" ]
-assignees:
-  - OXY2DEV
 body:
   - type: checkboxes
-    id: issue-conditions
+    id: branch
     attributes:
-      label: 'Before reporting:'
-      description: |
-        These are **requirements** and failing to fulfill them will result the issue to be closed.
+      labels: "🤖 Which branch are you using?"
       options:
-        - label: Ensure that the issue is reproducable on the main branch.
-          required: true
-        - label: Ensure that there isn't an issue on this(either open or closed).
-          required: true
+        - label: "dev"
+        - label: "main"
+
   - type: textarea
-    id: issue-desc
+    id: desc
     attributes:
-      label: 'Problem:'
-      description: |
-        Describe the current behavior(images, gif, videos & logs) may be attached.
-      placeholder: A description of the issue...
+      label: "📜 Issue description:"
+      description: "Describe the issue in a *clear* and *concise* way. You should also attach `images`/`gifs` if it's a visual bug."
+      placeholder: "Fenced code blocks don't render when..."
     validations:
       required: true
+
   - type: textarea
-    id: issue-repro
+    id: repro
     attributes:
-      label: 'Steps to reproduce the issue:'
-      description: |
-        *Things to check before opening an issue:*
-        - Ensure that you don't have other `markdown` plugins enabled(unless it's a comparability issue with that plugin).
-        - Ensure that you are using the **latest version** of the plugin.
-        - Ensure that your `Neovim` version is **>=0.10**.
-        - Ensure that you have the correct `tree-sitter` parsers
-        installed(markdown, markdown_inline & html).
-      placeholder: nvim
+      label: "📑 Reproduction steps:"
+      description: "Give step by step instructions on how to recreate the issue using the `minimal init`."
+      placeholder: "1. Open Neovim."
     validations:
       required: true
+
   - type: textarea
-    id: issue-expected
+    id: minit
     attributes:
-      label: 'Expected behavior:'
-      description: Describe what should've happened.
-      placeholder: Markview should've...
+      label: "💻 Minimal init:"
+      description: |
+        The minimal config file to reproduce the issue.
+
+        Put this in a file(e.g. `minit.lua`) and do `nvim -u minit.lua` to run it.
+      placeholder: |
+        vim.env.LAZY_STDPATH = ".repro"
+        load(vim.fn.system("curl -s https://raw.githubusercontent.com/folke/lazy.nvim/main/bootstrap.lua"))()
+
+        require("lazy.minit").repro({
+            spec = {
+                {
+                    "nvim-treesitter/nvim-treesitter",
+                    build = ":TSUpdate",
+
+                    ensure_installed = { "html", "latex", "markdown", "markdown_inline", "typst", "yaml" }
+                },
+                {
+                    "OXY2DEV/markview.nvim",
+                    -- branch = "dev",
+                    lazy = false
+                }
+            },
+        });
+    validations:
+      required: true
+
+  - type: textarea
+    id: repro
+    attributes:
+      label: "📜 Logs:"
+      description: |
+        After Reproducing the bug, run `:Markview traceExport`. You will see a new file `trace.log` has been created in your current directory.
+
+        Copy it's contents here.
+      placeholder: "Logs..."
+    validations:
+      required: true
+
   - type: input
-    id: issue-nvim_v
+    id: nvim-ver
     attributes:
-      label: 'Neovim version:'
-      description: Neovim version.
-      placeholder: nvim -v
+      label: "Neovim version:"
+      description: "Neovim version."
+      placeholder: "nvim -v"
     validations:
       required: true
+
+  - type: textarea
+    id: minit
+    attributes:
+      label: "✅ Expected behavior:"
+      description: "The expected behavior."
+      placeholder: "Markview should..."
+    validations:
+      required: true
+

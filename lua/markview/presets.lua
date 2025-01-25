@@ -1,6 +1,5 @@
 local presets = {};
 
----@type { [string]: markview.conf.checkboxes }
 presets.checkboxes = {
 	legacy = {
 		---+ ${conf, Old checkboxes}
@@ -66,6 +65,7 @@ presets.checkboxes = {
 	---_
 	},
 
+	---@deprecated
 	minimal = {
 		---+ ${conf, Minimal style checkboxes}
 		enable = true,
@@ -195,7 +195,7 @@ presets.headings = {
 			sign = "󰌕 ", sign_hl = "MarkviewHeading1Sign",
 
 			padding_left = " ", padding_right = " ",
-			icon = "󰼏  ", hl = "MarkviewHeading1",
+			icon = "󰼏 ", hl = "MarkviewHeading1",
 
 		},
 		heading_2 = {
@@ -203,31 +203,31 @@ presets.headings = {
 			sign = "󰌖 ", sign_hl = "MarkviewHeading2Sign",
 
 			padding_left = " ", padding_right = " ",
-			icon = "󰎨  ", hl = "MarkviewHeading2",
+			icon = "󰎨 ", hl = "MarkviewHeading2",
 		},
 		heading_3 = {
 			style = "label",
 
 			padding_left = " ", padding_right = " ",
-			icon = "󰼑  ", hl = "MarkviewHeading3",
+			icon = "󰼑 ", hl = "MarkviewHeading3",
 		},
 		heading_4 = {
 			style = "label",
 
 			padding_left = " ", padding_right = " ",
-			icon = "󰎲  ", hl = "MarkviewHeading4",
+			icon = "󰎲 ", hl = "MarkviewHeading4",
 		},
 		heading_5 = {
 			style = "label",
 
 			padding_left = " ", padding_right = " ",
-			icon = "󰼓  ", hl = "MarkviewHeading5",
+			icon = "󰼓 ", hl = "MarkviewHeading5",
 		},
 		heading_6 = {
 			style = "label",
 
 			padding_left = " ", padding_right = " ",
-			icon = "󰎴  ", hl = "MarkviewHeading6",
+			icon = "󰎴 ", hl = "MarkviewHeading6",
 		}
 		---_
 	},
@@ -242,7 +242,7 @@ presets.headings = {
 			align = "center",
 
 			padding_left = " ", padding_right = " ",
-			icon = "󰼏  ", hl = "MarkviewHeading1",
+			icon = "󰼏 ", hl = "MarkviewHeading1",
 
 		},
 		heading_2 = {
@@ -251,35 +251,35 @@ presets.headings = {
 			align = "center",
 
 			padding_left = " ", padding_right = " ",
-			icon = "󰎨  ", hl = "MarkviewHeading2",
+			icon = "󰎨 ", hl = "MarkviewHeading2",
 		},
 		heading_3 = {
 			style = "label",
 			align = "center",
 
 			padding_left = " ", padding_right = " ",
-			icon = "󰼑  ", hl = "MarkviewHeading3",
+			icon = "󰼑 ", hl = "MarkviewHeading3",
 		},
 		heading_4 = {
 			style = "label",
 			align = "center",
 
 			padding_left = " ", padding_right = " ",
-			icon = "󰎲  ", hl = "MarkviewHeading4",
+			icon = "󰎲 ", hl = "MarkviewHeading4",
 		},
 		heading_5 = {
 			style = "label",
 			align = "center",
 
 			padding_left = " ", padding_right = " ",
-			icon = "󰼓  ", hl = "MarkviewHeading5",
+			icon = "󰼓 ", hl = "MarkviewHeading5",
 		},
 		heading_6 = {
 			style = "label",
 			align = "center",
 
 			padding_left = " ", padding_right = " ",
-			icon = "󰎴  ", hl = "MarkviewHeading6",
+			icon = "󰎴 ", hl = "MarkviewHeading6",
 		}
 		---_
 	},
@@ -294,8 +294,8 @@ presets.headings = {
 			sign = "󰌕 ", sign_hl = "MarkviewHeading1Sign",
 
 			padding_left = " ", padding_right = " ",
-			corner_right = "", corner_right_hl = "MarkviewHeading1Sign",
-			icon = "󰼏  ", hl = "MarkviewHeading1",
+			corner_right = "", corner_right_hl = "MarkviewPalette1Fg",
+			hl = "MarkviewHeading1",
 
 		},
 		heading_2 = {
@@ -303,36 +303,36 @@ presets.headings = {
 			sign = "󰌖 ", sign_hl = "MarkviewHeading2Sign",
 
 			padding_left = " ", padding_right = " ",
-			corner_right = "", corner_right_hl = "MarkviewHeading2Sign",
-			icon = "󰎨  ", hl = "MarkviewHeading2",
+			corner_right = "", corner_right_hl = "MarkviewPalette2Fg",
+			hl = "MarkviewHeading2",
 		},
 		heading_3 = {
 			style = "label",
 
 			padding_left = " ", padding_right = " ",
-			corner_right = "", corner_right_hl = "MarkviewHeading3Sign",
-			icon = "󰼑  ", hl = "MarkviewHeading3",
+			corner_right = "", corner_right_hl = "MarkviewPalette3Fg",
+			hl = "MarkviewHeading3",
 		},
 		heading_4 = {
 			style = "label",
 
 			padding_left = " ", padding_right = " ",
-			corner_right = "", corner_right_hl = "MarkviewHeading4Sign",
-			icon = "󰎲  ", hl = "MarkviewHeading4",
+			corner_right = "", corner_right_hl = "MarkviewPalette4Fg",
+			hl = "MarkviewHeading4",
 		},
 		heading_5 = {
 			style = "label",
 
 			padding_left = " ", padding_right = " ",
-			corner_right = "", corner_right_hl = "MarkviewHeading5Sign",
-			icon = "󰼓  ", hl = "MarkviewHeading5",
+			corner_right = "", corner_right_hl = "MarkviewPalette5Fg",
+			hl = "MarkviewHeading5",
 		},
 		heading_6 = {
 			style = "label",
 
 			padding_left = " ", padding_right = " ",
-			corner_right = "", corner_right_hl = "MarkviewHeading6Sign",
-			icon = "󰎴  ", hl = "MarkviewHeading6",
+			corner_right = "", corner_right_hl = "MarkviewPalette6Fg",
+			hl = "MarkviewHeading6",
 		}
 		---_
 	},
@@ -346,8 +346,8 @@ presets.headings = {
 			sign = "󰌕 ", sign_hl = "MarkviewHeading1Sign",
 
 			padding_left = " ", padding_right = " ",
-			corner_right = "", corner_right_hl = "MarkviewHeading1Sign",
-			icon = "󰼏  ", hl = "MarkviewHeading1",
+			corner_right = "", corner_right_hl = "MarkviewPalette1Fg",
+			hl = "MarkviewHeading1",
 
 		},
 		heading_2 = {
@@ -355,36 +355,36 @@ presets.headings = {
 			sign = "󰌖 ", sign_hl = "MarkviewHeading2Sign",
 
 			padding_left = " ", padding_right = " ",
-			corner_right = "", corner_right_hl = "MarkviewHeading2Sign",
-			icon = "󰎨  ", hl = "MarkviewHeading2",
+			corner_right = "", corner_right_hl = "MarkviewPalette2Fg",
+			hl = "MarkviewHeading2",
 		},
 		heading_3 = {
 			style = "label",
 
 			padding_left = " ", padding_right = " ",
-			corner_right = "", corner_right_hl = "MarkviewHeading3Sign",
-			icon = "󰼑  ", hl = "MarkviewHeading3",
+			corner_right = "", corner_right_hl = "MarkviewPalette3Fg",
+			hl = "MarkviewHeading3",
 		},
 		heading_4 = {
 			style = "label",
 
 			padding_left = " ", padding_right = " ",
-			corner_right = "", corner_right_hl = "MarkviewHeading4Sign",
-			icon = "󰎲  ", hl = "MarkviewHeading4",
+			corner_right = "", corner_right_hl = "MarkviewPalette4Fg",
+			hl = "MarkviewHeading4",
 		},
 		heading_5 = {
 			style = "label",
 
 			padding_left = " ", padding_right = " ",
-			corner_right = "", corner_right_hl = "MarkviewHeading5Sign",
-			icon = "󰼓  ", hl = "MarkviewHeading5",
+			corner_right = "", corner_right_hl = "MarkviewPalette5Fg",
+			hl = "MarkviewHeading5",
 		},
 		heading_6 = {
 			style = "label",
 
 			padding_left = " ", padding_right = " ",
-			corner_right = "", corner_right_hl = "MarkviewHeading6Sign",
-			icon = "󰎴  ", hl = "MarkviewHeading6",
+			corner_right = "", corner_right_hl = "MarkviewPalette6Fg",
+			hl = "MarkviewHeading6",
 		}
 		---_
 	},
@@ -638,6 +638,95 @@ presets.horizontal_rules = {
 					"MarkviewGradient4", "MarkviewGradient3",
 				}
 			}
+		}
+		---_
+	}
+};
+
+presets.tables = {
+	none = {
+		---+${lua}
+		parts = {
+			top = { " ", " ", " ", " " },
+			header = { " ", " ", " " },
+			separator = { " ", "-", " ", " " },
+			row = { " ", " ", " " },
+			bottom = { " ", " ", " ", " " },
+
+			overlap = { " ", " ", " ", " " },
+
+			align_left = "-",
+			align_right = "-",
+			align_center = { "-", "-" }
+		}
+		---_
+	},
+
+	single = {
+		---+${lua}
+		parts = {
+			top = { "┌", "─", "┐", "┬" },
+			header = { "│", "│", "│" },
+			separator = { "├", "─", "┤", "┼" },
+			row = { "│", "│", "│" },
+			bottom = { "└", "─", "┘", "┴" },
+
+			overlap = { "┝", "━", "┥", "┿" },
+
+			align_left = "╼",
+			align_right = "╾",
+			align_center = { "╴", "╶" }
+		}
+		---_
+	},
+	double = {
+		---+${lua}
+		parts = {
+			top = { "╔", "═", "╗", "╦" },
+			header = { "║", "║", "║" },
+			separator = { "╠", "═", "╣", "╬" },
+			row = { "║", "║", "║" },
+			bottom = { "╚", "═", "╝", "╩" },
+
+			overlap = { "╟", "─", "╢", "╫" },
+
+			align_left = "━",
+			align_right = "━",
+			align_center = { "━", "━" }
+		}
+		---_
+	},
+	rounded = {
+		---+${lua}
+		parts = {
+			top = { "╭", "─", "╮", "┬" },
+			header = { "│", "│", "│" },
+			separator = { "├", "─", "┤", "┼" },
+			row = { "│", "│", "│" },
+			bottom = { "╰", "─", "╯", "┴" },
+
+			overlap = { "┝", "━", "┥", "┿" },
+
+			align_left = "╼",
+			align_right = "╾",
+			align_center = { "╴", "╶" }
+		}
+		---_
+	},
+	solid = {
+		---+${lua}
+		parts = {
+			top = { "█", "█", "█", "█" },
+			header = { "█", "█", "█" },
+			separator = { "█", "█", "█", "█" },
+			row = { "█", "█", "█" },
+			bottom = { "█", "█", "█", "█" },
+
+			overlap = { "█", "█", "█", "█" },
+
+			align_left = "█",
+			align_right = "█",
+			align_center = { "█", "█" }
 		}
 		---_
 	}
