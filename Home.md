@@ -34,7 +34,7 @@ Make sure you read this to understand how the type definitions in the wiki are w
 --                             ╾────╴ This is the resulting configuration
 --                                    table that will be used by the plugin
 
---                              ╾────╴ Static configuration clasess end with `static`
+--                              ╾────╴ Static configuration classes end with `static`
 ---@class markdown.block_quotes.static
 ---
 ---@field enable boolean Option description.
@@ -57,7 +57,7 @@ Make sure you read this to understand how the type definitions in the wiki are w
 ---@field class "markdown_block_quote"
 ---
 ---@field text string[]
----@field range nrde.range
+---@field range node.range
 ```
 
 <!--_-->

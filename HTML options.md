@@ -184,7 +184,7 @@ M.__html_container_elements = {
 ---
 ---@field text string Text inside this segment.
 ---@field range integer[] Range of this segment(Result of `{ TSNode:range() }`).
-M.__conteiner_segment_opts = {
+M.__container_segment_opts = {
     text = "<p>",
     range = { 0, 0, 0, 3 }
 };

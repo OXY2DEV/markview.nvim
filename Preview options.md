@@ -254,7 +254,7 @@ Here's a simple comparison,
 
 | Feature        | `devicons` | `mini`  | `internal` |
 |----------------|------------|---------|------------|
-| Icon supoort   | many       | many    | limited    |
+| Icon support   | many       | many    | limited    |
 | Dynamic colors | no         | partial | yes        |
 | External       | yes        | yes     | no         |
 
