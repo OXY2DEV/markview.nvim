@@ -8,6 +8,7 @@
 --- And other minor things!
 local markview = {};
 local spec = require("markview.spec");
+local highlights = require("markview.highlights");
 local health = require("markview.health");
 
 --- Plugin state variables.
