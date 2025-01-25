@@ -33,7 +33,7 @@ are written.
     --                             ╾────╴ This is the resulting configuration
     --                                    table that will be used by the plugin
     
-    --                              ╾────╴ Static configuration clasess end with `static`
+    --                              ╾────╴ Static configuration classes end with `static`
     ---@class markdown.block_quotes.static
     ---
     ---@field enable boolean Option description.
