@@ -268,7 +268,7 @@ Here's a simple comparison,
 Functions to execute when specific tasks are done by the plugin.
 
 >[!NOTE]
-> Callbacks are executed **before** [autocmds]().
+> Callbacks are executed **before** [autocmds](https://github.com/OXY2DEV/markview.nvim/tree/main?tab=readme-ov-file#-autocmds).
 
 ```lua
 -- [ Markview | Preview options > Callbacks ] ---------------------------------------------

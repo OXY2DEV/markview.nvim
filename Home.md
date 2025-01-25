@@ -84,8 +84,6 @@ Make sure you read this to understand how the type definitions in the wiki are w
 
 ## 🧭 Configuration
 
-Check the [wiki]() for the entire configuration table. A simplified version is given below.
-
 <details>
     <summary>Click for config jump-scare</summary><!-- --+ -->
 
