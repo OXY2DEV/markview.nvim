@@ -108,7 +108,7 @@ print("Hello world!");
 console.log("Hello world!");
 ```
 
-```typ
+```typst
 Hello _world!_
 ```
 
