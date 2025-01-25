@@ -8,7 +8,6 @@
 --- And other minor things!
 local markview = {};
 local spec = require("markview.spec");
-local highlights = require("markview.highlights");
 local health = require("markview.health");
 
 --- Plugin state variables.
@@ -1291,7 +1290,10 @@ markview.commands = {
 ---@param config table?
 markview.setup = function (config)
 	spec.setup(config);
+
+	local highlights = require("markview.highlights");
 	highlights.setup(spec.get({ "highlight_groups" }, { fallback = {} }));
+
 	markview.commands.Render();
 end
 
