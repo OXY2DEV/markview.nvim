@@ -1,6 +1,8 @@
 <h1 align="center">☄️ markview.nvim</h1>
 
-A hackable **markdown**, <h5>HTML</h5>, $LaTeX$, `Typst` & *YAML* previewer for Neovim.
+<img src="https://github.com/OXY2DEV/markview.nvim/blob/images/v25/repo/markdown-catppuccin_mocha.png">
+
+A hackable **markdown**, <b>HTML</b>, $LaTeX$, `Typst` & *YAML* previewer for Neovim.
 
 >[!NOTE]
 > This wiki assumes you have basic understanding of `LuaCATS` annotations.
