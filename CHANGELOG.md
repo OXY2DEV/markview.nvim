@@ -1,5 +1,12 @@
 # Changelog
 
+## [25.0.2](https://github.com/OXY2DEV/markview.nvim/compare/v25.0.1...v25.0.2) (2025-01-25)
+
+
+### Bug Fixes
+
+* Fixed an issue caused by `enable = false` when getting options from `preview` ([79539be](https://github.com/OXY2DEV/markview.nvim/commit/79539bec86a904855c13d0aee2776f372cbf7be7))
+
 ## [25.0.0](https://github.com/OXY2DEV/markview.nvim/compare/v24.0.0...v25.0.0) (2025-01-25)
 
 
