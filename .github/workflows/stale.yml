@@ -6,7 +6,6 @@ on:
 
 jobs:
   stale:
-
     runs-on: ubuntu-latest
     permissions:
       issues: write
@@ -16,8 +15,17 @@ jobs:
     - uses: actions/stale@v5
       with:
         repo-token: ${{ secrets.GITHUB_TOKEN }}
-        stale-issue-message: '🤖 Bot: **Issue** has not seen activity in **30** days and will therefore be marked as stale. It will be closed in 7 days if no further response is found.'
-        stale-pr-message: '🤖 Bot: **PR** has not seen activity in **30** days and will therefore be marked as stale. It will be closed in 7 days if no further response is found.'
+        days-before-stale: 30
+        days-before-close: 7
+        exempt-issue-labels: dev,important
+
+        stale-issue-message: |
+          🤖 Bot: There has been no recent activity in this issue. Without new activity this issue will be closed in **7** days.
+        stale-pr-message: |
+          🤖 Bot: There has been no recent activity in this PR. Without new activity this PR will be closed in **7** days.
+
         stale-issue-label: 'no-issue-activity'
         stale-pr-label: 'no-pr-activity'
-        days-before-stale: 30
+
+        close-issue-label: 'no-issue-activity'
+        close-pr-label: 'no-pr-activity'

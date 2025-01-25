@@ -1,0 +1,1203 @@
+*markview.nvim-inline*                       Preview options for inline markdown
+
+           Changes how inline markdown items are shown in preview.
+>lua
+    -- [ Markview | Inline ] ------------------------------------------------------------------
+
+    --- Configuration for inline markdown.
+    ---@class config.markdown_inline
+    ---
+    ---@field enable boolean
+    ---
+    ---@field block_references inline.block_references | fun(): inline.block_references
+    ---@field checkboxes inline.checkboxes | fun(): inline.checkboxes
+    ---@field emails inline.emails | fun(): inline.emails
+    ---@field embed_files inline.embed_files | fun(): inline.embed_files
+    ---@field emoji_shorthands inline.emojis | fun(): inline.emojis
+    ---@field entities inline.entities | fun(): inline.entities
+    ---@field escapes inline.escapes | fun(): inline.escapes
+    ---@field footnotes inline.footnotes | fun(): inline.footnotes
+    ---@field highlights inline.highlights | fun(): inline.highlights
+    ---@field hyperlinks inline.hyperlinks | fun(): inline.hyperlinks
+    ---@field images inline.images | fun(): inline.images
+    ---@field inline_codes inline.inline_codes | fun(): inline.inline_codes
+    ---@field internal_links inline.internal_links | fun(): inline.internal_links
+    ---@field uri_autolinks inline.uri_autolinks | fun(): inline.uri_autolinks
+    M.markdown_inline = {
+        enable = true,
+
+        block_references = {},
+        checkboxes = {},
+        emails = {},
+        embed_files = {},
+        emoji_shorthands = {},
+        entities = {},
+        escapes = {},
+        footnotes = {},
+        highlights = {},
+        hyperlinks = {},
+        images = {},
+        inline_codes = {},
+        internal_links = {},
+        uri_autolinks = {},
+    };
+
+    -- [ Markview | Inline • Static ] ---------------------------------------------------------
+
+    --- Static configuration for inline markdown.
+    ---@class config.markdown_inline_static
+    ---
+    ---@field enable boolean
+    ---
+    ---@field block_references inline.block_references Block reference link configuration.
+    ---@field checkboxes inline.checkboxes Checkbox configuration.
+    ---@field inline_codes inline.inline_codes Inline code/code span configuration.
+    ---@field emails inline.emails Email link configuration.
+    ---@field embed_files inline.embed_files Embed file link configuration.
+    ---@field emoji_shorthands inline.emojis Github styled emoji shorthands.
+    ---@field entities inline.entities HTML entities configuration.
+    ---@field escapes inline.escapes Escaped characters configuration.
+    ---@field footnotes inline.footnotes Footnotes configuration.
+    ---@field highlights inline.highlights Highlighted text configuration.
+    ---@field hyperlinks inline.hyperlinks Hyperlink configuration.
+    ---@field images inline.images Image link configuration.
+    ---@field internal_links inline.internal_links Internal link configuration.
+    ---@field uri_autolinks inline.uri_autolinks URI autolink configuration.
+<
+▋ 📜 Note
+▋ Almost every element in inline markdown have the same customisation options.
+▋ As such these options are given below.
+>lua
+    -- [ Markview | Generic inline element ] --------------------------------------------------
+
+    --- Generic configuration for inline markdown items.
+    --- Note: {item} will be different based on the node this is being used by.
+    ---@class config.inline_generic
+    ---
+    ---@field corner_left? string | fun(buffer: integer, item: table): string?
+    ---@field corner_left_hl? string | fun(buffer: integer, item: table): string?
+    ---@field corner_right? string | fun(buffer: integer, item: table): string?
+    ---@field corner_right_hl? string | fun(buffer: integer, item: table): string?
+    ---@field hl? string | fun(buffer: integer, item: table): string?
+    ---@field icon? string | fun(buffer: integer, item: table): string?
+    ---@field icon_hl? string | fun(buffer: integer, item: table): string?
+    ---@field padding_left? string | fun(buffer: integer, item: table): string?
+    ---@field padding_left_hl? string | fun(buffer: integer, item: table): string?
+    ---@field padding_right? string | fun(buffer: integer, item: table): string?
+    ---@field padding_right_hl? string | fun(buffer: integer, item: table): string?
+    ---
+    ---@field file_hl? string | fun(buffer: integer, item: table): string?
+    ---@field block_hl? string | fun(buffer: integer, item: table): string?
+    M.inline_generic = {
+        corner_left = "<",
+        padding_left = " ",
+        icon = "π ",
+        padding_right = " ",
+        corner_right = ">",
+
+        hl = "MarkviewCode"
+    };
+
+    -- [ Markview | Generic inline element • Static ] -----------------------------------------
+
+    --- Static configuration for inline elements.
+    ---@class config.inline_generic_static
+    ---
+    ---@field corner_left? string Left corner.
+    ---@field corner_left_hl? string Highlight group for left corner.
+    ---@field corner_right? string Right corner.
+    ---@field corner_right_hl? string Highlight group for right corner.
+    ---@field hl? string Base Highlight group.
+    ---@field icon? string Icon.
+    ---@field icon_hl? string Highlight group for icon.
+    ---@field padding_left? string Left padding.
+    ---@field padding_left_hl? string Highlight group for left padding.
+    ---@field padding_right? string Right padding.
+    ---@field padding_right_hl? string Highlight group for right padding.
+    ---
+    ---@field file_hl? string Highlight group for block reference file name.
+    ---@field block_hl? string Highlight group for block reference block ID.
+<
+                                       *markview.nvim-inline.block_references*
+block_references ~
+
+    - Type: `inline.block_references`
+    - Dynamic: false
+
+Configuration for block reference links(from `Obsidian`).
+>lua
+    -- [ Inline | Block references ] ----------------------------------------------------------
+
+    --- Configuration for block reference links.
+    ---@class inline.block_references
+    ---
+    ---@field enable boolean
+    ---
+    ---@field default config.inline_generic | fun(buffer: integer, item: __inline.block_references): config.inline_generic
+    ---@field [string] config.inline_generic | fun(buffer: integer, item: __inline.block_references): config.inline_generic
+    block_references = {
+        enable = true,
+
+        default = {
+            icon = "󰿨 ",
+
+            hl = "MarkviewPalette6Fg",
+            file_hl = "MarkviewPalette0Fg",
+        }
+    };
+
+    -- [ Inline | Block references • Static ] -------------------------------------------------
+
+    --- Static configuration for block reference links.
+    ---@class inline.block_references
+    ---
+    ---@field enable boolean
+    ---
+    ---@field default config.inline_generic_static Default configuration for block reference links.
+    ---@field [string] config.inline_generic_static Configuration for block references whose label matches with the key's pattern.
+<
+>lua
+    -- [ Inline | Block references > Parameters ] ---------------------------------------------
+
+    ---@class __inline.block_references
+    ---
+    ---@field class "inline_link_block_ref"
+    ---
+    ---@field file? string File name.
+    ---@field block string Block ID.
+    ---
+    ---@field label string
+    ---
+    ---@field text string[]
+    ---@field range inline_link.range
+    M.__inline_block_references = {
+        class = "inline_link_block_ref",
+
+        file = "Some_file.md",
+        block = "Block",
+        label = "Some_file.md#^Block",
+
+        text = { "![[Some_file.md#^Block]]" },
+        range = {
+            row_start = 0,
+            row_end = 0,
+
+            col_start = 0,
+            col_end = 25,
+
+            label = { 0, 3, 0, 23 },
+            file = { 0, 3, 0, 12 },
+            block = { 0, 14, 0, 23 }
+        }
+    };
+<
+                                             *markview.nvim-inline.checkboxes*
+checkboxes ~
+
+    - Type: `inlines.checkboxes`
+    - Dynamic: false
+
+Configuration for checkboxes.
+>lua
+    -- [ Inline | Checkboxes ] ----------------------------------------------------------------
+
+    --- Configuration for checkboxes.
+    ---@class inline.checkboxes
+    ---
+    ---@field enable boolean
+    ---
+    ---@field checked checkboxes.opts Configuration for [x] & [X].
+    ---@field unchecked checkboxes.opts Configuration for [ ].
+    ---
+    ---@field [string] checkboxes.opts
+    checkboxes = {
+        enable = true,
+
+        checked = { text = "󰗠", hl = "MarkviewCheckboxChecked", scope_hl = "MarkviewCheckboxChecked" },
+        unchecked = { text = "󰄰", hl = "MarkviewCheckboxUnchecked", scope_hl = "MarkviewCheckboxUnchecked" },
+
+        ["/"] = { text = "󱎖", hl = "MarkviewCheckboxPending" },
+        [">"] = { text = "", hl = "MarkviewCheckboxCancelled" },
+        ["<"] = { text = "󰃖", hl = "MarkviewCheckboxCancelled" },
+        ["-"] = { text = "󰍶", hl = "MarkviewCheckboxCancelled", scope_hl = "MarkviewCheckboxStriked" },
+
+        ["?"] = { text = "󰋗", hl = "MarkviewCheckboxPending" },
+        ["!"] = { text = "󰀦", hl = "MarkviewCheckboxUnchecked" },
+        ["*"] = { text = "󰓎", hl = "MarkviewCheckboxPending" },
+        ['"'] = { text = "󰸥", hl = "MarkviewCheckboxCancelled" },
+        ["l"] = { text = "󰆋", hl = "MarkviewCheckboxProgress" },
+        ["b"] = { text = "󰃀", hl = "MarkviewCheckboxProgress" },
+        ["i"] = { text = "󰰄", hl = "MarkviewCheckboxChecked" },
+        ["S"] = { text = "", hl = "MarkviewCheckboxChecked" },
+        ["I"] = { text = "󰛨", hl = "MarkviewCheckboxPending" },
+        ["p"] = { text = "", hl = "MarkviewCheckboxChecked" },
+        ["c"] = { text = "", hl = "MarkviewCheckboxUnchecked" },
+        ["f"] = { text = "󱠇", hl = "MarkviewCheckboxUnchecked" },
+        ["k"] = { text = "", hl = "MarkviewCheckboxPending" },
+        ["w"] = { text = "", hl = "MarkviewCheckboxProgress" },
+        ["u"] = { text = "󰔵", hl = "MarkviewCheckboxChecked" },
+        ["d"] = { text = "󰔳", hl = "MarkviewCheckboxUnchecked" },
+    }
+<
+>lua
+    -- [ Inline | Checkboxes > Type definitions ] ---------------------------------------------
+
+    ---@class checkboxes.opts
+    ---
+    ---@field text string
+    ---@field hl? string
+    ---@field scope_hl? string Highlight group for the list item.
+    M.checkboxes_opts = {
+        text = "∆",
+        hl = "MarkviewCheckboxChecked"
+    };
+
+    -- [ HTML | Checkboxes > Parameters ] -----------------------------------------------------
+
+    ---@class __inline.checkboxes
+    ---
+    ---@field class "inline_checkbox"
+    ---@field state string Checkbox state(text inside `[]`).
+    ---
+    ---@field text string[]
+    ---@field range? node.range Range of the checkbox. `nil` when rendering list items.
+    M.__inline_checkboxes = {
+        class = "inline_checkbox",
+        state = "-",
+
+        text = { "[-]" },
+        range = {
+            row_start = 0,
+            row_end = 0,
+
+            col_start = 2,
+            col_end = 5
+        }
+    };
+<
+                                                 *markview.nvim-inline.emails*
+emails ~
+
+    - Type: `inline.emails`
+    - Dynamic: true
+
+Configuration for block reference links.
+>lua
+    -- [ Inline | Emails ] --------------------------------------------------------------------
+
+    --- Configuration for emails.
+    ---@class inline.emails
+    ---
+    ---@field enable boolean
+    ---
+    ---@field default config.inline_generic | fun(buffer: integer, item: __inline.emails): config.inline_generic
+    ---@field [string] config.inline_generic | fun(buffer: integer, item: __inline.emails): config.inline_generic
+    emails = {
+        ---+${lua}
+
+        enable = true,
+
+        default = {
+            icon = " ",
+            hl = "MarkviewEmail"
+        },
+
+        ---+${lua, Commonly used email service providers}
+
+        ["%@gmail%.com$"] = {
+            --- user@gmail.com
+
+            icon = "󰊫 ",
+            hl = "MarkviewPalette0Fg"
+        },
+
+        ["%@outlook%.com$"] = {
+            --- user@outlook.com
+
+            icon = "󰴢 ",
+            hl = "MarkviewPalette5Fg"
+        },
+
+        ["%@yahoo%.com$"] = {
+            --- user@yahoo.com
+
+            icon = " ",
+            hl = "MarkviewPalette6Fg"
+        },
+
+        ["%@icloud%.com$"] = {
+            --- user@icloud.com
+
+            icon = "󰀸 ",
+            hl = "MarkviewPalette6Fg"
+        }
+
+        ---_
+
+        ---_
+    };
+
+    -- [ Inline | Emails • Static ] -----------------------------------------------------------
+
+    --- Static configuration for emails.
+    ---@class inline.emails
+    ---
+    ---@field enable boolean
+    ---
+    ---@field default config.inline_generic_static Default configuration for emails
+    ---@field [string] config.inline_generic_static Configuration for emails whose label(address) matches `string`.
+<
+>lua
+    -- [ Inline | Emails > Parameters ] -------------------------------------------------------
+
+    ---@class __inline.emails
+    ---
+    ---@field class "inline_link_email"
+    ---@field label string
+    ---@field text string[]
+    ---@field range inline_link.range
+    M.__inline_link_emails = {
+        class = "inline_link_email",
+        label = "example@mail.com",
+
+        text = { "<example@mail.com>" },
+        range = {
+            row_start = 0,
+            row_end = 0,
+
+            col_start = 0,
+            col_end = 17,
+
+            label = { 0, 1, 0, 16 }
+        }
+    };
+<
+                                            *markview.nvim-inline.embed_files*
+embed_files ~
+
+    - Type: `inline.embed_files`
+    - Dynamic: true
+
+Configuration for embed file links(from `Obsidian`).
+>lua
+    -- [ Inline | Embed files ] ---------------------------------------------------------------
+
+    --- Configuration for obsidian's embed files.
+    ---@class inline.embed_files
+    ---
+    ---@field enable boolean
+    ---
+    ---@field default config.inline_generic | fun(buffer: integer, item: __inline.embed_files): inline.embed_files
+    ---@field [string] config.inline_generic | fun(buffer: integer, item: __inline.embed_files): inline.embed_files
+    embed_files = {
+        enable = true,
+
+        default = {
+            icon = "󰠮 ",
+            hl = "MarkviewPalette7Fg"
+        }
+    };
+
+    -- [ Inline | Embed files • Static ] ------------------------------------------------------
+
+    --- Static configuration for obsidian's embed files.
+    ---@class inline.embed_files
+    ---
+    ---@field enable boolean
+    ---
+    ---@field default config.inline_generic_static Default configuration for embed file links.
+    ---@field [string] config.inline_generic_static Configuration for embed file links whose label matches `string`.
+<
+>lua
+    -- [ Inline | Embed files > Parameters ] --------------------------------------------------
+
+    ---@class __inline.embed_files
+    ---
+    ---@field class "inline_link_embed_file"
+    ---
+    ---@field label string Text inside `[[...]]`.
+    ---
+    ---@field text string[]
+    ---@field range node.range
+    M.__inline_link_embed_files = {
+        class = "inline_link_embed_file",
+        label = "v25",
+
+        text = { "![[v25]]" },
+        range = {
+            row_start = 0,
+            row_end = 0,
+
+            col_start = 0,
+            col_end = 8
+        }
+    };
+<
+                                       *markview.nvim-inline.emoji_shorthands*
+emoji_shorthands ~
+
+    - Type: `inline.emoji_shorthands`
+    - Dynamic: true
+
+Configuration for emoji shorthands.
+>lua
+    -- [ Inline | Emojis ] ------------------------------------------------------------------
+
+    --- Configuration for emoji shorthands.
+    ---@class inline.emojis
+    ---
+    ---@field enable boolean
+    ---
+    ---@field hl? string | fun(buffer: integer, item: __inline.entities): inline.emojis
+    M.inline_emojis = {
+        enable = true
+    };
+
+    -- [ Inline | Emojis • Static ] ---------------------------------------------------------
+
+    --- Static configuration for emoji shorthands.
+    ---@class inline.emojis_static
+    ---
+    ---@field enable boolean
+    ---
+    ---@field hl? string Highlight group for the emoji.
+<
+>lua
+    -- [ Inline | Emojis > Parameters ] --------------------------------------------------------
+
+    ---@class __inline.emojis
+    ---
+    ---@field class "inline_emoji"
+    ---
+    ---@field name string Emoji name(without `:`).
+    ---
+    ---@field text string[]
+    ---@field range node.range
+    M.__inline_emojis = {
+        class = "inline_emoji",
+        name = "label",
+        text = { ":label:" },
+        range = {
+            row_start = 0,
+            row_end = 0,
+
+            col_start = 0,
+            col_end = 7
+        }
+    };
+<
+                                               *markview.nvim-inline.entities*
+entities ~
+
+    - Type: `inline.entities`
+    - Dynamic: true
+
+Configuration for entity references.
+>lua
+    -- [ Inline | Entities ] ------------------------------------------------------------------
+
+    --- Configuration for HTML entities.
+    ---@class inline.entities
+    ---
+    ---@field enable boolean
+    ---
+    ---@field hl? string | fun(buffer: integer, item: __inline.entities): inline.entities
+    entities = {
+        enable = true,
+        hl = "Special"
+    };
+
+    -- [ Inline | Entities • Static ] ---------------------------------------------------------
+
+    --- Static configuration for HTML entities.
+    ---@class inline.entities_static
+    ---
+    ---@field enable boolean
+    ---
+    ---@field hl? string Highlight group for the symbol
+<
+>lua
+    -- [ Inline | Entities > Parameters ] ------------------------------------------------------------------
+
+    ---@class __inline.entities
+    ---
+    ---@field class "inline_entity"
+    ---
+    ---@field name string Entity name(text after "\")
+    ---
+    ---@field text string[]
+    ---@field range node.range
+    M.__inline_entities = {
+        class = "inline_entity",
+        name = "Int",
+        text = { "&Int;" },
+        range = {
+            row_start = 0,
+            row_end = 0,
+
+            col_start = 0,
+            col_end = 5
+        }
+    };
+<
+                                                *markview.nvim-inline.escapes*
+escapes ~
+
+    - Type: `inline.escapes`
+    - Dynamic: true
+
+Configuration for escaped characters.
+>lua
+    --- Configuration for escaped characters.
+    ---@class inline.escapes 
+    ---
+    ---@field enable boolean
+    escapes = {
+        enable = true
+    };
+<
+>lua
+    -- [ Inline | Escapes > Parameters ] ------------------------------------------------------
+
+    ---@class __inline.escaped
+    ---
+    ---@field class "inline_escaped"
+    ---
+    ---@field text string[]
+    ---@field range node.range
+    M.__inline_escaped = {
+        class = "inline_escaped",
+
+        text = { "\\'" },
+        range = {
+            row_start = 0,
+            row_end = 0,
+
+            col_start = 0,
+            col_end = 2
+        }
+    };
+<
+                                              *markview.nvim-inline.footnotes*
+footnotes ~
+
+    - Type: `inline.footnotes`
+    - Dynamic: true
+
+Configuration for footnotes.
+>lua
+    -- [ Inline | Footnotes ] -----------------------------------------------------------------
+
+    --- Configuration for footnotes.
+    ---@class inline.footnotes
+    ---
+    ---@field enable boolean
+    ---
+    ---@field default config.inline_generic | fun(buffer: integer, item: __inline.footnotes): inline.footnotes
+    ---@field [string] config.inline_generic | fun(buffer: integer, item: __inline.footnotes): inline.footnotes
+    footnotes = {
+        enable = true,
+
+        default = {
+            icon = "󰯓 ",
+            hl = "MarkviewHyperlink"
+        },
+        ["^%d+$"] = {
+            icon = "󰯓 ",
+            hl = "MarkviewPalette4Fg"
+        }
+    };
+
+    -- [ Inline | Footnotes • Static ] --------------------------------------------------------
+
+    --- Static configuration for footnotes.
+    ---@class inline.footnotes_static
+    ---
+    ---@field enable boolean
+    ---
+    ---@field default config.inline_generic_static Default configuration for footnotes.
+    ---@field [string] config.inline_generic_static Configuration for footnotes whose label matches `string`.
+<
+>lua
+    -- [ Inline | Footnotes > Parameters ] ----------------------------------------------------
+
+    ---@class __inline.footnotes
+    ---
+    ---@field class "inline_footnotes"
+    ---@field label string
+    ---@field text string[]
+    ---@field range inline_link.range
+    M.__inline_footnotes = {
+        class = "inline_footnotes",
+        label = "1",
+
+        text = { "[^1]" },
+        range = {
+            label = { 0, 2, 0, 3 },
+
+            row_start = 0,
+            row_end = 0,
+
+            col_start = 0,
+            col_end = 4
+        }
+    };
+<
+                                             *markview.nvim-inline.highlights*
+highlights ~
+
+    - Type: `inline.highlights`
+    - Dynamic: true
+
+Configuration for PKM-like highlights(`==highlights==`).
+>lua
+    -- [ Inline | Highlights ] ----------------------------------------------------------------
+
+    --- Configuration for highlighted texts.
+    ---@class inline.highlights
+    ---
+    ---@field enable boolean
+    ---
+    ---@field default config.inline_generic | fun(buffer: integer, item: __inline.highlights): inline.highlights
+    ---@field [string] config.inline_generic | fun(buffer: integer, item: __inline.highlights): inline.highlights
+    highlights = {
+        enable = true,
+
+        default = {
+            padding_left = " ",
+            padding_right = " ",
+
+            hl = "MarkviewPalette3"
+        },
+    };
+
+    -- [ Inline | Highlights • Static ] -------------------------------------------------------
+
+    --- Static configuration for highlighted texts.
+    ---@class inline.highlights
+    ---
+    ---@field enable boolean
+    ---
+    ---@field default config.inline_generic_static Default configuration for highlighted text.
+    ---@field [string] config.inline_generic_static Configuration for highlighted text that matches `string`.
+<
+>lua
+    -- [ Inline | Highlights > Parameters ] ---------------------------------------------------
+
+    ---@class __inline.highlights
+    ---
+    ---@field class "inline_highlight"
+    ---@field text string[]
+    ---@field range node.range
+    M.__inline_highlights = {
+        class = "inline_highlight",
+
+        text = { "==Highlight==" },
+        range = {
+            row_start = 0,
+            row_end = 0,
+
+            col_start = 0,
+            col_end = 13
+        }
+    };
+<
+                                             *markview.nvim-inline.hyperlinks*
+hyperlinks ~
+
+    - Type: `inline.hyperlinks`
+    - Dynamic: true
+
+Configuration for hyperlinks.
+>lua
+    -- [ Inline | Hyperlinks ] ----------------------------------------------------------------
+
+    --- Configuration for hyperlinks.
+    ---@class inline.hyperlinks
+    ---
+    ---@field enable boolean
+    ---
+    ---@field default config.inline_generic | fun(buffer: integer, item: __inline.hyperlinks): inline.hyperlinks
+    ---@field [string] config.inline_generic | fun(buffer: integer, item: __inline.hyperlinks): inline.hyperlinks
+    hyperlinks = {
+        ---+${lua}
+
+        enable = true,
+
+        default = {
+            icon = "󰌷 ",
+            hl = "MarkviewHyperlink",
+        },
+
+        ---+${lua, Github sites}
+
+        ["github%.com/[%a%d%-%_%.]+%/?$"] = {
+            --- github.com/<user>
+
+            icon = " ",
+            hl = "MarkviewPalette0Fg"
+        },
+        ["github%.com/[%a%d%-%_%.]+/[%a%d%-%_%.]+%/?$"] = {
+            --- github.com/<user>/<repo>
+
+            icon = "󰳐 ",
+            hl = "MarkviewPalette0Fg"
+        },
+        ["github%.com/[%a%d%-%_%.]+/[%a%d%-%_%.]+/tree/[%a%d%-%_%.]+%/?$"] = {
+            --- github.com/<user>/<repo>/tree/<branch>
+
+            icon = " ",
+            hl = "MarkviewPalette0Fg"
+        },
+        ["github%.com/[%a%d%-%_%.]+/[%a%d%-%_%.]+/commits/[%a%d%-%_%.]+%/?$"] = {
+            --- github.com/<user>/<repo>/commits/<branch>
+
+            icon = " ",
+            hl = "MarkviewPalette0Fg"
+        },
+
+        ["github%.com/[%a%d%-%_%.]+/[%a%d%-%_%.]+%/releases$"] = {
+            --- github.com/<user>/<repo>/releases
+
+            icon = " ",
+            hl = "MarkviewPalette0Fg"
+        },
+        ["github%.com/[%a%d%-%_%.]+/[%a%d%-%_%.]+%/tags$"] = {
+            --- github.com/<user>/<repo>/tags
+
+            icon = " ",
+            hl = "MarkviewPalette0Fg"
+        },
+        ["github%.com/[%a%d%-%_%.]+/[%a%d%-%_%.]+%/issues$"] = {
+            --- github.com/<user>/<repo>/issues
+
+            icon = " ",
+            hl = "MarkviewPalette0Fg"
+        },
+        ["github%.com/[%a%d%-%_%.]+/[%a%d%-%_%.]+%/pulls$"] = {
+            --- github.com/<user>/<repo>/pulls
+
+            icon = " ",
+            hl = "MarkviewPalette0Fg"
+        },
+
+        ["github%.com/[%a%d%-%_%.]+/[%a%d%-%_%.]+%/wiki$"] = {
+            --- github.com/<user>/<repo>/wiki
+
+            icon = " ",
+            hl = "MarkviewPalette0Fg"
+        },
+
+        ---_
+        ---+${lua, Commonly used sites by programmers}
+
+        ["developer%.mozilla%.org"] = {
+            priority = 9999,
+
+            icon = "󰖟 ",
+            hl = "MarkviewPalette5Fg"
+        },
+
+        ["w3schools%.com"] = {
+            priority = 9999,
+
+            icon = " ",
+            hl = "MarkviewPalette4Fg"
+        },
+
+        ["stackoverflow%.com"] = {
+            priority = 9999,
+
+            icon = "󰓌 ",
+            hl = "MarkviewPalette2Fg"
+        },
+
+        ["reddit%.com"] = {
+            priority = 9999,
+
+            icon = " ",
+            hl = "MarkviewPalette2Fg"
+        },
+
+        ["github%.com"] = {
+            priority = 9999,
+
+            icon = " ",
+            hl = "MarkviewPalette6Fg"
+        },
+
+        ["gitlab%.com"] = {
+            priority = 9999,
+
+            icon = " ",
+            hl = "MarkviewPalette2Fg"
+        },
+
+        ["dev%.to"] = {
+            priority = 9999,
+
+            icon = "󱁴 ",
+            hl = "MarkviewPalette0Fg"
+        },
+
+        ["codepen%.io"] = {
+            priority = 9999,
+
+            icon = " ",
+            hl = "MarkviewPalette6Fg"
+        },
+
+        ["replit%.com"] = {
+            priority = 9999,
+
+            icon = " ",
+            hl = "MarkviewPalette2Fg"
+        },
+
+        ["jsfiddle%.net"] = {
+            priority = 9999,
+
+            icon = " ",
+            hl = "MarkviewPalette5Fg"
+        },
+
+        ["npmjs%.com"] = {
+            priority = 9999,
+
+            icon = " ",
+            hl = "MarkviewPalette0Fg"
+        },
+
+        ["pypi%.org"] = {
+            priority = 9999,
+
+            icon = "󰆦 ",
+            hl = "MarkviewPalette0Fg"
+        },
+
+        ["mvnrepository%.com"] = {
+            priority = 9999,
+
+            icon = " ",
+            hl = "MarkviewPalette1Fg"
+        },
+
+        ["medium%.com"] = {
+            priority = 9999,
+
+            icon = " ",
+            hl = "MarkviewPalette6Fg"
+        },
+
+        ["linkedin%.com"] = {
+            priority = 9999,
+
+            icon = "󰌻 ",
+            hl = "MarkviewPalette5Fg"
+        },
+
+        ["news%.ycombinator%.com"] = {
+            priority = 9999,
+
+            icon = " ",
+            hl = "MarkviewPalette2Fg"
+        },
+
+        ---_
+
+        ---_
+    };
+
+    -- [ Inline | Hyperlinks • Static ] -------------------------------------------------------
+
+    --- Static configuration for hyperlinks.
+    ---@class inline.hyperlinks_static
+    ---
+    ---@field enable boolean
+    ---
+    ---@field default config.inline_generic_static Default configuration for hyperlinks.
+    ---@field [string] config.inline_generic_static Configuration for links whose description matches `string`.
+<
+>lua
+    -- [ Inline | Hyperlinks > Parameters ] ----------------------------------------------------
+
+    ---@class __inline.hyperlinks
+    ---
+    ---@field class "inline_link_hyperlink"
+    ---
+    ---@field label? string
+    ---@field description? string
+    ---
+    ---@field text string[]
+    ---@field range inline_link.range
+    M.__inline_images = {
+        class = "inline_link_hyperlink",
+
+        label = "link",
+        description = "test.svg",
+
+        text = { "[link](example.md)" },
+        range = {
+            row_start = 0,
+            row_end = 0,
+
+            col_start = 0,
+            col_end = 18,
+
+            label = { 0, 1, 0, 5 },
+            description = { 0, 7, 0, 16 }
+        }
+    };
+<
+                                                 *markview.nvim-inline.images*
+images ~
+
+    - Type: `inline.images`
+    - Dynamic: true
+
+Configuration for image links.
+>lua
+    -- [ Inline | Images ] --------------------------------------------------------------------
+
+    --- Configuration for image links.
+    ---@class inline.images
+    ---
+    ---@field enable boolean
+    ---
+    ---@field default config.inline_generic | fun(vuffer: integer, item: __inline.images): inline.images
+    ---@field [string] config.inline_generic | fun(vuffer: integer, item: __inline.images): inline.images
+    images = {
+        ---+${lua}
+
+        enable = true,
+
+        default = {
+            icon = "󰥶 ",
+            hl = "MarkviewImage",
+        },
+
+        ["%.svg$"] = { icon = "󰜡 " },
+        ["%.png$"] = { icon = "󰸭 " },
+        ["%.jpg$"] = { icon = "󰈥 " },
+        ["%.gif$"] = { icon = "󰵸 " },
+        ["%.pdf$"] = { icon = " " }
+
+        ---_
+    };
+
+    -- [ Inline | Images • Static ] -----------------------------------------------------------
+
+    --- Static configuration for image links.
+    ---@class inline.images_static
+    ---
+    ---@field enable boolean
+    ---
+    ---@field default config.inline_generic_static Default configuration for image links
+    ---@field [string] config.inline_generic_static Configuration image links whose description matches `string`.
+<
+>lua
+    -- [ Inline | Images > Parameters ] -------------------------------------------------------
+
+    ---@class __inline.images
+    ---
+    ---@field class "inline_link_image"
+    ---@field label? string
+    ---@field description? string
+    ---@field text string[]
+    ---@field range inline_link.range
+    M.__inline_images = {
+        class = "inline_link_image",
+        label = "image",
+        description = "test.svg",
+
+        text = { "![image](test.svg)" },
+        range = {
+            row_start = 0,
+            row_end = 0,
+
+            col_start = 0,
+            col_end = 18,
+
+            label = { 0, 2, 0, 7 },
+            description = { 0, 9, 0, 17 }
+        }
+    };
+<
+                                           *markview.nvim-inline.inline_codes*
+inline_codes ~
+
+    - Type: `inline.inline_codes`
+    - Dynamic: true.
+
+Configuration for inline codes.
+>lua
+    -- [ Inline | Inline codes ] --------------------------------------------------------------
+
+    --- Configuration for inline codes.
+    ---@alias inline.inline_codes config.inline_generic
+    inline_codes = {
+        enable = true,
+        hl = "MarkviewInlineCode",
+
+        padding_left = " ",
+        padding_right = " "
+    };
+
+    -- [ Inline | Inline codes • Static ] -----------------------------------------------------
+
+    --- Static configuration for inline codes.
+    ---@alias inline.inline_codes_static config.inline_generic_static
+<
+>lua
+    -- [ Inline | Inline codes > Parameters ] -------------------------------------------------
+
+    ---@class __inline.inline_codes
+    ---
+    ---@field class "inline_code_span"
+    ---@field text string[]
+    ---@field range node.range
+    M.__inline_inline_codes = {
+        class = "inline_code_span",
+        text = { "`inline code`" },
+        range = {
+            row_start = 0,
+            row_end = 0,
+
+            col_start = 0,
+            col_end = 13
+        }
+    };
+<
+                                         *markview.nvim-inline.internal_links*
+internal_links ~
+
+    - Type: `inline.internal_links`
+    - Dynamic: true.
+
+Configuration for internal links(from `Obsidian`).
+>lua
+    -- [ Inline | Internal links ] ------------------------------------------------------------
+
+    --- Configuration for obsidian's internal links.
+    ---@class inline.internal_links
+    ---
+    ---@field enable boolean
+    ---
+    ---@field default config.inline_generic | fun(buffer: integer, item: __inline.internal_links): config.inline_generic
+    ---@field [string] config.inline_generic | fun(buffer: integer, item: __inline.internal_links): config.inline_generic
+    internal_links = {
+        enable = true,
+
+        default = {
+            icon = " ",
+            hl = "MarkviewPalette7Fg",
+        }
+    };
+
+    -- [ Inline | Internal links • Static ] ---------------------------------------------------
+
+    --- Static configuration for obsidian's internal links.
+    ---@class inline.internal_links_static
+    ---
+    ---@field enable boolean
+    ---
+    ---@field default config.inline_generic_static Default configuration for internal links.
+    ---@field [string] config.inline_generic_static Configuration for internal links whose label match `string`.
+<
+>lua
+    -- [ Inline | Internal links > Parameters ] ------------------------------------------------------------
+
+    ---@class __inline.internal_links
+    ---
+    ---@field class "inline_link_internal"
+    ---
+    ---@field alias? string
+    ---@field label string Text inside `[[...]]`.
+    ---
+    ---@field text string[]
+    ---@field range inline_link.range
+    M.__inline_internal_links = {
+        class = "inline_link_internal",
+
+        alias = "Alias",
+        label = "v25|Alias",
+
+        text = { "[[v25|alias]]" },
+        range = {
+            alias = { 0, 6, 0, 11 },
+            label = { 0, 2, 0, 11 },
+
+            row_start = 0,
+            row_end = 0,
+
+            col_start = 0,
+            col_end = 13
+        }
+    };
+<
+                                          *markview.nvim-inline.uri_autolinks*
+uri_autolinks ~
+
+    - Type: `inline.uri_autolinks`
+    - Dynamic: true.
+
+Configuration for URI autolinks(`<https://example.com>`).
+>lua
+    -- [ Inline | URI autolinks ] ------------------------------------------------------------
+
+    --- Configuration for uri autolinks.
+    ---@class inline.uri_autolinks
+    ---
+    ---@field enable boolean
+    ---
+    ---@field default config.inline_generic | fun(buffer: integer, item: __inline.uri_autolinks): config.inline_generic
+    ---@field [string] config.inline_generic | fun(buffer: integer, item: __inline.uri_autolinks): config.inline_generic
+    uri_autolinks = {
+        enable = true,
+
+        default = {
+            icon = " ",
+            hl = "MarkviewEmail"
+        }
+    };
+
+    -- [ Inline | URI autolinks • Static ] ---------------------------------------------------
+
+    --- Static configuration for uri autolinks.
+    ---@class inline.uri_autolinks_static
+    ---
+    ---@field enable boolean
+    ---
+    ---@field default config.inline_generic_static Default configuration for URI autolinks.
+    ---@field [string] config.inline_generic_static Configuration for URI autolinks whose label match `string`.
+<
+>lua
+    -- [ Inline | URI autolinks > Parameters ] ------------------------------------------------
+
+    ---@class __inline.uri_autolinks
+    ---
+    ---@field class "inline_link_uri_autolinks"
+    ---
+    ---@field label string
+    ---
+    ---@field text string[]
+    ---@field range inline_link.range
+    M.__inline_uri_autolinks = {
+        class = "inline_link_uri_autolinks",
+        label = "https://example.com",
+
+        text = { "<https://example.com>" },
+        range = {
+            row_start = 0,
+            row_end = 0,
+
+            col_start = 0,
+            col_end = 21,
+
+            label = { 0, 1, 0, 20 }
+        }
+    };
+<
+
+------------------------------------------------------------------------------
+vim:ft=help:tw=78:
