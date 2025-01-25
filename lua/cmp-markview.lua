@@ -4,7 +4,7 @@ local source = {};
 --- Is this source available?
 ---@return boolean
 function source:is_available()
-	local fts = require("markview.spec").get({ "preview", "filetypes" }, { fallback = {}  });
+	local fts = require("markview.spec").get({ "preview", "filetypes" }, { fallback = {}, ignore_enable = true  });
 	return vim.list_contains(fts, vim.bo.ft);
 end
 

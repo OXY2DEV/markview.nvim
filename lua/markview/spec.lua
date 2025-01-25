@@ -214,9 +214,9 @@ spec.default = {
 				---+${lua}
 
 				---@type string[]
-				local preview_modes = spec.get({ "preview", "modes" }, { fallback = {} });
+				local preview_modes = spec.get({ "preview", "modes" }, { fallback = {}, ignore_enable = true });
 				---@type string[]
-				local hybrid_modes = spec.get({ "preview", "hybrid_modes" }, { fallback = {} });
+				local hybrid_modes = spec.get({ "preview", "hybrid_modes" }, { fallback = {}, ignore_enable = true });
 
 				local concealcursor = "";
 
@@ -237,7 +237,7 @@ spec.default = {
 				---+${lua}
 
 				---@type string[]
-				local preview_modes = spec.get({ "preview", "modes" }, { fallback = {} });
+				local preview_modes = spec.get({ "preview", "modes" }, { fallback = {}, ignore_enable = true });
 				local concealcursor = "";
 
 				for _, mode in ipairs(preview_modes) do
@@ -257,9 +257,9 @@ spec.default = {
 				---+${lua}
 
 				---@type string[]
-				local preview_modes = spec.get({ "preview", "modes" }, { fallback = {} });
+				local preview_modes = spec.get({ "preview", "modes" }, { fallback = {}, ignore_enable = true });
 				---@type string[]
-				local hybrid_modes = spec.get({ "preview", "hybrid_modes" }, { fallback = {} });
+				local hybrid_modes = spec.get({ "preview", "hybrid_modes" }, { fallback = {}, ignore_enable = true });
 
 				local concealcursor = "";
 

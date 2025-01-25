@@ -515,7 +515,8 @@ markview.actions = {
 				markview.state.splitview_buffer,
 				false,
 				spec.get({ "preview", "splitview_winopts", }, {
-					fallback = { split = "right" }
+					fallback = { split = "right" },
+					ignore_enable = true
 				})
 			);
 		end
@@ -798,7 +799,7 @@ markview.actions = {
 
 		local mode = vim.api.nvim_get_mode().mode;
 		---@type string[]
-		local hybd_modes = spec.get({ "preview", "hybrid_modes" }, { fallback = {} });
+		local hybd_modes = spec.get({ "preview", "hybrid_modes" }, { fallback = {}, ignore_enable = true });
 
 		if vim.list_contains(hybd_modes, mode) == false then
 			health.__child_indent_de();
@@ -844,9 +845,9 @@ markview.actions = {
 
 		local mode = vim.api.nvim_get_mode().mode;
 		---@type string[]
-		local prev_modes = spec.get({ "preview", "modes" }, { fallback = {} });
+		local prev_modes = spec.get({ "preview", "modes" }, { fallback = {}, ignore_enable = true });
 		---@type string[]
-		local hybd_modes = spec.get({ "preview", "hybrid_modes" }, { fallback = {} });
+		local hybd_modes = spec.get({ "preview", "hybrid_modes" }, { fallback = {}, ignore_enable = true });
 
 		if vim.list_contains(prev_modes, mode) == false then
 			health.__child_indent_de();
@@ -905,7 +906,7 @@ markview.actions = {
 
 			local mode = vim.api.nvim_get_mode().mode;
 			---@type string[]
-			local hybd_modes = spec.get({ "preview", "hybrid_modes" }, { fallback = {} });
+			local hybd_modes = spec.get({ "preview", "hybrid_modes" }, { fallback = {}, ignore_enable = true });
 
 			if vim.list_contains(hybd_modes, mode) == false then
 				return;
@@ -946,7 +947,7 @@ markview.actions = {
 
 			local mode = vim.api.nvim_get_mode().mode;
 			---@type string[]
-			local hybd_modes = spec.get({ "preview", "hybrid_modes" }, { fallback = {} });
+			local hybd_modes = spec.get({ "preview", "hybrid_modes" }, { fallback = {}, ignore_enable = true });
 
 			if vim.list_contains(hybd_modes, mode) == false then
 				return;
