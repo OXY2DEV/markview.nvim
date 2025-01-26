@@ -6,7 +6,7 @@ body:
   - type: checkboxes
     id: branch
     attributes:
-      labels: "🤖 Which branch are you using?"
+      label: "🤖 Which branch are you using?"
       options:
         - label: "dev"
         - label: "main"
@@ -60,7 +60,7 @@ body:
       required: true
 
   - type: textarea
-    id: repro
+    id: logs
     attributes:
       label: "📜 Logs:"
       description: |
@@ -81,7 +81,7 @@ body:
       required: true
 
   - type: textarea
-    id: minit
+    id: expected
     attributes:
       label: "✅ Expected behavior:"
       description: "The expected behavior."
