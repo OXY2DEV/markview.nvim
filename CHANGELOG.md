@@ -1,5 +1,13 @@
 # Changelog
 
+## [25.0.3](https://github.com/OXY2DEV/markview.nvim/compare/v25.0.2...v25.0.3) (2025-01-26)
+
+
+### Bug Fixes
+
+* **devicons:** properly fetch devicons by filetype ([1a60203](https://github.com/OXY2DEV/markview.nvim/commit/1a602031fa0549b1e0c0dba4f116187ea1313005))
+* Visual text concealing is now done via `string.rep()` instead of `string.gsub()` ([d91c277](https://github.com/OXY2DEV/markview.nvim/commit/d91c277e55df98fe99bebf88e6ebf2cafc2bfebb)), closes [#260](https://github.com/OXY2DEV/markview.nvim/issues/260)
+
 ## [25.0.2](https://github.com/OXY2DEV/markview.nvim/compare/v25.0.1...v25.0.2) (2025-01-25)
 
 
