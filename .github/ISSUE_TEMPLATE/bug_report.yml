@@ -1,4 +1,4 @@
-name: Bug report
+name: 🐞 Bug report
 description: "Report a bug in markview."
 title: "🐞 Bug: "
 labels: [ "bug" ]
@@ -38,6 +38,7 @@ body:
 
         Put this in a file(e.g. `minit.lua`) and do `nvim -u minit.lua` to run it.
       value: |
+        ```lua
         vim.env.LAZY_STDPATH = ".repro"
         load(vim.fn.system("curl -s https://raw.githubusercontent.com/folke/lazy.nvim/main/bootstrap.lua"))()
 
@@ -56,6 +57,7 @@ body:
                 }
             },
         });
+        ```
     validations:
       required: true
 
