@@ -37,7 +37,7 @@ body:
         The minimal config file to reproduce the issue.
 
         Put this in a file(e.g. `minit.lua`) and do `nvim -u minit.lua` to run it.
-      placeholder: |
+      value: |
         vim.env.LAZY_STDPATH = ".repro"
         load(vim.fn.system("curl -s https://raw.githubusercontent.com/folke/lazy.nvim/main/bootstrap.lua"))()
 
