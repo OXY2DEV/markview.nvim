@@ -178,7 +178,7 @@ markdown.output = function (str, buffer)
 				concat({
 					_codes.corner_left or "",
 					_codes.padding_left or "",
-					inline_code:gsub(".", "X"),
+					string.rep("X", vim.fn.strdisplaywidth(inline_code)),
 					_codes.padding_right or "",
 					_codes.corner_left or ""
 				})
@@ -500,7 +500,7 @@ markdown.output = function (str, buffer)
 				}),
 				concat({
 					" ",
-					(alias or link):gsub(".", "X"),
+					string.rep("X", vim.fn.strdisplaywidth(alias or link)),
 					" "
 				})
 			);
@@ -534,7 +534,7 @@ markdown.output = function (str, buffer)
 					_int.corner_left or "",
 					_int.padding_left or "",
 					_int.icon or "",
-					(alias or link):gsub(".", "X"),
+					string.rep("X", vim.fn.strdisplaywidth(alias or link)),
 					_int.padding_right or "",
 					_int.corner_right or ""
 				})
@@ -933,7 +933,7 @@ markdown.get_visual_text = {
 			content = utils.escape_string(content);
 			str_a = utils.escape_string(str_a);
 
-			str = str:gsub(str_b .. content .. str_a, utils.escape_string(content):gsub(".", "X"))
+			str = str:gsub(str_b .. content .. str_a, string.rep("X", vim.fn.strdisplaywidth(content)))
 
 			::continue::
 			---_
@@ -946,7 +946,7 @@ markdown.get_visual_text = {
 				striked,
 				"~~"
 			}), concat({
-				utils.escape_string(striked):gsub(".", "X"),
+				string.rep("X", vim.fn.strdisplaywidth(striked))
 			}));
 			---_
 		end
@@ -978,7 +978,7 @@ markdown.get_visual_text = {
 				link,
 				"]",
 			}), concat({
-				utils.escape_string(link):gsub(".", "X"),
+				string.rep("X", vim.fn.strdisplaywidth(link))
 			}))
 			---_
 		end
@@ -992,7 +992,9 @@ markdown.get_visual_text = {
 				m1,
 				address,
 				m2
-			}), link:gsub(".", "X"));
+			}),
+				string.rep("X", vim.fn.strdisplaywidth(link))
+			);
 			---_
 		end
 
@@ -1003,7 +1005,7 @@ markdown.get_visual_text = {
 				link,
 				"]",
 			}), concat({
-				utils.escape_string(link):gsub(".", "X"),
+				string.rep("X", vim.fn.strdisplaywidth(link)),
 			}))
 			---_
 		end

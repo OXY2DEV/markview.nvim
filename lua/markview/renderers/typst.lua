@@ -57,7 +57,7 @@ typst.get_visual_text = {
 				link,
 				"]",
 			}), concat({
-				utils.escape_string(link):gsub(".", "X"),
+				string.rep("X", vim.fn.strdisplaywidth(link))
 			}))
 			---_
 		end
@@ -69,7 +69,9 @@ typst.get_visual_text = {
 				link,
 				"]",
 				address
-			}), concat({ utils.escape_string(link):gsub(".", "X") }))
+			}), concat({
+				string.rep("X", vim.fn.strdisplaywidth(link))
+			}));
 			---_
 		end
 
@@ -80,7 +82,7 @@ typst.get_visual_text = {
 				link,
 				"]",
 			}), concat({
-				utils.escape_string(link):gsub(".", "X"),
+				string.rep("X", vim.fn.strdisplaywidth(link))
 			}))
 			---_
 		end
@@ -99,7 +101,7 @@ typst.get_visual_text = {
 			content = utils.escape_string(content);
 			str_a = utils.escape_string(str_a);
 
-			str = str:gsub(str_b .. content .. str_a, utils.escape_string(content):gsub(".", "X"))
+			str = str:gsub(str_b .. content .. str_a, string.rep("X", vim.fn.strdisplaywidth(content)))
 
 			::continue::
 			---_
@@ -112,7 +114,7 @@ typst.get_visual_text = {
 				striked,
 				"~~"
 			}), concat({
-				utils.escape_string(striked):gsub(".", "X"),
+				string.rep("X", vim.fn.strdisplaywidth(striked))
 			}));
 			---_
 		end
