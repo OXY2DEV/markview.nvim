@@ -170,6 +170,62 @@ vim.o.foldexpr = "v:lua.vim.treesitter.foldexpr()";
 vim.o.foldtext = "v:lua.heading_foldtext()"
 ```
 
+## 🎨 Single highlight group for all links
+
+> This has been taken from [#265](https://github.com/OXY2DEV/markview.nvim/issues/265)
+
+Copy this to your plugin's `config` option.
+
+```lua
+---@param group string New highlight group.
+---@return { [string]: { hl: string } } New configuration.
+local function generic_hl(group)
+	return {
+		["github%.com/[%a%d%-%_%.]+%/?$"] = {
+			hl = group
+		},
+		["github%.com/[%a%d%-%_%.]+/[%a%d%-%_%.]+%/?$"] = {
+			hl = group
+		},
+		["github%.com/[%a%d%-%_%.]+/[%a%d%-%_%.]+/tree/[%a%d%-%_%.]+%/?$"] = {
+			hl = group
+		},
+		["github%.com/[%a%d%-%_%.]+/[%a%d%-%_%.]+/commits/[%a%d%-%_%.]+%/?$"] = {
+			hl = group
+		},
+		["github%.com/[%a%d%-%_%.]+/[%a%d%-%_%.]+%/releases$"] = {
+			hl = group
+		},
+		["github%.com/[%a%d%-%_%.]+/[%a%d%-%_%.]+%/tags$"] = {
+			hl = group
+		},
+		["github%.com/[%a%d%-%_%.]+/[%a%d%-%_%.]+%/issues$"] = {
+			hl = group
+		},
+		["github%.com/[%a%d%-%_%.]+/[%a%d%-%_%.]+%/pulls$"] = {
+			hl = group
+		},
+		["github%.com/[%a%d%-%_%.]+/[%a%d%-%_%.]+%/wiki$"] = {
+			hl = group
+		}
+	};
+end
+
+require("markview").setup({
+    markdown = {
+       reference_definitions = generic_hl("MarkviewPalette4Fg")
+    },
+    markdown_inline = {
+        hyperlinks = generic_hl("MarkviewHyperlink"),
+        uri_autolinks = generic_hl("MarkviewEmail"),
+    },
+
+    typst = {
+        url_links = generic_hl("MarkviewEmail")
+    }
+});
+```
+
 ------
 
 Also available in vimdoc, `:h markview.nvim-advanced`
