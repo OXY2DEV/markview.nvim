@@ -472,21 +472,22 @@ vim.api.nvim_create_autocmd({
 			---_
 		end
 
-		if markview.actions.__is_attached(buffer) == false then
-			return;
-		elseif markview.actions.__is_enabled(buffer) == false then
-			return;
-		elseif vim.list_contains(modes, mode) == false then
-			if buffer == markview.state.splitview_source then
-				handle_splitview();
-			end
-
-			return;
-		end
-
 		if buffer == markview.state.splitview_source then
 			handle_splitview();
 		else
+			--- Do these checks only for normal buffers.
+			if markview.actions.__is_attached(buffer) == false then
+				return;
+			elseif markview.actions.__is_enabled(buffer) == false then
+				return;
+			elseif vim.list_contains(modes, mode) == false then
+				if buffer == markview.state.splitview_source then
+					handle_splitview();
+				end
+
+				return;
+			end
+
 			handle_renderer();
 		end
 		---_
