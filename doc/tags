@@ -1,6 +1,7 @@
 markview.nvim	home.txt	/*markview.nvim*
 markview.nvim-advanced	advanced_usage.txt	/*markview.nvim-advanced*
 markview.nvim-advanced.header_folding	advanced_usage.txt	/*markview.nvim-advanced.header_folding*
+markview.nvim-advanced.single_link_hl	advanced_usage.txt	/*markview.nvim-advanced.single_link_hl*
 markview.nvim-autocmds	home.txt	/*markview.nvim-autocmds*
 markview.nvim-commands	home.txt	/*markview.nvim-commands*
 markview.nvim-config	home.txt	/*markview.nvim-config*
@@ -78,6 +79,7 @@ markview.nvim-preview.hybrid_modes	preview_options.txt	/*markview.nvim-preview.h
 markview.nvim-preview.icon_provider	preview_options.txt	/*markview.nvim-preview.icon_provider*
 markview.nvim-preview.ignore_buftypes	preview_options.txt	/*markview.nvim-preview.ignore_buftypes*
 markview.nvim-preview.ignore_previews	preview_options.txt	/*markview.nvim-preview.ignore_previews*
+markview.nvim-preview.linewise_hybrid_mode	preview_options.txt	/*markview.nvim-preview.linewise_hybrid_mode*
 markview.nvim-preview.max_buf_lines	preview_options.txt	/*markview.nvim-preview.max_buf_lines*
 markview.nvim-preview.modes	preview_options.txt	/*markview.nvim-preview.modes*
 markview.nvim-preview.splitview_winopts	preview_options.txt	/*markview.nvim-preview.splitview_winopts*

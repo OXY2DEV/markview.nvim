@@ -107,7 +107,6 @@ markview.strict_render = {
 		local parser = require("markview.parser");
 		local renderer = require("markview.renderer");
 
-		markview.render(buffer);
 		local content;
 
 		markview.clear(buffer);

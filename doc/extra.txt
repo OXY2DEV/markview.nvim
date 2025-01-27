@@ -133,4 +133,4 @@ You will get access to the `:Code` command. It has the following sub-commands,
     - `edit`
       Edits the code block under the cursor.
 
-vim:ft=help:tw=78:colorcolumn=78:
+vim:ft=help:tw=78:
