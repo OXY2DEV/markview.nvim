@@ -475,6 +475,8 @@ highlights.set_hl = function (name, value)
 
 			message = err
 		});
+	else
+		table.insert(highlights.created, name);
 	end
 end
 
@@ -482,6 +484,8 @@ end
 ---@param array { [string]: config.hl | fun(): config.hl }
 highlights.create = function (array)
 	---+${lua}
+
+	highlights.created = {};
 
 	if type(array) == "string" then
 		if not highlights[array] then
@@ -516,6 +520,19 @@ highlights.create = function (array)
 		end
 	end
 	---_
+end
+
+--- Destroys created highlight groups.
+--- Internal function! Should be only called
+--- manually!
+highlights.destroy = function ()
+	for _, name in ipairs(highlights.created) do
+		--- BUG, `nvim_set_hl()` gives unexpected
+		--- behavior.
+		vim.cmd("hi clear " .. name);
+	end
+
+	highlights.created = {};
 end
 
 --- Is the background "dark"?

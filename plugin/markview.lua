@@ -498,7 +498,7 @@ vim.api.nvim_create_autocmd({
 vim.api.nvim_create_autocmd("ColorScheme", {
 	callback = function ()
 		local hls = require("markview.highlights");
-		hls.create(hls.groups)
+		hls.create(hls.groups);
 
 		health.notify("trace", {
 			level = 5,

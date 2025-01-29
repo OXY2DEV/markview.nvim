@@ -930,6 +930,7 @@ Go over a line with a checkbox and run,
 ```vim
 :Checkbox interactive
 ```
+
 Now use `h`, `j`, `k`, `l` to change the checkbox state.
 
 ## ✅ Contributing to the projects
