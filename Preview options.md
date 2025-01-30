@@ -37,6 +37,8 @@ Options that change how previews are shown.
 --- Buftypes that should be ignored(e.g. nofile).
 ---@field ignore_buftypes? string[]
 --- Maximum number of lines a buffer can have before switching to partial rendering.
+---@field condition? fun(buffer: integer): boolean
+--- Maximum number of lines a buffer can have before switching to partial rendering.
 ---@field max_buf_lines? integer
 ---
 --- Lines before & after the cursor that is considered being edited.
@@ -755,6 +757,14 @@ List of buffer filetypes to enable this plugin in. This will cause the plugin to
 - Default: { "nofile" }
 
 List of buffer types to ignore when attaching to new buffers. Checked after the filetype.
+
+### condition
+
+- Type: `nil | fun(buffer: integer): boolean`
+- Dynamic: false
+- Default: nil
+
+Condition used to check if a buffer should be attached to or not.
 
 ### max_buf_lines
 
