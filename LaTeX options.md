@@ -873,6 +873,7 @@ Configuration for subscripts(`_{}`).
 ---@class latex.subscripts
 ---
 ---@field enable boolean Enables preview of subscript text.
+---@field fake_preview? boolean When `true`, subscript characters are *faked*.
 ---@field hl? string | string[] Highlight group for the subscript text. Can be a list to use different hl for nested subscripts.
 subscripts = {
     enable = true,
@@ -935,6 +936,7 @@ Configuration for superscripts(`^{}`).
 ---@class latex.superscripts
 ---
 ---@field enable boolean Enables preview of superscript text.
+---@field fake_preview? boolean When `true`, superscript characters are *faked*.
 ---@field hl? string | string[] Highlight group for the superscript text. Can be a list to use different hl for nested superscripts.
 subscripts = {
     enable = true,
