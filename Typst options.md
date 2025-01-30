@@ -976,6 +976,7 @@ Configuration for subscript texts.
 ---@class typst.subscripts
 ---
 ---@field enable boolean
+---@field fake_preview? boolean When `true`, fake subscript characters.
 ---
 ---@field hl? string | string[]
 ---@field marker_left? string
@@ -1035,6 +1036,7 @@ Configuration for superscript texts.
 ---@class typst.superscripts
 ---
 ---@field enable boolean
+---@field fake_preview? boolean When `true`, fake superscript characters.
 ---
 ---@field hl? string | string[]
 ---@field marker_left? string
