@@ -736,7 +736,7 @@ List of VIM-modes where previews are shown.
 
 - Type: `integer`
 - Dynamic: **true**(not recommended)
-- Default: 50
+- Default: 150
 
 Debounce delay(in `milliseconds`) for rendering. Affects how frequently the preview is updated.
 
