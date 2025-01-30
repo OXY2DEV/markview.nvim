@@ -35,6 +35,8 @@
     ---@field filetypes? string[]
     --- Buftypes that should be ignored(e.g. nofile).
     ---@field ignore_buftypes? string[]
+	--- Condition to check if a buffer should be attached or not.
+	---@field condition? fun(buffer: integer): boolean
     --- Maximum number of lines a buffer can have before switching to partial rendering.
     ---@field max_buf_lines? integer
     ---
@@ -748,6 +750,15 @@ ignore_buftypes ~
 
 List of buffer types to ignore when attaching to new buffers. Checked after
 the filetype.
+
+											 *markview.nvim-preview.condition*
+condition ~
+
+    - Type: `nil | fun(buffer: integer): boolean`
+    - Dynamic: false
+    - Default: nil
+
+Condition used to check if a buffer should be attached to or not.
 
                                          *markview.nvim-preview.max_buf_lines*
 max_buf_lines ~

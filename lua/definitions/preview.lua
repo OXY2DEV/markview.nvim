@@ -35,6 +35,8 @@ local M = {};
 ---@field filetypes? string[]
 --- Buftypes that should be ignored(e.g. nofile).
 ---@field ignore_buftypes? string[]
+--- Condition to check if a buffer should be attached or not.
+---@field condition? fun(buffer: integer): boolean
 --- Maximum number of lines a buffer can have before switching to partial rendering.
 ---@field max_buf_lines? integer
 ---

@@ -131,11 +131,15 @@ vim.api.nvim_create_autocmd({ "BufAdd", "BufEnter" }, {
 		local attach_ft = spec.get({ "preview", "filetypes" }, { fallback = {}, ignore_enable = true });
 		local ignore_bt = spec.get({ "preview", "ignore_buftypes" }, { fallback = {}, ignore_enable = true });
 
+		local condition = spec.get({ "preview", "condition" }, { eval_args = { buffer } });
+
 		if vim.list_contains(ignore_bt, bt) == true then
 			--- Ignored buffer type.
 			return;
 		elseif vim.list_contains(attach_ft, ft) == false then
 			--- Ignored file type.
+			return;
+		elseif condition == false then
 			return;
 		end
 
