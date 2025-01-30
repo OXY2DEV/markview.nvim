@@ -401,46 +401,89 @@ latex.subscript = function (buffer, item)
 		hl = config.hl;
 	end
 
-	vim.api.nvim_buf_set_extmark(buffer, latex.ns, range.row_start, range.col_start, {
-		undo_restore = false, invalidate = true,
-		end_col = range.col_start + (item.parenthesis and 2 or 1),
-		conceal = "",
+	---@cast hl string?
 
-		virt_text_pos = "inline",
-		virt_text = item.preview == false and { { "↓(", utils.set_hl(hl) } } or nil,
+	if config.fake_preview == false or item.preview == false then
+		if item.parenthesis then
+			vim.api.nvim_buf_set_extmark(buffer, latex.ns, range.row_start, range.col_start, {
+				undo_restore = false, invalidate = true,
+				end_col = range.col_start + 2,
+				conceal = "",
 
-		hl_mode = "combine"
-	});
+				virt_text_pos = "inline",
+				virt_text = {
+					{ "↓(", utils.set_hl(hl) }
+				},
 
-	if item.parenthesis then
-		table.insert(latex.cache.style_regions.subscripts, item);
+				hl_mode = "combine"
+			});
 
-		vim.api.nvim_buf_set_extmark(buffer, latex.ns, range.row_start, range.col_start, {
-			undo_restore = false, invalidate = true,
-			end_row = range.row_end,
-			end_col = range.col_end,
+			vim.api.nvim_buf_set_extmark(buffer, latex.ns, range.row_end, range.col_end - 1, {
+				undo_restore = false, invalidate = true,
+				end_col = range.col_end,
+				conceal = "",
 
-			hl_group = utils.set_hl(hl)
-		});
+				virt_text_pos = "inline",
+				virt_text = { { ")", utils.set_hl(hl) } },
 
-		vim.api.nvim_buf_set_extmark(buffer, latex.ns, range.row_end, range.col_end - 1, {
-			undo_restore = false, invalidate = true,
-			end_col = range.col_end,
-			conceal = "",
+				hl_mode = "combine"
+			});
+		else
+			vim.api.nvim_buf_set_extmark(buffer, latex.ns, range.row_start, range.col_start, {
+				undo_restore = false, invalidate = true,
+				end_col = range.col_start + 1,
+				conceal = "",
 
-			virt_text_pos = "inline",
-			virt_text = item.preview == false and { { ")", utils.set_hl(hl) } } or nil,
+				virt_text_pos = "inline",
+				virt_text = {
+					{ "↓(", utils.set_hl(hl) }
+				},
 
-			hl_mode = "combine"
-		});
-	elseif symbols.subscripts[item.text[1]:sub(2)] then
-		vim.api.nvim_buf_set_extmark(buffer, latex.ns, range.row_start, range.col_start + 1, {
-			undo_restore = false, invalidate = true,
-			virt_text_pos = "overlay",
-			virt_text = { { symbols.subscripts[item.text[1]:sub(2)], utils.set_hl(hl) } },
+				hl_mode = "combine"
+			});
 
-			hl_mode = "combine"
-		});
+			vim.api.nvim_buf_set_extmark(buffer, latex.ns, range.row_end, range.col_end, {
+				undo_restore = false, invalidate = true,
+				right_gravity = false,
+
+				virt_text_pos = "inline",
+				virt_text = { { ")", utils.set_hl(hl) } },
+
+				hl_mode = "combine"
+			});
+		end
+	else
+		if item.parenthesis then
+			if item.preview then
+				table.insert(latex.cache.style_regions.subscripts, item);
+			end
+
+			vim.api.nvim_buf_set_extmark(buffer, latex.ns, range.row_start, range.col_start, {
+				undo_restore = false, invalidate = true,
+				end_col = range.col_start + 2,
+				conceal = ""
+			});
+
+			vim.api.nvim_buf_set_extmark(buffer, latex.ns, range.row_end, range.col_end - 1, {
+				undo_restore = false, invalidate = true,
+				end_col = range.col_end,
+				conceal = "",
+			});
+		elseif symbols.subscripts[item.text[1]:sub(2)] then
+			vim.api.nvim_buf_set_extmark(buffer, latex.ns, range.row_start, range.col_start, {
+				undo_restore = false, invalidate = true,
+				end_col = range.col_start + 1,
+				conceal = ""
+			});
+
+			vim.api.nvim_buf_set_extmark(buffer, latex.ns, range.row_start, range.col_start + 1, {
+				undo_restore = false, invalidate = true,
+				virt_text_pos = "overlay",
+				virt_text = { { symbols.subscripts[item.text[1]:sub(2)], utils.set_hl(hl) } },
+
+				hl_mode = "combine"
+			});
+		end
 	end
 
 	vim.api.nvim_buf_set_extmark(buffer, latex.ns, range.row_start, range.col_start, {
@@ -458,7 +501,7 @@ end
 latex.superscript = function (buffer, item)
 	---+${func}
 
-	---@type latex.superscripts?
+	---@type latex.subscripts?
 	local config = spec.get({ "latex", "superscripts" }, { fallback = nil, eval_args = { buffer, item } });
 
 	if not config then
@@ -466,50 +509,106 @@ latex.superscript = function (buffer, item)
 	end
 
 	local range = item.range;
+	local hl;
 
-	vim.api.nvim_buf_set_extmark(buffer, latex.ns, range.row_start, range.col_start, {
-		undo_restore = false, invalidate = true,
-		end_col = range.col_start + (item.parenthesis and 2 or 1),
-		conceal = "",
+	if vim.islist(config.hl) then
+		hl = config.hl[utils.clamp(item.level, 1, #config.hl)];
+	elseif type(config.hl) == "string" then
+		hl = config.hl;
+	end
 
-		virt_text_pos = "inline",
-		virt_text = item.preview == false and { { "↑(", utils.set_hl(config.hl) } } or nil,
+	---@cast hl string?
 
-		hl_mode = "combine"
-	});
+	if config.fake_preview == false or item.preview == false then
+		if item.parenthesis then
+			vim.api.nvim_buf_set_extmark(buffer, latex.ns, range.row_start, range.col_start, {
+				undo_restore = false, invalidate = true,
+				end_col = range.col_start + 2,
+				conceal = "",
 
-	if item.parenthesis then
-		if item.preview then
-			table.insert(latex.cache.style_regions.superscripts, item);
+				virt_text_pos = "inline",
+				virt_text = {
+					{ "↑(", utils.set_hl(hl) }
+				},
+
+				hl_mode = "combine"
+			});
+
+			vim.api.nvim_buf_set_extmark(buffer, latex.ns, range.row_end, range.col_end - 1, {
+				undo_restore = false, invalidate = true,
+				end_col = range.col_end,
+				conceal = "",
+
+				virt_text_pos = "inline",
+				virt_text = { { ")", utils.set_hl(hl) } },
+
+				hl_mode = "combine"
+			});
 		else
 			vim.api.nvim_buf_set_extmark(buffer, latex.ns, range.row_start, range.col_start, {
 				undo_restore = false, invalidate = true,
-				end_row = range.row_end,
-				end_col = range.col_end,
+				end_col = range.col_start + 1,
+				conceal = "",
 
-				hl_group = utils.set_hl(config.hl)
+				virt_text_pos = "inline",
+				virt_text = {
+					{ "↑(", utils.set_hl(hl) }
+				},
+
+				hl_mode = "combine"
+			});
+
+			vim.api.nvim_buf_set_extmark(buffer, latex.ns, range.row_end, range.col_end, {
+				undo_restore = false, invalidate = true,
+				right_gravity = false,
+
+				virt_text_pos = "inline",
+				virt_text = { { ")", utils.set_hl(hl) } },
+
+				hl_mode = "combine"
 			});
 		end
+	else
+		if item.parenthesis then
+			if item.preview then
+				table.insert(latex.cache.style_regions.superscripts, item);
+			end
 
-		vim.api.nvim_buf_set_extmark(buffer, latex.ns, range.row_end, range.col_end - 1, {
-			undo_restore = false, invalidate = true,
-			end_col = range.col_end,
-			conceal = "",
+			vim.api.nvim_buf_set_extmark(buffer, latex.ns, range.row_start, range.col_start, {
+				undo_restore = false, invalidate = true,
+				end_col = range.col_start + 2,
+				conceal = ""
+			});
 
-			virt_text_pos = "inline",
-			virt_text = item.preview == false and { { ")", utils.set_hl(config.hl) } } or nil,
+			vim.api.nvim_buf_set_extmark(buffer, latex.ns, range.row_end, range.col_end - 1, {
+				undo_restore = false, invalidate = true,
+				end_col = range.col_end,
+				conceal = "",
+			});
+		elseif symbols.superscripts[item.text[1]:sub(2)] then
+			vim.api.nvim_buf_set_extmark(buffer, latex.ns, range.row_start, range.col_start, {
+				undo_restore = false, invalidate = true,
+				end_col = range.col_start + 1,
+				conceal = ""
+			});
 
-			hl_mode = "combine"
-		});
-	elseif symbols.superscripts[item.text[1]:sub(2)] then
-		vim.api.nvim_buf_set_extmark(buffer, latex.ns, range.row_start, range.col_start + 1, {
-			undo_restore = false, invalidate = true,
-			virt_text_pos = "overlay",
-			virt_text = { { symbols.superscripts[item.text[1]:sub(2)], utils.set_hl(config.hl) } },
+			vim.api.nvim_buf_set_extmark(buffer, latex.ns, range.row_start, range.col_start + 1, {
+				undo_restore = false, invalidate = true,
+				virt_text_pos = "overlay",
+				virt_text = { { symbols.superscripts[item.text[1]:sub(2)], utils.set_hl(hl) } },
 
-			hl_mode = "combine"
-		});
+				hl_mode = "combine"
+			});
+		end
 	end
+
+	vim.api.nvim_buf_set_extmark(buffer, latex.ns, range.row_start, range.col_start, {
+		undo_restore = false, invalidate = true,
+		end_row = range.row_end,
+		end_col = range.col_end,
+
+		hl_group = utils.set_hl(hl)
+	});
 	---_
 end
 
