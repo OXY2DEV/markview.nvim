@@ -1,5 +1,20 @@
 # Changelog
 
+## [25.1.0](https://github.com/OXY2DEV/markview.nvim/compare/v25.0.3...v25.1.0) (2025-01-30)
+
+
+### Features
+
+* Added option to disable faking characters of subscript/supersc in Typst ([2975f6e](https://github.com/OXY2DEV/markview.nvim/commit/2975f6ea5e9a7653413d7258d8040d9ee68d1ddc)), closes [#271](https://github.com/OXY2DEV/markview.nvim/issues/271)
+* Added option to disable faking preview of subscript/superscript in LaTeX ([c382be1](https://github.com/OXY2DEV/markview.nvim/commit/c382be12f166ed6bee8fe9fe6d4a41d1596af5c1)), closes [#271](https://github.com/OXY2DEV/markview.nvim/issues/271)
+
+
+### Bug Fixes
+
+* Buffer attach, enable state & preview modes are no longer checked for splitview ([81b40bd](https://github.com/OXY2DEV/markview.nvim/commit/81b40bd8c8c9e239bd14f7dace29f64fe20cbb98)), closes [#264](https://github.com/OXY2DEV/markview.nvim/issues/264)
+* **presets:** Fix icon highlight for marker preset ([399fcce](https://github.com/OXY2DEV/markview.nvim/commit/399fccede8dcee89b5c84ef4a0670fe3dbb1cd32))
+* **renderer_markdown:** Indentation concealing no longer breaks when `add_padding = false` ([aeb5b4e](https://github.com/OXY2DEV/markview.nvim/commit/aeb5b4e3eca3388e389cbd89d05045a5c4bcfda4)), closes [#267](https://github.com/OXY2DEV/markview.nvim/issues/267)
+
 ## [25.0.3](https://github.com/OXY2DEV/markview.nvim/compare/v25.0.2...v25.0.3) (2025-01-26)
 
 
