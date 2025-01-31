@@ -3103,7 +3103,7 @@ spec.fixup = {
 					end
 
 					::invalid_type::
-				elseif k ~= "__emoji_link_compatibility" then
+				elseif k ~= "__emoji_link_compatability" then
 					_l[k] = v;
 				end
 			end
