@@ -1043,7 +1043,7 @@ Configuration for URLs.
     ---@field [string] config.inline_generic Configuration for URL links whose label matches `string`.
     url_links = {
         enable = true,
-        __emoji_link_compatibility = true,
+        __emoji_link_compatability = true,
 
         default = {
             icon = " ",
@@ -1061,7 +1061,7 @@ Configuration for URLs.
     ---@field [string] config.inline_generic Configuration for URL links whose label matches `string`.
     url_links = {
         enable = true,
-        __emoji_link_compatibility = true,
+        __emoji_link_compatability = true,
 
         default = {
             icon = " ",
