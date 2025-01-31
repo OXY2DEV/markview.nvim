@@ -769,4 +769,3 @@ fts.get = function (ft)
 end
 
 return fts;
-
