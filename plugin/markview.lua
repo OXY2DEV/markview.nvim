@@ -1,5 +1,5 @@
 --- Functionality provider for `markview.nvim`.
---- Functionalities that are implementated,
+--- Functionalities that are implemented,
 ---
 ---   + Buffer registration.
 ---   + Command.

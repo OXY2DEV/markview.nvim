@@ -84,7 +84,7 @@ author: "OXY2DEV"
 printf("Hello world!")
 ```
 
-```html A very long info string that wil not fit here! And to be absolutely sure I will add a few more words.
+```html A very long info string that will not fit here! And to be absolutely sure I will add a few more words.
 <p>Hello world!</p>
 ```
 
@@ -169,5 +169,6 @@ Setext 2
 | 1 | 2 | 3 | 4 |
 | **Bold** | *italic* | ***Bold italic*** | `Inline code` |
 | [Shortcut] | [Link](reddit.com) | ![Image](test.svg) | [[Internal]] |
+
 
 

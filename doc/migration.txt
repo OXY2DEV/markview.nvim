@@ -61,25 +61,25 @@ v24.x → v25.x
     -   },
     -   links = {
     -       hyperlinks = {
-    -           __emoji_link_compatability = false,
+    -           __emoji_link_compatibility = false,
     -           icon = "", hl = nil,
 
     -           custom = {}
     -       },
     -       images = {
-    -           __emoji_link_compatability = false,
+    -           __emoji_link_compatibility = false,
     -           icon = "", hl = nil,
 
     -           custom = {}
     -       },
     -       emails = {
-    -           __emoji_link_compatability = false,
+    -           __emoji_link_compatibility = false,
     -           icon = "", hl = nil,
 
     -           custom = {}
     -       },
     -       internal_links = {
-    -           __emoji_link_compatability = false,
+    -           __emoji_link_compatibility = false,
     -           icon = "", hl = nil,
 
     -           custom = {}
