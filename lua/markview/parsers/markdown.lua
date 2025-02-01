@@ -152,6 +152,12 @@ markdown.code_block = function (buffer, TSNode, _, range)
 	---@type string[]
 	local text = vim.api.nvim_buf_get_lines(buffer, range.row_start, range.row_end, false);
 
+	--- Fix range when leading whitespace(s)
+	--- are present.
+	if text[1]:sub(range.col_start + 1):match("^%s+") then
+		range.col_start = range.col_start + text[1]:sub(range.col_start + 1):match("^%s+"):len();
+	end
+
 	--- Modify the text so that only the text
 	--- inside the node's range is visible.
 	for l, line in ipairs(text) do
@@ -184,8 +190,8 @@ markdown.code_block = function (buffer, TSNode, _, range)
 		language = language,
 		info_string = info_string,
 		delimiters = {
-			start_delim and vim.treesitter.get_node_text(start_delim, buffer) or "",
-			end_delim and vim.treesitter.get_node_text(end_delim, buffer) or "",
+			start_delim and vim.treesitter.get_node_text(start_delim, buffer):gsub("^%s*", "") or "",
+			end_delim and vim.treesitter.get_node_text(end_delim, buffer):gsub("^%s*", "") or "",
 		},
 
 		text = text,
