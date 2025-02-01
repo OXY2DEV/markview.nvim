@@ -33,41 +33,45 @@ health.notify("trace", {
 	message = "Created highlight groups"
 });
 
---- FIX, Patch for the broken (fenced_code_block) concealment.
---- Doesn't hide leading spaces before ```.
-vim.treesitter.query.add_directive("conceal-patch!", function (match, _, bufnr, predicate, metadata)
-	---+${lua}
-	local id = predicate[2];
-	local node = match[id];
+local available_directives = vim.treesitter.query.list_directives();
 
-	local r_s, c_s, r_e, c_e = node:range();
-	local line = vim.api.nvim_buf_get_lines(bufnr, r_s, r_s + 1, true)[1];
+if vim.list_contains(available_directives, "conceal-patch!") == false then
+	--- FIX, Patch for the broken (fenced_code_block) concealment.
+	--- Doesn't hide leading spaces before ```.
+	vim.treesitter.query.add_directive("conceal-patch!", function (match, _, bufnr, predicate, metadata)
+		---+${lua}
+		local id = predicate[2];
+		local node = match[id];
 
-	if not line then
-		return;
-	elseif not metadata[id] then
-		metadata[id] = { range = {} };
-	end
+		local r_s, c_s, r_e, c_e = node:range();
+		local line = vim.api.nvim_buf_get_lines(bufnr, r_s, r_s + 1, true)[1];
 
-	line = line:sub(c_s + 1, #line);
-	local spaces = line:match("^(%s*)%S"):len();
+		if not line then
+			return;
+		elseif not metadata[id] then
+			metadata[id] = { range = {} };
+		end
 
-	metadata[id].range[1] = r_s;
-	metadata[id].range[2] = c_s + spaces;
-	metadata[id].range[3] = r_e;
-	metadata[id].range[4] = c_e;
+		line = line:sub(c_s + 1, #line);
+		local spaces = line:match("^(%s*)%S"):len();
 
-	metadata[id].conceal = "";
-	---_
-end);
+		metadata[id].range[1] = r_s;
+		metadata[id].range[2] = c_s + spaces;
+		metadata[id].range[3] = r_e;
+		metadata[id].range[4] = c_e;
 
-health.notify("trace", {
-	level = 5,
-	message = {
-		{ "Added tree-sitter directive ", "Special" },
-		{ " conceal-patch! ", "DiagnosticVirtualTextInfo" }
-	}
-});
+		metadata[id].conceal = "";
+		---_
+	end);
+
+	health.notify("trace", {
+		level = 5,
+		message = {
+			{ "Added tree-sitter directive ", "Special" },
+			{ " conceal-patch! ", "DiagnosticVirtualTextInfo" }
+		}
+	});
+end
 
  ------------------------------------------------------------------------------------------
 
