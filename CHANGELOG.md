@@ -1,5 +1,17 @@
 # Changelog
 
+## [25.1.1](https://github.com/OXY2DEV/markview.nvim/compare/v25.1.0...v25.1.1) (2025-02-01)
+
+
+### Bug Fixes
+
+* **parser-markdown:** Fixed incorrect start column of code blocks with manual indentations ([85926af](https://github.com/OXY2DEV/markview.nvim/commit/85926af964f399e479ba175bef9976bf35442945))
+* **treesitter:** Added directive check before adding new directive ([89f397d](https://github.com/OXY2DEV/markview.nvim/commit/89f397d0f4a2276c08a24b040a7f745cb4d3b504)), closes [#277](https://github.com/OXY2DEV/markview.nvim/issues/277)
+* **typos:** Possibly all typos in plugin ([ca35213](https://github.com/OXY2DEV/markview.nvim/commit/ca35213f90a421869c865604484556f38f29b391))
+* **typo:** the compatability should be the same ([2f1e438](https://github.com/OXY2DEV/markview.nvim/commit/2f1e438b09a1968a30c760692b846f20bf8d0e75))
+* **typo:** the compatability should be the same ([2f1e438](https://github.com/OXY2DEV/markview.nvim/commit/2f1e438b09a1968a30c760692b846f20bf8d0e75))
+* **typo:** weird ([d9804d8](https://github.com/OXY2DEV/markview.nvim/commit/d9804d8d4144d64d7923efcf9519be43f294af0c))
+
 ## [25.1.0](https://github.com/OXY2DEV/markview.nvim/compare/v25.0.3...v25.1.0) (2025-01-30)
 
 
