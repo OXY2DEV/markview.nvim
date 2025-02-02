@@ -1,5 +1,12 @@
 # Changelog
 
+## [25.1.2](https://github.com/OXY2DEV/markview.nvim/compare/v25.1.1...v25.1.2) (2025-02-02)
+
+
+### Bug Fixes
+
+* **core:** Fixed a bug with decoration overlapping ([a39d03f](https://github.com/OXY2DEV/markview.nvim/commit/a39d03f8445971c4a250396a44b23fa9c6fd8921))
+
 ## [25.1.1](https://github.com/OXY2DEV/markview.nvim/compare/v25.1.0...v25.1.1) (2025-02-01)
 
 
