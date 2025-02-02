@@ -489,42 +489,33 @@ renderer.clear = function (buffer, from, to)
 	---_
 end
 
-renderer.range = function (content)
-	local _f, _t = nil, nil;
-	local range_processoer = {
-		["markdown_table"] = function (range)
-			local use_virt = require("markview.spec").get({ "markdown", "tables", "use_virt_lines" }, { fallback = false });
-
-			if use_virt ~= true then
-				range.row_start = range.row_start - 1;
-				range.row_end = range.row_end + 1;
-			end
-
-			return range;
-		end
+renderer.get_range = function (content)
+	local from, to = nil, nil;
+	local ignore_nodes = {
+		markdown = { "markdown_section" }
 	}
 
-	for _, lang in pairs(content) do
-		for _, item in ipairs(lang) do
-			local range = vim.deepcopy(item.range);
-
-			-- Change the range when specific options
-			-- are set.
-			if range_processoer[item.class] then
-				range = range_processoer[item.class](range);
+	for lang, lang_items in pairs(content) do
+		for _, item in ipairs(lang_items) do
+			if vim.list_contains(ignore_nodes[lang] or {}, item.class) then
+				goto continue;
 			end
 
-			if not _f or item.range.row_start < _f then
-				_f = item.range.row_start;
+			local range = renderer.fix_range(item.class, vim.deepcopy(item.range));
+
+			if not from or range.row_start < from then
+				from = range.row_start;
 			end
 
-			if not _t or item.range.row_end > _t then
-				_t = item.range.row_end;
+			if not to or range.row_end > to then
+				to = range.row_end;
 			end
+
+		    ::continue::
 		end
 	end
 
-	return _f, _t;
+	return from, to;
 end
 
 return renderer;

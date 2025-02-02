@@ -348,6 +348,7 @@ markview.render = function (buffer, state)
 					math.max(0, cursor[1] - edit_range[1]),
 					math.min(cursor[1] + edit_range[2], line_count)
 				});
+
 				renderer.render(buffer, content);
 			elseif hybrid_mode() == true then
 				renderer.render(buffer, content);
@@ -357,6 +358,7 @@ markview.render = function (buffer, state)
 					math.min(cursor[1] + 1 + edit_range[2], line_count)
 				);
 			else
+				renderer.clear(buffer, renderer.get_range(content));
 				renderer.render(buffer, content);
 			end
 		end
