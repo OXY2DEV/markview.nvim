@@ -4,7 +4,15 @@ local source = {};
 --- Is this source available?
 ---@return boolean
 function source:is_available()
-	local fts = require("markview.spec").get({ "preview", "filetypes" }, { fallback = {}, ignore_enable = true  });
+	if not package.loaded["markview.spec"] then
+		--- Plugin not available.
+		return false;
+	end
+
+	local fts = require("markview.spec").get({ "preview", "filetypes" }, {
+		fallback = {},
+		ignore_enable = true
+	});
 	return vim.list_contains(fts, vim.bo.ft);
 end
 
@@ -17,7 +25,7 @@ end
 --- Characters that trigger the completion.
 ---@return string[]
 function source:get_trigger_characters()
-	return { "[", "!" }
+	return { "[", "!" };
 end
 
 --- Completion items.
@@ -25,16 +33,17 @@ end
 ---@param params table
 ---@param callback function
 function source:complete(params, callback)
-	local spec = require("markview.spec");
+	if not package.loaded["markview.spec"] then
+		--- Plugin not available.
+		return;
+	end
+
+	local spec = package.loaded["markview.spec"];
 
 	local before = params.context.cursor_before_line or "";
 	local after = params.context.cursor_after_line or "";
 
 	local comp = {};
-
-	if vim.bo.ft ~= "markdown" then
-		goto not_md;
-	end
 
 	if before:match("^[ %>]+%s*%[%!%a*$") then
 		---+${func, Callout completion}
@@ -100,8 +109,6 @@ function source:complete(params, callback)
 	else
 		return;
 	end
-
-	::not_md::
 
 	callback(comp);
 end
