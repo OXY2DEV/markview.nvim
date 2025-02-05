@@ -754,7 +754,7 @@ These groups are then used as links by other groups responsible for various prev
 | MarkviewCheckboxChecked   | link: `MarkviewPalette4Fg`                 |
 | MarkviewCheckboxPending   | link: `MarkviewPalette2Fg`                 |
 | MarkviewCheckboxProgress  | link: `MarkviewPalette6Fg`                 |
-| MarkviewCheckboxUnchecked  | link: `MarkviewPalette1Fg`                 |
+| MarkviewCheckboxUnchecked | link: `MarkviewPalette1Fg`                 |
 | MarkviewCheckboxStriked   | link\*: `MarkviewPalette0Fg`               |
 | ————————————————————————— | —————————————————————————————————————————— |
 | MarkviewCode              | bg\*\*: `normal` ± 5%(L)                   |

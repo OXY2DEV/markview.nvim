@@ -273,7 +273,7 @@ markview.render = function (buffer, state)
 	---@type [ integer, integer ] Number of lines to draw on large buffers.
 	local draw_range = spec.get({ "preview", "draw_range" }, { fallback = { vim.o.lines, vim.o.lines }, ignore_enable = true });
 	---@type [ integer, integer ] Number of lines to be considered being edited.
-	local edit_range = spec.get({ "preview", "edit_range" }, { fallback = { 1, 0 }, ignore_enable = true });
+	local edit_range = spec.get({ "preview", "edit_range" }, { fallback = { 0, 0 }, ignore_enable = true });
 
 	---@type integer Buffer's line count.
 	local line_count = vim.api.nvim_buf_line_count(buffer);
@@ -296,12 +296,10 @@ markview.render = function (buffer, state)
 		end
 	end
 
-	local content;
-
 	markview.clear(buffer);
 
 	if line_count <= line_limit then
-		content, _ = parser.parse(buffer, 0, -1, true);
+		local content, _ = parser.parse(buffer, 0, -1, true);
 
 		if hybrid_mode() == true and linewise_hybrid_mode == false then
 			for _, win in ipairs(vim.fn.win_findbuf(buffer)) do
@@ -341,7 +339,7 @@ markview.render = function (buffer, state)
 			--- 1-index → 0-index
 			cursor[1] = cursor[1] - 1;
 
-			content, _ = parser.parse(buffer, math.max(0, cursor[1] - draw_range[1]), math.min(line_count, cursor[1] + draw_range[2]), true);
+			local content, _ = parser.parse(buffer, math.max(0, cursor[1] - draw_range[1]), math.min(line_count, cursor[1] + draw_range[2]), true);
 
 			if hybrid_mode() == true and linewise_hybrid_mode == false then
 				content = renderer.filter(content, nil, {
