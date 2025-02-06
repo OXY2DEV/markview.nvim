@@ -1,5 +1,13 @@
 # Changelog
 
+## [25.1.2](https://github.com/OXY2DEV/markview.nvim/compare/v25.1.1...v25.1.2) (2025-02-06)
+
+
+### Bug Fixes
+
+* **core:** Fixed a bug with decoration overlapping ([a39d03f](https://github.com/OXY2DEV/markview.nvim/commit/a39d03f8445971c4a250396a44b23fa9c6fd8921))
+* **icons:** Fixed an issue with incorrect string being used for icon fetching ([25d987a](https://github.com/OXY2DEV/markview.nvim/commit/25d987a58fd0ca3bef45473d7d656eba5bc83723)), closes [#282](https://github.com/OXY2DEV/markview.nvim/issues/282)
+
 ## [25.1.1](https://github.com/OXY2DEV/markview.nvim/compare/v25.1.0...v25.1.1) (2025-02-01)
 
 
