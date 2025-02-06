@@ -732,7 +732,7 @@ fts.get = function (ft)
 
 	if provider_name == "devicons" and pcall(require, "nvim-web-devicons") then
 		conf.icon, conf.icon_hl = require("nvim-web-devicons").get_icon_by_filetype(
-			ft,
+			_ft,
 			{ default = true }
 		);
 
