@@ -941,8 +941,8 @@ Configuration for various list items.
 ---
 ---@field enable boolean
 ---
----@field indent_size integer Indentation size for list items.
----@field shift_width integer Virtual indentation size for previewed list items.
+---@field indent_size integer | fun(buffer: integer, item: __markdown.list_items): integer Indentation size for list items.
+---@field shift_width integer | fun(buffer: integer, item: __markdown.list_items): integer Virtual indentation size for previewed list items.
 ---
 ---@field marker_dot list_items.ordered Configuration for `n.` list items.
 ---@field marker_minus list_items.unordered Configuration for `-` list items.
