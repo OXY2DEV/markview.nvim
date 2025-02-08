@@ -1,5 +1,17 @@
 # Changelog
 
+## [25.2.0](https://github.com/OXY2DEV/markview.nvim/compare/v25.1.2...v25.2.0) (2025-02-08)
+
+
+### Features
+
+* **renderer_markdown:** Dynamic `indent_size` & `shift_width` support for list items ([07a6688](https://github.com/OXY2DEV/markview.nvim/commit/07a668805e96b0975e6d5b0b50fd1d7b54e74417)), closes [#283](https://github.com/OXY2DEV/markview.nvim/issues/283)
+
+
+### Bug Fixes
+
+* **config:** List items `indent_size` now respects 'shiftwidth' ([93d3648](https://github.com/OXY2DEV/markview.nvim/commit/93d3648e0e293f8a0cb0704f2c9650384a9cde8a)), closes [#283](https://github.com/OXY2DEV/markview.nvim/issues/283)
+
 ## [25.1.2](https://github.com/OXY2DEV/markview.nvim/compare/v25.1.1...v25.1.2) (2025-02-06)
 
 
