@@ -1929,7 +1929,7 @@ markdown.list_item = function (buffer, item)
 		return;
 	end
 
-	if config.add_padding then
+	if config.add_padding == true then
 		for _, l in ipairs(item.candidates) do
 			local from, to = range.col_start, range.col_start + item.indent;
 

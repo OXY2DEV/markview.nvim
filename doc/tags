@@ -2,6 +2,7 @@ markview.nvim	home.txt	/*markview.nvim*
 markview.nvim-advanced	advanced_usage.txt	/*markview.nvim-advanced*
 markview.nvim-advanced.header_folding	advanced_usage.txt	/*markview.nvim-advanced.header_folding*
 markview.nvim-advanced.single_link_hl	advanced_usage.txt	/*markview.nvim-advanced.single_link_hl*
+markview.nvim-advanced.top_list_indent_disable	advanced_usage.txt	/*markview.nvim-advanced.top_list_indent_disable*
 markview.nvim-autocmds	home.txt	/*markview.nvim-autocmds*
 markview.nvim-commands	home.txt	/*markview.nvim-commands*
 markview.nvim-config	home.txt	/*markview.nvim-config*
@@ -69,6 +70,7 @@ markview.nvim-presets.tables	presets.txt	/*markview.nvim-presets.tables*
 markview.nvim-presets.use	presets.txt	/*markview.nvim-presets.use*
 markview.nvim-preview	preview_options.txt	/*markview.nvim-preview*
 markview.nvim-preview.callbacks	preview_options.txt	/*markview.nvim-preview.callbacks*
+markview.nvim-preview.condition	preview_options.txt	/*markview.nvim-preview.condition*
 markview.nvim-preview.debounce	preview_options.txt	/*markview.nvim-preview.debounce*
 markview.nvim-preview.draw_range	preview_options.txt	/*markview.nvim-preview.draw_range*
 markview.nvim-preview.edit_range	preview_options.txt	/*markview.nvim-preview.edit_range*
