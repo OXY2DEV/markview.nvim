@@ -366,22 +366,9 @@ markdown.list_item = function (buffer, TSNode, _, range)
 		---_
 	end
 
-	local node = TSNode;
-	local block = false;
-
-	while node do
-		if node:type() == "block_quote" then
-			block = true;
-			break;
-		end
-
-		node = node:parent();
-	end
-
 	---@type __markdown.list_items
 	markdown.insert({
 		class = "markdown_list_item",
-		__block = block,
 
 		candidates = candidates,
 		marker = marker:gsub("%s", ""),

@@ -1883,8 +1883,11 @@ end
 markdown.list_item = function (buffer, item)
 	---+${func, Renders List items}
 
-	---@type markdown.list_items?
-	local main_config = spec.get({ "markdown", "list_items" }, { fallback = nil });
+	---@type markdown.list_items_static?
+	local main_config = spec.get({ "markdown", "list_items" }, {
+		fallback = nil,
+		eval_args = { buffer, item }
+	});
 	local range = item.range;
 
 	if not main_config then

@@ -519,6 +519,32 @@ M.__markdown_hr = {
 ---
 ---@field enable boolean
 ---
+---@field indent_size integer | fun(buffer: integer, item: __markdown.list_items): integer Indentation size for list items.
+---@field shift_width integer | fun(buffer: integer, item: __markdown.list_items): integer Virtual indentation size for previewed list items.
+---
+---@field marker_dot list_items.ordered Configuration for `n.` list items.
+---@field marker_minus list_items.unordered Configuration for `-` list items.
+---@field marker_parenthesis list_items.ordered Configuration for `n)` list items.
+---@field marker_plus list_items.unordered Configuration for `+` list items.
+---@field marker_star list_items.unordered Configuration for `*` list items.
+---
+---@field wrap? boolean Enables wrap support.
+M.markdown_list_items = {
+	enable = true,
+	marker_plus = {},
+	marker_star = {},
+	marker_minus = {},
+	marker_dot = {},
+	marker_parenthesis = {}
+};
+
+-- [ Markdown | List items • Static ] -----------------------------------------------------
+
+--- Configuration for list items.
+---@class markdown.list_items_static
+---
+---@field enable boolean
+---
 ---@field indent_size integer Indentation size for list items.
 ---@field shift_width integer Virtual indentation size for previewed list items.
 ---
