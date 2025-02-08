@@ -767,7 +767,10 @@ spec.default = {
 			enable = true,
 			wrap = true,
 
-			indent_size = 4,
+			indent_size = function (buffer)
+				--- Use 'shiftwidth' value.
+				return vim.bo[buffer].shiftwidth or 4;
+			end,
 			shift_width = 4,
 
 			marker_minus = {
@@ -2159,7 +2162,10 @@ spec.default = {
 
 			enable = true,
 
-			indent_size = 4,
+			indent_size = function (buffer)
+				--- Use 'shiftwidth' value.
+				return vim.bo[buffer].shiftwidth or 4;
+			end,
 			shift_width = 4,
 
 			marker_minus = {
