@@ -1,5 +1,12 @@
 # Changelog
 
+## [25.2.1](https://github.com/OXY2DEV/markview.nvim/compare/v25.2.0...v25.2.1) (2025-02-09)
+
+
+### Bug Fixes
+
+* **highlights:** Prefer newer tree-sitter highlights for creating colors ([c095a7c](https://github.com/OXY2DEV/markview.nvim/commit/c095a7c7c6343863fb3046781e295103e3e081ab))
+
 ## [25.2.0](https://github.com/OXY2DEV/markview.nvim/compare/v25.1.2...v25.2.0) (2025-02-08)
 
 
