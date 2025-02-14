@@ -858,7 +858,7 @@ spec.default = {
 			["github%.com/[%a%d%-%_%.]+/[%a%d%-%_%.]+%/?$"] = {
 				--- github.com/<user>/<repo>
 
-				icon = "󰳐 ",
+				icon = " ",
 				hl = "MarkviewPalette0Fg"
 			},
 			["github%.com/[%a%d%-%_%.]+/[%a%d%-%_%.]+/tree/[%a%d%-%_%.]+%/?$"] = {
@@ -910,112 +910,112 @@ spec.default = {
 			---+${lua, Commonly used sites by programmers}
 
 			["developer%.mozilla%.org"] = {
-				priority = 9999,
+				priority = -9999,
 
 				icon = "󰖟 ",
 				hl = "MarkviewPalette5Fg"
 			},
 
 			["w3schools%.com"] = {
-				priority = 9999,
+				priority = -9999,
 
 				icon = " ",
 				hl = "MarkviewPalette4Fg"
 			},
 
 			["stackoverflow%.com"] = {
-				priority = 9999,
+				priority = -9999,
 
 				icon = "󰓌 ",
 				hl = "MarkviewPalette2Fg"
 			},
 
 			["reddit%.com"] = {
-				priority = 9999,
+				priority = -9999,
 
 				icon = " ",
 				hl = "MarkviewPalette2Fg"
 			},
 
 			["github%.com"] = {
-				priority = 9999,
+				priority = -9999,
 
 				icon = " ",
 				hl = "MarkviewPalette6Fg"
 			},
 
 			["gitlab%.com"] = {
-				priority = 9999,
+				priority = -9999,
 
 				icon = " ",
 				hl = "MarkviewPalette2Fg"
 			},
 
 			["dev%.to"] = {
-				priority = 9999,
+				priority = -9999,
 
 				icon = "󱁴 ",
 				hl = "MarkviewPalette0Fg"
 			},
 
 			["codepen%.io"] = {
-				priority = 9999,
+				priority = -9999,
 
 				icon = " ",
 				hl = "MarkviewPalette6Fg"
 			},
 
 			["replit%.com"] = {
-				priority = 9999,
+				priority = -9999,
 
 				icon = " ",
 				hl = "MarkviewPalette2Fg"
 			},
 
 			["jsfiddle%.net"] = {
-				priority = 9999,
+				priority = -9999,
 
 				icon = " ",
 				hl = "MarkviewPalette5Fg"
 			},
 
 			["npmjs%.com"] = {
-				priority = 9999,
+				priority = -9999,
 
 				icon = " ",
 				hl = "MarkviewPalette0Fg"
 			},
 
 			["pypi%.org"] = {
-				priority = 9999,
+				priority = -9999,
 
 				icon = "󰆦 ",
 				hl = "MarkviewPalette0Fg"
 			},
 
 			["mvnrepository%.com"] = {
-				priority = 9999,
+				priority = -9999,
 
 				icon = " ",
 				hl = "MarkviewPalette1Fg"
 			},
 
 			["medium%.com"] = {
-				priority = 9999,
+				priority = -9999,
 
 				icon = " ",
 				hl = "MarkviewPalette6Fg"
 			},
 
 			["linkedin%.com"] = {
-				priority = 9999,
+				priority = -9999,
 
 				icon = "󰌻 ",
 				hl = "MarkviewPalette5Fg"
 			},
 
 			["news%.ycombinator%.com"] = {
-				priority = 9999,
+				priority = -9999,
 
 				icon = " ",
 				hl = "MarkviewPalette2Fg"
@@ -1250,7 +1250,7 @@ spec.default = {
 			["github%.com/[%a%d%-%_%.]+/[%a%d%-%_%.]+%/?$"] = {
 				--- github.com/<user>/<repo>
 
-				icon = "󰳐 ",
+				icon = " ",
 				hl = "MarkviewPalette0Fg"
 			},
 			["github%.com/[%a%d%-%_%.]+/[%a%d%-%_%.]+/tree/[%a%d%-%_%.]+%/?$"] = {
@@ -1302,112 +1302,112 @@ spec.default = {
 			---+${lua, Commonly used sites by programmers}
 
 			["developer%.mozilla%.org"] = {
-				priority = 9999,
+				priority = -9999,
 
 				icon = "󰖟 ",
 				hl = "MarkviewPalette5Fg"
 			},
 
 			["w3schools%.com"] = {
-				priority = 9999,
+				priority = -9999,
 
 				icon = " ",
 				hl = "MarkviewPalette4Fg"
 			},
 
 			["stackoverflow%.com"] = {
-				priority = 9999,
+				priority = -9999,
 
 				icon = "󰓌 ",
 				hl = "MarkviewPalette2Fg"
 			},
 
 			["reddit%.com"] = {
-				priority = 9999,
+				priority = -9999,
 
 				icon = " ",
 				hl = "MarkviewPalette2Fg"
 			},
 
 			["github%.com"] = {
-				priority = 9999,
+				priority = -9999,
 
 				icon = " ",
 				hl = "MarkviewPalette6Fg"
 			},
 
 			["gitlab%.com"] = {
-				priority = 9999,
+				priority = -9999,
 
 				icon = " ",
 				hl = "MarkviewPalette2Fg"
 			},
 
 			["dev%.to"] = {
-				priority = 9999,
+				priority = -9999,
 
 				icon = "󱁴 ",
 				hl = "MarkviewPalette0Fg"
 			},
 
 			["codepen%.io"] = {
-				priority = 9999,
+				priority = -9999,
 
 				icon = " ",
 				hl = "MarkviewPalette6Fg"
 			},
 
 			["replit%.com"] = {
-				priority = 9999,
+				priority = -9999,
 
 				icon = " ",
 				hl = "MarkviewPalette2Fg"
 			},
 
 			["jsfiddle%.net"] = {
-				priority = 9999,
+				priority = -9999,
 
 				icon = " ",
 				hl = "MarkviewPalette5Fg"
 			},
 
 			["npmjs%.com"] = {
-				priority = 9999,
+				priority = -9999,
 
 				icon = " ",
 				hl = "MarkviewPalette0Fg"
 			},
 
 			["pypi%.org"] = {
-				priority = 9999,
+				priority = -9999,
 
 				icon = "󰆦 ",
 				hl = "MarkviewPalette0Fg"
 			},
 
 			["mvnrepository%.com"] = {
-				priority = 9999,
+				priority = -9999,
 
 				icon = " ",
 				hl = "MarkviewPalette1Fg"
 			},
 
 			["medium%.com"] = {
-				priority = 9999,
+				priority = -9999,
 
 				icon = " ",
 				hl = "MarkviewPalette6Fg"
 			},
 
 			["linkedin%.com"] = {
-				priority = 9999,
+				priority = -9999,
 
 				icon = "󰌻 ",
 				hl = "MarkviewPalette5Fg"
 			},
 
 			["news%.ycombinator%.com"] = {
-				priority = 9999,
+				priority = -9999,
 
 				icon = " ",
 				hl = "MarkviewPalette2Fg"
@@ -1483,7 +1483,7 @@ spec.default = {
 			["github%.com/[%a%d%-%_%.]+/[%a%d%-%_%.]+%/?$"] = {
 				--- github.com/<user>/<repo>
 
-				icon = "󰳐 ",
+				icon = " ",
 				hl = "MarkviewPalette0Fg"
 			},
 			["github%.com/[%a%d%-%_%.]+/[%a%d%-%_%.]+/tree/[%a%d%-%_%.]+%/?$"] = {
@@ -1535,112 +1535,112 @@ spec.default = {
 			---+${lua, Commonly used sites by programmers}
 
 			["developer%.mozilla%.org"] = {
-				priority = 9999,
+				priority = -9999,
 
 				icon = "󰖟 ",
 				hl = "MarkviewPalette5Fg"
 			},
 
 			["w3schools%.com"] = {
-				priority = 9999,
+				priority = -9999,
 
 				icon = " ",
 				hl = "MarkviewPalette4Fg"
 			},
 
 			["stackoverflow%.com"] = {
-				priority = 9999,
+				priority = -9999,
 
 				icon = "󰓌 ",
 				hl = "MarkviewPalette2Fg"
 			},
 
 			["reddit%.com"] = {
-				priority = 9999,
+				priority = -9999,
 
 				icon = " ",
 				hl = "MarkviewPalette2Fg"
 			},
 
 			["github%.com"] = {
-				priority = 9999,
+				priority = -9999,
 
 				icon = " ",
 				hl = "MarkviewPalette6Fg"
 			},
 
 			["gitlab%.com"] = {
-				priority = 9999,
+				priority = -9999,
 
 				icon = " ",
 				hl = "MarkviewPalette2Fg"
 			},
 
 			["dev%.to"] = {
-				priority = 9999,
+				priority = -9999,
 
 				icon = "󱁴 ",
 				hl = "MarkviewPalette0Fg"
 			},
 
 			["codepen%.io"] = {
-				priority = 9999,
+				priority = -9999,
 
 				icon = " ",
 				hl = "MarkviewPalette6Fg"
 			},
 
 			["replit%.com"] = {
-				priority = 9999,
+				priority = -9999,
 
 				icon = " ",
 				hl = "MarkviewPalette2Fg"
 			},
 
 			["jsfiddle%.net"] = {
-				priority = 9999,
+				priority = -9999,
 
 				icon = " ",
 				hl = "MarkviewPalette5Fg"
 			},
 
 			["npmjs%.com"] = {
-				priority = 9999,
+				priority = -9999,
 
 				icon = " ",
 				hl = "MarkviewPalette0Fg"
 			},
 
 			["pypi%.org"] = {
-				priority = 9999,
+				priority = -9999,
 
 				icon = "󰆦 ",
 				hl = "MarkviewPalette0Fg"
 			},
 
 			["mvnrepository%.com"] = {
-				priority = 9999,
+				priority = -9999,
 
 				icon = " ",
 				hl = "MarkviewPalette1Fg"
 			},
 
 			["medium%.com"] = {
-				priority = 9999,
+				priority = -9999,
 
 				icon = " ",
 				hl = "MarkviewPalette6Fg"
 			},
 
 			["linkedin%.com"] = {
-				priority = 9999,
+				priority = -9999,
 
 				icon = "󰌻 ",
 				hl = "MarkviewPalette5Fg"
 			},
 
 			["news%.ycombinator%.com"] = {
-				priority = 9999,
+				priority = -9999,
 
 				icon = " ",
 				hl = "MarkviewPalette2Fg"
@@ -2345,7 +2345,7 @@ spec.default = {
 			["github%.com/[%a%d%-%_%.]+/[%a%d%-%_%.]+%/?$"] = {
 				--- github.com/<user>/<repo>
 
-				icon = "󰳐 ",
+				icon = " ",
 				hl = "MarkviewPalette0Fg"
 			},
 			["github%.com/[%a%d%-%_%.]+/[%a%d%-%_%.]+/tree/[%a%d%-%_%.]+%/?$"] = {
@@ -2397,112 +2397,112 @@ spec.default = {
 			---+${lua, Commonly used sites by programmers}
 
 			["developer%.mozilla%.org"] = {
-				priority = 9999,
+				priority = -9999,
 
 				icon = "󰖟 ",
 				hl = "MarkviewPalette5Fg"
 			},
 
 			["w3schools%.com"] = {
-				priority = 9999,
+				priority = -9999,
 
 				icon = " ",
 				hl = "MarkviewPalette4Fg"
 			},
 
 			["stackoverflow%.com"] = {
-				priority = 9999,
+				priority = -9999,
 
 				icon = "󰓌 ",
 				hl = "MarkviewPalette2Fg"
 			},
 
 			["reddit%.com"] = {
-				priority = 9999,
+				priority = -9999,
 
 				icon = " ",
 				hl = "MarkviewPalette2Fg"
 			},
 
 			["github%.com"] = {
-				priority = 9999,
+				priority = -9999,
 
 				icon = " ",
 				hl = "MarkviewPalette6Fg"
 			},
 
 			["gitlab%.com"] = {
-				priority = 9999,
+				priority = -9999,
 
 				icon = " ",
 				hl = "MarkviewPalette2Fg"
 			},
 
 			["dev%.to"] = {
-				priority = 9999,
+				priority = -9999,
 
 				icon = "󱁴 ",
 				hl = "MarkviewPalette0Fg"
 			},
 
 			["codepen%.io"] = {
-				priority = 9999,
+				priority = -9999,
 
 				icon = " ",
 				hl = "MarkviewPalette6Fg"
 			},
 
 			["replit%.com"] = {
-				priority = 9999,
+				priority = -9999,
 
 				icon = " ",
 				hl = "MarkviewPalette2Fg"
 			},
 
 			["jsfiddle%.net"] = {
-				priority = 9999,
+				priority = -9999,
 
 				icon = " ",
 				hl = "MarkviewPalette5Fg"
 			},
 
 			["npmjs%.com"] = {
-				priority = 9999,
+				priority = -9999,
 
 				icon = " ",
 				hl = "MarkviewPalette0Fg"
 			},
 
 			["pypi%.org"] = {
-				priority = 9999,
+				priority = -9999,
 
 				icon = "󰆦 ",
 				hl = "MarkviewPalette0Fg"
 			},
 
 			["mvnrepository%.com"] = {
-				priority = 9999,
+				priority = -9999,
 
 				icon = " ",
 				hl = "MarkviewPalette1Fg"
 			},
 
 			["medium%.com"] = {
-				priority = 9999,
+				priority = -9999,
 
 				icon = " ",
 				hl = "MarkviewPalette6Fg"
 			},
 
 			["linkedin%.com"] = {
-				priority = 9999,
+				priority = -9999,
 
 				icon = "󰌻 ",
 				hl = "MarkviewPalette5Fg"
 			},
 
 			["news%.ycombinator%.com"] = {
-				priority = 9999,
+				priority = -9999,
 
 				icon = " ",
 				hl = "MarkviewPalette2Fg"
