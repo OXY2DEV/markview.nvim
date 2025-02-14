@@ -116,7 +116,10 @@ local function register_source()
 end
 
 --- Registers buffers.
-vim.api.nvim_create_autocmd({ "BufAdd", "BufEnter" }, {
+vim.api.nvim_create_autocmd({
+	"BufAdd", "BufEnter",
+	"BufWinEnter"
+}, {
 	group = markview.augroup,
 	callback = function (event)
 		---+${lua}
@@ -153,6 +156,77 @@ vim.api.nvim_create_autocmd({ "BufAdd", "BufEnter" }, {
 	end
 });
 
+--- Timer for 'filetype', 'buftype' changes.
+local bf_timer = vim.uv.new_timer();
+
+vim.api.nvim_create_autocmd({
+	"OptionSet"
+}, {
+	group = markview.augroup,
+	callback = function ()
+		---+${lua}
+		bf_timer:stop()
+
+		local buffer = vim.api.nvim_get_current_buf();
+		local option = vim.fn.expand("<amatch>");
+
+		local valid_options = { "filetype", "buftype" };
+
+		---@type string, string
+		local bt, ft = vim.bo[buffer].buftype, vim.bo[buffer].filetype;
+		local attach_ft = spec.get({ "preview", "filetypes" }, { fallback = {}, ignore_enable = true });
+		local ignore_bt = spec.get({ "preview", "ignore_buftypes" }, { fallback = {}, ignore_enable = true });
+
+		local condition = spec.get({ "preview", "condition" }, { eval_args = { buffer } });
+
+		if markview.state.enable == false then
+			--- New buffers shouldn't be registered.
+			return;
+		elseif markview.actions.__is_attached(buffer) == true then
+			--- Already attached to this buffer!
+			--- We should check if the buffer is still valid.
+
+			if vim.list_contains(ignore_bt, bt) == true then
+				--- Ignored buffer type.
+				bf_timer:start(5, 0, vim.schedule_wrap(function ()
+					markview.actions.detach(buffer);
+				end));
+			elseif vim.list_contains(attach_ft, ft) == false then
+				--- Ignored file type.
+				bf_timer:start(5, 0, vim.schedule_wrap(function ()
+					markview.actions.detach(buffer);
+				end));
+			elseif condition == false then
+				bf_timer:start(5, 0, vim.schedule_wrap(function ()
+					markview.actions.detach(buffer);
+				end));
+			end
+
+			return;
+		elseif vim.list_contains(valid_options, option) == false then
+			--- We shouldn't do anything on other events.
+			return;
+		end
+
+		if vim.list_contains(ignore_bt, bt) == true then
+			--- Ignored buffer type.
+			return;
+		elseif vim.list_contains(attach_ft, ft) == false then
+			--- Ignored file type.
+			return;
+		elseif condition == false then
+			return;
+		end
+
+		bf_timer:start(5, 0, vim.schedule_wrap(function ()
+			markview.actions.attach(buffer);
+			register_source();
+		end));
+		---_
+	end
+});
+
+--- Timer for 'wrap', 'linebreak' changes.
 local o_timer = vim.uv.new_timer();
 
 --- Option changes(e.g. wrap, linebreak)

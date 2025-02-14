@@ -400,6 +400,9 @@ return {
 - `code span`s don't get recognized when on the line after a `code block`(if the line after the `code span` is empty).
   This is most likely due to some bug in either the `markdown` or the `markdown_inline` parser.
 
+- Incorrect wrapping when setting `wrap` using `modeline`.
+  This is due to `textoff` being 0(instead of the size of the `statuscolumn`) when entering a buffer.
+
 ## 🧭 Configuration
 
 Check the [wiki](https://github.com/OXY2DEV/markview.nvim/wiki) for the entire configuration table. A simplified version is given below.
