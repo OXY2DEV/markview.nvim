@@ -1,5 +1,13 @@
 # Changelog
 
+## [25.3.1](https://github.com/OXY2DEV/markview.nvim/compare/v25.3.0...v25.3.1) (2025-02-14)
+
+
+### Bug Fixes
+
+* **config:** Fixed link configuration order ([04c9082](https://github.com/OXY2DEV/markview.nvim/commit/04c908218fb01e771526893fdd3da8db51922ff5))
+* **renderer_latex:** Added option to disable the default font in LaTeX ([f71aebe](https://github.com/OXY2DEV/markview.nvim/commit/f71aebe4031ce979e883442c11d91247890bb24e)), closes [#288](https://github.com/OXY2DEV/markview.nvim/issues/288)
+
 ## [25.3.0](https://github.com/OXY2DEV/markview.nvim/compare/v25.2.0...v25.3.0) (2025-02-14)
 
 
