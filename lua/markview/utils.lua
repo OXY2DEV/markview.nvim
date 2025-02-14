@@ -304,7 +304,7 @@ end
 --- NOTE, {name} will be used to index the config.
 ---@param config table
 ---@param name string
----@param opts { default: boolean, def_fallback: any?, eval_args: any[], ignore_keys?: any[] }
+---@param opts { key_mod: string?, default: boolean, def_fallback: any?, eval_args: any[], ignore_keys?: any[] }
 ---@return any
 utils.match = function (config, name, opts)
 	config = config or {};
@@ -318,6 +318,8 @@ utils.match = function (config, name, opts)
 
 	if opts.default ~= false then
 		default = spec.get({ "default" }, vim.tbl_extend("keep", {
+			ignore_enable = true,
+
 			source = config,
 			fallback = opts.def_fallback
 		}, opts));
@@ -325,42 +327,48 @@ utils.match = function (config, name, opts)
 
 	local match = {};
 
-	local sort_keys = function (values)
-		local w_priority = {};
-		local n_priority = {};
+	---@return { key: string, priority: integer }[]
+	local sort_keys = function (tbl)
+		local keys = {};
 
-		for k, v in pairs(values or {}) do
-			if type(v) == "table" and type(v.priority) == "number" then
-				table.insert(w_priority, {
-					key = k,
-					priority = v.priority
+		for key, value in pairs(tbl) do
+			if type(value) == "table" and type(value.priority) == "number" then
+				table.insert(keys, {
+					priority = value.priority,
+					key = key
 				});
-			elseif k ~= "default" and vim.list_contains(opts.ignore_keys or {}, k) == false then
-				table.insert(n_priority, k);
+			else
+				table.insert(keys, {
+					priority = 0,
+					key = key
+				});
 			end
 		end
 
-		table.sort(w_priority, function (a, b)
+		--- Return higher priority or longer pattern
+		--- first.
+		table.sort(keys, function (a, b)
+			if a.priority == b.priority then
+				return a.key > b.key;
+			end
+
 			return a.priority > b.priority;
-		end)
-
-		local keys = {};
-
-		for _, item in ipairs(w_priority) do
-			table.insert(keys, item.key);
-		end
-
-		keys = vim.list_extend(n_priority, keys);
+		end);
 
 		return keys;
 	end
 
 	local function is_valid (value, pattern)
 		local ignore = opts.ignore_keys or {};
+		local _pattern = pattern;
+
+		if opts.key_mod then
+			_pattern = string.format(opts.key_mod, _pattern);
+		end
 
 		if vim.list_contains(ignore, pattern) then
 			return false;
-		elseif string.match(value, pattern) then
+		elseif string.match(value, _pattern) then
 			return true;
 		else
 			return false;
@@ -370,21 +378,22 @@ utils.match = function (config, name, opts)
 	--- NOTE, We should sort the keys so that we
 	--- don't get different results every time
 	--- when multiple patterns can be matched.
-	---
-	---@type string[]
-	local keys = sort_keys(config or {});
+	local sorted = sort_keys(config or {});
 
-	for _, key in ipairs(keys) do
-		if is_valid(name, key) == true then
+	for _, entry in ipairs(sorted) do
+		if is_valid(name, entry.key) == true then
 			match = spec.get(
-				{ key },
-				vim.tbl_extend("force", opts, { source = config })
+				{ entry.key },
+				vim.tbl_extend("force", opts, {
+					ignore_enable = true,
+					source = config
+				})
 			);
 			break
 		end
 	end
 
-	return vim.tbl_deep_extend("force", default, match);
+	return vim.tbl_deep_extend("force", default or {}, match or {});
 end
 
 --- Checks if a string only contains {chars}
