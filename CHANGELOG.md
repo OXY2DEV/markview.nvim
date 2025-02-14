@@ -1,5 +1,17 @@
 # Changelog
 
+## [25.3.0](https://github.com/OXY2DEV/markview.nvim/compare/v25.2.0...v25.3.0) (2025-02-14)
+
+
+### Features
+
+* Markview now listens to BifWinEnter & OptionSet autocmds ([c7e70ab](https://github.com/OXY2DEV/markview.nvim/commit/c7e70ab2fd4e091801ed938b4838e27b3dde763c)), closes [#287](https://github.com/OXY2DEV/markview.nvim/issues/287)
+
+
+### Bug Fixes
+
+* **highlights:** Prefer newer tree-sitter highlights for creating colors ([c095a7c](https://github.com/OXY2DEV/markview.nvim/commit/c095a7c7c6343863fb3046781e295103e3e081ab))
+
 ## [25.2.0](https://github.com/OXY2DEV/markview.nvim/compare/v25.1.2...v25.2.0) (2025-02-08)
 
 
