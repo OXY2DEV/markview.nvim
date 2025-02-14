@@ -1995,7 +1995,20 @@ spec.default = {
 				enable = true,
 				hl = "MarkviewSpecial"
 			},
-			-- ["^mathtt$"] = { hl = "MarkviewPalette1" }
+
+			mathbf = { enable = true },
+			mathbfit = { enable = true },
+			mathcal = { enable = true },
+			mathbfscr = { enable = true },
+			mathfrak = { enable = true },
+			mathbb = { enable = true },
+			mathbffrak = { enable = true },
+			mathsf = { enable = true },
+			mathsfbf = { enable = true },
+			mathsfit = { enable = true },
+			mathsfbfit = { enable = true },
+			mathtt = { enable = true },
+
 			---_
 		},
 

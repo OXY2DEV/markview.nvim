@@ -216,7 +216,7 @@ latex.font = function (buffer, item)
 	end
 
 	---@type fonts.opts?
-	local config = utils.match(main_config, item.name, { eval_args = { buffer, item } });
+	local config = utils.match(main_config, item.name, { key_mod = "^%s$", eval_args = { buffer, item } });
 
 	if config == nil then
 		return;
@@ -695,6 +695,24 @@ local get_style = function (buffer, range, opts)
 	---_
 
 	if _o == nil then
+		---@type latex.fonts?
+		local main_config = spec.get({ "latex", "fonts" }, { fallback = nil });
+
+		if main_config == nil then
+			return;
+		elseif symbols.fonts.default == nil then
+			return;
+		end
+
+		---@type fonts.opts?
+		local config = spec.get({ "default" }, { source = main_config });
+
+		if config == nil then
+			return;
+		elseif vim.tbl_isempty(config) == true then
+			return;
+		end
+
 		if opts.symbol then
 			text = result_text(symbols.entries);
 		elseif opts.text then
@@ -745,7 +763,7 @@ local get_style = function (buffer, range, opts)
 		end
 
 		---@type fonts.opts?
-		local config = utils.match(main_config, _o.name, { eval_args = { buffer, item } });
+		local config = utils.match(main_config, _o.name, { key_mod = "^%s$", eval_args = { buffer, item } });
 
 		if config == nil then
 			return;
