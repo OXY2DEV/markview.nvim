@@ -53,6 +53,12 @@ if vim.list_contains(available_directives, "conceal-patch!") == false then
 		end
 
 		line = line:sub(c_s + 1, #line);
+
+		if not line:match("^(%s*)%S") then
+			--- Line is probably empty.
+			return;
+		end
+
 		local spaces = line:match("^(%s*)%S"):len();
 
 		metadata[id].range[1] = r_s;
