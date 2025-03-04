@@ -1,5 +1,12 @@
 # Changelog
 
+## [25.3.2](https://github.com/OXY2DEV/markview.nvim/compare/v25.3.1...v25.3.2) (2025-03-04)
+
+
+### Bug Fixes
+
+* **spec:** Broken function values now get replaced with `nil` ([213461f](https://github.com/OXY2DEV/markview.nvim/commit/213461f03905536bd340fa8831f102c9ec6fc606))
+
 ## [25.3.1](https://github.com/OXY2DEV/markview.nvim/compare/v25.3.0...v25.3.1) (2025-02-14)
 
 
