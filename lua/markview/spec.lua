@@ -3407,10 +3407,10 @@ spec.get = function (keys, opts)
 		---@diagnostic disable
 		if pcall(val, unpack(args)) then
 			return val(unpack(args));
+		else
+			return nil;
 		end
 		---@diagnostic enable
-
-		return val;
 		---_
 	end
 
