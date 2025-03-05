@@ -3453,14 +3453,21 @@ spec.get = function (keys, opts)
 	end
 
 	for k, key in ipairs(keys) do
-		val = to_static(val[key], val.args);
-
 		if k ~= #keys then
+			val = to_static(val[key], val.args);
+
 			if type(val) ~= "table" then
 				return opts.fallback;
 			elseif opts.ignore_enable ~= true and val.enable == false then
 				return opts.fallback;
 			end
+		else
+			--- Do not evaluate the final
+			--- value.
+			---
+			--- It should be evaluated using
+			--- `eval_args`.
+			val = val[key];
 		end
 	end
 
