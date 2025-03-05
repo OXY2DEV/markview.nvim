@@ -1,5 +1,12 @@
 # Changelog
 
+## [25.3.3](https://github.com/OXY2DEV/markview.nvim/compare/v25.3.2...v25.3.3) (2025-03-05)
+
+
+### Bug Fixes
+
+* Config evaluator no longer evaluates final function value using `args` ([ac31c1d](https://github.com/OXY2DEV/markview.nvim/commit/ac31c1dd7a5ba3bea6f9baf668c14ca80e4f6b9e)), closes [#272](https://github.com/OXY2DEV/markview.nvim/issues/272)
+
 ## [25.3.2](https://github.com/OXY2DEV/markview.nvim/compare/v25.3.1...v25.3.2) (2025-03-04)
 
 
