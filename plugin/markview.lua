@@ -21,6 +21,40 @@ if vim.g.markview_cmp_loaded == nil then
 	vim.g.markview_cmp_loaded = false;
 end
 
+--- Was the completion source loaded?
+if vim.g.markview_blink_loaded == nil then
+	vim.g.markview_blink_loaded = false;
+end
+
+local blink = package.loaded["blink.cmp.config"];
+
+if vim.g.markview_blink_loaded == false and blink ~= nil then
+	local fts = spec.get({ "preview", "filetypes" }, {
+		fallback = {},
+		ignore_enable = true
+	});
+
+	local opts = {
+		sources = {
+			per_filetype = {},
+
+			providers = {
+				markview = {
+					name = "markview",
+					module = "blink-markview"
+				}
+			}
+		}
+	};
+
+	--- TODO, find ways to preserve user config
+	for _, ft in ipairs(fts) do
+		opts.sources.per_filetype[ft] = { "markview" };
+	end
+
+	blink.merge_with(opts);
+end
+
  ------------------------------------------------------------------------------------------
 
 --- Sets up the highlight groups.
