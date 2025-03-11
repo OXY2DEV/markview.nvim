@@ -1,5 +1,13 @@
 # Changelog
 
+## [25.4.0](https://github.com/OXY2DEV/markview.nvim/compare/v25.3.3...v25.4.0) (2025-03-11)
+
+
+### Features
+
+* **blink:** Added blink.cmp completion source ([929b5ba](https://github.com/OXY2DEV/markview.nvim/commit/929b5bad69e10775d3d1e65a8f259a923965e287)), closes [#200](https://github.com/OXY2DEV/markview.nvim/issues/200)
+* **latex:** Added `\vec{}` support ([6c92a64](https://github.com/OXY2DEV/markview.nvim/commit/6c92a6455e97c954a4a419265a032fedd69846f6))
+
 ## [25.3.3](https://github.com/OXY2DEV/markview.nvim/compare/v25.3.2...v25.3.3) (2025-03-05)
 
 
