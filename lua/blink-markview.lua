@@ -66,7 +66,7 @@ function source:get_completions(ctx, callback)
 					},
 
 					documentation = {
-						kind = "mrkdown",
+						kind = "plaintext",
 						value = string.format("▌ %s\n▌ Block quote description.", item.preview);
 					}
 				});
@@ -99,7 +99,7 @@ function source:get_completions(ctx, callback)
 					},
 
 					documentation = {
-						kind = "mrkdown",
+						kind = "plaintext",
 						value = string.format("◇ List item,\n  %s Checkbox with\n    some text.", item.text);
 					}
 				});
