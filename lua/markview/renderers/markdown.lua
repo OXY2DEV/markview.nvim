@@ -2589,8 +2589,8 @@ markdown.table = function (buffer, item)
 			---_
 		elseif part.class == "missing_seperator" then
 			---+${custom, Handle missing last |}
-			local border, border_hl = get_border("header", 3);
-			local top, top_hl = get_border("top", 3);
+			local border, border_hl = get_border("header", p == 1 and 1 or 3);
+			local top, top_hl = get_border("top", p == 1 and 1 or 3);
 
 			table.insert(tmp, {
 				top,
@@ -2610,6 +2610,7 @@ markdown.table = function (buffer, item)
 					}
 				},
 
+				right_gravity = p ~= 1,
 				hl_mode = "combine"
 			})
 
@@ -2666,7 +2667,6 @@ markdown.table = function (buffer, item)
 							{ string.rep(" ", math.max(0, column_width - visible_width)) }
 						},
 
-						right_gravity = false,
 						hl_mode = "combine"
 					});
 				elseif item.alignments[c] == "right" then
@@ -2677,7 +2677,6 @@ markdown.table = function (buffer, item)
 							{ string.rep(" ", math.max(0, column_width - visible_width)) }
 						},
 
-						right_gravity = false,
 						hl_mode = "combine"
 					});
 				else
@@ -2688,7 +2687,6 @@ markdown.table = function (buffer, item)
 							{ string.rep(" ", math.ceil((column_width - visible_width) / 2)) }
 						},
 
-						right_gravity = true,
 						hl_mode = "combine"
 					});
 					vim.api.nvim_buf_set_extmark(buffer, markdown.ns, range.row_start, range.col_start + part.col_end, {
@@ -2698,7 +2696,6 @@ markdown.table = function (buffer, item)
 							{ string.rep(" ", math.floor((column_width - visible_width) / 2)) }
 						},
 
-						right_gravity = false,
 						hl_mode = "combine"
 					});
 				end
@@ -2745,29 +2742,18 @@ markdown.table = function (buffer, item)
 			---_
 		elseif sep.class == "missing_seperator" then
 			---+${custom, Handle missing last |}
-			local border, border_hl = get_border("separator", 3);
+			local border, border_hl = get_border("separator", s == 1 and 1 or 3);
 
-			if is_wrapped == true then
-				vim.api.nvim_buf_set_extmark(buffer, markdown.ns, x, y, {
-					undo_restore = false, invalidate = true,
-					virt_text_pos = "inline",
-					virt_text = {
-						{ "|", "@punctuation.special.markdown" }
-					},
+			vim.api.nvim_buf_set_extmark(buffer, markdown.ns, x, y, {
+				undo_restore = false, invalidate = true,
+				virt_text_pos = "inline",
+				virt_text = {
+					is_wrapped == true and { "|", "@punctuation.special.markdown" } or { border, utils.set_hl(border_hl) }
+				},
 
-					hl_mode = "combine"
-				});
-			else
-				vim.api.nvim_buf_set_extmark(buffer, markdown.ns, x, y, {
-					undo_restore = false, invalidate = true,
-					virt_text_pos = "inline",
-					virt_text = {
-						{ border, utils.set_hl(border_hl) }
-					},
-
-					hl_mode = "combine"
-				});
-			end
+				right_gravity = s ~= 1,
+				hl_mode = "combine"
+			});
 			---_
 		elseif sep.class == "column" then
 			local border, border_hl = get_border("separator", 2);
@@ -2790,7 +2776,6 @@ markdown.table = function (buffer, item)
 							}
 						},
 
-						right_gravity = false,
 						hl_mode = "combine"
 					});
 				end
@@ -2810,7 +2795,6 @@ markdown.table = function (buffer, item)
 							},
 						},
 
-						right_gravity = false,
 						hl_mode = "combine"
 					});
 
@@ -2822,7 +2806,6 @@ markdown.table = function (buffer, item)
 							{ string.rep(border, left), utils.set_hl(border_hl) },
 						},
 
-						right_gravity = false,
 						hl_mode = "combine"
 					});
 				else
@@ -2838,7 +2821,6 @@ markdown.table = function (buffer, item)
 							}
 						},
 
-						right_gravity = false,
 						hl_mode = "combine"
 					});
 				end
@@ -2862,7 +2844,6 @@ markdown.table = function (buffer, item)
 							},
 						},
 
-						right_gravity = false,
 						hl_mode = "combine"
 					});
 
@@ -2874,7 +2855,6 @@ markdown.table = function (buffer, item)
 							{ string.rep(border, left), utils.set_hl(border_hl) },
 						},
 
-						right_gravity = false,
 						hl_mode = "combine"
 					});
 				else
@@ -2891,7 +2871,6 @@ markdown.table = function (buffer, item)
 							}
 						},
 
-						right_gravity = false,
 						hl_mode = "combine"
 					});
 				end
@@ -2914,7 +2893,6 @@ markdown.table = function (buffer, item)
 							},
 						},
 
-						right_gravity = false,
 						hl_mode = "combine"
 					});
 
@@ -2927,7 +2905,6 @@ markdown.table = function (buffer, item)
 							{ align, utils.set_hl(align_hl) }
 						},
 
-						right_gravity = false,
 						hl_mode = "combine"
 					});
 				else
@@ -2944,7 +2921,6 @@ markdown.table = function (buffer, item)
 							{ align, utils.set_hl(align_hl) }
 						},
 
-						right_gravity = false,
 						hl_mode = "combine"
 					});
 				end
@@ -2968,7 +2944,6 @@ markdown.table = function (buffer, item)
 							},
 						},
 
-						right_gravity = false,
 						hl_mode = "combine"
 					});
 
@@ -2981,7 +2956,6 @@ markdown.table = function (buffer, item)
 							{ align[2], utils.set_hl(align_hl[2]) }
 						},
 
-						right_gravity = false,
 						hl_mode = "combine"
 					});
 				else
@@ -2999,7 +2973,6 @@ markdown.table = function (buffer, item)
 							{ align[2], utils.set_hl(align_hl[2]) },
 						},
 
-						right_gravity = false,
 						hl_mode = "combine"
 					});
 				end
@@ -3047,7 +3020,7 @@ markdown.table = function (buffer, item)
 				---_
 			elseif part.class == "missing_seperator" then
 				---+${custom, Handle missing last |}
-				local border, border_hl = get_border("row", 3);
+				local border, border_hl = get_border("row", r == 1 and 1 or 3);
 
 				vim.api.nvim_buf_set_extmark(buffer, markdown.ns, range.row_start + 1 + r, range.col_start + part.col_start, {
 					undo_restore = false, invalidate = true,
@@ -3062,6 +3035,7 @@ markdown.table = function (buffer, item)
 						}
 					},
 
+					right_gravity = r ~= 1,
 					hl_mode = "combine"
 				})
 				---_
@@ -3188,10 +3162,13 @@ markdown.table = function (buffer, item)
 			---_
 		elseif part.class == "missing_seperator" then
 			---+${custom, Handle missing last |}
-			local border, border_hl = get_border("row", 3);
-			local bottom, bottom_hl = bottom_part(3);
+			local border, border_hl = get_border("row", p == 1 and 1 or 3);
+			local bottom, bottom_hl = bottom_part(p == 1 and 1 or 3);
 
-			table.insert(tmp, { bottom, utils.set_hl(bottom_hl) });
+			table.insert(tmp, {
+				bottom,
+				is_wrapped == true and "@punctuation.special.markdown" or utils.set_hl(bottom_hl)
+			});
 
 			vim.api.nvim_buf_set_extmark(buffer, markdown.ns, range.row_end - 1, range.col_start + part.col_start, {
 				undo_restore = false, invalidate = true,
@@ -3200,9 +3177,16 @@ markdown.table = function (buffer, item)
 
 				virt_text_pos = "inline",
 				virt_text = {
-					{ border, utils.set_hl(border_hl) }
+					is_wrapped and {
+						"|",
+						"@punctuation.special.markdown"
+					} or {
+						border,
+						utils.set_hl(border_hl)
+					}
 				},
 
+				right_gravity = p ~= 1,
 				hl_mode = "combine"
 			})
 

@@ -459,6 +459,148 @@ local function overlap (row_start)
 	---_
 end
 
+--- LPeg-based parser for markdown table rows.
+---@param line string
+---@return table[]
+local function lpeg_processor(line)
+	---|fS
+
+	line = line:gsub("^%s*", "");
+	line = line:gsub("\\|", "  ");
+
+	local pipe = vim.lpeg.C("|");
+	local cont = vim.lpeg.C(vim.re.compile("[^|]+"))
+
+	local init_cell = vim.lpeg.P(pipe^-1 * cont * pipe)
+	local end_cell = vim.lpeg.P(cont * pipe^-1)
+
+	local ROW = vim.lpeg.Ct( init_cell * end_cell ^ 1 );
+
+	local RESULT = ROW:match(line);
+	local _o = {};
+	local y = 0;
+
+	for _, j in ipairs(RESULT) do
+		---|fS
+
+		if j == "|" then
+			table.insert(_o, {
+				class = "separator",
+
+				text = j,
+
+				col_start = y,
+				col_end = y + #j,
+			});
+		else
+			table.insert(_o, {
+				class = "column",
+
+				text = j,
+
+				col_start = y,
+				col_end = y + #j,
+			});
+		end
+
+		y = y + #j;
+
+		---|fE
+	end
+
+	if #_o > 0 then
+		---|fS
+		if _o[1].class ~= "separator" then
+			table.insert(_o, 1, {
+				class = "missing_seperator",
+
+				text = "|",
+
+				col_start = 0,
+				col_end = 0,
+			});
+		end
+
+		if _o[#_o].class ~= "separator" then
+			table.insert(_o, {
+				class = "missing_seperator",
+
+				text = "|",
+
+				col_start = y,
+				col_end = y,
+			});
+		end
+		---|fE
+	end
+
+	return _o;
+
+	---|fE
+end
+
+--- Lua_patterns-based parser for markdown table rows.
+---@param line string
+---@return table[]
+local function lagecy_processor(line)
+	---|fS
+
+	local _o = {};
+	local y = 0;
+
+	line = line:gsub("^%s*", "");
+	line = line:gsub("\\|", "  ");
+
+	for sep, col in line:gmatch("(|)([^|]+)") do
+		table.insert(_o, {
+			class = "separator",
+
+			text = sep,
+
+			col_start = y,
+			col_end = y + #sep,
+		});
+
+		y = y + #sep;
+		col = col:gsub("MKVescapedPIPE", "\\|")
+
+		table.insert(_o, {
+			class = "column",
+
+			text = col,
+
+			col_start = y,
+			col_end = y + #col,
+		})
+
+		y = y + #col;
+	end
+
+	if line:match("|$") then
+		table.insert(_o, {
+			class = "separator",
+
+			text = "|",
+
+			col_start = y,
+			col_end = y + 1,
+		});
+	else
+		table.insert(_o, {
+			class = "missing_seperator",
+
+			text = "|",
+
+			col_start = y,
+			col_end = y,
+		});
+	end
+
+	return _o;
+
+	---|fE
+end
+
 --- Table parser.
 ---@param text string[]
 ---@param range node.range
@@ -472,62 +614,13 @@ markdown.table = function (_, _, text, range)
 		range.col_start = range.col_start + text[1]:match("^%s+"):len();
 	end
 
+	--- Line processor.
 	local function line_processor (line)
-		local _o = {};
-		local y = 0;
-
-		line = line:gsub("\\|", "  ");
-
-		for sep, col in line:gmatch("(|)([^|]+)") do
-			table.insert(_o, {
-				class = "separator",
-
-				text = sep,
-
-				col_start = y,
-				col_end = y + #sep,
-			});
-
-			y = y + #sep;
-			col = col:gsub("MKVescapedPIPE", "\\|")
-
-			table.insert(_o, {
-				class = "column",
-
-				text = col,
-
-				col_start = y,
-				col_end = y + #col,
-			})
-
-			y = y + #col;
-		end
-
-		if line:match("|$") then
-			table.insert(_o, {
-				class = "separator",
-
-				text = "|",
-
-				col_start = y,
-				col_end = y + 1,
-			});
-		else
-			table.insert(_o, {
-				class = "missing_seperator",
-
-				text = "|",
-
-				col_start = y,
-				col_end = y,
-			});
-		end
-
-		return _o;
+		return vim.lpeg and lpeg_processor(line) or lagecy_processor(line);
 	end
 
 	for l, line in ipairs(text) do
-		local row_text = line:gsub("\\|", "MKVescapedPIPE");
+		local row_text = line;
 
 		if l == 1 then
 			header = line_processor(row_text);
