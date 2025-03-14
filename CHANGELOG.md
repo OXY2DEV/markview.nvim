@@ -1,5 +1,17 @@
 # Changelog
 
+## [25.5.0](https://github.com/OXY2DEV/markview.nvim/compare/v25.4.0...v25.5.0) (2025-03-14)
+
+
+### Features
+
+* LPeg parser for table rows ([9a135dd](https://github.com/OXY2DEV/markview.nvim/commit/9a135ddc29d3659a4df765dcc379df1a16672a11)), closes [#308](https://github.com/OXY2DEV/markview.nvim/issues/308)
+
+
+### Bug Fixes
+
+* **blink:** Fixed issues with loading completion source for blink.cmp ([17a93b3](https://github.com/OXY2DEV/markview.nvim/commit/17a93b32b688f1f5bf9328692ba0e6b2f06659d3)), closes [#310](https://github.com/OXY2DEV/markview.nvim/issues/310)
+
 ## [25.4.0](https://github.com/OXY2DEV/markview.nvim/compare/v25.3.3...v25.4.0) (2025-03-11)
 
 
