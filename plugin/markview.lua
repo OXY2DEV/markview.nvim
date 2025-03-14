@@ -21,13 +21,18 @@ if vim.g.markview_cmp_loaded == nil then
 	vim.g.markview_cmp_loaded = false;
 end
 
---- Was the completion source loaded?
+--- Was the completion source for blink loaded?
 if vim.g.markview_blink_loaded == nil then
 	vim.g.markview_blink_loaded = false;
 end
 
 local blink = package.loaded["blink.cmp.config"];
 
+--- NOTE, `blink.cmp` doesn't allow dynamically
+--- setting up completion source.
+---
+--- So, we can only define the source and not register
+--- it.
 if vim.g.markview_blink_loaded == false and blink ~= nil then
 	local fts = spec.get({ "preview", "filetypes" }, {
 		fallback = {},
@@ -36,23 +41,25 @@ if vim.g.markview_blink_loaded == false and blink ~= nil then
 
 	local opts = {
 		sources = {
-			per_filetype = {},
-
 			providers = {
 				markview = {
 					name = "markview",
-					module = "blink-markview"
+					module = "blink-markview",
+
+					should_show_items = function ()
+						return vim.tbl_contains(fts, vim.o.filetype);
+					end
 				}
 			}
 		}
 	};
 
-	--- TODO, find ways to preserve user config
-	for _, ft in ipairs(fts) do
-		opts.sources.per_filetype[ft] = { "markview" };
-	end
-
 	blink.merge_with(opts);
+
+	health.notify("trace", {
+		level = 5,
+		message = "Registered source for blink.cmp."
+	});
 end
 
  ------------------------------------------------------------------------------------------

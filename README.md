@@ -320,6 +320,17 @@ Fonts,
 
 ## 📐 Installation
 
+>[!IMPORTANT]
+> If you are using `blink.cmp`, make sure to add `markview` as a provider.
+>
+> ```lua
+> sources = {
+>     per_filetype = {
+>         markdown = { "markview" }
+>     }
+> }
+> ```
+
 ### 🧩 Vim-plug
 
 Add this to your plugin list.
@@ -341,7 +352,13 @@ The plugin should be loaded *after* your colorscheme to ensure the correct highl
 -- For `plugins/markview.lua` users.
 return {
     "OXY2DEV/markview.nvim",
-    lazy = false
+    lazy = false,
+
+    -- For blink.cmp's completion
+    -- source
+    -- dependencies = {
+    --     "seghen/blink.cmp"
+    -- },
 };
 ```
 
@@ -349,7 +366,13 @@ return {
 -- For `plugins.lua` users.
 {
     "OXY2DEV/markview.nvim",
-    lazy = false
+    lazy = false,
+
+    -- For blink.cmp's completion
+    -- source
+    -- dependencies = {
+    --     "seghen/blink.cmp"
+    -- },
 },
 ```
 
@@ -359,7 +382,13 @@ return {
 local MiniDeps = require("mini.deps");
 
 MiniDeps.add({
-    source = "OXY2DEV/markview.nvim"
+    source = "OXY2DEV/markview.nvim",
+
+    -- For blink.cmp's completion
+    -- source
+    -- depends = {
+    --     "seghen/blink.cmp"
+    -- },
 });
 ```
 
