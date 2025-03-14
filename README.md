@@ -357,7 +357,7 @@ return {
     -- For blink.cmp's completion
     -- source
     -- dependencies = {
-    --     "seghen/blink.cmp"
+    --     "saghen/blink.cmp"
     -- },
 };
 ```
@@ -371,7 +371,7 @@ return {
     -- For blink.cmp's completion
     -- source
     -- dependencies = {
-    --     "seghen/blink.cmp"
+    --     "saghen/blink.cmp"
     -- },
 },
 ```
@@ -387,7 +387,7 @@ MiniDeps.add({
     -- For blink.cmp's completion
     -- source
     -- depends = {
-    --     "seghen/blink.cmp"
+    --     "saghen/blink.cmp"
     -- },
 });
 ```
