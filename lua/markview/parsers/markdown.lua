@@ -359,7 +359,9 @@ markdown.list_item = function (buffer, TSNode, _, range)
 				break;
 			elseif line == "" then
 				list_tolerance = list_tolerance + 1;
+				table.insert(candidates, (l - 1));
 			else
+				list_tolerance = 0;
 				table.insert(candidates, (l - 1));
 			end
 		end
