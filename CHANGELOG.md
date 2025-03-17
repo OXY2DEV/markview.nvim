@@ -1,5 +1,14 @@
 # Changelog
 
+## [25.5.1](https://github.com/OXY2DEV/markview.nvim/compare/v25.5.0...v25.5.1) (2025-03-17)
+
+
+### Bug Fixes
+
+* **blink:** Switched to blink's API function for registering source ([725a271](https://github.com/OXY2DEV/markview.nvim/commit/725a271c96ecffb7fff606d4edf3b68cbe64e5b5)), closes [#310](https://github.com/OXY2DEV/markview.nvim/issues/310)
+* **parser_markdown:** Empty lines now also receive indentation insidr of lists ([d3daa83](https://github.com/OXY2DEV/markview.nvim/commit/d3daa83ce97240f798d055525bbedc08f6fd1545)), closes [#311](https://github.com/OXY2DEV/markview.nvim/issues/311)
+* **parser_markdown:** List tolerance now resets on non-empty lines ([d3daa83](https://github.com/OXY2DEV/markview.nvim/commit/d3daa83ce97240f798d055525bbedc08f6fd1545))
+
 ## [25.5.0](https://github.com/OXY2DEV/markview.nvim/compare/v25.4.0...v25.5.0) (2025-03-14)
 
 
