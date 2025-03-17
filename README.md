@@ -320,17 +320,6 @@ Fonts,
 
 ## 📐 Installation
 
->[!IMPORTANT]
-> If you are using `blink.cmp`, make sure to add `markview` as a provider.
->
-> ```lua
-> sources = {
->     per_filetype = {
->         markdown = { "markview" }
->     }
-> }
-> ```
-
 ### 🧩 Vim-plug
 
 Add this to your plugin list.
