@@ -26,7 +26,7 @@ if vim.g.markview_blink_loaded == nil then
 	vim.g.markview_blink_loaded = false;
 end
 
-local blink = package.loaded["blink.cmp.config"];
+local blink = package.loaded["blink.cmp"];
 
 --- NOTE, `blink.cmp` doesn't allow dynamically
 --- setting up completion source.
@@ -34,27 +34,32 @@ local blink = package.loaded["blink.cmp.config"];
 --- So, we can only define the source and not register
 --- it.
 if vim.g.markview_blink_loaded == false and blink ~= nil then
+	local config = require("blink.cmp.config");
+
 	local fts = spec.get({ "preview", "filetypes" }, {
 		fallback = {},
 		ignore_enable = true
 	});
 
-	local opts = {
-		sources = {
-			providers = {
-				markview = {
-					name = "markview",
-					module = "blink-markview",
+	pcall(blink.add_provider, "markview", {
+		name = "markview",
+		module = "blink-markview",
 
-					should_show_items = function ()
-						return vim.tbl_contains(fts, vim.o.filetype);
-					end
-				}
-			}
-		}
-	};
+		should_show_items = function ()
+			return vim.tbl_contains(fts, vim.o.filetype);
+		end
+	});
 
-	blink.merge_with(opts);
+	for _, ft in ipairs(fts) do
+		if config then
+			--- ISSUE, blink doesn't merge default sources.
+
+			local default = config.sources.default or {};
+			config.sources.per_filetype[ft] = vim.list_extend(default, { "markview" });
+		else
+			pcall(blink.add_filetype_source, ft, "markview");
+		end
+	end
 
 	health.notify("trace", {
 		level = 5,
