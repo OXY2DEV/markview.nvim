@@ -41,7 +41,7 @@ if vim.g.markview_blink_loaded == false and blink ~= nil then
 		ignore_enable = true
 	});
 
-	pcall(blink.add_provider, "markview", {
+	pcall(blink.add_source_provider, "markview", {
 		name = "markview",
 		module = "blink-markview",
 
