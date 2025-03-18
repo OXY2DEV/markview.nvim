@@ -69,13 +69,13 @@ if vim.g.markview_blink_loaded == false and blink ~= nil then
 
 			if vim.islist(default) then
 				config.sources.per_filetype[ft] = vim.list_extend(default, { "markview" });
-			else
-				--- Empty context.
-				local can_exec, exec = pcall(default, {});
-
-				if can_exec and vim.islist(exec) then
-					config.sources.per_filetype[ft] = vim.list_extend(exec, { "markview" });
-				end
+			-- else
+			-- 	--- Empty context.
+			-- 	local can_exec, exec = pcall(default, {});
+			--
+			-- 	if can_exec and vim.islist(exec) then
+			-- 		config.sources.per_filetype[ft] = vim.list_extend(exec, { "markview" });
+			-- 	end
 			end
 		else
 			pcall(blink.add_filetype_source, ft, "markview");
