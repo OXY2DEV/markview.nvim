@@ -1,5 +1,13 @@
 # Changelog
 
+## [25.5.4](https://github.com/OXY2DEV/markview.nvim/compare/v25.5.3...v25.5.4) (2025-03-18)
+
+
+### Bug Fixes
+
+* **blink:** Attempt to get dynamic source list for blink.cmp ([e4c47d2](https://github.com/OXY2DEV/markview.nvim/commit/e4c47d28dbccf2a56db8293df3e6e7fe6063fb84)), closes [#317](https://github.com/OXY2DEV/markview.nvim/issues/317)
+* Markview no longer overwrites user source list for blink.cmp ([351366e](https://github.com/OXY2DEV/markview.nvim/commit/351366e7d2794456465dc6c48342177114ef15c0)), closes [#317](https://github.com/OXY2DEV/markview.nvim/issues/317)
+
 ## [25.5.3](https://github.com/OXY2DEV/markview.nvim/compare/v25.5.2...v25.5.3) (2025-03-18)
 
 
