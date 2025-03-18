@@ -1,5 +1,13 @@
 # Changelog
 
+## [25.5.2](https://github.com/OXY2DEV/markview.nvim/compare/v25.5.1...v25.5.2) (2025-03-18)
+
+
+### Bug Fixes
+
+* **blink:** use add_source_provider due to deprecation ([7ebb1d2](https://github.com/OXY2DEV/markview.nvim/commit/7ebb1d2fe489f32ff0d347e0868407c504ffe8e0))
+* **blink:** use add_source_provider due to deprecation ([382dd40](https://github.com/OXY2DEV/markview.nvim/commit/382dd401861b8604043427dfe44f343c56288dd4))
+
 ## [25.5.1](https://github.com/OXY2DEV/markview.nvim/compare/v25.5.0...v25.5.1) (2025-03-17)
 
 
