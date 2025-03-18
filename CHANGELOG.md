@@ -1,5 +1,12 @@
 # Changelog
 
+## [25.5.3](https://github.com/OXY2DEV/markview.nvim/compare/v25.5.2...v25.5.3) (2025-03-18)
+
+
+### Bug Fixes
+
+* **blink:** Added support for both version of source provider ([f4c55fa](https://github.com/OXY2DEV/markview.nvim/commit/f4c55fa2720025e17cdf11fbc557216de64e2517)), closes [#315](https://github.com/OXY2DEV/markview.nvim/issues/315)
+
 ## [25.5.2](https://github.com/OXY2DEV/markview.nvim/compare/v25.5.1...v25.5.2) (2025-03-18)
 
 
