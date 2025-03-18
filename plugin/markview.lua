@@ -41,14 +41,25 @@ if vim.g.markview_blink_loaded == false and blink ~= nil then
 		ignore_enable = true
 	});
 
-	pcall(blink.add_source_provider, "markview", {
-		name = "markview",
-		module = "blink-markview",
+	if blink.add_source_provider then
+		pcall(blink.add_source_provider, "markview", {
+			name = "markview",
+			module = "blink-markview",
 
-		should_show_items = function ()
-			return vim.tbl_contains(fts, vim.o.filetype);
-		end
-	});
+			should_show_items = function ()
+				return vim.tbl_contains(fts, vim.o.filetype);
+			end
+		});
+	else
+		pcall(blink.add_provider, "markview", {
+			name = "markview",
+			module = "blink-markview",
+
+			should_show_items = function ()
+				return vim.tbl_contains(fts, vim.o.filetype);
+			end
+		});
+	end
 
 	for _, ft in ipairs(fts) do
 		if config then
