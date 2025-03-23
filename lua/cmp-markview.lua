@@ -54,7 +54,7 @@ function source:complete(params, callback)
 				local label = "[!" .. key;
 				local desc = {
 					string.format("▌ %s",
-						item.preview
+						item.preview or ""
 					),
 					"▌ Block quote description."
 				};
@@ -64,7 +64,7 @@ function source:complete(params, callback)
 				end
 
 				local result = label;
-				label = label .. " » " .. item.preview;
+				label = label .. " » " .. (item.preview or "");
 
 				table.insert(comp, {
 					label = label,
@@ -85,7 +85,7 @@ function source:complete(params, callback)
 				local desc = {
 					"◇ List item,",
 					string.format("  %s Checkbox with",
-						item.text
+						item.text or ""
 					),
 					"    some text."
 				};
@@ -95,7 +95,7 @@ function source:complete(params, callback)
 				end
 
 				local result = label;
-				label = label .. " » " .. item.text;
+				label = label .. " » " .. (item.text or "");
 
 				table.insert(comp, {
 					label = label,

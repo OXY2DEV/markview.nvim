@@ -44,7 +44,7 @@ function source:get_completions(ctx, callback)
 
 		for key, item in pairs(items) do
 			if vim.list_contains({ "enable", "wrap", "default" }, key) == false then
-				local label = "[!" .. key .. "]" .. " » " .. item.preview;
+				local label = "[!" .. key .. "]" .. " » " .. (item.preview or "");
 				local result = key;
 
 				if string.match(after, "^%]") == nil then
@@ -67,7 +67,7 @@ function source:get_completions(ctx, callback)
 
 					documentation = {
 						kind = "plaintext",
-						value = string.format("▌ %s\n▌ Block quote description.", item.preview);
+						value = string.format("▌ %s\n▌ Block quote description.", item.preview or "");
 					}
 				});
 			end
@@ -77,7 +77,7 @@ function source:get_completions(ctx, callback)
 
 		for key, item in pairs(items) do
 			if vim.list_contains({ "enable", "checked", "unchecked" }, key) == false then
-				local label = "[" .. key .. "]" .. " » " .. item.text .. " ";
+				local label = "[" .. key .. "]" .. " » " .. (item.text or "") .. " ";
 				local result = key;
 
 				if string.match(after, "^%]") == nil then
@@ -100,7 +100,7 @@ function source:get_completions(ctx, callback)
 
 					documentation = {
 						kind = "plaintext",
-						value = string.format("◇ List item,\n  %s Checkbox with\n    some text.", item.text);
+						value = string.format("◇ List item,\n  %s Checkbox with\n    some text.", item.text or "");
 					}
 				});
 			end
