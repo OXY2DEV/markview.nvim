@@ -1664,6 +1664,11 @@ spec.default = {
 
 			---+${lua, Various inline elements used in markdown}
 
+			["^a$"] = {
+				on_opening_tag = { conceal = "", virt_text_pos = "inline", virt_text = { { "", "MarkviewHyperlink" } } },
+				on_node = { hl_group = "MarkviewHyperlink" },
+				on_closing_tag = { conceal = "" },
+			},
 			["^b$"] = {
 				on_opening_tag = { conceal = "" },
 				on_node = { hl_group = "Bold" },
@@ -1689,6 +1694,11 @@ spec.default = {
 				on_node = { hl_group = "MarkviewPalette1" },
 				on_closing_tag = { conceal = "" },
 			},
+			["^pre$"] = {
+				on_opening_tag = { conceal = "" },
+				on_node = { hl_group = "Special" },
+				on_closing_tag = { conceal = "" },
+			},
 			["^strong$"] = {
 				on_opening_tag = { conceal = "" },
 				on_node = { hl_group = "@text.strong" },
@@ -1709,12 +1719,6 @@ spec.default = {
 				on_node = { hl_group = "Underlined" },
 				on_closing_tag = { conceal = "" },
 			},
-
-			["^a$"] = {
-				on_opening_tag = { conceal = "", virt_text_pos = "inline", virt_text = { { "", "MarkviewHyperlink" } } },
-				on_node = { hl_group = "MarkviewHyperlink" },
-				on_closing_tag = { conceal = "" },
-			}
 
 			---_
 			---_

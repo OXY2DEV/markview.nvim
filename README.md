@@ -52,6 +52,7 @@ HTML features,
     + `<i></i>`
     + `<mark></mark>`
     + `<strong></strong>`
+    + `<pre></pre>`
     + `<sub></sub>`
     + `<sup></sup>`
     + `<u></u>`
