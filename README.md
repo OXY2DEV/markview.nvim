@@ -45,6 +45,7 @@ HTML features,
 + Allows customising how various container & void elements are shown.
 + Supports *heading* elements out of the box.
 + Supports the following container elements out of the box,
+    + `<a></a>`
     + `<b></b>`
     + `<code></code>`
     + `<em></em>`
