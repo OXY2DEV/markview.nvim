@@ -1,5 +1,13 @@
 # Changelog
 
+## [25.6.0](https://github.com/OXY2DEV/markview.nvim/compare/v25.5.4...v25.6.0) (2025-03-28)
+
+
+### Features
+
+* Added &lt;pre&gt; to supported HTML tag list ([0d67884](https://github.com/OXY2DEV/markview.nvim/commit/0d6788416f8d935f6d6cba4a8dbdd5308cca3e7f)), closes [#323](https://github.com/OXY2DEV/markview.nvim/issues/323)
+* **core:** Added &lt;a&gt; support to supported HTML container elements ([6499c7f](https://github.com/OXY2DEV/markview.nvim/commit/6499c7f7bab3e4a7cddf570c6abedcb41abc2eb3)), closes [#323](https://github.com/OXY2DEV/markview.nvim/issues/323)
+
 ## [25.5.4](https://github.com/OXY2DEV/markview.nvim/compare/v25.5.3...v25.5.4) (2025-03-23)
 
 
