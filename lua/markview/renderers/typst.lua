@@ -1673,6 +1673,7 @@ typst.render = function (buffer, content)
 				level = 4,
 				message = {
 					{ " r/typst.lua: ", "DiagnosticVirtualTextInfo" },
+					{ string.format(" %s ", item.class), "DiagnosticVirtualTextHint" },
 					{ " " },
 					{ err, "DiagnosticError" }
 				}

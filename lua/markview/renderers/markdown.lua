@@ -3759,6 +3759,7 @@ markdown.post_render = function (buffer, content)
 				level = 4,
 				message = {
 					{ " r/markdown.lua: ", "DiagnosticVirtualTextInfo" },
+					{ string.format(" %s ", item.class), "DiagnosticVirtualTextHint" },
 					{ " " },
 					{ err, "DiagnosticError" }
 				}

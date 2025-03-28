@@ -213,6 +213,7 @@ html.render = function (buffer, content)
 				level = 4,
 				message = {
 					{ " r/html.lua: ", "DiagnosticVirtualTextInfo" },
+					{ string.format(" %s ", item.class), "DiagnosticVirtualTextHint" },
 					{ " " },
 					{ err, "DiagnosticError" }
 				}

@@ -1088,6 +1088,7 @@ inline.render = function (buffer, content)
 				level = 4,
 				message = {
 					{ " r/markdown_inline.lua: ", "DiagnosticVirtualTextInfo" },
+					{ string.format(" %s ", item.class), "DiagnosticVirtualTextHint" },
 					{ " " },
 					{ err, "DiagnosticError" }
 				}

@@ -359,7 +359,7 @@ utils.match = function (config, name, opts)
 	end
 
 	local function is_valid (value, pattern)
-		local ignore = opts.ignore_keys or {};
+		local ignore = opts.ignore_keys or { "enable" };
 		local _pattern = pattern;
 
 		if opts.key_mod then
