@@ -710,7 +710,7 @@ highlights.dynamic = {
 		));
 		local h_fg = highlights.rgb_to_lab(highlights.get_property(
 			"fg",
-			{ "@markup.heading.1.markdown", "@markup.heading", "markdownH1"  },
+			{ "markdownH1", "@markup.heading.1.markdown"  },
 			"#D20F39",
 			"#F38BA8"
 		));
@@ -772,7 +772,7 @@ highlights.dynamic = {
 		));
 		local h_fg = highlights.rgb_to_lab(highlights.get_property(
 			"fg",
-			{ "@markup.heading.2.markdown", "@markup.heading", "markdownH2"  },
+			{ "markdownH2", "@markup.heading.2.markdown"  },
 			"#FAB387",
 			"#FE640B"
 		));
@@ -834,7 +834,7 @@ highlights.dynamic = {
 		));
 		local h_fg = highlights.rgb_to_lab(highlights.get_property(
 			"fg",
-			{ "@markup.heading.3.markdown", "@markup.heading", "markdownH3"  },
+			{ "markdownH3", "@markup.heading.3.markdown"  },
 			"#DF8E1D",
 			"#F9E2AF"
 		));
@@ -896,7 +896,7 @@ highlights.dynamic = {
 		));
 		local h_fg = highlights.rgb_to_lab(highlights.get_property(
 			"fg",
-			{ "@markup.heading.4.markdown", "@markup.heading", "markdownH4"  },
+			{ "markdownH4", "@markup.heading.4.markdown"  },
 			"#40A02B",
 			"#A6E3A1"
 		));
@@ -958,7 +958,7 @@ highlights.dynamic = {
 		));
 		local h_fg = highlights.rgb_to_lab(highlights.get_property(
 			"fg",
-			{ "@markup.heading.5.markdown", "@markup.heading", "markdownH5"  },
+			{ "markdownH5", "@markup.heading.5.markdown"  },
 			"#209FB5",
 			"#74C7EC"
 		));
@@ -1020,7 +1020,7 @@ highlights.dynamic = {
 		));
 		local h_fg = highlights.rgb_to_lab(highlights.get_property(
 			"fg",
-			{ "@markup.heading.6.markdown", "@markup.heading", "markdownH6"  },
+			{ "markdownH6", "@markup.heading.6.markdown"  },
 			"#7287FD",
 			"#B4BEFE"
 		));
