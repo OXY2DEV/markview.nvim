@@ -710,6 +710,11 @@ Additional command(s),
 
 If you want to create your own *dynamic* highlight groups or modify existing ones, see the [custom highlight groups](placeholder) section.
 
+>[!IMPORTANT]
+> The process of checking for heading highlight groups is a bit complicated.
+> For example, `markdownH1` actually checks `@markup.heading.1.markdown`, `@markup.heading` & `markdownH1`
+> For the sake of simplicity & saving space in the table the first 2 are omitted below.
+
 
 | Highlight group      | Generated from                           | Default                     |
 |----------------------|------------------------------------------|-----------------------------|
