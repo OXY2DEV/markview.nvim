@@ -1,5 +1,14 @@
 # Changelog
 
+## [25.6.1](https://github.com/OXY2DEV/markview.nvim/compare/v25.6.0...v25.6.1) (2025-03-29)
+
+
+### Bug Fixes
+
+* **renderer_markdown:** List item padding's `start_col` no longer exceeds line length ([40a7356](https://github.com/OXY2DEV/markview.nvim/commit/40a7356a44f20ba15138c1d7bcd1d9493fbf1d20))
+* **renderer_markdown:** Shift width & indent size of list items now fallback to 1 when the function calculation fails ([180c67b](https://github.com/OXY2DEV/markview.nvim/commit/180c67ba92afe31600b2e4da2c98be078c740626))
+* **renderer_markdown:** Signs for ATX heading now pass through `tostring()` first ([ad10211](https://github.com/OXY2DEV/markview.nvim/commit/ad10211a503c515d2da18946e71100f29bc074f6)), closes [#323](https://github.com/OXY2DEV/markview.nvim/issues/323)
+
 ## [25.6.0](https://github.com/OXY2DEV/markview.nvim/compare/v25.5.4...v25.6.0) (2025-03-28)
 
 
