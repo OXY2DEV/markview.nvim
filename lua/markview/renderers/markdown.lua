@@ -3452,6 +3452,14 @@ markdown.__list_item = function (buffer, item)
 	local config;
 	local shift_width, indent_size = main_config.shift_width or 1, main_config.indent_size or 1;
 
+	if type(shift_width) ~= "number" then
+		shift_width = 1;
+	end
+
+	if type(indent_size) ~= "number" then
+		shift_width = 1;
+	end
+
 	if item.marker == "-" then
 		config = spec.get({ "marker_minus" }, {
 			source = main_config,
