@@ -1931,11 +1931,7 @@ markdown.list_item = function (buffer, item)
 
 	if config.add_padding == true then
 		for _, l in ipairs(item.candidates) do
-			local from, to = range.col_start, range.col_start + item.indent;
-
-			if item.text[l + 1]:len() < to then
-				to = from;
-			end
+			local from, to = math.min(range.col_start, item.text[l + 1]:len()), math.min(range.col_start + item.indent, item.text[l + 1]:len());
 
 			vim.api.nvim_buf_set_extmark(buffer, markdown.ns, range.row_start + l, from, {
 				undo_restore = false, invalidate = true,
