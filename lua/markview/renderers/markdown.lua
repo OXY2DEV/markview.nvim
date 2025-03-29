@@ -1103,7 +1103,7 @@ markdown.atx_heading = function (buffer, item)
 			undo_restore = false, invalidate = true,
 			end_col = range.col_start + #item.marker + (#item.text[1] > #item.marker and 1 or 0),
 			conceal = "",
-			sign_text = config.sign,
+			sign_text = config.sign and tostring(config.sign) or nil,
 			sign_hl_group = utils.set_hl(config.sign_hl),
 			virt_text_pos = "inline",
 			virt_text = {
@@ -1136,7 +1136,7 @@ markdown.atx_heading = function (buffer, item)
 			undo_restore = false, invalidate = true,
 			end_col = range.col_start + #item.marker + (#item.text[1] > #item.marker and 1 or 0),
 			conceal = "",
-			sign_text = config.sign,
+			sign_text = config.sign and tostring(config.sign) or nil,
 			sign_hl_group = utils.set_hl(config.sign_hl),
 			virt_text_pos = "inline",
 			virt_text = {
