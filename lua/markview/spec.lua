@@ -119,6 +119,7 @@ spec.default = {
 
 		read_chunk_size = 1024,
 
+		prefer_nvim = false,
 		file_open_command = "tabnew",
 		list_empty_line_tolerance = 3,
 

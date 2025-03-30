@@ -452,6 +452,7 @@ mkv.config = {
         text_filetypes = {},
         read_chunk_size = 1000,
         link_open_alerts = false,
+        prefer_nvim = true,
         file_open_command = "tabnew",
 
         list_empty_line_tolerance = 3

@@ -217,9 +217,14 @@ links.__open = function (buffer, address)
 		ui_open(address);
 	elseif links.__text_file(address) == true then
 		local command = spec.get({ "experimental", "file_open_command" }, { fallback = "tabnew" });
+		local prefer_nvim = spec.get({ "experimental", "prefer_nvim" }, { fallback = true });
 
-		--- Text file. Open inside Neovim.
-		vim.cmd(string.format("%s %s", command, address));
+		if prefer_nvim then
+			--- Text file. Open inside Neovim.
+			vim.cmd(string.format("%s %s", command, address));
+		else
+			ui_open(address);
+		end
 	else
 		--- This is a file, but not a text file.
 		ui_open(address);
