@@ -769,6 +769,10 @@ spec.default = {
 			wrap = true,
 
 			indent_size = function (buffer)
+				if type(buffer) ~= "number" then
+					return vim.bo.shiftwidth or 4;
+				end
+
 				--- Use 'shiftwidth' value.
 				return vim.bo[buffer].shiftwidth or 4;
 			end,
@@ -2232,6 +2236,10 @@ spec.default = {
 			enable = true,
 
 			indent_size = function (buffer)
+				if type(buffer) ~= "number" then
+					return vim.bo.shiftwidth or 4;
+				end
+
 				--- Use 'shiftwidth' value.
 				return vim.bo[buffer].shiftwidth or 4;
 			end,

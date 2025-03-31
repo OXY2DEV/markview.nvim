@@ -3457,7 +3457,7 @@ markdown.__list_item = function (buffer, item)
 	end
 
 	if type(indent_size) ~= "number" then
-		shift_width = 1;
+		indent_size = 1;
 	end
 
 	if item.marker == "-" then
