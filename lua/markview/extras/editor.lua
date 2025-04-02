@@ -750,7 +750,7 @@ vim.api.nvim_create_user_command("CodeCreate", function ()
 		ignore = true,
 
 		option = ":CodeCreate",
-		alter = ":Code create"
+		alter = ":Editor create"
 	});
 
 	editor.actions.create();
@@ -761,7 +761,7 @@ vim.api.nvim_create_user_command("CodeEdit", function ()
 		ignore = true,
 
 		option = ":CodeEdit",
-		alter = ":Code edit"
+		alter = ":Editor edit"
 	});
 
 	editor.actions.edit();
