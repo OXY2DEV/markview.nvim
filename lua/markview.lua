@@ -1221,6 +1221,40 @@ markview.commands = {
 		markview.actions.hybridEnable(buffer);
 	end,
 
+	["linewiseEnable"] = function ()
+		spec.config.preview.linewise_hybrid_mode = true;
+		markview.clean();
+
+		for _, buf in ipairs(markview.state.attached_buffers) do
+			if markview.actions.__is_enabled(buf) then
+				markview.render(buf);
+			end
+		end
+	end,
+	["linewiseDisable"] = function ()
+		spec.config.preview.linewise_hybrid_mode = false;
+		markview.clean();
+
+		for _, buf in ipairs(markview.state.attached_buffers) do
+			if markview.actions.__is_enabled(buf) then
+				markview.render(buf);
+			end
+		end
+	end,
+	["linewiseToggle"] = function ()
+		---@type boolean Is line-wise hybrid mode enabled?
+		local linewise_hybrid_mode = spec.get({ "preview", "linewise_hybrid_mode" }, { fallback = false, ignore_enable = true });
+
+		spec.config.preview.linewise_hybrid_mode = not linewise_hybrid_mode;
+		markview.clean();
+
+		for _, buf in ipairs(markview.state.attached_buffers) do
+			if markview.actions.__is_enabled(buf) then
+				markview.render(buf);
+			end
+		end
+	end,
+
 	["HybridToggle"] = function ()
 		markview.clean();
 

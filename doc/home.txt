@@ -235,12 +235,30 @@ It comes with the following sub-commands,
 │ `Disable`             │ none                  │ Disables preview globally. │
 │ `Toggle`              │ none                  │ Toggles preview globally.  │
 ├───────────────────────┼───────────────────────┼────────────────────────────┤
+│ `HybridEnable`        │ none                  │ Enables hybrid mode.       │
+│ `HybridDisable`       │ none                  │ Disables hybrid mode.      │
+│ `HybridToggle`        │ none                  │ Toggles hybrid mode.       │
+├───────────────────────┼───────────────────────┼────────────────────────────┤
 │ `enable`              │ `buffer`, integer     │ Enables preview for        │
 │                       │                       │ {buffer}.                  │
 │ `disable`             │ `buffer`, integer     │ Disables preview for       │
 │                       │                       │ {buffer}.                  │
 │ `toggle`              │ `buffer`, integer     │ Toggles preview for        │
 │                       │                       │ {buffer}.                  │
+├───────────────────────┼───────────────────────┼────────────────────────────┤
+│ `hybridEnable`        │ `buffer`, integer     │ Enables hybrid mode for    │
+│                       │                       │ {buffer}.                  │
+│ `hybridDisable`       │ `buffer`, integer     │ Disables hybrid mode for   │
+│                       │                       │ {buffer}.                  │
+│ `hybridToggle`        │ `buffer`, integer     │ Toggles hybrid mode for    │
+│                       │                       │ {buffer}.                  │
+├───────────────────────┼───────────────────────┼────────────────────────────┤
+│ `linewiseEnable`      │ none                  │ Enables linewise hybrid    │
+│                       │                       │ mode.                      │
+│ `linewiseDisable`     │ none                  │ Disables linewise hybrid   │
+│                       │                       │ mode.                      │
+│ `linewiseToggle`      │ none                  │ Toggles linewise hybrid    │
+│                       │                       │ mode.                      │
 ├───────────────────────┼───────────────────────┼────────────────────────────┤
 │ `splitOpen`           │ `buffer`, integer     │ Opens `splitview`          │
 │                       │                       │ for {buffer}.              │
