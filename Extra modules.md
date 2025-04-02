@@ -124,7 +124,7 @@ A simple *syntax-aware* code block editor/creator.
 require("markview.extras.editor").setup();
 ```
 
-You will get access to the `:Code` command. It has the following sub-commands,
+You will get access to the `:Editor` command. It has the following sub-commands,
 
 - `create`
   Create a code block under the cursor.
