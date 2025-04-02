@@ -298,7 +298,9 @@ markview.render = function (buffer, state)
 
 	markview.clear(buffer);
 
-	if line_count <= line_limit then
+	if state.enable == false then
+		return;
+	elseif line_count <= line_limit then
 		local content, _ = parser.parse(buffer, 0, -1, true);
 
 		if hybrid_mode() == true and linewise_hybrid_mode == false then
