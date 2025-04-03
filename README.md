@@ -320,6 +320,9 @@ Fonts,
 >[!TIP]
 > It is recommended to run `:checkhealth markview` after installing the plugin to check if any potential issues exist.
 
+>[!NOTE]
+> This plugin uses `tree-sitter` queries. So, it should be loaded **before** `nvim-treesitter`.
+
 ## 📐 Installation
 
 ### 🧩 Vim-plug
