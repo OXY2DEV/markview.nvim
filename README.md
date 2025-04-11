@@ -920,7 +920,7 @@ Accessed using `require("markview.presets").horizontal_rules`.
 - `double`
   Double lines.
 
-- `dahsed`
+- `dashed`
   Dashed line.
 
 - `dotted`
