@@ -482,7 +482,7 @@ local function lpeg_processor(line)
 	local _o = {};
 	local y = 0;
 
-	for _, j in ipairs(RESULT) do
+	for _, j in ipairs(RESULT or {}) do
 		---|fS
 
 		if j == "|" then
@@ -618,7 +618,17 @@ markdown.table = function (_, _, text, range)
 
 	--- Line processor.
 	local function line_processor (line)
-		return vim.lpeg and lpeg_processor(line) or lagecy_processor(line);
+		if vim.lpeg then
+			local succes, res = pcall(lpeg_processor, line);
+
+			if succes == false then
+				return lagecy_processor(line);
+			else
+				return res;
+			end
+		else
+			return lagecy_processor(line);
+		end
 	end
 
 	for l, line in ipairs(text) do
