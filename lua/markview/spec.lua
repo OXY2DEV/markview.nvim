@@ -196,8 +196,36 @@ spec.default = {
 			on_enable = function (_, wins)
 				---+${lua}
 
-				for _, win in ipairs(wins) do
-					vim.wo[win].conceallevel = 3;
+				--- Initial state for attached buffers.
+				---@type string
+				local attach_state = spec.get({ "preview", "enable" }, { fallback = true, ignore_enable = true });
+
+				if attach_state == false then
+					-- If the window's aren't initially
+					-- attached, we need to set the 
+					-- 'concealcursor' too.
+
+					---@type string[]
+					local preview_modes = spec.get({ "preview", "modes" }, { fallback = {}, ignore_enable = true });
+					---@type string[]
+					local hybrid_modes = spec.get({ "preview", "hybrid_modes" }, { fallback = {}, ignore_enable = true });
+
+					local concealcursor = "";
+
+					for _, mode in ipairs(preview_modes) do
+						if vim.list_contains(hybrid_modes, mode) == false and vim.list_contains({ "n", "v", "i", "c" }, mode) then
+							concealcursor = concealcursor .. mode;
+						end
+					end
+
+					for _, win in ipairs(wins) do
+						vim.wo[win].conceallevel = 3;
+						vim.wo[win].concealcursor = concealcursor;
+					end
+				else
+					for _, win in ipairs(wins) do
+						vim.wo[win].conceallevel = 3;
+					end
 				end
 
 				---_
