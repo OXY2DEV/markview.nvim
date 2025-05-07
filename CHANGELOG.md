@@ -1,5 +1,24 @@
 # Changelog
 
+## [25.7.0](https://github.com/OXY2DEV/markview.nvim/compare/v25.6.0...v25.7.0) (2025-05-07)
+
+
+### Features
+
+* **core:** Added ability to toggle linewise hybrid mode ([4c880d2](https://github.com/OXY2DEV/markview.nvim/commit/4c880d2afaca8df7f7070b0143b5854bfc049dbe)), closes [#330](https://github.com/OXY2DEV/markview.nvim/issues/330)
+* **latex:** Added `\mathrm{}` to latex fonts ([0f27afe](https://github.com/OXY2DEV/markview.nvim/commit/0f27afe779243e7ef01eb13cd570fdfe61644371)), closes [#341](https://github.com/OXY2DEV/markview.nvim/issues/341)
+
+
+### Bug Fixes
+
+* **config:** Fixed a bug with concealcursor beinh not set when preview is disabled ([eed5410](https://github.com/OXY2DEV/markview.nvim/commit/eed5410b17ad927b092dcc2579c40acdb655a41d))
+* **core:** Fixed a bug with preview being shown after runnibg `Disable` ([2b810d7](https://github.com/OXY2DEV/markview.nvim/commit/2b810d72e1867739a1d617e6e244718d8d3a06f2))
+* **link:** Allow users to change preference for opening text files ([7953828](https://github.com/OXY2DEV/markview.nvim/commit/795382867430559f4b776ebf378ca632965f23ff)), closes [#328](https://github.com/OXY2DEV/markview.nvim/issues/328)
+* **renderer_markdown:** List item padding's `start_col` no longer exceeds line length ([40a7356](https://github.com/OXY2DEV/markview.nvim/commit/40a7356a44f20ba15138c1d7bcd1d9493fbf1d20))
+* **renderer_markdown:** Shift width & indent size of list items now fallback to 1 when the function calculation fails ([180c67b](https://github.com/OXY2DEV/markview.nvim/commit/180c67ba92afe31600b2e4da2c98be078c740626))
+* **renderer_markdown:** Signs for ATX heading now pass through `tostring()` first ([ad10211](https://github.com/OXY2DEV/markview.nvim/commit/ad10211a503c515d2da18946e71100f29bc074f6)), closes [#323](https://github.com/OXY2DEV/markview.nvim/issues/323)
+* **renderer_markdown:** Turn non-number `indent_size` to 1 ([59d3baa](https://github.com/OXY2DEV/markview.nvim/commit/59d3baaac5b77aa3939f5a00acd335183e45930d)), closes [#323](https://github.com/OXY2DEV/markview.nvim/issues/323)
+
 ## [25.6.0](https://github.com/OXY2DEV/markview.nvim/compare/v25.5.4...v25.6.0) (2025-03-28)
 
 
