@@ -2096,6 +2096,7 @@ spec.default = {
 			mathsfit = { enable = true },
 			mathsfbfit = { enable = true },
 			mathtt = { enable = true },
+			mathrm = { enable = true },
 
 			---_
 		},
