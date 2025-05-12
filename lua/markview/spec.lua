@@ -810,7 +810,7 @@ spec.default = {
 				add_padding = true,
 				conceal_on_checkboxes = true,
 
-				text = "",
+				text = "●",
 				hl = "MarkviewListItemMinus"
 			},
 
@@ -818,7 +818,7 @@ spec.default = {
 				add_padding = true,
 				conceal_on_checkboxes = true,
 
-				text = "",
+				text = "◈",
 				hl = "MarkviewListItemPlus"
 			},
 
@@ -826,7 +826,7 @@ spec.default = {
 				add_padding = true,
 				conceal_on_checkboxes = true,
 
-				text = "",
+				text = "⬢",
 				hl = "MarkviewListItemStar"
 			},
 
@@ -2277,7 +2277,7 @@ spec.default = {
 			marker_minus = {
 				add_padding = true,
 
-				text = "",
+				text = "●",
 				hl = "MarkviewListItemMinus"
 			},
 
