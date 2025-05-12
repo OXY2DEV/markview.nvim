@@ -549,6 +549,7 @@ fts.styles = {
 	["sgmldecl"]                = { name = "SGML",                 sign = "󰯂 ", sign_hl = "MarkviewPalette6Sign", icon = "󰯂 ", icon_hl = "MarkviewIcon6", border_hl = "MarkviewPalette6Fg" },
 	["sgmllnx"]                 = { name = "SGML-linuxdoc",        sign = "󰯂 ", sign_hl = "MarkviewPalette2Sign", icon = "󰯂 ", icon_hl = "MarkviewIcon2", border_hl = "MarkviewPalette2Fg" },
 	["sh"]                      = { name = "Shell",                sign = " ", sign_hl = "MarkviewPalette4Sign", icon = " ", icon_hl = "MarkviewIcon4", border_hl = "MarkviewPalette4Fg" },
+	["shell"]                   = { name = "Shell",                sign = " ", sign_hl = "MarkviewPalette4Sign", icon = " ", icon_hl = "MarkviewIcon4", border_hl = "MarkviewPalette4Fg" },
 	["shada"]                   = { name = "Shada",                sign = "󰯂 ", sign_hl = "MarkviewPalette6Sign", icon = "󰯂 ", icon_hl = "MarkviewIcon6", border_hl = "MarkviewPalette6Fg" },
 	["sicad"]                   = { name = "SiCAD",                sign = "󰯂 ", sign_hl = "MarkviewPalette6Sign", icon = "󰯂 ", icon_hl = "MarkviewIcon6", border_hl = "MarkviewPalette6Fg" },
 	["sieve"]                   = { name = "Sieve",                sign = "󰯂 ", sign_hl = "MarkviewPalette6Sign", icon = "󰯂 ", icon_hl = "MarkviewIcon6", border_hl = "MarkviewPalette6Fg" },
