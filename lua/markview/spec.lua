@@ -826,7 +826,7 @@ spec.default = {
 				add_padding = true,
 				conceal_on_checkboxes = true,
 
-				text = "⬢",
+				text = "◇",
 				hl = "MarkviewListItemStar"
 			},
 
