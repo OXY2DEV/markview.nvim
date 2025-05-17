@@ -1,5 +1,14 @@
 # Changelog
 
+## [25.7.1](https://github.com/OXY2DEV/markview.nvim/compare/v25.7.0...v25.7.1) (2025-05-17)
+
+
+### Bug Fixes
+
+* **filetypes:** Added support for `shell` filetype ([165121d](https://github.com/OXY2DEV/markview.nvim/commit/165121d0ec0ba8d3b68576eedb97c1dbc4f2301a))
+* **hl:** Colorscheme highlight groups are now respected: ([23f8bda](https://github.com/OXY2DEV/markview.nvim/commit/23f8bda5a172287c3423a3ffe7640efefa52a48b))
+* **list_items:** Fixed incorrect character for list item markers ([2089a0f](https://github.com/OXY2DEV/markview.nvim/commit/2089a0f08dd3f83eb5f348c0080d70a6b87c7b98))
+
 ## [25.7.0](https://github.com/OXY2DEV/markview.nvim/compare/v25.6.0...v25.7.0) (2025-05-07)
 
 
