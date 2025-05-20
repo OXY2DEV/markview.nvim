@@ -4,7 +4,7 @@ local source = {};
 --- Is this source available?
 ---@return boolean
 function source:is_available()
-	if not package.loaded["markview.spec"] then
+	if not package.loaded["markview"] then
 		--- Plugin not available.
 		return false;
 	end
@@ -33,12 +33,7 @@ end
 ---@param params table
 ---@param callback function
 function source:complete(params, callback)
-	if not package.loaded["markview.spec"] then
-		--- Plugin not available.
-		return;
-	end
-
-	local spec = package.loaded["markview.spec"];
+	local spec = require("markview.spec");
 
 	local before = params.context.cursor_before_line or "";
 	local after = params.context.cursor_after_line or "";

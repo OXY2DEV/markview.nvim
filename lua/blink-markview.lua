@@ -3,7 +3,7 @@ local source = {};
 --- Is this source available?
 ---@return boolean
 function source:is_available()
-	if not package.loaded["markview.spec"] then
+	if not package.loaded["markview"] then
 		--- Plugin not available.
 		return false;
 	end
