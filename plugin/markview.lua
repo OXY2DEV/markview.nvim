@@ -1,112 +1,141 @@
-local markview = require("markview");
-local spec = require("markview.spec");
-local health = require("markview.health");
+---@type integer Autocmd group ID.
+local augroup = vim.api.nvim_create_augroup("markview", { clear = true });
 
-health.notify("trace", {
-	level = 1,
-	message = "Start"
-});
+local function register_blink_source ()
+	---|fS
 
---- Was the completion source loaded?
-if vim.g.markview_cmp_loaded == nil then
-	vim.g.markview_cmp_loaded = false;
-end
+	local blink = package.loaded["blink.cmp"];
 
---- Was the completion source for blink loaded?
-if vim.g.markview_blink_loaded == nil then
-	vim.g.markview_blink_loaded = false;
-end
+	if vim.g.markview_blink_loaded ~= true or blink == nil then
+		return;
+	end
 
-local blink = package.loaded["blink.cmp"];
+	local add_provider = blink.add_source_provider or blink.add_provider;
 
---- NOTE, `blink.cmp` doesn't allow dynamically
---- setting up completion source.
----
---- So, we can only define the source and not register
---- it.
-if vim.g.markview_blink_loaded == false and blink ~= nil then
-	local config = require("blink.cmp.config");
-
-	local fts = spec.get({ "preview", "filetypes" }, {
+	local blink_config = require("blink.cmp.config");
+	local filetypes = require("markview.spec").get({ "preview", "filetypes" }, {
 		fallback = {},
 		ignore_enable = true
 	});
 
-	if blink.add_source_provider then
-		pcall(blink.add_source_provider, "markview", {
-			name = "markview",
-			module = "blink-markview",
+	add_provider("markview", {
+		name = "markview",
+		module = "blink-markview",
 
-			should_show_items = function ()
-				return vim.tbl_contains(fts, vim.o.filetype);
-			end
-		});
-	else
-		pcall(blink.add_provider, "markview", {
-			name = "markview",
-			module = "blink-markview",
+		should_show_items = function ()
+			return vim.tbl_contains(filetypes, vim.o.filetype);
+		end
+	});
 
-			should_show_items = function ()
-				return vim.tbl_contains(fts, vim.o.filetype);
-			end
-		});
-	end
+	-- ISSUE, blink.cmp doesn't allow dynamically
+	-- modifying source list.
+	for _, filetype in ipairs(filetypes) do
+		if blink_config then
+			---|fS "feat: Modify blink sources"
 
-	for _, ft in ipairs(fts) do
-		if config then
-			--- ISSUE, blink doesn't merge default sources.
-
-			local default = config.sources.default;
+			local default = blink_config.sources.default;
 
 			if vim.islist(default) then
-				config.sources.per_filetype[ft] = vim.list_extend(default, { "markview" });
+				-- If the default sources is a list
+				-- we extend the list of sources.
+				blink_config.sources.per_filetype[filetype] = vim.list_extend(default, { "markview" });
 			else
-				--- Empty context.
-				local can_exec, exec = pcall(default, {});
+				-- If it's a function we wrap it in
+				-- *another* function.
+				blink_config.sources.per_filetype[filetype] = function (...)
+					local can_exec, result = pcall(default, ...);
 
-				if can_exec and vim.islist(exec) then
-					config.sources.per_filetype[ft] = vim.list_extend(exec, { "markview" });
+					if can_exec and vim.islist(result) and not vim.list_contains(result, "markview") then
+						return vim.list_extend(result, { "markview" });
+					elseif can_exec == false then
+						-- Emit errors in the original function.
+						error(result);
+					else
+						return { "markview" };
+					end
 				end
 			end
+
+			---|fE
 		else
-			pcall(blink.add_filetype_source, ft, "markview");
+			pcall(blink.add_filetype_source, filetype, "markview");
 		end
 	end
 
-	health.notify("trace", {
+	vim.g.markview_blink_loaded = true;
+	require("markview.health").notify("trace", {
 		level = 5,
 		message = "Registered source for blink.cmp."
 	});
+
+	---|fE
 end
 
- ------------------------------------------------------------------------------------------
+local function register_cmp_source ()
+	---|fS
 
---- Sets up the highlight groups.
---- Should be called AFTER loading
---- colorschemes.
-require("markview.highlights").setup();
+	local cmp = package.loaded["cmp"];
 
-health.notify("trace", {
-	level = 5,
-	message = "Created highlight groups"
-});
+	if vim.g.markview_cmp_loaded ~= true or cmp == nil then
+		return;
+	end
 
-local available_directives = vim.treesitter.query.list_directives();
+	cmp.register_source("cmp-markview", require("cmp-markview"));
 
-if vim.list_contains(available_directives, "conceal-patch!") == false then
+	local sources = cmp.get_config().sources or {};
+	local filetypes = require("markview.spec").get({ "preview", "filetypes" }, {
+		fallback = {},
+		ignore_enable = true
+	});
+
+	for _, filetype in ipairs(filetypes) do
+		---|fS "feat: Modify nvim-cmp sources"
+
+		cmp.setup.filetype(filetype, {
+			sources = vim.list_extend(sources, {
+				{
+					name = "cmp-markview",
+					keyword_length = 1,
+					options = {}
+				}
+			})
+		});
+
+		---|fE
+	end
+
+	vim.g.markview_cmp_loaded = true;
+	require("markview.health").notify("trace", {
+		level = 5,
+		message = "Registered source for nvim-cmp."
+	});
+
+	---|fE
+end
+
+local function set_ts_directive ()
+	---|fS
+
+	local available_directives = vim.treesitter.query.list_directives();
+
+	if vim.list_contains(available_directives, "conceal-patch!") then
+		return;
+	end
+
 	--- FIX, Patch for the broken (fenced_code_block) concealment.
 	--- Doesn't hide leading spaces before ```.
 	vim.treesitter.query.add_directive("conceal-patch!", function (match, _, bufnr, predicate, metadata)
-		---+${lua}
 		local id = predicate[2];
 		local node = match[id];
 
+		---@diagnostic disable-next-line: undefined-field
 		local r_s, c_s, r_e, c_e = node:range();
 		local line = vim.api.nvim_buf_get_lines(bufnr --[[ @as integer ]], r_s, r_s + 1, true)[1];
 
 		if not line then
 			return;
 		elseif not metadata[id] then
+		---@diagnostic disable-next-line: missing-fields
 			metadata[id] = { range = {} };
 		end
 
@@ -125,219 +154,56 @@ if vim.list_contains(available_directives, "conceal-patch!") == false then
 		metadata[id].range[4] = c_e;
 
 		metadata[id].conceal = "";
-		---_
 	end, {});
 
-	health.notify("trace", {
+	require("markview.health").notify("trace", {
 		level = 5,
 		message = {
 			{ "Added tree-sitter directive ", "Special" },
 			{ " conceal-patch! ", "DiagnosticVirtualTextInfo" }
 		}
 	});
+
+	---|fE
 end
 
- ------------------------------------------------------------------------------------------
-
---- Registers completion sources for `markview.nvim`.
-local function register_source()
-	---+${lua}
-
-	---@type boolean, table
-	local has_cmp, cmp = pcall(require, "cmp");
-
-	if has_cmp == false then
-		return;
-	elseif vim.g.markview_cmp_loaded == false then
-		--- Completion source for `markview.nvim`.
-		local mkv_src = require("cmp-markview");
-		cmp.register_source("cmp-markview", mkv_src);
-
-		vim.g.markview_cmp_loaded = true;
-	end
-
-	local old_src = cmp.get_config().sources or {};
-
-	if vim.list_contains(old_src, "cmp-markview") then
-		return;
-	end
-
-	cmp.setup.buffer({
-		sources = vim.list_extend(old_src, {
-			{
-				name = "cmp-markview",
-				keyword_length = 1,
-				options = {}
-			}
-		})
-	});
-
-	health.notify("trace", {
-		level = 5,
-		message = "Registered source for nvim-cmp."
-	});
-	---_
-end
-
---- Registers buffers.
-vim.api.nvim_create_autocmd({
-	"BufAdd", "BufEnter",
-	"BufWinEnter"
-}, {
-	group = markview.augroup,
-	callback = function (event)
-		---+${lua}
-		local buffer = event.buf;
-		markview.clean();
-
-		if markview.state.enable == false then
-			--- New buffers shouldn't be registered.
-			return;
-		elseif markview.actions.__is_attached(buffer) == true then
-			--- Already attached to this buffer!
-			return;
-		end
-
-		---@type string, string
-		local bt, ft = vim.bo[buffer].buftype, vim.bo[buffer].filetype;
-		local attach_ft = spec.get({ "preview", "filetypes" }, { fallback = {}, ignore_enable = true });
-		local ignore_bt = spec.get({ "preview", "ignore_buftypes" }, { fallback = {}, ignore_enable = true });
-
-		local condition = spec.get({ "preview", "condition" }, { eval_args = { buffer } });
-
-		if vim.list_contains(ignore_bt, bt) == true then
-			--- Ignored buffer type.
-			return;
-		elseif vim.list_contains(attach_ft, ft) == false then
-			--- Ignored file type.
-			return;
-		elseif condition == false then
-			return;
-		end
-
-		markview.actions.attach(buffer);
-		register_source();
-		---_
-	end
-});
-
---- Timer for 'filetype', 'buftype' changes.
-local bf_timer = vim.uv.new_timer();
-
-vim.api.nvim_create_autocmd({
-	"OptionSet"
-}, {
-	group = markview.augroup,
+vim.api.nvim_create_autocmd("VimEnter", {
+	group = augroup,
 	callback = function ()
-		---+${lua}
-		bf_timer:stop()
+		require("markview.highlights").setup();
 
-		local buffer = vim.api.nvim_get_current_buf();
-		local option = vim.fn.expand("<amatch>");
-
-		local valid_options = { "filetype", "buftype" };
-
-		---@type string, string
-		local bt, ft = vim.bo[buffer].buftype, vim.bo[buffer].filetype;
-		local attach_ft = spec.get({ "preview", "filetypes" }, { fallback = {}, ignore_enable = true });
-		local ignore_bt = spec.get({ "preview", "ignore_buftypes" }, { fallback = {}, ignore_enable = true });
-
-		local condition = spec.get({ "preview", "condition" }, { eval_args = { buffer } });
-
-		if markview.state.enable == false then
-			--- New buffers shouldn't be registered.
-			return;
-		elseif markview.actions.__is_attached(buffer) == true then
-			--- Already attached to this buffer!
-			--- We should check if the buffer is still valid.
-
-			if vim.list_contains(ignore_bt, bt) == true then
-				--- Ignored buffer type.
-				bf_timer:start(5, 0, vim.schedule_wrap(function ()
-					markview.actions.detach(buffer);
-				end));
-			elseif vim.list_contains(attach_ft, ft) == false then
-				--- Ignored file type.
-				bf_timer:start(5, 0, vim.schedule_wrap(function ()
-					markview.actions.detach(buffer);
-				end));
-			elseif condition == false then
-				bf_timer:start(5, 0, vim.schedule_wrap(function ()
-					markview.actions.detach(buffer);
-				end));
-			end
-
-			return;
-		elseif vim.list_contains(valid_options, option) == false then
-			--- We shouldn't do anything on other events.
-			return;
-		end
-
-		if vim.list_contains(ignore_bt, bt) == true then
-			--- Ignored buffer type.
-			return;
-		elseif vim.list_contains(attach_ft, ft) == false then
-			--- Ignored file type.
-			return;
-		elseif condition == false then
-			return;
-		end
-
-		bf_timer:start(5, 0, vim.schedule_wrap(function ()
-			markview.actions.attach(buffer);
-			register_source();
-		end));
-		---_
+		set_ts_directive();
+		register_blink_source();
+		register_cmp_source();
 	end
 });
 
---- Timer for 'wrap', 'linebreak' changes.
-local o_timer = vim.uv.new_timer();
-
---- Option changes(e.g. wrap, linebreak)
-vim.api.nvim_create_autocmd({ "OptionSet" }, {
-	group = markview.augroup,
+-- Updates the highlight groups.
+vim.api.nvim_create_autocmd("ColorScheme", {
+	group = augroup,
 	callback = function ()
-		---+${lua}
-		local buffer = vim.api.nvim_get_current_buf();
-		local option = vim.fn.expand("<amatch>");
+		local highlights = require("markview.highlights")
+		highlights.create(highlights.groups);
 
-		local valid_options = { "wrap", "linebreak" };
-
-		---@type string[] List of modes where preview is shown.
-		local preview_modes = spec.get({ "preview", "modes" }, { fallback = {}, ignore_enable = true });
-		local mode = vim.api.nvim_get_mode().mode;
-
-		if markview.actions.__is_attached(buffer) == false then
-			--- Not attached to a buffer
-			return;
-		elseif markview.actions.__is_enabled(buffer) == false then
-			--- Disabled on this buffer.
-			return;
-		elseif vim.list_contains(preview_modes, mode) == false then
-			--- Wrong mode.
-			return;
-		elseif vim.list_contains(valid_options, option) == false then
-			--- This option shouldn't cause a redraw.
-			return;
-		elseif vim.v.option_old == vim.v.option_new then
-			--- Option value wasn't changed.
-			return;
-		end
-
-		o_timer:stop()
-		o_timer:start(5, 0, vim.schedule_wrap(function ()
-			markview.render(buffer);
-		end));
-		---_
+		require("markview.health").notify("trace", {
+			level = 5,
+			message = "Updated highlight groups"
+		});
 	end
 });
 
---- Mode changes.
-vim.api.nvim_create_autocmd({ "ModeChanged" }, {
-	group = markview.augroup,
+------------------------------------------------------------------------------
+
+-- Mode changes.
+vim.api.nvim_create_autocmd("ModeChanged", {
+	group = augroup,
 	callback = function (event)
-		---+${lua}
+		---|fS
+
+		local markview = require("markview");
+		local health = require("markview.health");
+		local spec = require("markview.spec");
+
 		local buffer = event.buf;
 		local mode = vim.api.nvim_get_mode().mode;
 
@@ -346,6 +212,7 @@ vim.api.nvim_create_autocmd({ "ModeChanged" }, {
 		---@type string[] List of modes where preview is shown.
 		local hybrid_modes = spec.get({ "preview", "hybrid_modes" }, { fallback = {}, ignore_enable = true });
 
+		---@diagnostic disable-next-line: undefined-field
 		local old_mode = vim.v.event.old_mode;
 
 		if markview.actions.__is_attached(buffer) == false then
@@ -419,21 +286,196 @@ vim.api.nvim_create_autocmd({ "ModeChanged" }, {
 		::callback::
 		markview.actions.__exec_callback("on_mode_change", buffer, vim.fn.win_findbuf(buffer), mode)
 		health.__child_indent_de();
-		---_
+
+		---|fE
 	end
 });
 
+--- Registers buffers.
+vim.api.nvim_create_autocmd({
+	"BufAdd", "BufEnter",
+	"BufWinEnter"
+}, {
+	group = augroup,
+	callback = function (event)
+		---|fS "feat: Attaches to new buffers"
+
+		local markview = require("markview");
+		local spec = require("markview.spec");
+
+		local buffer = event.buf;
+		markview.clean();
+
+		if markview.state.enable == false then
+			--- New buffers shouldn't be registered.
+			return;
+		elseif markview.actions.__is_attached(buffer) == true then
+			--- Already attached to this buffer!
+			return;
+		end
+
+		---@type string, string
+		local bt, ft = vim.bo[buffer].buftype, vim.bo[buffer].filetype;
+		local attach_ft = spec.get({ "preview", "filetypes" }, { fallback = {}, ignore_enable = true });
+		local ignore_bt = spec.get({ "preview", "ignore_buftypes" }, { fallback = {}, ignore_enable = true });
+
+		local condition = spec.get({ "preview", "condition" }, { eval_args = { buffer } });
+
+		if vim.list_contains(ignore_bt, bt) == true then
+			--- Ignored buffer type.
+			return;
+		elseif vim.list_contains(attach_ft, ft) == false then
+			--- Ignored file type.
+			return;
+		elseif condition == false then
+			return;
+		end
+
+		markview.actions.attach(buffer);
+
+		---|fE
+	end
+});
+
+--- Timer for 'filetype', 'buftype' changes.
+---@diagnostic disable-next-line: undefined-field
+local bf_timer = vim.uv.new_timer();
+
+vim.api.nvim_create_autocmd({
+	"OptionSet"
+}, {
+	group = augroup,
+	callback = function ()
+		---|fS "feat: Attaches/Detaches on Option change"
+
+		local markview = require("markview");
+		local spec = require("markview.spec");
+
+		bf_timer:stop()
+
+		local buffer = vim.api.nvim_get_current_buf();
+		local option = vim.fn.expand("<amatch>");
+
+		local valid_options = { "filetype", "buftype" };
+
+		---@type string, string
+		local bt, ft = vim.bo[buffer].buftype, vim.bo[buffer].filetype;
+		local attach_ft = spec.get({ "preview", "filetypes" }, { fallback = {}, ignore_enable = true });
+		local ignore_bt = spec.get({ "preview", "ignore_buftypes" }, { fallback = {}, ignore_enable = true });
+
+		local condition = spec.get({ "preview", "condition" }, { eval_args = { buffer } });
+
+		if markview.state.enable == false then
+			--- New buffers shouldn't be registered.
+			return;
+		elseif markview.actions.__is_attached(buffer) == true then
+			--- Already attached to this buffer!
+			--- We should check if the buffer is still valid.
+
+			if vim.list_contains(ignore_bt, bt) == true then
+				--- Ignored buffer type.
+				bf_timer:start(5, 0, vim.schedule_wrap(function ()
+					markview.actions.detach(buffer);
+				end));
+			elseif vim.list_contains(attach_ft, ft) == false then
+				--- Ignored file type.
+				bf_timer:start(5, 0, vim.schedule_wrap(function ()
+					markview.actions.detach(buffer);
+				end));
+			elseif condition == false then
+				bf_timer:start(5, 0, vim.schedule_wrap(function ()
+					markview.actions.detach(buffer);
+				end));
+			end
+
+			return;
+		elseif vim.list_contains(valid_options, option) == false then
+			--- We shouldn't do anything on other events.
+			return;
+		end
+
+		if vim.list_contains(ignore_bt, bt) == true then
+			--- Ignored buffer type.
+			return;
+		elseif vim.list_contains(attach_ft, ft) == false then
+			--- Ignored file type.
+			return;
+		elseif condition == false then
+			return;
+		end
+
+		bf_timer:start(5, 0, vim.schedule_wrap(function ()
+			markview.actions.attach(buffer);
+		end));
+
+		---|fE
+	end
+});
+
+--- Timer for 'wrap', 'linebreak' changes.
+---@diagnostic disable-next-line: undefined-field
+local o_timer = vim.uv.new_timer();
+
+--- Option changes(e.g. wrap, linebreak)
+vim.api.nvim_create_autocmd({ "OptionSet" }, {
+	group = augroup,
+	callback = function ()
+		---|fS
+
+		local markview = require("markview");
+		local spec = require("markview.spec");
+
+		local buffer = vim.api.nvim_get_current_buf();
+		local option = vim.fn.expand("<amatch>");
+
+		local valid_options = { "wrap", "linebreak" };
+
+		---@type string[] List of modes where preview is shown.
+		local preview_modes = spec.get({ "preview", "modes" }, { fallback = {}, ignore_enable = true });
+		local mode = vim.api.nvim_get_mode().mode;
+
+		if markview.actions.__is_attached(buffer) == false then
+			--- Not attached to a buffer
+			return;
+		elseif markview.actions.__is_enabled(buffer) == false then
+			--- Disabled on this buffer.
+			return;
+		elseif vim.list_contains(preview_modes, mode) == false then
+			--- Wrong mode.
+			return;
+		elseif vim.list_contains(valid_options, option) == false then
+			--- This option shouldn't cause a redraw.
+			return;
+		elseif vim.v.option_old == vim.v.option_new then
+			--- Option value wasn't changed.
+			return;
+		end
+
+		o_timer:stop()
+		o_timer:start(5, 0, vim.schedule_wrap(function ()
+			markview.render(buffer);
+		end));
+
+		---|fE
+	end
+});
+
+---@diagnostic disable-next-line: undefined-field
 local timer = vim.uv.new_timer();
 
---- Preview updates.
+-- Preview updates.
 vim.api.nvim_create_autocmd({
 	"CursorMoved",  "TextChanged",
 	"CursorMovedI", "TextChangedI"
 }, {
-	group = markview.augroup,
+	group = augroup,
 	callback = function (event)
-		---+${lua}
+		---|fS
+
 		timer:stop();
+
+		local markview = require("markview");
+		local spec = require("markview.spec");
 
 		local buffer = event.buf;
 		local name = event.event;
@@ -449,7 +491,8 @@ vim.api.nvim_create_autocmd({
 		--- previews or not.
 		---@return boolean
 		local function immediate_render ()
-			---+${lua}
+			---|fS
+
 			if vim.list_contains({ "TextChanged", "TextChangedI" }, name) then
 				--- Changes to the buffer content MUST
 				--- always be debounced to ensure that
@@ -492,12 +535,13 @@ vim.api.nvim_create_autocmd({
 				--- We shouldn't redraw.
 				return false;
 			end
-			---_
+
+			---|fE
 		end
 
 		--- Handles the renderer for a buffer.
 		local handle_renderer = function ()
-			---+${lua}
+			---|fS
 
 			---@type integer
 			local lines = vim.api.nvim_buf_line_count(buffer);
@@ -553,12 +597,12 @@ vim.api.nvim_create_autocmd({
 				end));
 			end
 
-			---_
+			---|fE
 		end
 
 		--- Handles the splitview renderer.
 		local function handle_splitview ()
-			---+${lua}
+			---|fS
 
 			---@type integer
 			local lines = vim.api.nvim_buf_line_count(buffer);
@@ -616,13 +660,13 @@ vim.api.nvim_create_autocmd({
 				end, 0);
 			end
 
-			---_
+			---|fE
 		end
 
 		if buffer == markview.state.splitview_source then
 			handle_splitview();
 		else
-			--- Do these checks only for normal buffers.
+			-- Do these checks only for normal buffers.
 			if markview.actions.__is_attached(buffer) == false then
 				return;
 			elseif markview.actions.__is_enabled(buffer) == false then
@@ -637,20 +681,8 @@ vim.api.nvim_create_autocmd({
 
 			handle_renderer();
 		end
-		---_
-	end
-});
 
---- Updates the highlight groups.
-vim.api.nvim_create_autocmd("ColorScheme", {
-	callback = function ()
-		local hls = require("markview.highlights");
-		hls.create(hls.groups);
-
-		health.notify("trace", {
-			level = 5,
-			message = "Updated highlight groups"
-		});
+		---|fE
 	end
 });
 
@@ -658,8 +690,13 @@ vim.api.nvim_create_autocmd("ColorScheme", {
 
 ---@type mkv.cmd_completion
 local get_complete_items = {
+	---|fS
+
 	default = function (str)
-		---+${lua}
+		---|fS
+
+		local markview = require("markview");
+
 		if str == nil then
 			local _o = vim.tbl_keys(markview.commands);
 			table.sort(_o);
@@ -677,11 +714,15 @@ local get_complete_items = {
 
 		table.sort(_o);
 		return _o;
-		---_
+
+		---|fE
 	end,
 
 	attach = function (args, cmd)
-		---+${lua}
+		---|fS
+
+		local markview = require("markview");
+
 		if #args > 3 then
 			--- Too many arguments!
 			return {};
@@ -710,10 +751,14 @@ local get_complete_items = {
 
 		table.sort(_o);
 		return _o;
-		---_
+
+		---|fE
 	end,
 	detach = function (args, cmd)
-		---+${lua}
+		---|fS
+
+		local markview = require("markview");
+
 		if #args > 3 then
 			--- Too many arguments!
 			return {};
@@ -742,11 +787,15 @@ local get_complete_items = {
 
 		table.sort(_o);
 		return _o;
-		---_
+
+		---|fE
 	end,
 
 	enable = function (args, cmd)
-		---+${lua}
+		---|fS
+
+		local markview = require("markview");
+
 		if #args > 3 then
 			--- Too many arguments!
 			return {};
@@ -775,10 +824,14 @@ local get_complete_items = {
 
 		table.sort(_o);
 		return _o;
-		---_
+
+		---|fE
 	end,
 	disable = function (args, cmd)
-		---+${lua}
+		---|fS
+
+		local markview = require("markview");
+
 		if #args > 3 then
 			--- Too many arguments!
 			return {};
@@ -807,11 +860,15 @@ local get_complete_items = {
 
 		table.sort(_o);
 		return _o;
-		---_
+
+		---|fE
 	end,
 
 	hybridToggle = function (args, cmd)
-		---+${lua}
+		---|fS
+
+		local markview = require("markview");
+
 		if #args > 3 then
 			--- Too many arguments!
 			return {};
@@ -840,10 +897,14 @@ local get_complete_items = {
 
 		table.sort(_o);
 		return _o;
-		---_
+
+		---|fE
 	end,
 	hybridDisable = function (args, cmd)
-		---+${lua}
+		---|fS
+
+		local markview = require("markview");
+
 		if #args > 3 then
 			--- Too many arguments!
 			return {};
@@ -872,10 +933,14 @@ local get_complete_items = {
 
 		table.sort(_o);
 		return _o;
-		---_
+
+		---|fE
 	end,
 	hybridEnable = function (args, cmd)
-		---+${lua}
+		---|fS
+
+		local markview = require("markview");
+
 		if #args > 3 then
 			--- Too many arguments!
 			return {};
@@ -904,11 +969,15 @@ local get_complete_items = {
 
 		table.sort(_o);
 		return _o;
-		---_
+
+		---|fE
 	end,
 
 	splitOpen = function (args, cmd)
-		---+${lua}
+		---|fS
+
+		local markview = require("markview");
+
 		if #args > 3 then
 			--- Too many arguments!
 			return {};
@@ -937,11 +1006,15 @@ local get_complete_items = {
 
 		table.sort(_o);
 		return _o;
-		---_
+
+		---|fE
 	end,
 
 	render = function (args, cmd)
-		---+${lua}
+		---|fS
+
+		local markview = require("markview");
+
 		if #args > 3 then
 			--- Too many arguments!
 			return {};
@@ -970,10 +1043,14 @@ local get_complete_items = {
 
 		table.sort(_o);
 		return _o;
-		---_
+
+		---|fE
 	end,
 	clear = function (args, cmd)
-		---+${lua}
+		---|fS
+
+		local markview = require("markview");
+
 		if #args > 3 then
 			--- Too many arguments!
 			return {};
@@ -1002,13 +1079,18 @@ local get_complete_items = {
 
 		table.sort(_o);
 		return _o;
-		---_
+
+		---|fE
 	end
+
+	---|fE
 };
 
 --- User command.
 vim.api.nvim_create_user_command("Markview", function (cmd)
-	---+${lua}
+	---|fS
+
+	local markview = require("markview");
 
 	local function exec(fun, args)
 		args = args or {};
@@ -1038,12 +1120,16 @@ vim.api.nvim_create_user_command("Markview", function (cmd)
 		--- FIXME, Change this if `vim.list_slice` becomes deprecated.
 		exec(markview.commands[args[1]], vim.list_slice(args, 2))
 	end
-	---_
+
+	---|fE
 end, {
-	---+${lua}
+	---|fS
+
 	nargs = "*",
 	desc = "User command for `markview.nvim`",
 	complete = function (_, cmd, cursorpos)
+		local markview = require("markview");
+
 		local function is_subcommand(str)
 			return markview.commands[str] ~= nil;
 		end
@@ -1063,5 +1149,6 @@ end, {
 			return get_complete_items[parts[2]](parts, before);
 		end
 	end
-	---_
+
+	---|fE
 });

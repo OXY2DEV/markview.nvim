@@ -33,9 +33,6 @@ markview.state = {
 	splitview_window = nil
 };
 
----@type integer Autocmd group ID.
-markview.augroup = vim.api.nvim_create_augroup("markview", { clear = true });
-
 -------------------------------------------------------------------------------------------
 
 --- Simple 1-time renderer for `markview`.
