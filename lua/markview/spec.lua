@@ -6,7 +6,6 @@
 ---    • Check for issues with config
 local spec = {};
 local health = require("markview.health");
-local symbols = require("markview.symbols");
 
 --- Creates a configuration table for a LaTeX command.
 ---@param name string Command name(Text to show).
@@ -23,6 +22,8 @@ local operator = function (name, text_pos, cmd_conceal, cmd_hl)
 
 
 		on_command = function (item)
+			local symbols = require("markview.symbols");
+
 			return {
 				end_col = item.range[2] + (cmd_conceal or 1),
 				conceal = "",
@@ -2062,9 +2063,18 @@ spec.default = {
 			["max"] = operator("max"),
 			["Pr"] = operator("Pr"),
 			["sup"] = operator("sup"),
-			["sqrt"] = operator(symbols.entries.sqrt, "inline", 5),
-			["lvert"] = operator(symbols.entries.vert, "inline", 6),
-			["lVert"] = operator(symbols.entries.Vert, "inline", 6),
+			["sqrt"] = function ()
+				local symbols = require("markview.symbols");
+				return operator(symbols.entries.sqrt, "inline", 5);
+			end,
+			["lvert"] = function ()
+				local symbols = require("markview.symbols");
+				return operator(symbols.entries.vert, "inline", 6);
+			end,
+			["lVert"] = function ()
+				local symbols = require("markview.symbols");
+				return operator(symbols.entries.Vert, "inline", 6);
+			end,
 
 			---_
 
