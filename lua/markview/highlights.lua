@@ -466,7 +466,9 @@ highlights.created = {};
 ---@param name string
 ---@param value table
 highlights.set_hl = function (name, value)
-	if vim.fn.hlexists(name) == 1 then
+	local found, v = pcall(vim.api.nvim_get_hl, 0, { name = name, create = false, link = false });
+
+	if found and vim.tbl_isempty(v) == false then
 		return;
 	end
 
