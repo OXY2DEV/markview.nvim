@@ -647,7 +647,14 @@ markview.actions = {
 			};
 		end
 
-		vim.api.nvim_buf_set_keymap(buffer, "n", "gx", "<CMD>Markview open<CR>", { desc = "Tree-sitter based link opener from `markview.nvim`." });
+		---@type boolean Whether `gx` should be remapped.
+		local map_gx = spec.get({ "preview", "map_gx" }, { ignore_enable = true, fallback = true });
+
+		if map_gx == true then
+			vim.api.nvim_buf_set_keymap(buffer, "n", "gx", "<CMD>Markview open<CR>", {
+				desc = "Tree-sitter based link opener from `markview.nvim`."
+			});
+		end
 
 		--- Execute the attaching callback.
 		markview.actions.__exec_callback("on_attach", buffer, vim.fn.win_findbuf(buffer))

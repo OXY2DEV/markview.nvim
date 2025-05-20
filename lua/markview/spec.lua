@@ -155,6 +155,7 @@ spec.default = {
 		---+${conf}
 
 		enable = true,
+		map_gx = true,
 
 		callbacks = {
 			---+${func}

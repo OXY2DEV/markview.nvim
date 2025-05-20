@@ -12,6 +12,9 @@ local M = {};
 --- Enables `hybrid mode` when attaching to new buffers.
 ---@field enable_hybrid_mode? boolean
 ---
+--- Whether to map `gx` to custom URL opener.
+---@field map_gx? boolean 
+---
 --- Icon provider.
 ---@field icon_provider?
 ---| "internal" Internal icon provider.
