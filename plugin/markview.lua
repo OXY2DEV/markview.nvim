@@ -1,12 +1,3 @@
---- Functionality provider for `markview.nvim`.
---- Functionalities that are implemented,
----
----   + Buffer registration.
----   + Command.
----   + Dynamic highlight groups.
----
---- **Author**: MD. Mouinul Hossain Shawon (OXY2DEV)
-
 local markview = require("markview");
 local spec = require("markview.spec");
 local health = require("markview.health");
@@ -111,7 +102,7 @@ if vim.list_contains(available_directives, "conceal-patch!") == false then
 		local node = match[id];
 
 		local r_s, c_s, r_e, c_e = node:range();
-		local line = vim.api.nvim_buf_get_lines(bufnr, r_s, r_s + 1, true)[1];
+		local line = vim.api.nvim_buf_get_lines(bufnr --[[ @as integer ]], r_s, r_s + 1, true)[1];
 
 		if not line then
 			return;
@@ -135,7 +126,7 @@ if vim.list_contains(available_directives, "conceal-patch!") == false then
 
 		metadata[id].conceal = "";
 		---_
-	end);
+	end, {});
 
 	health.notify("trace", {
 		level = 5,
@@ -197,6 +188,7 @@ vim.api.nvim_create_autocmd({
 	callback = function (event)
 		---+${lua}
 		local buffer = event.buf;
+		markview.clean();
 
 		if markview.state.enable == false then
 			--- New buffers shouldn't be registered.
