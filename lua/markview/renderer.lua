@@ -1,12 +1,7 @@
+---@diagnostic disable: undefined-field
+
 local renderer = {};
 local health = require("markview.health");
-
-renderer.html = require("markview.renderers.html");
-renderer.markdown = require("markview.renderers.markdown");
-renderer.markdown_inline = require("markview.renderers.markdown_inline");
-renderer.latex = require("markview.renderers.latex");
-renderer.yaml = require("markview.renderers.yaml");
-renderer.typst = require("markview.renderers.typst");
 
 renderer.cache = {};
 
@@ -15,17 +10,20 @@ renderer.__filter_cache = {
 	result = nil
 };
 
+
+---@alias render_option table<string, string[]>
+
 --- Maps a `class` to an option name.
 ---@class mkv.option_maps
 ---
----@field html { [string]: string[] }
----@field latex { [string]: string[] }
----@field markdown { [string]: string[] }
----@field markdown_inline { [string]: string[] }
----@field typst { [string]: string[] }
----@field yaml { [string]: string[] }
+---@field html render_option
+---@field latex render_option
+---@field markdown render_option
+---@field markdown_inline render_option
+---@field typst render_option
+---@field yaml render_option
 renderer.option_maps = {
-	---+${lua}
+	---|fS
 
 	html = {
 		container_elements = { "html_container_element" },
@@ -93,25 +91,26 @@ renderer.option_maps = {
 	yaml = {
 		properties = { "yaml_property" },
 	}
-	---_
+
+	---|fE
 };
+
 
 --- Creates node class filters for hybrid mode.
 ---@param filter preview.ignore?
----@return { [string]: string[] }
+---@return render_option}
 local create_filter = function (filter)
-	---+${lua}
+	---|fS
+
 	local spec = require("markview.spec");
 
 	--- Ignore queries.
 	---@type preview.ignore
 	local filters = filter or spec.get({ "preview", "ignore_previews" }, { fallback = {} });
 
-	--- To save time, do not recalculate these if the
-	--- configuration hasn't changed.
+	--- To save time, do not recalculate node filters
+	--- if the configuration hasn't changed!
 	if vim.deep_equal(renderer.__filter_cache.config, filters) == true then
-		--- Configuration has most likely not changed.
-		--- Return the cached value.
 		return renderer.__filter_cache.result;
 	end
 
@@ -124,7 +123,7 @@ local create_filter = function (filter)
 	---@param queries string[]
 	---@return boolean
 	local is_valid = function (value, queries)
-		---+${lua}
+		---|fS
 
 		for q, query in ipairs(queries or {}) do
 			--- Queries that were already passed.
@@ -132,24 +131,23 @@ local create_filter = function (filter)
 
 			if string.match(query, "^%!") then
 				if value == string.sub(query, 2) then
-					--- Part of negation query.
+					-- Part of negation query.
 					return false;
 				elseif vim.list_contains(passed, value) then
-					--- Already part of the query.
+					-- Already part of the query.
 					return true;
 				end
 			elseif value == query then
-				--- Valid value.
 				return true;
 			else
-				--- Invalid value.
+				-- Invalid value.
 				return false;
 			end
 		end
 
-		--- All conditions matched!
 		return true;
-		---_
+
+		---|fE
 	end
 
 	--- Creates a list of valid options for {language}.
@@ -157,7 +155,7 @@ local create_filter = function (filter)
 	---@param options string[]
 	---@return string[]
 	local function language_filter (language, options)
-		---+${lua}
+		---|fS
 
 		---@type string[] Filters for this language.
 		local queries = filters[language];
@@ -180,14 +178,16 @@ local create_filter = function (filter)
 		end
 
 		return _m;
-		---_
+
+		---|fE
 	end
 
 	--- Registers a new entry to {language}.
 	---@param language string
 	---@param classes string[]
 	local function register (language, classes)
-		---+${lua}
+		---|fS
+
 		if vim.islist(_f[language]) == false then
 			_f[language] = {};
 		end
@@ -197,7 +197,8 @@ local create_filter = function (filter)
 				table.insert(_f[language], class);
 			end
 		end
-		---_
+
+		---|fE
 	end
 
 	for language, maps in pairs(renderer.option_maps) do
@@ -220,13 +221,16 @@ local create_filter = function (filter)
 	renderer.__filter_cache.result = _f;
 
 	return _f;
-	---_
+
+	---|fE
 end
 
---- Range modifiers for various nodes.
+--- Range modifiers for various node type.
+--- Used to fix ranges of specific block nodes.
 ---@type { [string]: fun(range: node.range): node.range }
 renderer.range_modifiers = {
-	---+${lua}
+	---|fS
+
 	markdown_atx_heading = function (range)
 		local _r = vim.deepcopy(range)
 		_r.row_end = _r.row_end - 1;
@@ -281,7 +285,8 @@ renderer.range_modifiers = {
 
 		return _r;
 	end
-	---_
+
+	---|fE
 };
 
 --- Fixes node ranges for `hybrid mode`.
@@ -303,14 +308,15 @@ end
 ---@param clear [ integer, integer ]
 ---@return table
 renderer.filter = function (content, filter, clear)
-	---+${lua}
+	---|fS
 
-	--- Checks if {pos} is inside of {range}.
+	--- Checks if `pos` is inside of `range`.
 	---@param range node.range
 	---@param pos [ integer, integer ]
 	---@return boolean
 	local within = function (range, pos)
-		---+${lua}
+		---|fS
+
 		if type(range) ~= "table" then
 			return false;
 		elseif type(range.row_start) ~= "number" or type(range.row_end) ~= "number" then
@@ -324,7 +330,8 @@ renderer.filter = function (content, filter, clear)
 		end
 
 		return false;
-		---_
+
+		---|fE
 	end
 
 	---@type [ integer, integer ] Range to clear.
@@ -333,12 +340,10 @@ renderer.filter = function (content, filter, clear)
 	--- Updates the range to clear.
 	---@param new [ integer, integer ]
 	local range_update = function (new)
-		---+${lua}
 		if new[1] <= clear_range[1] and new[2] >= clear_range[2] then
 			clear_range[1] = new[1];
 			clear_range[2] = new[2];
 		end
-		---_
 	end
 
 	--- Node filters.
@@ -348,9 +353,9 @@ renderer.filter = function (content, filter, clear)
 	---@type { [string]: table }
 	local indexes = {};
 
-	--- Create a range to clear.
+	-- Create a range to clear.
 	for lang, items in pairs(content) do
-		---+${lua}
+		---|fS
 
 		--- Filter for this language.
 		---@type string[]?
@@ -374,12 +379,13 @@ renderer.filter = function (content, filter, clear)
 		end
 
 		::continue::
-		---_
+
+		---|fE
 	end
 
-	--- Remove the nodes inside the `clear_range`.
+	-- Remove the nodes inside the `clear_range`.
 	for lang, references in pairs(indexes) do
-		---+${lua}
+		---|fS
 
 		--- Amount of nodes removed in this language.
 		--- Used for offsetting the index for later nodes.
@@ -394,21 +400,24 @@ renderer.filter = function (content, filter, clear)
 				removed = removed + 1;
 			end
 		end
-		---_
+
+		---|fE
 	end
 
 	return content;
-	---_
+
+	---|fE
 end
 
 --- Renders things
 ---@param buffer integer
 renderer.render = function (buffer, parsed_content)
-	---+${lua}
+	---|fS
 
 	renderer.cache = {};
 
-	---+${lua, Announce start of rendering}
+	---|fS, "chore, Announce start of rendering"
+
 	---@type integer
 	local start = vim.uv.hrtime();
 
@@ -417,7 +426,8 @@ renderer.render = function (buffer, parsed_content)
 		message = string.format("Rendering(main): %d", buffer)
 	});
 	health.__child_indent_in();
-	---_
+
+	---|fE
 
 	for lang, content in pairs(parsed_content) do
 		if renderer[lang] then
@@ -426,14 +436,16 @@ renderer.render = function (buffer, parsed_content)
 		end
 	end
 
-	---+${lua, Announce end of main render}
+	---|fS "chore: Announce end of main render"
+
 	local post = vim.uv.hrtime();
 
 	health.notify("trace", {
 		level = 3,
 		message = string.format("Render(main): %dms", (post - start) / 1e6)
 	});
-	---_
+
+	---|fE
 
 	for lang, content in pairs(renderer.cache) do
 		if renderer[lang] then
@@ -441,7 +453,7 @@ renderer.render = function (buffer, parsed_content)
 		end
 	end
 
-	---+${lua, Announce end of rendering}
+	---|fS "chore: Announce end of rendering"
 	local now = vim.uv.hrtime();
 
 	--- Announce end of post rendering.
@@ -455,22 +467,40 @@ renderer.render = function (buffer, parsed_content)
 		level = 3,
 		message = string.format("Rendering(end, %dms): %d", (now - start) / 1e6, buffer)
 	});
-	---_
 
-	---_
+	---|fE
+
+	---|fE
 end
 
+--- Clears rendered content.
+---@param buffer integer
+---@param from? integer
+---@param to? integer
 renderer.clear = function (buffer, from, to)
-	local langs = { "html", "latex", "markdown", "markdown_inline", "typst", "yaml" };
+	---|fS
+
+	local _renderers = {
+		html = require("markview.renderers.html");
+		markdown = require("markview.renderers.markdown");
+		markdown_inline = require("markview.renderers.markdown_inline");
+		latex = require("markview.renderers.latex");
+		yaml = require("markview.renderers.yaml");
+		typst = require("markview.renderers.typst");
+	};
+
+	local langs = vim.tbl_keys(_renderers);
 	local start = vim.uv.hrtime();
 
-	---+${lua, Announce start of clearing}
+	---|fS "chore: Announce start of clearing"
+
 	health.notify("trace", {
 		level = 1,
 		message = string.format("Clearing: %d", buffer)
 	});
 	health.__child_indent_in();
-	---_
+
+	---|fE
 
 	for _, lang in ipairs(langs) do
 		if renderer[lang] then
@@ -478,7 +508,8 @@ renderer.clear = function (buffer, from, to)
 		end
 	end
 
-	---+${lua, Announce end of clearing}
+	---|fS "chore: Announce end of clearing"
+
 	local now = vim.uv.hrtime();
 
 	health.__child_indent_de();
@@ -486,10 +517,19 @@ renderer.clear = function (buffer, from, to)
 		level = 3,
 		message = string.format("Clearing(end, %dms): %d", (now - start) / 1e6, buffer)
 	});
-	---_
+
+	---|fE
+
+	---|fE
 end
 
+--- Gets the range a list of contents occupy.
+---@param content table[]
+---@return integer
+---@return integer
 renderer.get_range = function (content)
+	---|fS
+
 	local from, to = nil, nil;
 	local ignore_nodes = {
 		markdown = { "markdown_section" }
@@ -516,6 +556,8 @@ renderer.get_range = function (content)
 	end
 
 	return from, to;
+
+	---|fE
 end
 
 return renderer;
