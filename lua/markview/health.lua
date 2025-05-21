@@ -10,15 +10,6 @@ health.window = nil;
 --- Fixed version of deprecated options.
 health.fixed_config = nil;
 
----@class health.log.deprecation
----
----@field kind "deprecation"
----@field name string
----@field command boolean
----
----@field alternative? string
----@field tip? string
-
 health.child_indent = 0;
 
 --- Increases indent level of child messages.
@@ -31,7 +22,7 @@ health.__child_indent_de = function ()
 	health.child_indent = math.max(0, health.child_indent - 1);
 end
 
---- Fancy print()
+--- Fancy print().
 ---@param handler string | nil
 ---@param opts table
 health.notify = function (handler, opts)
@@ -69,15 +60,6 @@ health.notify = function (handler, opts)
 	if handler == "deprecation" then
 		---|fS
 
-		---@class notify.deprecation
-		---
-		---@field option string
-		---@field ignore? boolean
-		---@field alter? string Alternative.
-		---@field tip? string Additional string.
-
-		---@cast opts notify.deprecation
-
 		local chunks = {
 			{ " markview.nvim: ", "DiagnosticError" },
 			{ string.format(" %s ", opts.option), "DiagnosticVirtualTextError" },
@@ -103,14 +85,6 @@ health.notify = function (handler, opts)
 
 		vim.api.nvim_echo(chunks, true, {});
 
-		---@class log.deprecation
-		---
-		---@field kind "deprecation"
-		---@field name string
-		---@field ignore boolean
-		---@field alternative? string
-		---@field tip? string
-
 		table.insert(health.log, {
 			kind = "deprecation",
 			name = opts.option,
@@ -123,14 +97,6 @@ health.notify = function (handler, opts)
 		---|fE
 	elseif handler == "type" then
 		---|fS
-
-		---@class notify.type
-		---
-		---@field option string
-		---@field uses string
-		---@field got string
-
-		---@cast opts notify.type
 
 		local article_1 = "a ";
 		local article_2 = "a ";
@@ -157,13 +123,6 @@ health.notify = function (handler, opts)
 			{ ".", "Normal" }
 		}, true, {});
 
-		---@class log.type
-		---
-		---@field kind "type_error"
-		---@field option string
-		---@field requires string
-		---@field received string
-
 		table.insert(health.log, {
 			kind = "type_error",
 			option = opts.option,
@@ -176,14 +135,6 @@ health.notify = function (handler, opts)
 		---|fE
 	elseif handler == "hl" then
 		---|fS
-
-		---@class notify.hl
-		---
-		---@field group string
-		---@field value any
-		---@field message string
-
-		---@cast opts notify.hl
 
 		local text = vim.split(vim.inspect(opts.value) or "", '\n', { trimempty = true });
 		local lines = {};
@@ -202,13 +153,6 @@ health.notify = function (handler, opts)
 			{ ",\n", "Normal" }
 		}, lines), true, {});
 
-		---@class log.hl
-		---
-		---@field kind "string"
-		---@field group string
-		---@field value any
-		---@field message string
-
 		table.insert(health.log, {
 			kind = "hl",
 
@@ -221,16 +165,6 @@ health.notify = function (handler, opts)
 		---|fE
 	elseif handler == "trace" then
 		---|fS
-
-		--- Tracing messages.
-		---@class notify.trace
-		---
-		---@field level? integer
-		---@field message [ string, string? ][] | string
-		---@field indent? integer
-		---@field child_indent? integer
-
-		---@cast opts notify.trace
 
 		local config = {
 			{ "", "DiagnosticOk" },
@@ -274,17 +208,6 @@ health.notify = function (handler, opts)
 		if opts.child_indent then
 			health.child_indent = opts.child_indent;
 		end
-
-		---@class logs.trace
-		---
-		---@field kind "trace"
-		---
-		---@field ignore boolean
-		---@field indent integer
-		---@field timestamp string
-		---@field message string
-		---@field notification [ string, string? ][]
-		---@field level integer
 
 		table.insert(health.log, {
 			kind = "trace",
@@ -421,6 +344,7 @@ health.trace_open = function (from, to)
 
 	trace_view_setup();
 	vim.api.nvim_win_set_config(health.window, {
+		---@diagnostic disable: assign-type-mismatch
 		border = {
 			{ "╭", "MarkviewPalette7Fg" },
 			{ "─", "MarkviewPalette7Fg" },
@@ -431,6 +355,7 @@ health.trace_open = function (from, to)
 			{ "╰", "MarkviewPalette7Fg" },
 			{ "│", "MarkviewPalette7Fg" },
 		},
+		---@diagnostic enable: assign-type-mismatch
 
 		title = {
 			(type(from) == "number" and type(to) == "number") and {
@@ -511,7 +436,7 @@ health.trace_open = function (from, to)
 end
 
 --- Holds icons for different filetypes.
----@type { [string]: string }
+---@type table<string, string>
 health.supported_languages = {
 	["html"] = " ",
 	["latex"] = " ",
