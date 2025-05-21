@@ -60,6 +60,9 @@ M.config = {
 --- Configuration for experimental options.
 ---@class config.experimental
 ---
+--- Opens text file inside Neovim.
+---@field prefer_nvim? boolean
+---
 --- Command used to open files inside Neovim.
 ---@field file_open_command? string
 --- Number of `bytes` to check before opening a link. Used for detecting when to open files inside Neovim.

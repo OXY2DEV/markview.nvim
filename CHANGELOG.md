@@ -1,5 +1,221 @@
 # Changelog
 
+## [25.7.0](https://github.com/OXY2DEV/markview.nvim/compare/v25.6.0...v25.7.0) (2025-05-07)
+
+
+### Features
+
+* **core:** Added ability to toggle linewise hybrid mode ([4c880d2](https://github.com/OXY2DEV/markview.nvim/commit/4c880d2afaca8df7f7070b0143b5854bfc049dbe)), closes [#330](https://github.com/OXY2DEV/markview.nvim/issues/330)
+* **latex:** Added `\mathrm{}` to latex fonts ([0f27afe](https://github.com/OXY2DEV/markview.nvim/commit/0f27afe779243e7ef01eb13cd570fdfe61644371)), closes [#341](https://github.com/OXY2DEV/markview.nvim/issues/341)
+
+
+### Bug Fixes
+
+* **config:** Fixed a bug with concealcursor beinh not set when preview is disabled ([eed5410](https://github.com/OXY2DEV/markview.nvim/commit/eed5410b17ad927b092dcc2579c40acdb655a41d))
+* **core:** Fixed a bug with preview being shown after runnibg `Disable` ([2b810d7](https://github.com/OXY2DEV/markview.nvim/commit/2b810d72e1867739a1d617e6e244718d8d3a06f2))
+* **link:** Allow users to change preference for opening text files ([7953828](https://github.com/OXY2DEV/markview.nvim/commit/795382867430559f4b776ebf378ca632965f23ff)), closes [#328](https://github.com/OXY2DEV/markview.nvim/issues/328)
+* **renderer_markdown:** List item padding's `start_col` no longer exceeds line length ([40a7356](https://github.com/OXY2DEV/markview.nvim/commit/40a7356a44f20ba15138c1d7bcd1d9493fbf1d20))
+* **renderer_markdown:** Shift width & indent size of list items now fallback to 1 when the function calculation fails ([180c67b](https://github.com/OXY2DEV/markview.nvim/commit/180c67ba92afe31600b2e4da2c98be078c740626))
+* **renderer_markdown:** Signs for ATX heading now pass through `tostring()` first ([ad10211](https://github.com/OXY2DEV/markview.nvim/commit/ad10211a503c515d2da18946e71100f29bc074f6)), closes [#323](https://github.com/OXY2DEV/markview.nvim/issues/323)
+* **renderer_markdown:** Turn non-number `indent_size` to 1 ([59d3baa](https://github.com/OXY2DEV/markview.nvim/commit/59d3baaac5b77aa3939f5a00acd335183e45930d)), closes [#323](https://github.com/OXY2DEV/markview.nvim/issues/323)
+
+## [25.6.0](https://github.com/OXY2DEV/markview.nvim/compare/v25.5.4...v25.6.0) (2025-03-28)
+
+
+### Features
+
+* Added &lt;pre&gt; to supported HTML tag list ([0d67884](https://github.com/OXY2DEV/markview.nvim/commit/0d6788416f8d935f6d6cba4a8dbdd5308cca3e7f)), closes [#323](https://github.com/OXY2DEV/markview.nvim/issues/323)
+* **core:** Added &lt;a&gt; support to supported HTML container elements ([6499c7f](https://github.com/OXY2DEV/markview.nvim/commit/6499c7f7bab3e4a7cddf570c6abedcb41abc2eb3)), closes [#323](https://github.com/OXY2DEV/markview.nvim/issues/323)
+
+## [25.5.4](https://github.com/OXY2DEV/markview.nvim/compare/v25.5.3...v25.5.4) (2025-03-23)
+
+
+### Bug Fixes
+
+* **blink:** Attempt to get dynamic source list for blink.cmp ([e4c47d2](https://github.com/OXY2DEV/markview.nvim/commit/e4c47d28dbccf2a56db8293df3e6e7fe6063fb84)), closes [#317](https://github.com/OXY2DEV/markview.nvim/issues/317)
+* **cmp, blink:** Non-existing peview no longer causes error with completion ([2192327](https://github.com/OXY2DEV/markview.nvim/commit/2192327840a4da1b4bd22495e02dbd4f12af9413)), closes [#320](https://github.com/OXY2DEV/markview.nvim/issues/320)
+* Markview no longer overwrites user source list for blink.cmp ([351366e](https://github.com/OXY2DEV/markview.nvim/commit/351366e7d2794456465dc6c48342177114ef15c0)), closes [#317](https://github.com/OXY2DEV/markview.nvim/issues/317)
+
+## [25.5.3](https://github.com/OXY2DEV/markview.nvim/compare/v25.5.2...v25.5.3) (2025-03-18)
+
+
+### Bug Fixes
+
+* **blink:** Added support for both version of source provider ([f4c55fa](https://github.com/OXY2DEV/markview.nvim/commit/f4c55fa2720025e17cdf11fbc557216de64e2517)), closes [#315](https://github.com/OXY2DEV/markview.nvim/issues/315)
+
+## [25.5.2](https://github.com/OXY2DEV/markview.nvim/compare/v25.5.1...v25.5.2) (2025-03-18)
+
+
+### Bug Fixes
+
+* **blink:** use add_source_provider due to deprecation ([7ebb1d2](https://github.com/OXY2DEV/markview.nvim/commit/7ebb1d2fe489f32ff0d347e0868407c504ffe8e0))
+* **blink:** use add_source_provider due to deprecation ([382dd40](https://github.com/OXY2DEV/markview.nvim/commit/382dd401861b8604043427dfe44f343c56288dd4))
+
+## [25.5.1](https://github.com/OXY2DEV/markview.nvim/compare/v25.5.0...v25.5.1) (2025-03-17)
+
+
+### Bug Fixes
+
+* **blink:** Switched to blink's API function for registering source ([725a271](https://github.com/OXY2DEV/markview.nvim/commit/725a271c96ecffb7fff606d4edf3b68cbe64e5b5)), closes [#310](https://github.com/OXY2DEV/markview.nvim/issues/310)
+* **parser_markdown:** Empty lines now also receive indentation insidr of lists ([d3daa83](https://github.com/OXY2DEV/markview.nvim/commit/d3daa83ce97240f798d055525bbedc08f6fd1545)), closes [#311](https://github.com/OXY2DEV/markview.nvim/issues/311)
+* **parser_markdown:** List tolerance now resets on non-empty lines ([d3daa83](https://github.com/OXY2DEV/markview.nvim/commit/d3daa83ce97240f798d055525bbedc08f6fd1545))
+
+## [25.5.0](https://github.com/OXY2DEV/markview.nvim/compare/v25.4.0...v25.5.0) (2025-03-14)
+
+
+### Features
+
+* LPeg parser for table rows ([9a135dd](https://github.com/OXY2DEV/markview.nvim/commit/9a135ddc29d3659a4df765dcc379df1a16672a11)), closes [#308](https://github.com/OXY2DEV/markview.nvim/issues/308)
+
+
+### Bug Fixes
+
+* **blink:** Fixed issues with loading completion source for blink.cmp ([17a93b3](https://github.com/OXY2DEV/markview.nvim/commit/17a93b32b688f1f5bf9328692ba0e6b2f06659d3)), closes [#310](https://github.com/OXY2DEV/markview.nvim/issues/310)
+
+## [25.4.0](https://github.com/OXY2DEV/markview.nvim/compare/v25.3.3...v25.4.0) (2025-03-11)
+
+
+### Features
+
+* **blink:** Added blink.cmp completion source ([929b5ba](https://github.com/OXY2DEV/markview.nvim/commit/929b5bad69e10775d3d1e65a8f259a923965e287)), closes [#200](https://github.com/OXY2DEV/markview.nvim/issues/200)
+* **latex:** Added `\vec{}` support ([6c92a64](https://github.com/OXY2DEV/markview.nvim/commit/6c92a6455e97c954a4a419265a032fedd69846f6))
+
+## [25.3.3](https://github.com/OXY2DEV/markview.nvim/compare/v25.3.2...v25.3.3) (2025-03-05)
+
+
+### Bug Fixes
+
+* Config evaluator no longer evaluates final function value using `args` ([ac31c1d](https://github.com/OXY2DEV/markview.nvim/commit/ac31c1dd7a5ba3bea6f9baf668c14ca80e4f6b9e)), closes [#272](https://github.com/OXY2DEV/markview.nvim/issues/272)
+
+## [25.3.2](https://github.com/OXY2DEV/markview.nvim/compare/v25.3.1...v25.3.2) (2025-03-04)
+
+
+### Bug Fixes
+
+* **spec:** Broken function values now get replaced with `nil` ([213461f](https://github.com/OXY2DEV/markview.nvim/commit/213461f03905536bd340fa8831f102c9ec6fc606))
+
+## [25.3.1](https://github.com/OXY2DEV/markview.nvim/compare/v25.3.0...v25.3.1) (2025-02-14)
+
+
+### Bug Fixes
+
+* **config:** Fixed link configuration order ([04c9082](https://github.com/OXY2DEV/markview.nvim/commit/04c908218fb01e771526893fdd3da8db51922ff5))
+* **renderer_latex:** Added option to disable the default font in LaTeX ([f71aebe](https://github.com/OXY2DEV/markview.nvim/commit/f71aebe4031ce979e883442c11d91247890bb24e)), closes [#288](https://github.com/OXY2DEV/markview.nvim/issues/288)
+
+## [25.3.0](https://github.com/OXY2DEV/markview.nvim/compare/v25.2.0...v25.3.0) (2025-02-14)
+
+
+### Features
+
+* Markview now listens to BifWinEnter & OptionSet autocmds ([c7e70ab](https://github.com/OXY2DEV/markview.nvim/commit/c7e70ab2fd4e091801ed938b4838e27b3dde763c)), closes [#287](https://github.com/OXY2DEV/markview.nvim/issues/287)
+
+
+### Bug Fixes
+
+* **highlights:** Prefer newer tree-sitter highlights for creating colors ([c095a7c](https://github.com/OXY2DEV/markview.nvim/commit/c095a7c7c6343863fb3046781e295103e3e081ab))
+
+## [25.2.0](https://github.com/OXY2DEV/markview.nvim/compare/v25.1.2...v25.2.0) (2025-02-08)
+
+
+### Features
+
+* **renderer_markdown:** Dynamic `indent_size` & `shift_width` support for list items ([07a6688](https://github.com/OXY2DEV/markview.nvim/commit/07a668805e96b0975e6d5b0b50fd1d7b54e74417)), closes [#283](https://github.com/OXY2DEV/markview.nvim/issues/283)
+
+
+### Bug Fixes
+
+* **config:** List items `indent_size` now respects 'shiftwidth' ([93d3648](https://github.com/OXY2DEV/markview.nvim/commit/93d3648e0e293f8a0cb0704f2c9650384a9cde8a)), closes [#283](https://github.com/OXY2DEV/markview.nvim/issues/283)
+
+## [25.1.2](https://github.com/OXY2DEV/markview.nvim/compare/v25.1.1...v25.1.2) (2025-02-06)
+
+
+### Bug Fixes
+
+* **core:** Fixed a bug with decoration overlapping ([a39d03f](https://github.com/OXY2DEV/markview.nvim/commit/a39d03f8445971c4a250396a44b23fa9c6fd8921))
+* **icons:** Fixed an issue with incorrect string being used for icon fetching ([25d987a](https://github.com/OXY2DEV/markview.nvim/commit/25d987a58fd0ca3bef45473d7d656eba5bc83723)), closes [#282](https://github.com/OXY2DEV/markview.nvim/issues/282)
+
+## [25.1.1](https://github.com/OXY2DEV/markview.nvim/compare/v25.1.0...v25.1.1) (2025-02-01)
+
+
+### Bug Fixes
+
+* **parser-markdown:** Fixed incorrect start column of code blocks with manual indentations ([85926af](https://github.com/OXY2DEV/markview.nvim/commit/85926af964f399e479ba175bef9976bf35442945))
+* **treesitter:** Added directive check before adding new directive ([89f397d](https://github.com/OXY2DEV/markview.nvim/commit/89f397d0f4a2276c08a24b040a7f745cb4d3b504)), closes [#277](https://github.com/OXY2DEV/markview.nvim/issues/277)
+* **typos:** Possibly all typos in plugin ([ca35213](https://github.com/OXY2DEV/markview.nvim/commit/ca35213f90a421869c865604484556f38f29b391))
+* **typo:** the compatability should be the same ([2f1e438](https://github.com/OXY2DEV/markview.nvim/commit/2f1e438b09a1968a30c760692b846f20bf8d0e75))
+* **typo:** the compatability should be the same ([2f1e438](https://github.com/OXY2DEV/markview.nvim/commit/2f1e438b09a1968a30c760692b846f20bf8d0e75))
+* **typo:** weird ([d9804d8](https://github.com/OXY2DEV/markview.nvim/commit/d9804d8d4144d64d7923efcf9519be43f294af0c))
+
+## [25.1.0](https://github.com/OXY2DEV/markview.nvim/compare/v25.0.3...v25.1.0) (2025-01-30)
+
+
+### Features
+
+* Added option to disable faking characters of subscript/supersc in Typst ([2975f6e](https://github.com/OXY2DEV/markview.nvim/commit/2975f6ea5e9a7653413d7258d8040d9ee68d1ddc)), closes [#271](https://github.com/OXY2DEV/markview.nvim/issues/271)
+* Added option to disable faking preview of subscript/superscript in LaTeX ([c382be1](https://github.com/OXY2DEV/markview.nvim/commit/c382be12f166ed6bee8fe9fe6d4a41d1596af5c1)), closes [#271](https://github.com/OXY2DEV/markview.nvim/issues/271)
+
+
+### Bug Fixes
+
+* Buffer attach, enable state & preview modes are no longer checked for splitview ([81b40bd](https://github.com/OXY2DEV/markview.nvim/commit/81b40bd8c8c9e239bd14f7dace29f64fe20cbb98)), closes [#264](https://github.com/OXY2DEV/markview.nvim/issues/264)
+* **presets:** Fix icon highlight for marker preset ([399fcce](https://github.com/OXY2DEV/markview.nvim/commit/399fccede8dcee89b5c84ef4a0670fe3dbb1cd32))
+* **renderer_markdown:** Indentation concealing no longer breaks when `add_padding = false` ([aeb5b4e](https://github.com/OXY2DEV/markview.nvim/commit/aeb5b4e3eca3388e389cbd89d05045a5c4bcfda4)), closes [#267](https://github.com/OXY2DEV/markview.nvim/issues/267)
+
+## [25.0.3](https://github.com/OXY2DEV/markview.nvim/compare/v25.0.2...v25.0.3) (2025-01-26)
+
+
+### Bug Fixes
+
+* **devicons:** properly fetch devicons by filetype ([1a60203](https://github.com/OXY2DEV/markview.nvim/commit/1a602031fa0549b1e0c0dba4f116187ea1313005))
+* Visual text concealing is now done via `string.rep()` instead of `string.gsub()` ([d91c277](https://github.com/OXY2DEV/markview.nvim/commit/d91c277e55df98fe99bebf88e6ebf2cafc2bfebb)), closes [#260](https://github.com/OXY2DEV/markview.nvim/issues/260)
+
+## [25.0.2](https://github.com/OXY2DEV/markview.nvim/compare/v25.0.1...v25.0.2) (2025-01-25)
+
+
+### Bug Fixes
+
+* Fixed an issue caused by `enable = false` when getting options from `preview` ([79539be](https://github.com/OXY2DEV/markview.nvim/commit/79539bec86a904855c13d0aee2776f372cbf7be7))
+
+## [25.0.0](https://github.com/OXY2DEV/markview.nvim/compare/v24.0.0...v25.0.0) (2025-01-25)
+
+
+### ⚠ BREAKING CHANGES
+
+* **spec:** Complete redesign of the configuration table
+* **spec:** Dynamic configuration support
+* **extras:** Completely changed how extra modules are used via
+* **v25:** New version release
+* **v25:** New version release
+
+### Features
+
+* Added a command to open link under cursor ([4ef3e11](https://github.com/OXY2DEV/markview.nvim/commit/4ef3e11292fdd4191e02ab865de2738d5fbeeba9)), closes [#173](https://github.com/OXY2DEV/markview.nvim/issues/173)
+* **core:** Added typst support ([06f4c87](https://github.com/OXY2DEV/markview.nvim/commit/06f4c87e5499c5f192aa01a3a2bfa3bfbd4acdec))
+* **renderer_markdown:** Added diff support to code blocks ([06f4c87](https://github.com/OXY2DEV/markview.nvim/commit/06f4c87e5499c5f192aa01a3a2bfa3bfbd4acdec))
+* **spec:** Added pattern based config support for various items ([06f4c87](https://github.com/OXY2DEV/markview.nvim/commit/06f4c87e5499c5f192aa01a3a2bfa3bfbd4acdec))
+* **spec:** Dynamic configuration support ([06f4c87](https://github.com/OXY2DEV/markview.nvim/commit/06f4c87e5499c5f192aa01a3a2bfa3bfbd4acdec))
+* **v25:** New version release ([b7fca7a](https://github.com/OXY2DEV/markview.nvim/commit/b7fca7aee35108bf186260684479aa8c6bb921cf))
+* **v25:** New version release ([b88a396](https://github.com/OXY2DEV/markview.nvim/commit/b88a3968337afe58dc6806dc19ba6a6b4618f12a))
+
+
+### Bug Fixes
+
+* **code-blocks:** Fixes multiple language parsing cases (tilde, spaces before/after, directives...) ([b7521d4](https://github.com/OXY2DEV/markview.nvim/commit/b7521d444d33517bbcbe033b183f3324f57dcd18)), closes [#234](https://github.com/OXY2DEV/markview.nvim/issues/234)
+* **editor:** fixes editor for all fences format ([534dfc8](https://github.com/OXY2DEV/markview.nvim/commit/534dfc8d2beee518a3be7725dd6f7bd799cf64a4))
+* Fixed callouts rendering ([493c054](https://github.com/OXY2DEV/markview.nvim/commit/493c054c6463156f1c584cffe006b2fc9ed2d34c))
+* Fixed gx keymap rhs ([67b69cd](https://github.com/OXY2DEV/markview.nvim/commit/67b69cdaf9055bebac3682a070d7e5c8eecba29c))
+* Fixed logic for detecting neovim version ([42b57e8](https://github.com/OXY2DEV/markview.nvim/commit/42b57e8f9a0fa69f1b2937342cdd27921346c990))
+* Fixed merging of highlight groups ([b474374](https://github.com/OXY2DEV/markview.nvim/commit/b474374ba1186f8028e06b16c195b823cff492ee)), closes [#172](https://github.com/OXY2DEV/markview.nvim/issues/172)
+* Fixed merging of highlight groups ([c29cf91](https://github.com/OXY2DEV/markview.nvim/commit/c29cf91e48979c12a8c1ac1e13d064720ee251d9)), closes [#172](https://github.com/OXY2DEV/markview.nvim/issues/172)
+* Updated test ([06f4c87](https://github.com/OXY2DEV/markview.nvim/commit/06f4c87e5499c5f192aa01a3a2bfa3bfbd4acdec))
+* Various QOL fixes ([06f4c87](https://github.com/OXY2DEV/markview.nvim/commit/06f4c87e5499c5f192aa01a3a2bfa3bfbd4acdec))
+
+
+### Code Refactoring
+
+* **extras:** Completely changed how extra modules are used via ([06f4c87](https://github.com/OXY2DEV/markview.nvim/commit/06f4c87e5499c5f192aa01a3a2bfa3bfbd4acdec))
+* **spec:** Complete redesign of the configuration table ([06f4c87](https://github.com/OXY2DEV/markview.nvim/commit/06f4c87e5499c5f192aa01a3a2bfa3bfbd4acdec))
+
 ## [24.0.0](https://github.com/OXY2DEV/markview.nvim/compare/v23.1.0...v24.0.0) (2024-10-05)
 
 

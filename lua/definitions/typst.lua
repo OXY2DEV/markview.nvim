@@ -642,6 +642,7 @@ M.__typst_link_ref = {
 ---@class typst.subscripts
 ---
 ---@field enable boolean
+---@field fake_preview? boolean When `true`, fake subscript characters.
 ---
 ---@field hl? string | string[]
 ---@field marker_left? string
@@ -682,6 +683,7 @@ M.__typst_subscripts = {
 ---@class typst.superscripts
 ---
 ---@field enable boolean
+---@field fake_preview? boolean When `true`, fake superscript characters.
 ---
 ---@field hl? string | string[]
 ---@field marker_left? string

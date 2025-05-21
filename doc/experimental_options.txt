@@ -8,6 +8,9 @@
     --- Configuration for experimental options.
     ---@class config.experimental
     ---
+	--- Opens text file inside Neovim.
+	---@field prefer_nvim? boolean
+	---
     --- Command used to open files inside Neovim.
     ---@field file_open_command? string
     --- Number of `bytes` to check before opening a link. Used for detecting when to open files inside Neovim.
@@ -23,6 +26,7 @@
     experimental = {
         read_chunk_size = 1024,
 
+		prefer_nvim = true,
         file_open_command = "tabnew",
         list_empty_line_tolerance = 3,
 
@@ -50,6 +54,15 @@
         }
     };
 <
+                                      *markview.nvim-experimental.prefer_nvim*
+prefer_nvim ~
+
+    - Type: `boolean`
+    - Dynamic: true
+    - Default: "tabnew"
+
+When `true`, opens text file inside Neovim.
+
                                 *markview.nvim-experimental.file_open_command*
 file_open_command ~
 

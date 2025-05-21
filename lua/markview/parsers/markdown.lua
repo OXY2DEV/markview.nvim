@@ -152,6 +152,12 @@ markdown.code_block = function (buffer, TSNode, _, range)
 	---@type string[]
 	local text = vim.api.nvim_buf_get_lines(buffer, range.row_start, range.row_end, false);
 
+	--- Fix range when leading whitespace(s)
+	--- are present.
+	if text[1]:sub(range.col_start + 1):match("^%s+") then
+		range.col_start = range.col_start + text[1]:sub(range.col_start + 1):match("^%s+"):len();
+	end
+
 	--- Modify the text so that only the text
 	--- inside the node's range is visible.
 	for l, line in ipairs(text) do
@@ -184,8 +190,8 @@ markdown.code_block = function (buffer, TSNode, _, range)
 		language = language,
 		info_string = info_string,
 		delimiters = {
-			start_delim and vim.treesitter.get_node_text(start_delim, buffer) or "",
-			end_delim and vim.treesitter.get_node_text(end_delim, buffer) or "",
+			start_delim and vim.treesitter.get_node_text(start_delim, buffer):gsub("^%s*", "") or "",
+			end_delim and vim.treesitter.get_node_text(end_delim, buffer):gsub("^%s*", "") or "",
 		},
 
 		text = text,
@@ -353,29 +359,18 @@ markdown.list_item = function (buffer, TSNode, _, range)
 				break;
 			elseif line == "" then
 				list_tolerance = list_tolerance + 1;
+				table.insert(candidates, (l - 1));
 			else
+				list_tolerance = 0;
 				table.insert(candidates, (l - 1));
 			end
 		end
 		---_
 	end
 
-	local node = TSNode;
-	local block = false;
-
-	while node do
-		if node:type() == "block_quote" then
-			block = true;
-			break;
-		end
-
-		node = node:parent();
-	end
-
 	---@type __markdown.list_items
 	markdown.insert({
 		class = "markdown_list_item",
-		__block = block,
 
 		candidates = candidates,
 		marker = marker:gsub("%s", ""),
@@ -466,6 +461,148 @@ local function overlap (row_start)
 	---_
 end
 
+--- LPeg-based parser for markdown table rows.
+---@param line string
+---@return table[]
+local function lpeg_processor(line)
+	---|fS
+
+	line = line:gsub("^%s*", "");
+	line = line:gsub("\\|", "  ");
+
+	local pipe = vim.lpeg.C("|");
+	local cont = vim.lpeg.C(vim.re.compile("[^|]+"))
+
+	local init_cell = vim.lpeg.P(pipe^-1 * cont * pipe)
+	local end_cell = vim.lpeg.P(cont * pipe^-1)
+
+	local ROW = vim.lpeg.Ct( init_cell * end_cell ^ 1 );
+
+	local RESULT = ROW:match(line);
+	local _o = {};
+	local y = 0;
+
+	for _, j in ipairs(RESULT or {}) do
+		---|fS
+
+		if j == "|" then
+			table.insert(_o, {
+				class = "separator",
+
+				text = j,
+
+				col_start = y,
+				col_end = y + #j,
+			});
+		else
+			table.insert(_o, {
+				class = "column",
+
+				text = j,
+
+				col_start = y,
+				col_end = y + #j,
+			});
+		end
+
+		y = y + #j;
+
+		---|fE
+	end
+
+	if #_o > 0 then
+		---|fS
+		if _o[1].class ~= "separator" then
+			table.insert(_o, 1, {
+				class = "missing_seperator",
+
+				text = "|",
+
+				col_start = 0,
+				col_end = 0,
+			});
+		end
+
+		if _o[#_o].class ~= "separator" then
+			table.insert(_o, {
+				class = "missing_seperator",
+
+				text = "|",
+
+				col_start = y,
+				col_end = y,
+			});
+		end
+		---|fE
+	end
+
+	return _o;
+
+	---|fE
+end
+
+--- Lua_patterns-based parser for markdown table rows.
+---@param line string
+---@return table[]
+local function lagecy_processor(line)
+	---|fS
+
+	local _o = {};
+	local y = 0;
+
+	line = line:gsub("^%s*", "");
+	line = line:gsub("\\|", "  ");
+
+	for sep, col in line:gmatch("(|)([^|]+)") do
+		table.insert(_o, {
+			class = "separator",
+
+			text = sep,
+
+			col_start = y,
+			col_end = y + #sep,
+		});
+
+		y = y + #sep;
+		col = col:gsub("MKVescapedPIPE", "\\|")
+
+		table.insert(_o, {
+			class = "column",
+
+			text = col,
+
+			col_start = y,
+			col_end = y + #col,
+		})
+
+		y = y + #col;
+	end
+
+	if line:match("|$") then
+		table.insert(_o, {
+			class = "separator",
+
+			text = "|",
+
+			col_start = y,
+			col_end = y + 1,
+		});
+	else
+		table.insert(_o, {
+			class = "missing_seperator",
+
+			text = "|",
+
+			col_start = y,
+			col_end = y,
+		});
+	end
+
+	return _o;
+
+	---|fE
+end
+
 --- Table parser.
 ---@param text string[]
 ---@param range node.range
@@ -479,62 +616,23 @@ markdown.table = function (_, _, text, range)
 		range.col_start = range.col_start + text[1]:match("^%s+"):len();
 	end
 
+	--- Line processor.
 	local function line_processor (line)
-		local _o = {};
-		local y = 0;
+		if vim.lpeg then
+			local succes, res = pcall(lpeg_processor, line);
 
-		line = line:gsub("\\|", "  ");
-
-		for sep, col in line:gmatch("(|)([^|]+)") do
-			table.insert(_o, {
-				class = "separator",
-
-				text = sep,
-
-				col_start = y,
-				col_end = y + #sep,
-			});
-
-			y = y + #sep;
-			col = col:gsub("MKVescapedPIPE", "\\|")
-
-			table.insert(_o, {
-				class = "column",
-
-				text = col,
-
-				col_start = y,
-				col_end = y + #col,
-			})
-
-			y = y + #col;
-		end
-
-		if line:match("|$") then
-			table.insert(_o, {
-				class = "separator",
-
-				text = "|",
-
-				col_start = y,
-				col_end = y + 1,
-			});
+			if succes == false then
+				return lagecy_processor(line);
+			else
+				return res;
+			end
 		else
-			table.insert(_o, {
-				class = "missing_seperator",
-
-				text = "|",
-
-				col_start = y,
-				col_end = y,
-			});
+			return lagecy_processor(line);
 		end
-
-		return _o;
 	end
 
 	for l, line in ipairs(text) do
-		local row_text = line:gsub("\\|", "MKVescapedPIPE");
+		local row_text = line;
 
 		if l == 1 then
 			header = line_processor(row_text);

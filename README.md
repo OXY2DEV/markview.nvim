@@ -45,12 +45,14 @@ HTML features,
 + Allows customising how various container & void elements are shown.
 + Supports *heading* elements out of the box.
 + Supports the following container elements out of the box,
+    + `<a></a>`
     + `<b></b>`
     + `<code></code>`
     + `<em></em>`
     + `<i></i>`
     + `<mark></mark>`
     + `<strong></strong>`
+    + `<pre></pre>`
     + `<sub></sub>`
     + `<sup></sup>`
     + `<u></u>`
@@ -250,6 +252,13 @@ Internal Icon provider features,
 + **708** different filetype configuration.
 + Dynamic highlight groups for matching the colorscheme.
 
+Tracing features,
+
+<img src="https://github.com/OXY2DEV/markview.nvim/blob/images/v25/repo/traceback.png">
+
++ You can use `:Markview traceShow` to see what the plugin has been doing(including how long some of them took).
+- You can also use `:Markview traceExport` to export these logs.
+
 <!--_-->
 </details>
 
@@ -281,8 +290,8 @@ External icon providers,
 > }
 > ```
 
-- [mini.icons]()
-- [nvim-web-devicons]()
+- [mini.icons](https://github.com/echasnovski/mini.icons)
+- [nvim-web-devicons](https://github.com/nvim-tree/nvim-web-devicons)
 
 Parsers,
 
@@ -292,6 +301,9 @@ Parsers,
 > ```vim
 > :TSInstall markdown markdown_inline html latex typst yaml
 > ```
+
+>[!IMPORTANT]
+> On windows, you might need `tree-sitter` CLI for the $LaTeX$ parser.
 
 - `markdown`
 - `markdown_inline`
@@ -308,7 +320,15 @@ Fonts,
 >[!TIP]
 > It is recommended to run `:checkhealth markview` after installing the plugin to check if any potential issues exist.
 
+>[!NOTE]
+> This plugin uses `tree-sitter` queries. So, it should be loaded **before** `nvim-treesitter`.
+
 ## 📐 Installation
+
+>[!IMPORTANT]
+> This plugin makes use of `tree-sitter` queries! So, it must be loaded **before** `nvim-treesitter`.
+>
+> You can solve this issue by loading this plugin **before** `nvim-treesitter`(add `dependencies = { "OXY2DEV/markview.nvim" }` to your config for nvim-treesitter in `lazy.nvim`). You may also need to disable lazy-loading(if you use it heavily).
 
 ### 🧩 Vim-plug
 
@@ -331,7 +351,13 @@ The plugin should be loaded *after* your colorscheme to ensure the correct highl
 -- For `plugins/markview.lua` users.
 return {
     "OXY2DEV/markview.nvim",
-    lazy = false
+    lazy = false,
+
+    -- For blink.cmp's completion
+    -- source
+    -- dependencies = {
+    --     "saghen/blink.cmp"
+    -- },
 };
 ```
 
@@ -339,7 +365,13 @@ return {
 -- For `plugins.lua` users.
 {
     "OXY2DEV/markview.nvim",
-    lazy = false
+    lazy = false,
+
+    -- For blink.cmp's completion
+    -- source
+    -- dependencies = {
+    --     "saghen/blink.cmp"
+    -- },
 },
 ```
 
@@ -349,7 +381,13 @@ return {
 local MiniDeps = require("mini.deps");
 
 MiniDeps.add({
-    source = "OXY2DEV/markview.nvim"
+    source = "OXY2DEV/markview.nvim",
+
+    -- For blink.cmp's completion
+    -- source
+    -- depends = {
+    --     "saghen/blink.cmp"
+    -- },
 });
 ```
 
@@ -364,14 +402,14 @@ MiniDeps.add({
 
 ### 📥 GitHub release
 
-Tagged releases can be found in the [release page]().
+Tagged releases can be found in the [release page](https://github.com/OXY2DEV/markview.nvim/releases).
 
 >[!NOTE]
 > `Github releases` may sometimes be slightly behind `main`.
 
 ### 🚨 Development version
 
-You can use the [dev]() branch to use test features.
+You can use the [dev](https://github.com/OXY2DEV/markview.nvim/tree/dev) branch to use test features.
 
 >[!WARNING]
 > Development releases can contain *breaking changes* and **experimental changes**.
@@ -390,9 +428,12 @@ return {
 - `code span`s don't get recognized when on the line after a `code block`(if the line after the `code span` is empty).
   This is most likely due to some bug in either the `markdown` or the `markdown_inline` parser.
 
+- Incorrect wrapping when setting `wrap` using `modeline`.
+  This is due to `textoff` being 0(instead of the size of the `statuscolumn`) when entering a buffer.
+
 ## 🧭 Configuration
 
-Check the [wiki]() for the entire configuration table. A simplified version is given below.
+Check the [wiki](https://github.com/OXY2DEV/markview.nvim/wiki) for the entire configuration table. A simplified version is given below.
 
 <details>
     <summary>Click for config jump-scare</summary><!-- --+ -->
@@ -419,6 +460,7 @@ mkv.config = {
         text_filetypes = {},
         read_chunk_size = 1000,
         link_open_alerts = false,
+        prefer_nvim = true,
         file_open_command = "tabnew",
 
         list_empty_line_tolerance = 3
@@ -531,39 +573,51 @@ It comes with the following sub-commands,
 > When no sub-command name is provided(or an invalid sub-command is used) `:Markview` will run `:Markview Toggle`.
 
 
-| Sub-command  | Arguments           | Description                              |
-|--------------|---------------------|------------------------------------------|
-| `Start`      | none                | Allows attaching to new buffers.         |
-| `Stop`       | none                | Prevents attaching to new buffers.       |
-| ———————————— | ——————————————————— | ———————————————————————————————————————— |
-| `attach`     | **buffer**, integer | Attaches to **buffer**.                  |
-| `detach`     | **buffer**, integer | Detaches from **buffer**.                |
-| ———————————— | ——————————————————— | ———————————————————————————————————————— |
-| `Enable`     | none                | Enables preview *globally*.              |
-| `Disable`    | none                | Disables preview *globally*.             |
-| `Toggle`     | none                | Toggles preview *globally*.              |
-| ———————————— | ——————————————————— | ———————————————————————————————————————— |
-| `enable`     | **buffer**, integer | Enables preview for **buffer**.          |
-| `disable`    | **buffer**, integer | Disables preview for **buffer**.         |
-| `toggle`     | **buffer**, integer | Toggles preview for **buffer**.          |
-| ———————————— | ——————————————————— | ———————————————————————————————————————— |
-| `splitOpen`  | **buffer**, integer | Opens *splitview* for **buffer**.        |
-| `splitClose` | none                | Closes any open *splitview*.             |
-| `splitToggle`| none                | Toggles *splitview*.                     |
-| `splitRedraw`| none                | Updates *splitview* contents.            |
-| ———————————— | ——————————————————— | ———————————————————————————————————————— |
-| `Render`     | none                | Updates preview of all *active* buffers. |
-| `Clear`      | none                | Clears preview of all **active** buffer. |
-| ———————————— | ——————————————————— | ———————————————————————————————————————— |
-| `render`     | **buffer**, integer | Renders preview for **buffer**.          |
-| `clear`      | **buffer**, integer | Clears preview for **buffer**.           |
-| ———————————— | ——————————————————— | ———————————————————————————————————————— |
-| `toggleAll`  | none                | **Deprecated** version of `Toggle`.      |
-| `enableAll`  | none                | **Deprecated** version of `Enable`.      |
-| `disableAll` | none                | **Deprecated** version of `Disable`.     |
-| ———————————— | ——————————————————— | ———————————————————————————————————————— |
-| `traceExport`| none                | Exports trace logs to `trace.txt`.       |
-| `traceShow`  | none                | Shows trace logs in a window.            |
+| Sub-command      | Arguments           | Description                              |
+|------------------|---------------------|------------------------------------------|
+| `Start`          | none                | Allows attaching to new buffers.         |
+| `Stop`           | none                | Prevents attaching to new buffers.       |
+| ———————————————— | ——————————————————— | ———————————————————————————————————————— |
+| `attach`         | **buffer**, integer | Attaches to **buffer**.                  |
+| `detach`         | **buffer**, integer | Detaches from **buffer**.                |
+| ———————————————— | ——————————————————— | ———————————————————————————————————————— |
+| `Enable`         | none                | Enables preview *globally*.              |
+| `Disable`        | none                | Disables preview *globally*.             |
+| `Toggle`         | none                | Toggles preview *globally*.              |
+| ———————————————— | ——————————————————— | ———————————————————————————————————————— |
+| `HybridEnable`   | none                | Enables hybrid mode.                     |
+| `HybridDisable`  | none                | Disables hybrid mode.                    |
+| `HybridToggle`   | none                | Toggles hybrid mode.                     |
+| ———————————————— | ——————————————————— | ———————————————————————————————————————— |
+| `enable`         | **buffer**, integer | Enables preview for **buffer**.          |
+| `disable`        | **buffer**, integer | Disables preview for **buffer**.         |
+| `toggle`         | **buffer**, integer | Toggles preview for **buffer**.          |
+| ———————————————— | ——————————————————— | ———————————————————————————————————————— |
+| `hybridEnable`   | **buffer**, integer | Enables hybrid mode for **buffer**.      |
+| `hybridDisable`  | **buffer**, integer | Disables hybrid mode for **buffer**.     |
+| `hybridToggle`   | **buffer**, integer | Toggles hybrid mode for **buffer**.      |
+| ———————————————— | ——————————————————— | ———————————————————————————————————————— |
+| `linewiseEnable` | none                | Enables linewise hybrid mode.            |
+| `linewiseDisable`| none                | Disables linewise hybrid mode.           |
+| `linewiseToggle` | none                | Toggles linewise hybrid mode.            |
+| ———————————————— | ——————————————————— | ———————————————————————————————————————— |
+| `splitOpen`      | **buffer**, integer | Opens *splitview* for **buffer**.        |
+| `splitClose`     | none                | Closes any open *splitview*.             |
+| `splitToggle`    | none                | Toggles *splitview*.                     |
+| `splitRedraw`    | none                | Updates *splitview* contents.            |
+| ———————————————— | ——————————————————— | ———————————————————————————————————————— |
+| `Render`         | none                | Updates preview of all *active* buffers. |
+| `Clear`          | none                | Clears preview of all **active** buffer. |
+| ———————————————— | ——————————————————— | ———————————————————————————————————————— |
+| `render`         | **buffer**, integer | Renders preview for **buffer**.          |
+| `clear`          | **buffer**, integer | Clears preview for **buffer**.           |
+| ———————————————— | ——————————————————— | ———————————————————————————————————————— |
+| `toggleAll`      | none                | **Deprecated** version of `Toggle`.      |
+| `enableAll`      | none                | **Deprecated** version of `Enable`.      |
+| `disableAll`     | none                | **Deprecated** version of `Disable`.     |
+| ———————————————— | ——————————————————— | ———————————————————————————————————————— |
+| `traceExport`    | none                | Exports trace logs to `trace.txt`.       |
+| `traceShow`      | none                | Shows trace logs in a window.            |
 
 >[!TIP]
 > **buffer** defaults to the current buffer. So, you can run commands on the current buffer without providing the buffer.
@@ -664,6 +718,10 @@ Currently emitted autocmds are,
   + `preview_window`, integer
     The window where the `preview_buffer` is being shown.
 
+Additional command(s),
+
+- `MarkOpen`, Opens the link under cursor, falls back to **vim.ui.open()**.
+
 ## 🎨 Highlight groups
 
 `markview.nvim` creates a number of *primary highlight groups* that are used by most of the decorations.
@@ -672,6 +730,11 @@ Currently emitted autocmds are,
 > These groups are all **generated** during runtime and as such their colors may look different.
 
 If you want to create your own *dynamic* highlight groups or modify existing ones, see the [custom highlight groups](placeholder) section.
+
+>[!IMPORTANT]
+> The process of checking for heading highlight groups is a bit complicated.
+> For example, `markdownH1` actually checks `@markup.heading.1.markdown`, `@markup.heading` & `markdownH1`
+> For the sake of simplicity & saving space in the table the first 2 are omitted below.
 
 
 | Highlight group      | Generated from                           | Default                     |
@@ -740,7 +803,7 @@ These groups are then used as links by other groups responsible for various prev
 | MarkviewCheckboxChecked   | link: `MarkviewPalette4Fg`                 |
 | MarkviewCheckboxPending   | link: `MarkviewPalette2Fg`                 |
 | MarkviewCheckboxProgress  | link: `MarkviewPalette6Fg`                 |
-| MarkviewCheckboxUncheked  | link: `MarkviewPalette1Fg`                 |
+| MarkviewCheckboxUnchecked | link: `MarkviewPalette1Fg`                 |
 | MarkviewCheckboxStriked   | link\*: `MarkviewPalette0Fg`               |
 | ————————————————————————— | —————————————————————————————————————————— |
 | MarkviewCode              | bg\*\*: `normal` ± 5%(L)                   |
@@ -806,7 +869,7 @@ These groups are then used as links by other groups responsible for various prev
 >
 > If you have any custom configuration that you would like to have as a preset you can open a `pull request` for that.
 
-Check the [wiki page]() for more information.
+Check the [wiki page](https://github.com/OXY2DEV/markview.nvim/wiki) for more information.
 
 ### 📚 Usage
 
@@ -857,7 +920,7 @@ Accessed using `require("markview.presets").horizontal_rules`.
 - `double`
   Double lines.
 
-- `dahsed`
+- `dashed`
   Dashed line.
 
 - `dotted`
@@ -916,6 +979,8 @@ Go over a line with a checkbox and run,
 ```vim
 :Checkbox interactive
 ```
+Now use `h`, `j`, `k`, `l` to change the checkbox state.
+
 Now use `h`, `j`, `k`, `l` to change the checkbox state.
 
 ## ✅ Contributing to the projects

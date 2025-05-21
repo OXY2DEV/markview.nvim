@@ -33,7 +33,7 @@ are written.
     --                             ╾────╴ This is the resulting configuration
     --                                    table that will be used by the plugin
     
-    --                              ╾────╴ Static configuration clasess end with `static`
+    --                              ╾────╴ Static configuration classes end with `static`
     ---@class markdown.block_quotes.static
     ---
     ---@field enable boolean Option description.
@@ -107,6 +107,7 @@ A simplified configuration is given below,
             text_filetypes = {},
             read_chunk_size = 1000,
             link_open_alerts = false,
+			prefer_nvim = true,
             file_open_command = "tabnew",
     
             list_empty_line_tolerance = 3
@@ -234,12 +235,30 @@ It comes with the following sub-commands,
 │ `Disable`             │ none                  │ Disables preview globally. │
 │ `Toggle`              │ none                  │ Toggles preview globally.  │
 ├───────────────────────┼───────────────────────┼────────────────────────────┤
+│ `HybridEnable`        │ none                  │ Enables hybrid mode.       │
+│ `HybridDisable`       │ none                  │ Disables hybrid mode.      │
+│ `HybridToggle`        │ none                  │ Toggles hybrid mode.       │
+├───────────────────────┼───────────────────────┼────────────────────────────┤
 │ `enable`              │ `buffer`, integer     │ Enables preview for        │
 │                       │                       │ {buffer}.                  │
 │ `disable`             │ `buffer`, integer     │ Disables preview for       │
 │                       │                       │ {buffer}.                  │
 │ `toggle`              │ `buffer`, integer     │ Toggles preview for        │
 │                       │                       │ {buffer}.                  │
+├───────────────────────┼───────────────────────┼────────────────────────────┤
+│ `hybridEnable`        │ `buffer`, integer     │ Enables hybrid mode for    │
+│                       │                       │ {buffer}.                  │
+│ `hybridDisable`       │ `buffer`, integer     │ Disables hybrid mode for   │
+│                       │                       │ {buffer}.                  │
+│ `hybridToggle`        │ `buffer`, integer     │ Toggles hybrid mode for    │
+│                       │                       │ {buffer}.                  │
+├───────────────────────┼───────────────────────┼────────────────────────────┤
+│ `linewiseEnable`      │ none                  │ Enables linewise hybrid    │
+│                       │                       │ mode.                      │
+│ `linewiseDisable`     │ none                  │ Disables linewise hybrid   │
+│                       │                       │ mode.                      │
+│ `linewiseToggle`      │ none                  │ Toggles linewise hybrid    │
+│                       │                       │ mode.                      │
 ├───────────────────────┼───────────────────────┼────────────────────────────┤
 │ `splitOpen`           │ `buffer`, integer     │ Opens `splitview`          │
 │                       │                       │ for {buffer}.              │
@@ -389,6 +408,13 @@ by most of the decorations.
 If you want to create your own [dynamic] highlight groups or modify existing
 ones, see the `LNK[custom highlight groups](placeholder)` section.
 
+▋ 🚨 Important
+▋ The process of checking for heading highlight groups is a bit complicated.
+▋ For example, `markdownH1` actually checks `@markup.heading.1.markdown`,
+▋ `@markup.heading` & `markdownH1`
+▋ For the sake of simplicity & saving space in the table the first 2 are
+▋ omitted below.
+
 ┏━━━━━━━━━━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
 ┃ Highlight group           ┃ value                                      ┃
 ┡━━━━━━━━━━━━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┩
@@ -403,7 +429,7 @@ ones, see the `LNK[custom highlight groups](placeholder)` section.
 │ MarkviewCheckboxChecked   │ link: `MarkviewPalette4Fg`                 │
 │ MarkviewCheckboxPending   │ link: `MarkviewPalette2Fg`                 │
 │ MarkviewCheckboxProgress  │ link: `MarkviewPalette6Fg`                 │
-│ MarkviewCheckboxUncheked  │ link: `MarkviewPalette1Fg`                 │
+│ MarkviewCheckboxUnchecked │ link: `MarkviewPalette1Fg`                 │
 │ MarkviewCheckboxStriked   │ link\*: `MarkviewPalette0Fg`               │
 ├———————————————————————————┼————————————————————————————————————————————┤
 │ MarkviewCode              │ bg\*\*: `normal` ± 5%(L)                   │
@@ -465,3 +491,4 @@ ones, see the `LNK[custom highlight groups](placeholder)` section.
 
 --------------------------------------------------------------------------
 vim:ft=help:tw=78:
+

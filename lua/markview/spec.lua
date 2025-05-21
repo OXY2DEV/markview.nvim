@@ -6,7 +6,6 @@
 ---    • Check for issues with config
 local spec = {};
 local health = require("markview.health");
-local symbols = require("markview.symbols");
 
 --- Creates a configuration table for a LaTeX command.
 ---@param name string Command name(Text to show).
@@ -23,6 +22,8 @@ local operator = function (name, text_pos, cmd_conceal, cmd_hl)
 
 
 		on_command = function (item)
+			local symbols = require("markview.symbols");
+
 			return {
 				end_col = item.range[2] + (cmd_conceal or 1),
 				conceal = "",
@@ -119,6 +120,7 @@ spec.default = {
 
 		read_chunk_size = 1024,
 
+		prefer_nvim = false,
 		file_open_command = "tabnew",
 		list_empty_line_tolerance = 3,
 
@@ -154,6 +156,7 @@ spec.default = {
 		---+${conf}
 
 		enable = true,
+		map_gx = true,
 
 		callbacks = {
 			---+${func}
@@ -195,8 +198,36 @@ spec.default = {
 			on_enable = function (_, wins)
 				---+${lua}
 
-				for _, win in ipairs(wins) do
-					vim.wo[win].conceallevel = 3;
+				--- Initial state for attached buffers.
+				---@type string
+				local attach_state = spec.get({ "preview", "enable" }, { fallback = true, ignore_enable = true });
+
+				if attach_state == false then
+					-- If the window's aren't initially
+					-- attached, we need to set the 
+					-- 'concealcursor' too.
+
+					---@type string[]
+					local preview_modes = spec.get({ "preview", "modes" }, { fallback = {}, ignore_enable = true });
+					---@type string[]
+					local hybrid_modes = spec.get({ "preview", "hybrid_modes" }, { fallback = {}, ignore_enable = true });
+
+					local concealcursor = "";
+
+					for _, mode in ipairs(preview_modes) do
+						if vim.list_contains(hybrid_modes, mode) == false and vim.list_contains({ "n", "v", "i", "c" }, mode) then
+							concealcursor = concealcursor .. mode;
+						end
+					end
+
+					for _, win in ipairs(wins) do
+						vim.wo[win].conceallevel = 3;
+						vim.wo[win].concealcursor = concealcursor;
+					end
+				else
+					for _, win in ipairs(wins) do
+						vim.wo[win].conceallevel = 3;
+					end
 				end
 
 				---_
@@ -214,9 +245,9 @@ spec.default = {
 				---+${lua}
 
 				---@type string[]
-				local preview_modes = spec.get({ "preview", "modes" }, { fallback = {} });
+				local preview_modes = spec.get({ "preview", "modes" }, { fallback = {}, ignore_enable = true });
 				---@type string[]
-				local hybrid_modes = spec.get({ "preview", "hybrid_modes" }, { fallback = {} });
+				local hybrid_modes = spec.get({ "preview", "hybrid_modes" }, { fallback = {}, ignore_enable = true });
 
 				local concealcursor = "";
 
@@ -237,7 +268,7 @@ spec.default = {
 				---+${lua}
 
 				---@type string[]
-				local preview_modes = spec.get({ "preview", "modes" }, { fallback = {} });
+				local preview_modes = spec.get({ "preview", "modes" }, { fallback = {}, ignore_enable = true });
 				local concealcursor = "";
 
 				for _, mode in ipairs(preview_modes) do
@@ -257,9 +288,9 @@ spec.default = {
 				---+${lua}
 
 				---@type string[]
-				local preview_modes = spec.get({ "preview", "modes" }, { fallback = {} });
+				local preview_modes = spec.get({ "preview", "modes" }, { fallback = {}, ignore_enable = true });
 				---@type string[]
-				local hybrid_modes = spec.get({ "preview", "hybrid_modes" }, { fallback = {} });
+				local hybrid_modes = spec.get({ "preview", "hybrid_modes" }, { fallback = {}, ignore_enable = true });
 
 				local concealcursor = "";
 
@@ -767,14 +798,21 @@ spec.default = {
 			enable = true,
 			wrap = true,
 
-			indent_size = 4,
+			indent_size = function (buffer)
+				if type(buffer) ~= "number" then
+					return vim.bo.shiftwidth or 4;
+				end
+
+				--- Use 'shiftwidth' value.
+				return vim.bo[buffer].shiftwidth or 4;
+			end,
 			shift_width = 4,
 
 			marker_minus = {
 				add_padding = true,
 				conceal_on_checkboxes = true,
 
-				text = "",
+				text = "●",
 				hl = "MarkviewListItemMinus"
 			},
 
@@ -782,7 +820,7 @@ spec.default = {
 				add_padding = true,
 				conceal_on_checkboxes = true,
 
-				text = "",
+				text = "◈",
 				hl = "MarkviewListItemPlus"
 			},
 
@@ -790,7 +828,7 @@ spec.default = {
 				add_padding = true,
 				conceal_on_checkboxes = true,
 
-				text = "",
+				text = "◇",
 				hl = "MarkviewListItemStar"
 			},
 
@@ -855,7 +893,7 @@ spec.default = {
 			["github%.com/[%a%d%-%_%.]+/[%a%d%-%_%.]+%/?$"] = {
 				--- github.com/<user>/<repo>
 
-				icon = "󰳐 ",
+				icon = " ",
 				hl = "MarkviewPalette0Fg"
 			},
 			["github%.com/[%a%d%-%_%.]+/[%a%d%-%_%.]+/tree/[%a%d%-%_%.]+%/?$"] = {
@@ -907,112 +945,112 @@ spec.default = {
 			---+${lua, Commonly used sites by programmers}
 
 			["developer%.mozilla%.org"] = {
-				priority = 9999,
+				priority = -9999,
 
 				icon = "󰖟 ",
 				hl = "MarkviewPalette5Fg"
 			},
 
 			["w3schools%.com"] = {
-				priority = 9999,
+				priority = -9999,
 
 				icon = " ",
 				hl = "MarkviewPalette4Fg"
 			},
 
 			["stackoverflow%.com"] = {
-				priority = 9999,
+				priority = -9999,
 
 				icon = "󰓌 ",
 				hl = "MarkviewPalette2Fg"
 			},
 
 			["reddit%.com"] = {
-				priority = 9999,
+				priority = -9999,
 
 				icon = " ",
 				hl = "MarkviewPalette2Fg"
 			},
 
 			["github%.com"] = {
-				priority = 9999,
+				priority = -9999,
 
 				icon = " ",
 				hl = "MarkviewPalette6Fg"
 			},
 
 			["gitlab%.com"] = {
-				priority = 9999,
+				priority = -9999,
 
 				icon = " ",
 				hl = "MarkviewPalette2Fg"
 			},
 
 			["dev%.to"] = {
-				priority = 9999,
+				priority = -9999,
 
 				icon = "󱁴 ",
 				hl = "MarkviewPalette0Fg"
 			},
 
 			["codepen%.io"] = {
-				priority = 9999,
+				priority = -9999,
 
 				icon = " ",
 				hl = "MarkviewPalette6Fg"
 			},
 
 			["replit%.com"] = {
-				priority = 9999,
+				priority = -9999,
 
 				icon = " ",
 				hl = "MarkviewPalette2Fg"
 			},
 
 			["jsfiddle%.net"] = {
-				priority = 9999,
+				priority = -9999,
 
 				icon = " ",
 				hl = "MarkviewPalette5Fg"
 			},
 
 			["npmjs%.com"] = {
-				priority = 9999,
+				priority = -9999,
 
 				icon = " ",
 				hl = "MarkviewPalette0Fg"
 			},
 
 			["pypi%.org"] = {
-				priority = 9999,
+				priority = -9999,
 
 				icon = "󰆦 ",
 				hl = "MarkviewPalette0Fg"
 			},
 
 			["mvnrepository%.com"] = {
-				priority = 9999,
+				priority = -9999,
 
 				icon = " ",
 				hl = "MarkviewPalette1Fg"
 			},
 
 			["medium%.com"] = {
-				priority = 9999,
+				priority = -9999,
 
 				icon = " ",
 				hl = "MarkviewPalette6Fg"
 			},
 
 			["linkedin%.com"] = {
-				priority = 9999,
+				priority = -9999,
 
 				icon = "󰌻 ",
 				hl = "MarkviewPalette5Fg"
 			},
 
 			["news%.ycombinator%.com"] = {
-				priority = 9999,
+				priority = -9999,
 
 				icon = " ",
 				hl = "MarkviewPalette2Fg"
@@ -1247,7 +1285,7 @@ spec.default = {
 			["github%.com/[%a%d%-%_%.]+/[%a%d%-%_%.]+%/?$"] = {
 				--- github.com/<user>/<repo>
 
-				icon = "󰳐 ",
+				icon = " ",
 				hl = "MarkviewPalette0Fg"
 			},
 			["github%.com/[%a%d%-%_%.]+/[%a%d%-%_%.]+/tree/[%a%d%-%_%.]+%/?$"] = {
@@ -1299,112 +1337,112 @@ spec.default = {
 			---+${lua, Commonly used sites by programmers}
 
 			["developer%.mozilla%.org"] = {
-				priority = 9999,
+				priority = -9999,
 
 				icon = "󰖟 ",
 				hl = "MarkviewPalette5Fg"
 			},
 
 			["w3schools%.com"] = {
-				priority = 9999,
+				priority = -9999,
 
 				icon = " ",
 				hl = "MarkviewPalette4Fg"
 			},
 
 			["stackoverflow%.com"] = {
-				priority = 9999,
+				priority = -9999,
 
 				icon = "󰓌 ",
 				hl = "MarkviewPalette2Fg"
 			},
 
 			["reddit%.com"] = {
-				priority = 9999,
+				priority = -9999,
 
 				icon = " ",
 				hl = "MarkviewPalette2Fg"
 			},
 
 			["github%.com"] = {
-				priority = 9999,
+				priority = -9999,
 
 				icon = " ",
 				hl = "MarkviewPalette6Fg"
 			},
 
 			["gitlab%.com"] = {
-				priority = 9999,
+				priority = -9999,
 
 				icon = " ",
 				hl = "MarkviewPalette2Fg"
 			},
 
 			["dev%.to"] = {
-				priority = 9999,
+				priority = -9999,
 
 				icon = "󱁴 ",
 				hl = "MarkviewPalette0Fg"
 			},
 
 			["codepen%.io"] = {
-				priority = 9999,
+				priority = -9999,
 
 				icon = " ",
 				hl = "MarkviewPalette6Fg"
 			},
 
 			["replit%.com"] = {
-				priority = 9999,
+				priority = -9999,
 
 				icon = " ",
 				hl = "MarkviewPalette2Fg"
 			},
 
 			["jsfiddle%.net"] = {
-				priority = 9999,
+				priority = -9999,
 
 				icon = " ",
 				hl = "MarkviewPalette5Fg"
 			},
 
 			["npmjs%.com"] = {
-				priority = 9999,
+				priority = -9999,
 
 				icon = " ",
 				hl = "MarkviewPalette0Fg"
 			},
 
 			["pypi%.org"] = {
-				priority = 9999,
+				priority = -9999,
 
 				icon = "󰆦 ",
 				hl = "MarkviewPalette0Fg"
 			},
 
 			["mvnrepository%.com"] = {
-				priority = 9999,
+				priority = -9999,
 
 				icon = " ",
 				hl = "MarkviewPalette1Fg"
 			},
 
 			["medium%.com"] = {
-				priority = 9999,
+				priority = -9999,
 
 				icon = " ",
 				hl = "MarkviewPalette6Fg"
 			},
 
 			["linkedin%.com"] = {
-				priority = 9999,
+				priority = -9999,
 
 				icon = "󰌻 ",
 				hl = "MarkviewPalette5Fg"
 			},
 
 			["news%.ycombinator%.com"] = {
-				priority = 9999,
+				priority = -9999,
 
 				icon = " ",
 				hl = "MarkviewPalette2Fg"
@@ -1480,7 +1518,7 @@ spec.default = {
 			["github%.com/[%a%d%-%_%.]+/[%a%d%-%_%.]+%/?$"] = {
 				--- github.com/<user>/<repo>
 
-				icon = "󰳐 ",
+				icon = " ",
 				hl = "MarkviewPalette0Fg"
 			},
 			["github%.com/[%a%d%-%_%.]+/[%a%d%-%_%.]+/tree/[%a%d%-%_%.]+%/?$"] = {
@@ -1532,112 +1570,112 @@ spec.default = {
 			---+${lua, Commonly used sites by programmers}
 
 			["developer%.mozilla%.org"] = {
-				priority = 9999,
+				priority = -9999,
 
 				icon = "󰖟 ",
 				hl = "MarkviewPalette5Fg"
 			},
 
 			["w3schools%.com"] = {
-				priority = 9999,
+				priority = -9999,
 
 				icon = " ",
 				hl = "MarkviewPalette4Fg"
 			},
 
 			["stackoverflow%.com"] = {
-				priority = 9999,
+				priority = -9999,
 
 				icon = "󰓌 ",
 				hl = "MarkviewPalette2Fg"
 			},
 
 			["reddit%.com"] = {
-				priority = 9999,
+				priority = -9999,
 
 				icon = " ",
 				hl = "MarkviewPalette2Fg"
 			},
 
 			["github%.com"] = {
-				priority = 9999,
+				priority = -9999,
 
 				icon = " ",
 				hl = "MarkviewPalette6Fg"
 			},
 
 			["gitlab%.com"] = {
-				priority = 9999,
+				priority = -9999,
 
 				icon = " ",
 				hl = "MarkviewPalette2Fg"
 			},
 
 			["dev%.to"] = {
-				priority = 9999,
+				priority = -9999,
 
 				icon = "󱁴 ",
 				hl = "MarkviewPalette0Fg"
 			},
 
 			["codepen%.io"] = {
-				priority = 9999,
+				priority = -9999,
 
 				icon = " ",
 				hl = "MarkviewPalette6Fg"
 			},
 
 			["replit%.com"] = {
-				priority = 9999,
+				priority = -9999,
 
 				icon = " ",
 				hl = "MarkviewPalette2Fg"
 			},
 
 			["jsfiddle%.net"] = {
-				priority = 9999,
+				priority = -9999,
 
 				icon = " ",
 				hl = "MarkviewPalette5Fg"
 			},
 
 			["npmjs%.com"] = {
-				priority = 9999,
+				priority = -9999,
 
 				icon = " ",
 				hl = "MarkviewPalette0Fg"
 			},
 
 			["pypi%.org"] = {
-				priority = 9999,
+				priority = -9999,
 
 				icon = "󰆦 ",
 				hl = "MarkviewPalette0Fg"
 			},
 
 			["mvnrepository%.com"] = {
-				priority = 9999,
+				priority = -9999,
 
 				icon = " ",
 				hl = "MarkviewPalette1Fg"
 			},
 
 			["medium%.com"] = {
-				priority = 9999,
+				priority = -9999,
 
 				icon = " ",
 				hl = "MarkviewPalette6Fg"
 			},
 
 			["linkedin%.com"] = {
-				priority = 9999,
+				priority = -9999,
 
 				icon = "󰌻 ",
 				hl = "MarkviewPalette5Fg"
 			},
 
 			["news%.ycombinator%.com"] = {
-				priority = 9999,
+				priority = -9999,
 
 				icon = " ",
 				hl = "MarkviewPalette2Fg"
@@ -1661,6 +1699,11 @@ spec.default = {
 
 			---+${lua, Various inline elements used in markdown}
 
+			["^a$"] = {
+				on_opening_tag = { conceal = "", virt_text_pos = "inline", virt_text = { { "", "MarkviewHyperlink" } } },
+				on_node = { hl_group = "MarkviewHyperlink" },
+				on_closing_tag = { conceal = "" },
+			},
 			["^b$"] = {
 				on_opening_tag = { conceal = "" },
 				on_node = { hl_group = "Bold" },
@@ -1684,6 +1727,11 @@ spec.default = {
 			["^mark$"] = {
 				on_opening_tag = { conceal = "" },
 				on_node = { hl_group = "MarkviewPalette1" },
+				on_closing_tag = { conceal = "" },
+			},
+			["^pre$"] = {
+				on_opening_tag = { conceal = "" },
+				on_node = { hl_group = "Special" },
 				on_closing_tag = { conceal = "" },
 			},
 			["^strong$"] = {
@@ -1929,6 +1977,51 @@ spec.default = {
 				}
 			},
 
+			["vec"] = {
+				condition = function (item)
+					return #item.args == 1;
+				end,
+				on_command = {
+					conceal = ""
+				},
+
+				on_args = {
+					{
+						on_before = function (item)
+							return {
+								end_col = item.range[2] + 1,
+								conceal = "",
+
+								virt_text_pos = "inline",
+								virt_text = {
+									{ "󱈥 ", "MarkviewPalette2Fg" },
+									{ "(", "@punctuation.bracket.latex" }
+								},
+
+								hl_mode = "combine"
+							}
+						end,
+
+						after_offset = function (range)
+							return { range[1], range[2], range[3], range[4] - 1 };
+						end,
+						on_after = function (item)
+							return {
+								end_col = item.range[4],
+								conceal = "",
+
+								virt_text_pos = "inline",
+								virt_text = {
+									{ ")", "@punctuation.bracket" }
+								},
+
+								hl_mode = "combine"
+							}
+						end
+					}
+				}
+			},
+
 			["sin"] = operator("sin"),
 			["cos"] = operator("cos"),
 			["tan"] = operator("tan"),
@@ -1970,9 +2063,18 @@ spec.default = {
 			["max"] = operator("max"),
 			["Pr"] = operator("Pr"),
 			["sup"] = operator("sup"),
-			["sqrt"] = operator(symbols.entries.sqrt, "inline", 5),
-			["lvert"] = operator(symbols.entries.vert, "inline", 6),
-			["lVert"] = operator(symbols.entries.Vert, "inline", 6),
+			["sqrt"] = function ()
+				local symbols = require("markview.symbols");
+				return operator(symbols.entries.sqrt, "inline", 5);
+			end,
+			["lvert"] = function ()
+				local symbols = require("markview.symbols");
+				return operator(symbols.entries.vert, "inline", 6);
+			end,
+			["lVert"] = function ()
+				local symbols = require("markview.symbols");
+				return operator(symbols.entries.Vert, "inline", 6);
+			end,
 
 			---_
 
@@ -1992,7 +2094,21 @@ spec.default = {
 				enable = true,
 				hl = "MarkviewSpecial"
 			},
-			-- ["^mathtt$"] = { hl = "MarkviewPalette1" }
+
+			mathbf = { enable = true },
+			mathbfit = { enable = true },
+			mathcal = { enable = true },
+			mathbfscr = { enable = true },
+			mathfrak = { enable = true },
+			mathbb = { enable = true },
+			mathbffrak = { enable = true },
+			mathsf = { enable = true },
+			mathsfbf = { enable = true },
+			mathsfit = { enable = true },
+			mathsfbfit = { enable = true },
+			mathtt = { enable = true },
+			mathrm = { enable = true },
+
 			---_
 		},
 
@@ -2159,13 +2275,20 @@ spec.default = {
 
 			enable = true,
 
-			indent_size = 4,
+			indent_size = function (buffer)
+				if type(buffer) ~= "number" then
+					return vim.bo.shiftwidth or 4;
+				end
+
+				--- Use 'shiftwidth' value.
+				return vim.bo[buffer].shiftwidth or 4;
+			end,
 			shift_width = 4,
 
 			marker_minus = {
 				add_padding = true,
 
-				text = "",
+				text = "●",
 				hl = "MarkviewListItemMinus"
 			},
 
@@ -2326,7 +2449,7 @@ spec.default = {
 			["github%.com/[%a%d%-%_%.]+/[%a%d%-%_%.]+%/?$"] = {
 				--- github.com/<user>/<repo>
 
-				icon = "󰳐 ",
+				icon = " ",
 				hl = "MarkviewPalette0Fg"
 			},
 			["github%.com/[%a%d%-%_%.]+/[%a%d%-%_%.]+/tree/[%a%d%-%_%.]+%/?$"] = {
@@ -2378,112 +2501,112 @@ spec.default = {
 			---+${lua, Commonly used sites by programmers}
 
 			["developer%.mozilla%.org"] = {
-				priority = 9999,
+				priority = -9999,
 
 				icon = "󰖟 ",
 				hl = "MarkviewPalette5Fg"
 			},
 
 			["w3schools%.com"] = {
-				priority = 9999,
+				priority = -9999,
 
 				icon = " ",
 				hl = "MarkviewPalette4Fg"
 			},
 
 			["stackoverflow%.com"] = {
-				priority = 9999,
+				priority = -9999,
 
 				icon = "󰓌 ",
 				hl = "MarkviewPalette2Fg"
 			},
 
 			["reddit%.com"] = {
-				priority = 9999,
+				priority = -9999,
 
 				icon = " ",
 				hl = "MarkviewPalette2Fg"
 			},
 
 			["github%.com"] = {
-				priority = 9999,
+				priority = -9999,
 
 				icon = " ",
 				hl = "MarkviewPalette6Fg"
 			},
 
 			["gitlab%.com"] = {
-				priority = 9999,
+				priority = -9999,
 
 				icon = " ",
 				hl = "MarkviewPalette2Fg"
 			},
 
 			["dev%.to"] = {
-				priority = 9999,
+				priority = -9999,
 
 				icon = "󱁴 ",
 				hl = "MarkviewPalette0Fg"
 			},
 
 			["codepen%.io"] = {
-				priority = 9999,
+				priority = -9999,
 
 				icon = " ",
 				hl = "MarkviewPalette6Fg"
 			},
 
 			["replit%.com"] = {
-				priority = 9999,
+				priority = -9999,
 
 				icon = " ",
 				hl = "MarkviewPalette2Fg"
 			},
 
 			["jsfiddle%.net"] = {
-				priority = 9999,
+				priority = -9999,
 
 				icon = " ",
 				hl = "MarkviewPalette5Fg"
 			},
 
 			["npmjs%.com"] = {
-				priority = 9999,
+				priority = -9999,
 
 				icon = " ",
 				hl = "MarkviewPalette0Fg"
 			},
 
 			["pypi%.org"] = {
-				priority = 9999,
+				priority = -9999,
 
 				icon = "󰆦 ",
 				hl = "MarkviewPalette0Fg"
 			},
 
 			["mvnrepository%.com"] = {
-				priority = 9999,
+				priority = -9999,
 
 				icon = " ",
 				hl = "MarkviewPalette1Fg"
 			},
 
 			["medium%.com"] = {
-				priority = 9999,
+				priority = -9999,
 
 				icon = " ",
 				hl = "MarkviewPalette6Fg"
 			},
 
 			["linkedin%.com"] = {
-				priority = 9999,
+				priority = -9999,
 
 				icon = "󰌻 ",
 				hl = "MarkviewPalette5Fg"
 			},
 
 			["news%.ycombinator%.com"] = {
-				priority = 9999,
+				priority = -9999,
 
 				icon = " ",
 				hl = "MarkviewPalette2Fg"
@@ -3388,10 +3511,10 @@ spec.get = function (keys, opts)
 		---@diagnostic disable
 		if pcall(val, unpack(args)) then
 			return val(unpack(args));
+		else
+			return nil;
 		end
 		---@diagnostic enable
-
-		return val;
 		---_
 	end
 
@@ -3434,14 +3557,21 @@ spec.get = function (keys, opts)
 	end
 
 	for k, key in ipairs(keys) do
-		val = to_static(val[key], val.args);
-
 		if k ~= #keys then
+			val = to_static(val[key], val.args);
+
 			if type(val) ~= "table" then
 				return opts.fallback;
 			elseif opts.ignore_enable ~= true and val.enable == false then
 				return opts.fallback;
 			end
+		else
+			--- Do not evaluate the final
+			--- value.
+			---
+			--- It should be evaluated using
+			--- `eval_args`.
+			val = val[key];
 		end
 	end
 

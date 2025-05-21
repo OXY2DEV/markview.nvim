@@ -840,6 +840,7 @@ Configuration for subscript texts.
     ---@class typst.subscripts
     ---
     ---@field enable boolean
+	---@field fake_preview? boolean When `true`, fake subscript characters.
     ---
     ---@field hl? string | string[]
     ---@field marker_left? string
@@ -887,6 +888,7 @@ Configuration for superscript texts.
     ---@class typst.superscripts
     ---
     ---@field enable boolean
+	---@field fake_preview? boolean When `true`, fake superscript characters.
     ---
     ---@field hl? string | string[]
     ---@field marker_left? string
@@ -1041,7 +1043,7 @@ Configuration for URLs.
     ---@field [string] config.inline_generic Configuration for URL links whose label matches `string`.
     url_links = {
         enable = true,
-        __emoji_link_compatibility = true,
+        __emoji_link_compatability = true,
 
         default = {
             icon = " ",
@@ -1059,7 +1061,7 @@ Configuration for URLs.
     ---@field [string] config.inline_generic Configuration for URL links whose label matches `string`.
     url_links = {
         enable = true,
-        __emoji_link_compatibility = true,
+        __emoji_link_compatability = true,
 
         default = {
             icon = " ",

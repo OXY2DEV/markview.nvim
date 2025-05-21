@@ -178,7 +178,7 @@ markdown.output = function (str, buffer)
 				concat({
 					_codes.corner_left or "",
 					_codes.padding_left or "",
-					inline_code:gsub(".", "X"),
+					string.rep("X", vim.fn.strdisplaywidth(inline_code)),
 					_codes.padding_right or "",
 					_codes.corner_left or ""
 				})
@@ -500,7 +500,7 @@ markdown.output = function (str, buffer)
 				}),
 				concat({
 					" ",
-					(alias or link):gsub(".", "X"),
+					string.rep("X", vim.fn.strdisplaywidth(alias or link)),
 					" "
 				})
 			);
@@ -534,7 +534,7 @@ markdown.output = function (str, buffer)
 					_int.corner_left or "",
 					_int.padding_left or "",
 					_int.icon or "",
-					(alias or link):gsub(".", "X"),
+					string.rep("X", vim.fn.strdisplaywidth(alias or link)),
 					_int.padding_right or "",
 					_int.corner_right or ""
 				})
@@ -933,7 +933,7 @@ markdown.get_visual_text = {
 			content = utils.escape_string(content);
 			str_a = utils.escape_string(str_a);
 
-			str = str:gsub(str_b .. content .. str_a, utils.escape_string(content):gsub(".", "X"))
+			str = str:gsub(str_b .. content .. str_a, string.rep("X", vim.fn.strdisplaywidth(content)))
 
 			::continue::
 			---_
@@ -946,7 +946,7 @@ markdown.get_visual_text = {
 				striked,
 				"~~"
 			}), concat({
-				utils.escape_string(striked):gsub(".", "X"),
+				string.rep("X", vim.fn.strdisplaywidth(striked))
 			}));
 			---_
 		end
@@ -978,7 +978,7 @@ markdown.get_visual_text = {
 				link,
 				"]",
 			}), concat({
-				utils.escape_string(link):gsub(".", "X"),
+				string.rep("X", vim.fn.strdisplaywidth(link))
 			}))
 			---_
 		end
@@ -992,7 +992,9 @@ markdown.get_visual_text = {
 				m1,
 				address,
 				m2
-			}), link:gsub(".", "X"));
+			}),
+				string.rep("X", vim.fn.strdisplaywidth(link))
+			);
 			---_
 		end
 
@@ -1003,7 +1005,7 @@ markdown.get_visual_text = {
 				link,
 				"]",
 			}), concat({
-				utils.escape_string(link):gsub(".", "X"),
+				string.rep("X", vim.fn.strdisplaywidth(link)),
 			}))
 			---_
 		end
@@ -1087,7 +1089,7 @@ markdown.atx_heading = function (buffer, item)
 			if config.align == "left" then
 				space = "";
 			elseif config.align == "center" then
-				space = string.rep(" ", math.floor((w_wid - wid) / 2));
+				space = string.rep(" ", math.max(0, math.floor((w_wid - wid) / 2)));
 			elseif config.align == "right" then
 				space = string.rep(" ", w_wid - wid);
 			end
@@ -1101,7 +1103,7 @@ markdown.atx_heading = function (buffer, item)
 			undo_restore = false, invalidate = true,
 			end_col = range.col_start + #item.marker + (#item.text[1] > #item.marker and 1 or 0),
 			conceal = "",
-			sign_text = config.sign,
+			sign_text = config.sign and tostring(config.sign) or nil,
 			sign_hl_group = utils.set_hl(config.sign_hl),
 			virt_text_pos = "inline",
 			virt_text = {
@@ -1134,7 +1136,7 @@ markdown.atx_heading = function (buffer, item)
 			undo_restore = false, invalidate = true,
 			end_col = range.col_start + #item.marker + (#item.text[1] > #item.marker and 1 or 0),
 			conceal = "",
-			sign_text = config.sign,
+			sign_text = config.sign and tostring(config.sign) or nil,
 			sign_hl_group = utils.set_hl(config.sign_hl),
 			virt_text_pos = "inline",
 			virt_text = {
@@ -1485,7 +1487,7 @@ markdown.code_block = function (buffer, item)
 					virt_text_pos = "inline",
 					virt_text = {
 						{
-							string.rep(config.pad_char or " ", block_width - label_width),
+							string.rep(config.pad_char or " ", math.max(0, block_width - label_width)),
 							utils.set_hl(config.border_hl)
 						}
 					}
@@ -1520,7 +1522,7 @@ markdown.code_block = function (buffer, item)
 					}
 				});
 			else
-				local spaces = avail_top - info_width + 2;
+				local spaces = math.max(0, avail_top - info_width + 2);
 
 				vim.api.nvim_buf_set_extmark(buffer, markdown.ns, range.row_start, range.col_start + #item.text[1], {
 					undo_restore = false, invalidate = true,
@@ -1539,7 +1541,7 @@ markdown.code_block = function (buffer, item)
 			---_
 		else
 			---+${Right aligned label}
-			local avail_top  = block_width - (label_width + 3);
+			local avail_top  = math.max(block_width - (label_width + 3));
 
 			vim.api.nvim_buf_set_extmark(buffer, markdown.ns, range.row_start, range.col_start, {
 				undo_restore = false, invalidate = true,
@@ -1603,7 +1605,7 @@ markdown.code_block = function (buffer, item)
 					}
 				});
 			else
-				local spaces = avail_top - info_width + 2;
+				local spaces = math.max(0, avail_top - info_width + 2);
 
 				vim.api.nvim_buf_set_extmark(buffer, markdown.ns, range.row_start, range.col_start + #item.text[1], {
 					undo_restore = false, invalidate = true,
@@ -1649,7 +1651,7 @@ markdown.code_block = function (buffer, item)
 					virt_text_pos = "inline",
 					virt_text = {
 						{
-							string.rep(" ", block_width - (( 2 * pad_amount) + width)),
+							string.rep(" ", math.max(0, block_width - (( 2 * pad_amount) + width))),
 							utils.set_hl(line_config.block_hl)
 						},
 						{
@@ -1675,14 +1677,14 @@ markdown.code_block = function (buffer, item)
 					virt_text_pos = "inline",
 					virt_text = {
 						{
-							string.rep(" ", range.col_start - #buf_line)
+							string.rep(" ", math.max(0, range.col_start - #buf_line))
 						},
 						{
 							string.rep(" ", pad_amount),
 							utils.set_hl(line_config.pad_hl)
 						},
 						{
-							string.rep(" ", block_width - (2 * pad_amount)),
+							string.rep(" ", math.max(0, block_width - (2 * pad_amount))),
 							utils.set_hl(line_config.block_hl)
 						},
 						{
@@ -1881,8 +1883,11 @@ end
 markdown.list_item = function (buffer, item)
 	---+${func, Renders List items}
 
-	---@type markdown.list_items?
-	local main_config = spec.get({ "markdown", "list_items" }, { fallback = nil });
+	---@type markdown.list_items_static?
+	local main_config = spec.get({ "markdown", "list_items" }, {
+		fallback = nil,
+		eval_args = { buffer, item }
+	});
 	local range = item.range;
 
 	if not main_config then
@@ -1924,13 +1929,9 @@ markdown.list_item = function (buffer, item)
 		return;
 	end
 
-	if config.add_padding then
+	if config.add_padding == true then
 		for _, l in ipairs(item.candidates) do
-			local from, to = range.col_start, range.col_start + item.indent;
-
-			if item.text[l + 1]:len() < to then
-				to = from;
-			end
+			local from, to = math.min(range.col_start, item.text[l + 1]:len()), math.min(range.col_start + item.indent, item.text[l + 1]:len());
 
 			vim.api.nvim_buf_set_extmark(buffer, markdown.ns, range.row_start + l, from, {
 				undo_restore = false, invalidate = true,
@@ -1940,7 +1941,7 @@ markdown.list_item = function (buffer, item)
 
 				virt_text_pos = "inline",
 				virt_text = {
-					{ string.rep(" ", (math.ceil(item.indent / indent_size) + 1) * shift_width) }
+					{ string.rep(" ", math.max(0, (math.ceil(item.indent / math.max(1, indent_size)) + 1) * shift_width)) }
 				}
 			});
 		end
@@ -1981,7 +1982,7 @@ markdown.list_item = function (buffer, item)
 	local checkbox = get_state(item.checkbox);
 
 	if checkbox and config.conceal_on_checkboxes == true then
-		vim.api.nvim_buf_set_extmark(buffer, markdown.ns, range.row_start, range.col_start, {
+		vim.api.nvim_buf_set_extmark(buffer, markdown.ns, range.row_start, range.col_start + item.indent, {
 			undo_restore = false, invalidate = true,
 			end_col = range.col_start + (item.indent + #item.marker + 1),
 			conceal = ""
@@ -2011,7 +2012,7 @@ markdown.list_item = function (buffer, item)
 			end
 		end
 	elseif item.marker:match("[%+%-%*]") then
-		vim.api.nvim_buf_set_extmark(buffer, markdown.ns, range.row_start, range.col_start, {
+		vim.api.nvim_buf_set_extmark(buffer, markdown.ns, range.row_start, range.col_start + item.indent, {
 			undo_restore = false, invalidate = true,
 			end_col = range.col_start + (item.indent + #item.marker),
 			conceal = "",
@@ -2204,7 +2205,7 @@ markdown.section = function (buffer, item)
 
 			virt_text_pos = "inline",
 			virt_text = {
-				{ string.rep(shift_char, shift_width * (item.level - 1)) }
+				{ string.rep(shift_char, math.max(0, shift_width * (item.level - 1))) }
 			},
 
 			right_gravity = false,
@@ -2560,7 +2561,7 @@ markdown.table = function (buffer, item)
 				if config.use_virt_lines == true then
 					table.insert(tmp, 1, { string.rep(" ", range.col_start) });
 				elseif range.row_start > 0 and prev_line < range.col_start then
-					table.insert(tmp, 1, { string.rep(" ", range.col_start - prev_line) });
+					table.insert(tmp, 1, { string.rep(" ", math.max(0, range.col_start - prev_line)) });
 				end
 
 				if config.use_virt_lines == true then
@@ -2584,8 +2585,8 @@ markdown.table = function (buffer, item)
 			---_
 		elseif part.class == "missing_seperator" then
 			---+${custom, Handle missing last |}
-			local border, border_hl = get_border("header", 3);
-			local top, top_hl = get_border("top", 3);
+			local border, border_hl = get_border("header", p == 1 and 1 or 3);
+			local top, top_hl = get_border("top", p == 1 and 1 or 3);
 
 			table.insert(tmp, {
 				top,
@@ -2605,6 +2606,7 @@ markdown.table = function (buffer, item)
 					}
 				},
 
+				right_gravity = p ~= 1,
 				hl_mode = "combine"
 			})
 
@@ -2617,7 +2619,7 @@ markdown.table = function (buffer, item)
 					});
 				elseif range.row_start > 0 and prev_line < range.col_start then
 					table.insert(tmp, 1, {
-						string.rep(" ", range.col_start - prev_line)
+						string.rep(" ", math.max(0, range.col_start - prev_line))
 					});
 				end
 
@@ -2658,10 +2660,9 @@ markdown.table = function (buffer, item)
 						undo_restore = false, invalidate = true,
 						virt_text_pos = "inline",
 						virt_text = {
-							{ string.rep(" ", column_width - visible_width) }
+							{ string.rep(" ", math.max(0, column_width - visible_width)) }
 						},
 
-						right_gravity = false,
 						hl_mode = "combine"
 					});
 				elseif item.alignments[c] == "right" then
@@ -2669,10 +2670,9 @@ markdown.table = function (buffer, item)
 						undo_restore = false, invalidate = true,
 						virt_text_pos = "inline",
 						virt_text = {
-							{ string.rep(" ", column_width - visible_width) }
+							{ string.rep(" ", math.max(0, column_width - visible_width)) }
 						},
 
-						right_gravity = false,
 						hl_mode = "combine"
 					});
 				else
@@ -2683,7 +2683,6 @@ markdown.table = function (buffer, item)
 							{ string.rep(" ", math.ceil((column_width - visible_width) / 2)) }
 						},
 
-						right_gravity = true,
 						hl_mode = "combine"
 					});
 					vim.api.nvim_buf_set_extmark(buffer, markdown.ns, range.row_start, range.col_start + part.col_end, {
@@ -2693,7 +2692,6 @@ markdown.table = function (buffer, item)
 							{ string.rep(" ", math.floor((column_width - visible_width) / 2)) }
 						},
 
-						right_gravity = false,
 						hl_mode = "combine"
 					});
 				end
@@ -2740,29 +2738,18 @@ markdown.table = function (buffer, item)
 			---_
 		elseif sep.class == "missing_seperator" then
 			---+${custom, Handle missing last |}
-			local border, border_hl = get_border("separator", 3);
+			local border, border_hl = get_border("separator", s == 1 and 1 or 3);
 
-			if is_wrapped == true then
-				vim.api.nvim_buf_set_extmark(buffer, markdown.ns, x, y, {
-					undo_restore = false, invalidate = true,
-					virt_text_pos = "inline",
-					virt_text = {
-						{ "|", "@punctuation.special.markdown" }
-					},
+			vim.api.nvim_buf_set_extmark(buffer, markdown.ns, x, y, {
+				undo_restore = false, invalidate = true,
+				virt_text_pos = "inline",
+				virt_text = {
+					is_wrapped == true and { "|", "@punctuation.special.markdown" } or { border, utils.set_hl(border_hl) }
+				},
 
-					hl_mode = "combine"
-				});
-			else
-				vim.api.nvim_buf_set_extmark(buffer, markdown.ns, x, y, {
-					undo_restore = false, invalidate = true,
-					virt_text_pos = "inline",
-					virt_text = {
-						{ border, utils.set_hl(border_hl) }
-					},
-
-					hl_mode = "combine"
-				});
-			end
+				right_gravity = s ~= 1,
+				hl_mode = "combine"
+			});
 			---_
 		elseif sep.class == "column" then
 			local border, border_hl = get_border("separator", 2);
@@ -2785,7 +2772,6 @@ markdown.table = function (buffer, item)
 							}
 						},
 
-						right_gravity = false,
 						hl_mode = "combine"
 					});
 				end
@@ -2805,7 +2791,6 @@ markdown.table = function (buffer, item)
 							},
 						},
 
-						right_gravity = false,
 						hl_mode = "combine"
 					});
 
@@ -2817,7 +2802,6 @@ markdown.table = function (buffer, item)
 							{ string.rep(border, left), utils.set_hl(border_hl) },
 						},
 
-						right_gravity = false,
 						hl_mode = "combine"
 					});
 				else
@@ -2833,7 +2817,6 @@ markdown.table = function (buffer, item)
 							}
 						},
 
-						right_gravity = false,
 						hl_mode = "combine"
 					});
 				end
@@ -2857,7 +2840,6 @@ markdown.table = function (buffer, item)
 							},
 						},
 
-						right_gravity = false,
 						hl_mode = "combine"
 					});
 
@@ -2869,7 +2851,6 @@ markdown.table = function (buffer, item)
 							{ string.rep(border, left), utils.set_hl(border_hl) },
 						},
 
-						right_gravity = false,
 						hl_mode = "combine"
 					});
 				else
@@ -2886,7 +2867,6 @@ markdown.table = function (buffer, item)
 							}
 						},
 
-						right_gravity = false,
 						hl_mode = "combine"
 					});
 				end
@@ -2909,7 +2889,6 @@ markdown.table = function (buffer, item)
 							},
 						},
 
-						right_gravity = false,
 						hl_mode = "combine"
 					});
 
@@ -2922,7 +2901,6 @@ markdown.table = function (buffer, item)
 							{ align, utils.set_hl(align_hl) }
 						},
 
-						right_gravity = false,
 						hl_mode = "combine"
 					});
 				else
@@ -2933,13 +2911,12 @@ markdown.table = function (buffer, item)
 						virt_text_pos = "overlay",
 						virt_text = {
 							{
-								string.rep(border, width - 1),
+								string.rep(border, math.max(0, width - 1)),
 								utils.set_hl(border_hl)
 							},
 							{ align, utils.set_hl(align_hl) }
 						},
 
-						right_gravity = false,
 						hl_mode = "combine"
 					});
 				end
@@ -2958,12 +2935,11 @@ markdown.table = function (buffer, item)
 						virt_text = {
 							{ align[1], utils.set_hl(align_hl[1]) },
 							{
-								string.rep(border, width - 1),
+								string.rep(border, math.max(0, width - 1)),
 								utils.set_hl(border_hl)
 							},
 						},
 
-						right_gravity = false,
 						hl_mode = "combine"
 					});
 
@@ -2972,11 +2948,10 @@ markdown.table = function (buffer, item)
 
 						virt_text_pos = "inline",
 						virt_text = {
-							{ string.rep(border, left - 1), utils.set_hl(border_hl) },
+							{ string.rep(border, math.max(0, left - 1)), utils.set_hl(border_hl) },
 							{ align[2], utils.set_hl(align_hl[2]) }
 						},
 
-						right_gravity = false,
 						hl_mode = "combine"
 					});
 				else
@@ -2988,13 +2963,12 @@ markdown.table = function (buffer, item)
 						virt_text = {
 							{ align[1], utils.set_hl(align_hl[1]) },
 							{
-								string.rep(border, width - 2),
+								string.rep(border, math.max(0, width - 2)),
 								utils.set_hl(border_hl)
 							},
 							{ align[2], utils.set_hl(align_hl[2]) },
 						},
 
-						right_gravity = false,
 						hl_mode = "combine"
 					});
 				end
@@ -3042,7 +3016,7 @@ markdown.table = function (buffer, item)
 				---_
 			elseif part.class == "missing_seperator" then
 				---+${custom, Handle missing last |}
-				local border, border_hl = get_border("row", 3);
+				local border, border_hl = get_border("row", r == 1 and 1 or 3);
 
 				vim.api.nvim_buf_set_extmark(buffer, markdown.ns, range.row_start + 1 + r, range.col_start + part.col_start, {
 					undo_restore = false, invalidate = true,
@@ -3057,6 +3031,7 @@ markdown.table = function (buffer, item)
 						}
 					},
 
+					right_gravity = r ~= 1,
 					hl_mode = "combine"
 				})
 				---_
@@ -3071,7 +3046,7 @@ markdown.table = function (buffer, item)
 							undo_restore = false, invalidate = true,
 							virt_text_pos = "inline",
 							virt_text = {
-								{ string.rep(" ", column_width - visible_width) }
+								{ string.rep(" ", math.max(0, column_width - visible_width)) }
 							},
 
 							right_gravity = false,
@@ -3082,7 +3057,7 @@ markdown.table = function (buffer, item)
 							undo_restore = false, invalidate = true,
 							virt_text_pos = "inline",
 							virt_text = {
-								{ string.rep(" ", column_width - visible_width) }
+								{ string.rep(" ", math.max(0, column_width - visible_width)) }
 							},
 
 							right_gravity = false,
@@ -3093,7 +3068,7 @@ markdown.table = function (buffer, item)
 							undo_restore = false, invalidate = true,
 							virt_text_pos = "inline",
 							virt_text = {
-								{ string.rep(" ", math.ceil((column_width - visible_width) / 2)) }
+								{ string.rep(" ", math.max(0, math.ceil((column_width - visible_width) / 2))) }
 							},
 
 							right_gravity = true,
@@ -3103,7 +3078,7 @@ markdown.table = function (buffer, item)
 							undo_restore = false, invalidate = true,
 							virt_text_pos = "inline",
 							virt_text = {
-								{ string.rep(" ", math.floor((column_width - visible_width) / 2)) }
+								{ string.rep(" ", math.max(0, math.floor((column_width - visible_width) / 2))) }
 							},
 
 							right_gravity = false,
@@ -3161,7 +3136,7 @@ markdown.table = function (buffer, item)
 				if config.use_virt_lines == true then
 					table.insert(tmp, 1, { string.rep(" ", range.col_start) });
 				elseif next_line < vim.api.nvim_buf_line_count(buffer) and  next_line < range.col_start then
-					table.insert(tmp, 1, { string.rep(" ", range.col_start - next_line) });
+					table.insert(tmp, 1, { string.rep(" ", math.max(0, range.col_start - next_line)) });
 				end
 
 				if config.use_virt_lines == true then
@@ -3183,10 +3158,13 @@ markdown.table = function (buffer, item)
 			---_
 		elseif part.class == "missing_seperator" then
 			---+${custom, Handle missing last |}
-			local border, border_hl = get_border("row", 3);
-			local bottom, bottom_hl = bottom_part(3);
+			local border, border_hl = get_border("row", p == 1 and 1 or 3);
+			local bottom, bottom_hl = bottom_part(p == 1 and 1 or 3);
 
-			table.insert(tmp, { bottom, utils.set_hl(bottom_hl) });
+			table.insert(tmp, {
+				bottom,
+				is_wrapped == true and "@punctuation.special.markdown" or utils.set_hl(bottom_hl)
+			});
 
 			vim.api.nvim_buf_set_extmark(buffer, markdown.ns, range.row_end - 1, range.col_start + part.col_start, {
 				undo_restore = false, invalidate = true,
@@ -3195,9 +3173,16 @@ markdown.table = function (buffer, item)
 
 				virt_text_pos = "inline",
 				virt_text = {
-					{ border, utils.set_hl(border_hl) }
+					is_wrapped and {
+						"|",
+						"@punctuation.special.markdown"
+					} or {
+						border,
+						utils.set_hl(border_hl)
+					}
 				},
 
+				right_gravity = p ~= 1,
 				hl_mode = "combine"
 			})
 
@@ -3207,7 +3192,7 @@ markdown.table = function (buffer, item)
 				if config.use_virt_lines == true then
 					table.insert(tmp, 1, { string.rep(" ", range.col_start) });
 				elseif next_line < vim.api.nvim_buf_line_count(buffer) and next_line < range.col_start then
-					table.insert(tmp, 1, { string.rep(" ", range.col_start - next_line) });
+					table.insert(tmp, 1, { string.rep(" ", math.max(0, range.col_start - next_line)) });
 				end
 
 				if config.use_virt_lines == true then
@@ -3245,7 +3230,7 @@ markdown.table = function (buffer, item)
 						undo_restore = false, invalidate = true,
 						virt_text_pos = "inline",
 						virt_text = {
-							{ string.rep(" ", column_width - visible_width) }
+							{ string.rep(" ", math.max(0, column_width - visible_width)) }
 						},
 
 						right_gravity = false,
@@ -3256,7 +3241,7 @@ markdown.table = function (buffer, item)
 						undo_restore = false, invalidate = true,
 						virt_text_pos = "inline",
 						virt_text = {
-							{ string.rep(" ", column_width - visible_width) }
+							{ string.rep(" ", math.max(0, column_width - visible_width)) }
 						},
 
 						right_gravity = false,
@@ -3267,7 +3252,7 @@ markdown.table = function (buffer, item)
 						undo_restore = false, invalidate = true,
 						virt_text_pos = "inline",
 						virt_text = {
-							{ string.rep(" ", math.ceil((column_width - visible_width) / 2)) }
+							{ string.rep(" ", math.max(0, math.ceil((column_width - visible_width) / 2))) }
 						},
 
 						right_gravity = true,
@@ -3277,7 +3262,7 @@ markdown.table = function (buffer, item)
 						undo_restore = false, invalidate = true,
 						virt_text_pos = "inline",
 						virt_text = {
-							{ string.rep(" ", math.floor((column_width - visible_width) / 2)) }
+							{ string.rep(" ", math.max(0, math.floor((column_width - visible_width) / 2))) }
 						},
 
 						right_gravity = false,
@@ -3467,6 +3452,14 @@ markdown.__list_item = function (buffer, item)
 	local config;
 	local shift_width, indent_size = main_config.shift_width or 1, main_config.indent_size or 1;
 
+	if type(shift_width) ~= "number" then
+		shift_width = 1;
+	end
+
+	if type(indent_size) ~= "number" then
+		indent_size = 1;
+	end
+
 	if item.marker == "-" then
 		config = spec.get({ "marker_minus" }, {
 			source = main_config,
@@ -3592,7 +3585,7 @@ markdown.__list_item = function (buffer, item)
 
 						virt_text_pos = "inline",
 						virt_text = {
-							{ string.rep(" ", has_space and pad_width - 1 or pad_width) }
+							{ string.rep(" ", math.max(0, has_space and pad_width - 1 or pad_width)) }
 						},
 
 						hl_mode = "combine",
@@ -3672,7 +3665,7 @@ markdown.__section = function (buffer, item)
 
 						virt_text_pos = "inline",
 						virt_text = vim.list_extend(virt_text, {
-							{ string.rep(shift_char, shift_width * (item.level - 1)) }
+							{ string.rep(shift_char, math.max(0, shift_width * (item.level - 1))) }
 						}),
 
 						hl_mode = "combine",
@@ -3684,7 +3677,7 @@ markdown.__section = function (buffer, item)
 
 						virt_text_pos = "inline",
 						virt_text = {
-							{ string.rep(shift_char, shift_width * (item.level - 1)) }
+							{ string.rep(shift_char, math.max(0, shift_width * (item.level - 1))) }
 						},
 
 						hl_mode = "combine",
@@ -3770,6 +3763,7 @@ markdown.post_render = function (buffer, content)
 				level = 4,
 				message = {
 					{ " r/markdown.lua: ", "DiagnosticVirtualTextInfo" },
+					{ string.format(" %s ", item.class), "DiagnosticVirtualTextHint" },
 					{ " " },
 					{ err, "DiagnosticError" }
 				}

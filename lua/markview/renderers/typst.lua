@@ -57,7 +57,7 @@ typst.get_visual_text = {
 				link,
 				"]",
 			}), concat({
-				utils.escape_string(link):gsub(".", "X"),
+				string.rep("X", vim.fn.strdisplaywidth(link))
 			}))
 			---_
 		end
@@ -69,7 +69,9 @@ typst.get_visual_text = {
 				link,
 				"]",
 				address
-			}), concat({ utils.escape_string(link):gsub(".", "X") }))
+			}), concat({
+				string.rep("X", vim.fn.strdisplaywidth(link))
+			}));
 			---_
 		end
 
@@ -80,7 +82,7 @@ typst.get_visual_text = {
 				link,
 				"]",
 			}), concat({
-				utils.escape_string(link):gsub(".", "X"),
+				string.rep("X", vim.fn.strdisplaywidth(link))
 			}))
 			---_
 		end
@@ -99,7 +101,7 @@ typst.get_visual_text = {
 			content = utils.escape_string(content);
 			str_a = utils.escape_string(str_a);
 
-			str = str:gsub(str_b .. content .. str_a, utils.escape_string(content):gsub(".", "X"))
+			str = str:gsub(str_b .. content .. str_a, string.rep("X", vim.fn.strdisplaywidth(content)))
 
 			::continue::
 			---_
@@ -112,7 +114,7 @@ typst.get_visual_text = {
 				striked,
 				"~~"
 			}), concat({
-				utils.escape_string(striked):gsub(".", "X"),
+				string.rep("X", vim.fn.strdisplaywidth(striked))
 			}));
 			---_
 		end
@@ -1239,49 +1241,106 @@ typst.subscript = function (buffer, item)
 	end
 
 	---+${Lua, Render markers}
-	if item.parenthesis == true then
-		vim.api.nvim_buf_set_extmark(buffer, typst.ns, range.row_start, range.col_start, {
-			undo_restore = false, invalidate = true,
-			end_col = range.col_start + 2,
-			conceal = "",
 
-			virt_text_pos = "inline",
-			virt_text = previewable == false and {
-				{ config.marker_left or "↓(", utils.set_hl(hl) }
-			} or nil,
+	if config.fake_preview == false or previewable == false then
+		if item.parenthesis then
+			vim.api.nvim_buf_set_extmark(buffer, typst.ns, range.row_start, range.col_start, {
+				undo_restore = false, invalidate = true,
+				end_col = range.col_start + 2,
+				conceal = "",
 
-			hl_mode = "combine"
-		});
+				virt_text_pos = "inline",
+				virt_text = {
+					{ config.marker_left or "↓(", utils.set_hl(hl) }
+				},
 
-		vim.api.nvim_buf_set_extmark(buffer, typst.ns, range.row_end, range.col_end - 1, {
-			undo_restore = false, invalidate = true,
-			end_col = range.col_end,
-			conceal = "",
+				hl_mode = "combine"
+			});
 
-			virt_text_pos = "inline",
-			virt_text = previewable == false and {
-				{ config.marker_right or ")", utils.set_hl(hl) }
-			} or nil,
+			vim.api.nvim_buf_set_extmark(buffer, typst.ns, range.row_end, range.col_end - 1, {
+				undo_restore = false, invalidate = true,
+				end_col = range.col_end,
+				conceal = "",
 
-			hl_mode = "combine"
-		});
+				virt_text_pos = "inline",
+				virt_text = {
+					{ config.marker_right or ")", utils.set_hl(hl) }
+				},
+
+				hl_mode = "combine"
+			});
+		else
+			vim.api.nvim_buf_set_extmark(buffer, typst.ns, range.row_start, range.col_start, {
+				undo_restore = false, invalidate = true,
+				end_col = range.col_start + 1,
+				conceal = "",
+
+				virt_text_pos = "inline",
+				virt_text = {
+					{ config.marker_left or "↓(", utils.set_hl(hl) }
+				},
+
+				hl_mode = "combine"
+			});
+
+			vim.api.nvim_buf_set_extmark(buffer, typst.ns, range.row_end, range.col_end, {
+				undo_restore = false, invalidate = true,
+				right_gravity = false,
+
+				virt_text_pos = "inline",
+				virt_text = {
+					{ config.marker_right or ")", utils.set_hl(hl) }
+				},
+
+				hl_mode = "combine"
+			});
+		end
 	else
-		vim.api.nvim_buf_set_extmark(buffer, typst.ns, range.row_start, range.col_start, {
-			undo_restore = false, invalidate = true,
-			end_col = range.col_start + 1,
-			conceal = "",
+		if item.parenthesis == true then
+			vim.api.nvim_buf_set_extmark(buffer, typst.ns, range.row_start, range.col_start, {
+				undo_restore = false, invalidate = true,
+				end_col = range.col_start + 2,
+				conceal = "",
 
-			virt_text_pos = "inline",
-			virt_text = previewable == false and {
-				{ config.marker_left or "↓", utils.set_hl(hl) }
-			} or nil,
+				virt_text_pos = "inline",
+				virt_text = previewable == false and {
+					{ config.marker_left or "↓(", utils.set_hl(hl) }
+				} or nil,
 
-			hl_mode = "combine"
-		});
+				hl_mode = "combine"
+			});
+
+			vim.api.nvim_buf_set_extmark(buffer, typst.ns, range.row_end, range.col_end - 1, {
+				undo_restore = false, invalidate = true,
+				end_col = range.col_end,
+				conceal = "",
+
+				virt_text_pos = "inline",
+				virt_text = previewable == false and {
+					{ config.marker_right or ")", utils.set_hl(hl) }
+				} or nil,
+
+				hl_mode = "combine"
+			});
+		else
+			vim.api.nvim_buf_set_extmark(buffer, typst.ns, range.row_start, range.col_start, {
+				undo_restore = false, invalidate = true,
+				end_col = range.col_start + 1,
+				conceal = "",
+
+				virt_text_pos = "inline",
+				virt_text = previewable == false and {
+					{ config.marker_left or "↓", utils.set_hl(hl) }
+				} or nil,
+
+				hl_mode = "combine"
+			});
+		end
 	end
+
 	---_
 
-	if previewable == true then
+	if previewable == true and config.fake_preview ~= false then
 		table.insert(typst.cache.subscripts, item);
 	else
 		vim.api.nvim_buf_set_extmark(buffer, typst.ns, range.row_start, range.col_start, {
@@ -1298,7 +1357,7 @@ end
 ---@param buffer integer
 ---@param item __typst.superscripts
 typst.superscript = function (buffer, item)
-	---+${func}
+	-- ---+${func}
 
 	---@type typst.superscripts?
 	local config = spec.get({ "typst", "superscripts" }, { fallback = nil, eval_args = { buffer, item } });
@@ -1338,49 +1397,106 @@ typst.superscript = function (buffer, item)
 	end
 
 	---+${Lua, Render markers}
-	if item.parenthesis == true then
-		vim.api.nvim_buf_set_extmark(buffer, typst.ns, range.row_start, range.col_start, {
-			undo_restore = false, invalidate = true,
-			end_col = range.col_start + 2,
-			conceal = "",
 
-			virt_text_pos = "inline",
-			virt_text = previewable == false and {
-				{ config.marker_left or "↑(", utils.set_hl(hl) }
-			} or nil,
+	if config.fake_preview == false or previewable == false then
+		if item.parenthesis then
+			vim.api.nvim_buf_set_extmark(buffer, typst.ns, range.row_start, range.col_start, {
+				undo_restore = false, invalidate = true,
+				end_col = range.col_start + 2,
+				conceal = "",
 
-			hl_mode = "combine"
-		});
+				virt_text_pos = "inline",
+				virt_text = {
+					{ config.marker_left or "↑(", utils.set_hl(hl) }
+				},
 
-		vim.api.nvim_buf_set_extmark(buffer, typst.ns, range.row_end, range.col_end - 1, {
-			undo_restore = false, invalidate = true,
-			end_col = range.col_end,
-			conceal = "",
+				hl_mode = "combine"
+			});
 
-			virt_text_pos = "inline",
-			virt_text = previewable == false and {
-				{ config.marker_right or ")", utils.set_hl(hl) }
-			} or nil,
+			vim.api.nvim_buf_set_extmark(buffer, typst.ns, range.row_end, range.col_end - 1, {
+				undo_restore = false, invalidate = true,
+				end_col = range.col_end,
+				conceal = "",
 
-			hl_mode = "combine"
-		});
+				virt_text_pos = "inline",
+				virt_text = {
+					{ config.marker_right or ")", utils.set_hl(hl) }
+				},
+
+				hl_mode = "combine"
+			});
+		else
+			vim.api.nvim_buf_set_extmark(buffer, typst.ns, range.row_start, range.col_start, {
+				undo_restore = false, invalidate = true,
+				end_col = range.col_start + 1,
+				conceal = "",
+
+				virt_text_pos = "inline",
+				virt_text = {
+					{ config.marker_left or "↑(", utils.set_hl(hl) }
+				},
+
+				hl_mode = "combine"
+			});
+
+			vim.api.nvim_buf_set_extmark(buffer, typst.ns, range.row_end, range.col_end, {
+				undo_restore = false, invalidate = true,
+				right_gravity = false,
+
+				virt_text_pos = "inline",
+				virt_text = {
+					{ config.marker_right or ")", utils.set_hl(hl) }
+				},
+
+				hl_mode = "combine"
+			});
+		end
 	else
-		vim.api.nvim_buf_set_extmark(buffer, typst.ns, range.row_start, range.col_start, {
-			undo_restore = false, invalidate = true,
-			end_col = range.col_start + 1,
-			conceal = "",
+		if item.parenthesis == true then
+			vim.api.nvim_buf_set_extmark(buffer, typst.ns, range.row_start, range.col_start, {
+				undo_restore = false, invalidate = true,
+				end_col = range.col_start + 2,
+				conceal = "",
 
-			virt_text_pos = "inline",
-			virt_text = previewable == false and {
-				{ config.marker_left or "↑", utils.set_hl(hl) }
-			} or nil,
+				virt_text_pos = "inline",
+				virt_text = previewable == false and {
+					{ config.marker_left or "↑(", utils.set_hl(hl) }
+				} or nil,
 
-			hl_mode = "combine"
-		});
+				hl_mode = "combine"
+			});
+
+			vim.api.nvim_buf_set_extmark(buffer, typst.ns, range.row_end, range.col_end - 1, {
+				undo_restore = false, invalidate = true,
+				end_col = range.col_end,
+				conceal = "",
+
+				virt_text_pos = "inline",
+				virt_text = previewable == false and {
+					{ config.marker_right or ")", utils.set_hl(hl) }
+				} or nil,
+
+				hl_mode = "combine"
+			});
+		else
+			vim.api.nvim_buf_set_extmark(buffer, typst.ns, range.row_start, range.col_start, {
+				undo_restore = false, invalidate = true,
+				end_col = range.col_start + 1,
+				conceal = "",
+
+				virt_text_pos = "inline",
+				virt_text = previewable == false and {
+					{ config.marker_left or "↑", utils.set_hl(hl) }
+				} or nil,
+
+				hl_mode = "combine"
+			});
+		end
 	end
+
 	---_
 
-	if previewable == true then
+	if previewable == true and config.fake_preview ~= false then
 		table.insert(typst.cache.superscripts, item);
 	else
 		vim.api.nvim_buf_set_extmark(buffer, typst.ns, range.row_start, range.col_start, {
@@ -1391,7 +1507,7 @@ typst.superscript = function (buffer, item)
 			hl_group = utils.set_hl(hl)
 		});
 	end
-	---_
+	-- ---_
 end
 
 ---@param buffer integer
@@ -1557,6 +1673,7 @@ typst.render = function (buffer, content)
 				level = 4,
 				message = {
 					{ " r/typst.lua: ", "DiagnosticVirtualTextInfo" },
+					{ string.format(" %s ", item.class), "DiagnosticVirtualTextHint" },
 					{ " " },
 					{ err, "DiagnosticError" }
 				}

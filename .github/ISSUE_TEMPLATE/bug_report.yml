@@ -1,4 +1,4 @@
-name: Bug report
+name: 🐞 Bug report
 description: "Report a bug in markview."
 title: "🐞 Bug: "
 labels: [ "bug" ]
@@ -6,7 +6,7 @@ body:
   - type: checkboxes
     id: branch
     attributes:
-      labels: "🤖 Which branch are you using?"
+      label: "🤖 Which branch are you using?"
       options:
         - label: "dev"
         - label: "main"
@@ -37,7 +37,8 @@ body:
         The minimal config file to reproduce the issue.
 
         Put this in a file(e.g. `minit.lua`) and do `nvim -u minit.lua` to run it.
-      placeholder: |
+      value: |
+        ```lua
         vim.env.LAZY_STDPATH = ".repro"
         load(vim.fn.system("curl -s https://raw.githubusercontent.com/folke/lazy.nvim/main/bootstrap.lua"))()
 
@@ -56,6 +57,19 @@ body:
                 }
             },
         });
+        ```
+    validations:
+      required: true
+
+  - type: textarea
+    id: logs
+    attributes:
+      label: "📜 Logs:"
+      description: |
+        After Reproducing the bug, run `:Markview traceExport`. You will see a new file `trace.log` has been created in your current directory.
+
+        Copy it's contents here.
+      placeholder: "Logs..."
     validations:
       required: true
 
@@ -69,7 +83,7 @@ body:
       required: true
 
   - type: textarea
-    id: minit
+    id: expected
     attributes:
       label: "✅ Expected behavior:"
       description: "The expected behavior."

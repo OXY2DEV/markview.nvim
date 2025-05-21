@@ -168,6 +168,100 @@
 
     vim.o.foldtext = "v:lua.heading_foldtext()"
 <
+------------------------------------------------------------------------------
+🎨 Single highlight group for all links
+									   *markview.nvim-advanced.single_link_hl*
+
+▋ This has been taken from
+▋ https://github.com/OXY2DEV/markview.nvim/issues/265
+
+Copy this to your plugin's `config` option.
+>lua
+	---@param group string New highlight group.
+	---@return { [string]: { hl: string } } New configuration.
+	local function generic_hl(group)
+		return {
+			["github%.com/[%a%d%-%_%.]+%/?$"] = {
+				hl = group
+			},
+			["github%.com/[%a%d%-%_%.]+/[%a%d%-%_%.]+%/?$"] = {
+				hl = group
+			},
+			["github%.com/[%a%d%-%_%.]+/[%a%d%-%_%.]+/tree/[%a%d%-%_%.]+%/?$"] = {
+				hl = group
+			},
+			["github%.com/[%a%d%-%_%.]+/[%a%d%-%_%.]+/commits/[%a%d%-%_%.]+%/?$"] = {
+				hl = group
+			},
+			["github%.com/[%a%d%-%_%.]+/[%a%d%-%_%.]+%/releases$"] = {
+				hl = group
+			},
+			["github%.com/[%a%d%-%_%.]+/[%a%d%-%_%.]+%/tags$"] = {
+				hl = group
+			},
+			["github%.com/[%a%d%-%_%.]+/[%a%d%-%_%.]+%/issues$"] = {
+				hl = group
+			},
+			["github%.com/[%a%d%-%_%.]+/[%a%d%-%_%.]+%/pulls$"] = {
+				hl = group
+			},
+			["github%.com/[%a%d%-%_%.]+/[%a%d%-%_%.]+%/wiki$"] = {
+				hl = group
+			}
+		};
+	end
+
+	require("markview").setup({
+		markdown = {
+		   reference_definitions = generic_hl("MarkviewPalette4Fg")
+		},
+		markdown_inline = {
+			hyperlinks = generic_hl("MarkviewHyperlink"),
+			uri_autolinks = generic_hl("MarkviewEmail"),
+		},
+
+		typst = {
+			url_links = generic_hl("MarkviewEmail")
+		}
+	});
+<
 
 ------------------------------------------------------------------------------
-vim:ft=help:colorcolumn=78:virtualedit=all:
+📐 Disabling indentation of top level list items
+							  *markview.nvim-advanced.top_list_indent_disable*
+
+▋ This has been taken from 
+▋ https://github.com/OXY2DEV/markview.nvim/issues/283
+
+▋ 💡 Tip:
+▋ This works the same way for `Typst` too!.
+
+Copy this to your plugin's `config` option.
+
+>lua
+	require("markview").setup({
+		markdown = {
+			list_items = {
+				shift_width = function (buffer, item)
+					--- Reduces the `indent` by 1 level.
+					---
+					---         indent                      1
+					--- ------------------------- = 1 ÷ --------- = new_indent
+					--- indent * (1 / new_indent)       new_indent
+					---
+					local parent_indnet = math.max(1, item.indent - vim.bo[buffer].shiftwidth);
+
+					return (item.indent) * (1 / (parent_indnet * 2));
+				end,
+				marker_minus = {
+					add_padding = function (_, item)
+						return item.indent > 1;
+					end
+				}
+			}
+		}
+	});
+<
+
+------------------------------------------------------------------------------
+vim:ft=help:tw=78:

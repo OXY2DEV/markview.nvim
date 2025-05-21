@@ -4,7 +4,15 @@ local source = {};
 --- Is this source available?
 ---@return boolean
 function source:is_available()
-	local fts = require("markview.spec").get({ "preview", "filetypes" }, { fallback = {}  });
+	if not package.loaded["markview"] then
+		--- Plugin not available.
+		return false;
+	end
+
+	local fts = require("markview.spec").get({ "preview", "filetypes" }, {
+		fallback = {},
+		ignore_enable = true
+	});
 	return vim.list_contains(fts, vim.bo.ft);
 end
 
@@ -17,7 +25,7 @@ end
 --- Characters that trigger the completion.
 ---@return string[]
 function source:get_trigger_characters()
-	return { "[", "!" }
+	return { "[", "!" };
 end
 
 --- Completion items.
@@ -32,10 +40,6 @@ function source:complete(params, callback)
 
 	local comp = {};
 
-	if vim.bo.ft ~= "markdown" then
-		goto not_md;
-	end
-
 	if before:match("^[ %>]+%s*%[%!%a*$") then
 		---+${func, Callout completion}
 		local items = spec.get({ "markdown", "block_quotes" }, { fallback = {} });
@@ -45,7 +49,7 @@ function source:complete(params, callback)
 				local label = "[!" .. key;
 				local desc = {
 					string.format("▌ %s",
-						item.preview
+						item.preview or ""
 					),
 					"▌ Block quote description."
 				};
@@ -55,7 +59,7 @@ function source:complete(params, callback)
 				end
 
 				local result = label;
-				label = label .. " » " .. item.preview;
+				label = label .. " » " .. (item.preview or "");
 
 				table.insert(comp, {
 					label = label,
@@ -76,7 +80,7 @@ function source:complete(params, callback)
 				local desc = {
 					"◇ List item,",
 					string.format("  %s Checkbox with",
-						item.text
+						item.text or ""
 					),
 					"    some text."
 				};
@@ -86,7 +90,7 @@ function source:complete(params, callback)
 				end
 
 				local result = label;
-				label = label .. " » " .. item.text;
+				label = label .. " » " .. (item.text or "");
 
 				table.insert(comp, {
 					label = label,
@@ -100,8 +104,6 @@ function source:complete(params, callback)
 	else
 		return;
 	end
-
-	::not_md::
 
 	callback(comp);
 end

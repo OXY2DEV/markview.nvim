@@ -484,7 +484,7 @@ presets.headings = {
 		heading_6 = {
 			style = "icon",
 
-			icon = "█ ", icon_hl = "MarkviewHeading5Sign",
+			icon = "█ ", icon_hl = "MarkviewHeading6Sign",
 			hl = "MarkviewHeading6",
 		}
 		---_

@@ -549,6 +549,7 @@ fts.styles = {
 	["sgmldecl"]                = { name = "SGML",                 sign = "󰯂 ", sign_hl = "MarkviewPalette6Sign", icon = "󰯂 ", icon_hl = "MarkviewIcon6", border_hl = "MarkviewPalette6Fg" },
 	["sgmllnx"]                 = { name = "SGML-linuxdoc",        sign = "󰯂 ", sign_hl = "MarkviewPalette2Sign", icon = "󰯂 ", icon_hl = "MarkviewIcon2", border_hl = "MarkviewPalette2Fg" },
 	["sh"]                      = { name = "Shell",                sign = " ", sign_hl = "MarkviewPalette4Sign", icon = " ", icon_hl = "MarkviewIcon4", border_hl = "MarkviewPalette4Fg" },
+	["shell"]                   = { name = "Shell",                sign = " ", sign_hl = "MarkviewPalette4Sign", icon = " ", icon_hl = "MarkviewIcon4", border_hl = "MarkviewPalette4Fg" },
 	["shada"]                   = { name = "Shada",                sign = "󰯂 ", sign_hl = "MarkviewPalette6Sign", icon = "󰯂 ", icon_hl = "MarkviewIcon6", border_hl = "MarkviewPalette6Fg" },
 	["sicad"]                   = { name = "SiCAD",                sign = "󰯂 ", sign_hl = "MarkviewPalette6Sign", icon = "󰯂 ", icon_hl = "MarkviewIcon6", border_hl = "MarkviewPalette6Fg" },
 	["sieve"]                   = { name = "Sieve",                sign = "󰯂 ", sign_hl = "MarkviewPalette6Sign", icon = "󰯂 ", icon_hl = "MarkviewIcon6", border_hl = "MarkviewPalette6Fg" },
@@ -727,13 +728,12 @@ fts.get = function (ft)
 	end
 
 	local spec = require("markview.spec");
-	local provider_name = spec.get({ "preview", "icon_provider" }, { fallback = "internal" });
+	local provider_name = spec.get({ "preview", "icon_provider" }, { fallback = "internal", ignore_enable = true });
 	local conf = {};
 
-	if provider_name == "devicons" and pcall(require, "nvim-web-devicons") then
-		conf.icon, conf.icon_hl = require("nvim-web-devicons").get_icon(
-			string.format("example.%s", ft),
-			nil,
+	if provider_name == "devicons" and  package.loaded["nvim-web-devicons"] then
+		conf.icon, conf.icon_hl = package.loaded["nvim-web-devicons"].get_icon_by_filetype(
+			_ft,
 			{ default = true }
 		);
 
@@ -742,17 +742,38 @@ fts.get = function (ft)
 		conf.sign = conf.icon;
 		conf.sign_hl = conf.icon_hl;
 		conf.border_hl = conf.icon_hl;
-	elseif provider_name == "mini" and pcall(require, "mini.icons") then
-		conf.icon, conf.icon_hl = require("mini.icons").get(
-			"file",
-			string.format("example.%s", ft)
+	elseif provider_name == "mini" and package.loaded["mini.icons"] then
+		--- Attempt to get icon from filetype directly.
+		---@type string, string, boolean
+		local ft_icon, ft_icon_hl, is_default = package.loaded["mini.icons"].get(
+			"filetype",
+			_ft
 		);
+
+		if is_default == true then
+			--- There is no icon for the filetype.
+			--- Attempt to get the icon from file path instead.
+
+			conf.icon, conf.icon_hl = package.loaded["mini.icons"].get(
+				"file",
+				string.format("example.%s", ft)
+			);
+		else
+			conf.icon = ft_icon;
+			conf.icon_hl = ft_icon_hl;
+		end
 
 		conf.icon = conf.icon .. " ";
 
 		conf.sign = conf.icon;
 		conf.sign_hl = conf.icon_hl;
 		conf.border_hl = conf.icon_hl;
+	elseif provider_name == '' then
+		local no_icon = ''
+		conf.icon = no_icon
+		conf.icon_hl = no_icon
+		conf.sign = no_icon
+		conf.hl = no_icon
 	else
 		conf = fts.styles[_ft] or fts.styles[ft] or fts.styles["default"];
 	end

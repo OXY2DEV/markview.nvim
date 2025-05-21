@@ -466,6 +466,12 @@ highlights.created = {};
 ---@param name string
 ---@param value table
 highlights.set_hl = function (name, value)
+	local found, v = pcall(vim.api.nvim_get_hl, 0, { name = name, create = false, link = false });
+
+	if found and vim.tbl_isempty(v) == false then
+		return;
+	end
+
 	local success, err = pcall(vim.api.nvim_set_hl, 0, name, value);
 
 	if success == false then
@@ -475,6 +481,8 @@ highlights.set_hl = function (name, value)
 
 			message = err
 		});
+	else
+		table.insert(highlights.created, name);
 	end
 end
 
@@ -482,6 +490,8 @@ end
 ---@param array { [string]: config.hl | fun(): config.hl }
 highlights.create = function (array)
 	---+${lua}
+
+	highlights.created = {};
 
 	if type(array) == "string" then
 		if not highlights[array] then
@@ -516,6 +526,19 @@ highlights.create = function (array)
 		end
 	end
 	---_
+end
+
+--- Destroys created highlight groups.
+--- Internal function! Should be only called
+--- manually!
+highlights.destroy = function ()
+	for _, name in ipairs(highlights.created) do
+		--- BUG, `nvim_set_hl()` gives unexpected
+		--- behavior.
+		vim.cmd("hi clear " .. name);
+	end
+
+	highlights.created = {};
 end
 
 --- Is the background "dark"?
@@ -693,7 +716,7 @@ highlights.dynamic = {
 		));
 		local h_fg = highlights.rgb_to_lab(highlights.get_property(
 			"fg",
-			{ "markdownH1", "@markup.heading.1.markdown", "@markup.heading" },
+			{ "@markup.heading.1.markdown", "@markup.heading", "markdownH1"  },
 			"#D20F39",
 			"#F38BA8"
 		));
@@ -755,7 +778,7 @@ highlights.dynamic = {
 		));
 		local h_fg = highlights.rgb_to_lab(highlights.get_property(
 			"fg",
-			{ "markdownH2", "@markup.heading.2.markdown", "@markup.heading" },
+			{ "@markup.heading.2.markdown", "@markup.heading", "markdownH2"  },
 			"#FAB387",
 			"#FE640B"
 		));
@@ -817,7 +840,7 @@ highlights.dynamic = {
 		));
 		local h_fg = highlights.rgb_to_lab(highlights.get_property(
 			"fg",
-			{ "markdownH3", "@markup.heading.3.markdown", "@markup.heading" },
+			{ "@markup.heading.3.markdown", "@markup.heading", "markdownH3"  },
 			"#DF8E1D",
 			"#F9E2AF"
 		));
@@ -879,7 +902,7 @@ highlights.dynamic = {
 		));
 		local h_fg = highlights.rgb_to_lab(highlights.get_property(
 			"fg",
-			{ "markdownH4", "@markup.heading.4.markdown", "@markup.heading" },
+			{ "@markup.heading.4.markdown", "@markup.heading", "markdownH4"  },
 			"#40A02B",
 			"#A6E3A1"
 		));
@@ -941,7 +964,7 @@ highlights.dynamic = {
 		));
 		local h_fg = highlights.rgb_to_lab(highlights.get_property(
 			"fg",
-			{ "markdownH5", "@markup.heading.5.markdown", "@markup.heading" },
+			{ "@markup.heading.5.markdown", "@markup.heading", "markdownH5"  },
 			"#209FB5",
 			"#74C7EC"
 		));
@@ -1003,7 +1026,7 @@ highlights.dynamic = {
 		));
 		local h_fg = highlights.rgb_to_lab(highlights.get_property(
 			"fg",
-			{ "markdownH6", "@markup.heading.6.markdown", "@markup.heading" },
+			{ "@markup.heading.6.markdown", "@markup.heading", "markdownH6"  },
 			"#7287FD",
 			"#B4BEFE"
 		));

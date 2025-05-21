@@ -1,27 +1,30 @@
+---@diagnostic disable: undefined-field
+
 local parser = {};
 local health = require("markview.health");
 
-parser.html = require("markview.parsers.html");
-parser.markdown = require("markview.parsers.markdown");
-parser.markdown_inline = require("markview.parsers.markdown_inline");
-parser.html = require("markview.parsers.html");
-parser.latex = require("markview.parsers.latex");
-parser.typst = require("markview.parsers.typst");
-parser.yaml = require("markview.parsers.yaml");
-
+---@type [ integer, integer ][] List of line ranges to ignore.
 parser.ignore_ranges = {};
 
---- Cached contents
+--- Cached contents.
 parser.cached = {};
 
+--- Creates ignore ranges from a list of parsed items.
+---@param language string
+---@param items table[]
+---@return [ integer, integer ][]
 parser.create_ignore_range = function (language, items)
+	---|fS
+
 	local _r = {};
 
 	if language == "markdown" then
+		-- Do not parse things inside code block.
 		for _, item in ipairs(items["markdown_code_block"] or {}) do
 			table.insert(_r, { item.range.row_start, item.range.row_end })
 		end
 	elseif language == "typst" then
+		-- Do not parse things inside raw block.
 		for _, item in ipairs(items["typst_raw_block"] or {}) do
 			table.insert(_r, { item.range.row_start, item.range.row_end })
 		end
@@ -29,9 +32,17 @@ parser.create_ignore_range = function (language, items)
 
 	parser.ignore_ranges = vim.list_extend(parser.ignore_ranges, _r);
 	return _r;
+
+	---|fE
 end
 
+--- Wrapper for `vim.tbl_extend()` that also extends lists.
+---@param tbl_1 table
+---@param tbl_2 table
+---@return table
 parser.deep_extend = function (tbl_1, tbl_2)
+	---|fS
+
 	for k, v in pairs(tbl_2) do
 		if tbl_1[k] then
 			if vim.islist(v) and vim.islist(tbl_1[k]) then
@@ -47,9 +58,16 @@ parser.deep_extend = function (tbl_1, tbl_2)
 	end
 
 	return tbl_1;
+
+	---|fE
 end
 
+--- Checks if a node should be ignored.
+---@param TSTree TSTree
+---@return boolean
 parser.should_ignore = function (TSTree)
+	---|fS
+
 	local t_start, _, t_stop, _ = TSTree:root():range();
 
 	for _, range in ipairs(parser.ignore_ranges) do
@@ -59,6 +77,8 @@ parser.should_ignore = function (TSTree)
 	end
 
 	return false;
+
+	---|fE
 end
 
 parser.content = {};
@@ -72,19 +92,36 @@ parser.sorted = {};
 ---@param to integer?
 ---@param cache boolean?
 parser.init = function (buffer, from, to, cache)
+	---|fS
+
+	local _parsers = {
+		markdown = require("markview.parsers.markdown");
+		markdown_inline = require("markview.parsers.markdown_inline");
+		html = require("markview.parsers.html");
+		latex = require("markview.parsers.latex");
+		typst = require("markview.parsers.typst");
+		yaml = require("markview.parsers.yaml");
+	};
+
 	-- Clear the previous contents
 	parser.content = {};
 	parser.sorted = {};
 	parser.ignore_ranges = {};
 
-	if
-		not pcall(vim.treesitter.get_parser, buffer) or
-		not vim.treesitter.get_parser(buffer)
-	then
+	if not pcall(vim.treesitter.get_parser, buffer) then
+		-- Couldn't call parser retrieval function.
 		return parser.content, parser.sorted;
 	end
 
-	---+${lua, Announce start of parsing}
+    vim.treesitter.get_parser(buffer):parse(true);
+	local root_parser = vim.treesitter.get_parser(buffer);
+
+	if not root_parser then
+		-- Can't find root parser.
+		return parser.content, parser.sorted;
+	end
+
+	---|fS "chore: Announce start of parsing"
 	---@type integer Start time
 	local start = vim.uv.hrtime();
 
@@ -93,10 +130,7 @@ parser.init = function (buffer, from, to, cache)
 		message = string.format("Parsing(start): %d", buffer)
 	});
 	health.__child_indent_in();
-	---_
-
-    vim.treesitter.get_parser(buffer):parse(true);
-	local root_parser = vim.treesitter.get_parser(buffer);
+	---|fE
 
 	root_parser:for_each_tree(function (TSTree, language_tree)
 		language_tree:parse(true);
@@ -104,8 +138,8 @@ parser.init = function (buffer, from, to, cache)
 		local language = language_tree:lang();
 		local content, sorted = {}, {};
 
-		if parser[language] and not parser.should_ignore(TSTree) then
-			content, sorted = parser[language].parse(buffer, TSTree, from, to);
+		if _parsers[language] and not parser.should_ignore(TSTree) then
+			content, sorted = _parsers[language].parse(buffer, TSTree, from, to);
 			parser.create_ignore_range(language, sorted)
 		end
 
@@ -117,7 +151,7 @@ parser.init = function (buffer, from, to, cache)
 		parser.cached[buffer] = parser.sorted;
 	end
 
-	---+${lua, Announce end of parsing}
+	---|fS "chore: Announce end of parsing"
 	---@type integer End time
 	local now = vim.uv.hrtime();
 
@@ -126,10 +160,14 @@ parser.init = function (buffer, from, to, cache)
 		level = 3,
 		message = string.format("Parsing(end, %dms): %d", (now - start) / 1e6, buffer)
 	});
-	---_
+	---|fE
+
 	return parser.content, parser.sorted;
+
+	---|fE
 end
 
+-- Chore: This is for backwards compatibility.
 parser.parse = parser.init;
 
 return parser;

@@ -1,0 +1,15 @@
+{
+	"completion.callSnippet": "Both",
+	"completion.displayContext": 5,
+	"completion.keywordSnippet": "Disable",
+
+	"diagnostics.globals": [ "vim" ],
+	"hint.arrayIndex": "Enable",
+	"hint.enable": true,
+	"hint.setType": true,
+
+	"hover.enumsLimit": 10,
+	"hover.previewFields": 10,
+
+	"runtime.version": "LuaJIT"
+}
