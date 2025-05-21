@@ -167,12 +167,17 @@ local function set_ts_directive ()
 	---|fE
 end
 
+-- BUG, Certain plugin(s) will try to call
+-- the directives before `VimEnter`.
+--
+-- Do not lazy load the directive.
+set_ts_directive();
+
 vim.api.nvim_create_autocmd("VimEnter", {
 	group = augroup,
 	callback = function ()
 		require("markview.highlights").setup();
 
-		set_ts_directive();
 		register_blink_source();
 		register_cmp_source();
 	end
