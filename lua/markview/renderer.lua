@@ -414,6 +414,15 @@ end
 renderer.render = function (buffer, parsed_content)
 	---|fS
 
+	local _renderers = {
+		html = require("markview.renderers.html");
+		markdown = require("markview.renderers.markdown");
+		markdown_inline = require("markview.renderers.markdown_inline");
+		latex = require("markview.renderers.latex");
+		yaml = require("markview.renderers.yaml");
+		typst = require("markview.renderers.typst");
+	};
+
 	renderer.cache = {};
 
 	---|fS, "chore, Announce start of rendering"
@@ -430,8 +439,8 @@ renderer.render = function (buffer, parsed_content)
 	---|fE
 
 	for lang, content in pairs(parsed_content) do
-		if renderer[lang] then
-			local c = renderer[lang].render(buffer, content);
+		if _renderers[lang] then
+			local c = _renderers[lang].render(buffer, content);
 			renderer.cache = vim.tbl_extend("force", renderer.cache, c or {});
 		end
 	end
@@ -448,8 +457,8 @@ renderer.render = function (buffer, parsed_content)
 	---|fE
 
 	for lang, content in pairs(renderer.cache) do
-		if renderer[lang] then
-			renderer[lang].post_render(buffer, content);
+		if _renderers[lang] then
+			_renderers[lang].post_render(buffer, content);
 		end
 	end
 
@@ -503,8 +512,8 @@ renderer.clear = function (buffer, from, to)
 	---|fE
 
 	for _, lang in ipairs(langs) do
-		if renderer[lang] then
-			renderer[lang].clear(buffer, from, to);
+		if _renderers[lang] then
+			_renderers[lang].clear(buffer, from, to);
 		end
 	end
 
