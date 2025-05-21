@@ -14,7 +14,8 @@ local entities = {};
 --- Map for entity number & entity.
 ---@type { [integer]: string }
 entities.codes = {
-	---+${lua}
+	---|fS
+
 	[32] = "",
 	[33] = "!",
 	[34] = '"',
@@ -868,13 +869,15 @@ entities.codes = {
 	[10621] = "⥽",
 	[10622] = "⥾",
 	[10623] = "⥿"
-	---_
+
+	---|fE
 };
 
 --- Map for entity name & entity value.
 ---@type { [string]: string }
 entities.names = {
-	---+${lua}
+	---|fS
+
 	AElig = "Æ",
 	Aacute = "Á",
 	Abreve = "Ă",
@@ -1661,7 +1664,8 @@ entities.names = {
 	zeta = "ζ",
 	ziglarr = "⇜",
 	zigrarr = "⇝"
-	---_
+
+	---|fE
 };
 
 --- Checks for missing entities.

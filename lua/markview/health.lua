@@ -35,14 +35,15 @@ end
 ---@param handler string | nil
 ---@param opts table
 health.notify = function (handler, opts)
-	---+${lua}
+	---|fS
 
 	--- Wrapper for tostring()
 	---@param tbl string | [ string, string? ][]
 	---@return string
 	local function to_string(tbl)
-		---+${lua}
-		if vim.islist(tbl) == false then
+		---|fS
+
+		if vim.islist(tbl --[[ @as table ]]) == false then
 			return tostring(tbl);
 		end
 
@@ -61,11 +62,12 @@ health.notify = function (handler, opts)
 		end
 
 		return _t;
-		---_
+
+		---|fE
 	end
 
 	if handler == "deprecation" then
-		---+${lua}
+		---|fS
 
 		---@class notify.deprecation
 		---
@@ -117,9 +119,10 @@ health.notify = function (handler, opts)
 			alternative = opts.alter,
 			tip = opts.tip and to_string(opts.tip) or nil
 		});
-		---_
+
+		---|fE
 	elseif handler == "type" then
-		---+${lua}
+		---|fS
 
 		---@class notify.type
 		---
@@ -169,9 +172,10 @@ health.notify = function (handler, opts)
 			received = opts.got
 		});
 
-		---_
+
+		---|fE
 	elseif handler == "hl" then
-		---+${lua}
+		---|fS
 
 		---@class notify.hl
 		---
@@ -213,9 +217,10 @@ health.notify = function (handler, opts)
 
 			message = opts.message
 		});
-		---_
+
+		---|fE
 	elseif handler == "trace" then
-		---+${lua}
+		---|fS
 
 		--- Tracing messages.
 		---@class notify.trace
@@ -291,17 +296,18 @@ health.notify = function (handler, opts)
 			notification = notif or {},
 			level = opts.level
 		})
-		---_
+
+		---|fE
 	else
 		---@cast opts { message: [ string, string? ][] }
 		vim.api.nvim_echo(vim.list_extend({ { " markview.nvim: ", "DiagnosticInfo" } }, opts.message), true, {});
 	end
-	---_
+	---|fE
 end
 
 --- Sets up the buffer & window for trace-view
 local function trace_view_setup ()
-	---+${lua}
+	---|fS
 
 	if not health.buffer then
 		health.buffer = vim.api.nvim_create_buf(false, true);
@@ -370,12 +376,12 @@ local function trace_view_setup ()
 			pcall(vim.api.nvim_win_close, health.window, true);
 		end
 	});
-	---_
+	---|fE
 end
 
 --- Creates a new entry inside the trace-view buffer.
 local function create_entry(l)
-	---+${lua}
+	---|fS
 
 	if not health.log[l] then
 		return;
@@ -406,12 +412,12 @@ local function create_entry(l)
 		);
 	end
 
-	---_
+	---|fE
 end
 
 --- Opens trace-view window.
 health.trace_open = function (from, to)
-	---+${lua}
+	---|fS
 
 	trace_view_setup();
 	vim.api.nvim_win_set_config(health.window, {
@@ -501,7 +507,7 @@ health.trace_open = function (from, to)
 		end
 	});
 
-	---_
+	---|fE
 end
 
 --- Holds icons for different filetypes.
@@ -517,7 +523,7 @@ health.supported_languages = {
 
 --- Health check function.
 health.check = function ()
-	---+${lua}
+	---|fS
 
 	local spec = require("markview.spec");
 	local symbols = require("markview.symbols");
@@ -602,7 +608,7 @@ health.check = function ()
 				vim.health.info(string.format("Tip: %s", entry.tip));
 			end
 		elseif entry.kind == "type_error" then
-			vim.health.warn(string.format("%s expects `%s`, not `%s`.", entrtype_errory.option, entry.requires, entry.receives));
+			vim.health.warn(string.format("%s expects `%s`, not `%s`.", entry.option, entry.requires, entry.receives));
 		elseif entry.kind == "hl" then
 			vim.health.warn(string.format("Failed to set highlight: `%s`. Error: %s.", entry.group, entry.message));
 		end
@@ -650,7 +656,8 @@ health.check = function ()
 	for font, _ in pairs(symbols.fonts) do
 		vim.health.info(string.format("%-20s" , "`" .. font .. "`") .. symbols.tostring(font, "ABCDEFGHIJKLMNOPQRSTUVWXYZ abcdefghijklmnopqrstuvwxyz 0123456789"));
 	end
-	---_
+
+	---|fE
 end
 
 return health;
