@@ -1065,6 +1065,7 @@ spec.default = {
 			---+ ${class, Tables}
 
 			enable = true,
+			strict = false,
 
 			col_min_width = 10,
 			block_decorator = true,

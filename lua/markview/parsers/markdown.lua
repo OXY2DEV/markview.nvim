@@ -610,6 +610,7 @@ markdown.table = function (_, _, text, range)
 	---+${lua}
 
 	local header, separator, rows = {}, {}, {};
+	local has_alignment_markers = false;
 	local aligns = {};
 
 	if text[1] and text[1]:match("^%s+") then
@@ -647,10 +648,13 @@ markdown.table = function (_, _, text, range)
 				end
 
 				if col:match("^%s*:") and col:match(":%s*$") then
+					has_alignment_markers = true;
 					table.insert(aligns, "center");
 				elseif col:match("^%s*:") then
+					has_alignment_markers = true;
 					table.insert(aligns, "left");
 				elseif col:match(":%s*$") then
+					has_alignment_markers = true;
 					table.insert(aligns, "right");
 				else
 					table.insert(aligns, "default");
@@ -674,6 +678,7 @@ markdown.table = function (_, _, text, range)
 		border_overlap = border_overlap,
 
 		alignments = aligns,
+		has_alignment_markers = has_alignment_markers,
 
 		header = header,
 		separator = separator,

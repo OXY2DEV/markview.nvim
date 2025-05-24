@@ -812,6 +812,7 @@ M.__reference_definitions_range = {
 ---@class markdown.tables
 ---
 ---@field enable boolean
+---@field strict boolean When `true`, leading & trailing whitespaces are not considered part of the cell.
 ---
 ---@field block_decorator boolean
 ---@field use_virt_lines boolean
@@ -832,6 +833,7 @@ M.markdown_tables = {
 ---@class markdown.tables_static
 ---
 ---@field enable boolean
+---@field strict boolean When `true`, leading & trailing whitespaces are not considered part of the cell.
 ---
 ---@field block_decorator boolean Whether to draw top & bottom border.
 ---@field use_virt_lines boolean Whether to use virtual lines for the borders.
@@ -870,6 +872,7 @@ M.tables_parts = {
 ---@class __markdown.tables
 ---
 ---@field class "markdown_table"
+---@field has_alignment_markers boolean Are there any alignment markers(e.g. `:-`, `-:`, `:-:`)?
 ---
 ---@field top_border boolean Can we draw the top border?
 ---@field bottom_border boolean Can we draw the bottom border?

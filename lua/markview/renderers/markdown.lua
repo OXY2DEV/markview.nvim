@@ -2365,6 +2365,15 @@ markdown.table = function (buffer, item)
 		end
 	end
 
+	---@type boolean
+	local strict = config.strict ~= nil and config.strict or true;
+
+	if item.has_alignment_markers == false then
+		-- Disable strict mode if no alignment
+		-- markers are found.
+		strict = false;
+	end
+
 	---@type integer[] Visible column widths(may be inaccurate).
 	local col_widths = {};
 
@@ -2646,6 +2655,31 @@ markdown.table = function (buffer, item)
 			---+${custom, Handle columns of text inside the header}
 			local visible_width = visible_texts.header[c];
 			local column_width  = col_widths[c];
+
+			if strict then
+				local before = string.match(part.text, "^%s*");
+				local after = string.match(part.text, "%s*$");
+
+				if #before > 1 then
+					vim.api.nvim_buf_set_extmark(buffer, markdown.ns, range.row_start, range.col_start + part.col_start + 1, {
+						undo_restore = false, invalidate = true,
+						end_col = range.col_start + part.col_start + #before,
+						conceal = ""
+					});
+
+					visible_width = visible_width - (#before - 1);
+				end
+
+				if #after > 1 then
+					vim.api.nvim_buf_set_extmark(buffer, markdown.ns, range.row_start, range.col_start + part.col_end - #after, {
+						undo_restore = false, invalidate = true,
+						end_col = range.col_start + part.col_end - 1,
+						conceal = ""
+					});
+
+					visible_width = visible_width - (#after - 1);
+				end
+			end
 
 			local top, top_hl = get_border("top", 2);
 
@@ -3040,6 +3074,31 @@ markdown.table = function (buffer, item)
 				local visible_width = visible_texts.rows[r][c];
 				local column_width  = col_widths[c];
 
+				if strict then
+					local before = string.match(part.text, "^%s*");
+					local after = string.match(part.text, "%s*$");
+
+					if #before > 1 then
+						vim.api.nvim_buf_set_extmark(buffer, markdown.ns, range.row_start + (r + 1), range.col_start + part.col_start + 1, {
+							undo_restore = false, invalidate = true,
+							end_col = range.col_start + part.col_start + #before,
+							conceal = ""
+						});
+
+						visible_width = visible_width - (#before - 1);
+					end
+
+					if #after > 1 then
+						vim.api.nvim_buf_set_extmark(buffer, markdown.ns, range.row_start + (r + 1), range.col_start + part.col_end - #after, {
+							undo_restore = false, invalidate = true,
+							end_col = range.col_start + part.col_end - 1,
+							conceal = ""
+						});
+
+						visible_width = visible_width - (#after - 1);
+					end
+				end
+
 				if visible_width < column_width then
 					if item.alignments[c] == "default" or item.alignments[c] == "left" then
 						vim.api.nvim_buf_set_extmark(buffer, markdown.ns, range.row_start + (r + 1), range.col_start + part.col_end, {
@@ -3216,6 +3275,31 @@ markdown.table = function (buffer, item)
 			---+${custom, Handle columns of text inside the last row}
 			local visible_width = visible_texts.rows[#visible_texts.rows][c];
 			local column_width  = col_widths[c];
+
+			if strict then
+				local before = string.match(part.text, "^%s*");
+				local after = string.match(part.text, "%s*$");
+
+				if #before > 1 then
+					vim.api.nvim_buf_set_extmark(buffer, markdown.ns, range.row_end - 1, range.col_start + part.col_start + 1, {
+						undo_restore = false, invalidate = true,
+						end_col = range.col_start + part.col_start + #before,
+						conceal = ""
+					});
+
+					visible_width = visible_width - (#before - 1);
+				end
+
+				if #after > 1 then
+					vim.api.nvim_buf_set_extmark(buffer, markdown.ns, range.row_end - 1, range.col_start + part.col_end - #after, {
+						undo_restore = false, invalidate = true,
+						end_col = range.col_start + part.col_end - 1,
+						conceal = ""
+					});
+
+					visible_width = visible_width - (#after - 1);
+				end
+			end
 
 			local bottom, bottom_hl = bottom_part(2);
 
