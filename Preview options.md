@@ -15,6 +15,7 @@ Options that change how previews are shown.
 ---
 --- Icon provider.
 ---@field icon_provider?
+---| "" Disable icons.
 ---| "internal" Internal icon provider.
 ---| "devicons" `nvim-web-devicons` as icon provider.
 ---| "mini" `mini.icons` as icon provider.
@@ -246,6 +247,7 @@ Changes the icon provider used for drawing icons. Currently supported providers 
 ```lua
 --- Icon provider.
 ---@field icon_provider?
+---| "" Disable icons.
 ---| "internal" Internal icon provider.
 ---| "devicons" `nvim-web-devicons` as icon provider.
 ---| "mini" `mini.icons` as icon provider.
