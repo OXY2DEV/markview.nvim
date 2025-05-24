@@ -2993,9 +2993,9 @@ markdown.table = function (buffer, item)
 				---+${custom, Handle | in the header}
 				local border, border_hl = get_border("row", 2);
 
-				if s == 1 then
+				if r == 1 then
 					border, border_hl = get_border("row", 1);
-				elseif s == #item.separator then
+				elseif r == #item.separator then
 					border, border_hl = get_border("row", 3);
 				end
 
