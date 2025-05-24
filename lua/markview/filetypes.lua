@@ -768,12 +768,14 @@ fts.get = function (ft)
 		conf.sign = conf.icon;
 		conf.sign_hl = conf.icon_hl;
 		conf.border_hl = conf.icon_hl;
-	elseif provider_name == '' then
-		local no_icon = ''
-		conf.icon = no_icon
-		conf.icon_hl = no_icon
-		conf.sign = no_icon
-		conf.hl = no_icon
+	elseif provider_name == "" then
+		local no_icon = "";
+
+		conf.icon = no_icon;
+		conf.icon_hl = "MarkviewIcon0";
+
+		conf.sign = no_icon;
+		conf.hl = no_icon;
 	else
 		conf = fts.styles[_ft] or fts.styles[ft] or fts.styles["default"];
 	end

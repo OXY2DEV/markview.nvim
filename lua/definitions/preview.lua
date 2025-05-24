@@ -17,6 +17,7 @@ local M = {};
 ---
 --- Icon provider.
 ---@field icon_provider?
+---| "" Disable icons.
 ---| "internal" Internal icon provider.
 ---| "devicons" `nvim-web-devicons` as icon provider.
 ---| "mini" `mini.icons` as icon provider.
