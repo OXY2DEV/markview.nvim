@@ -260,6 +260,17 @@ require("markview").setup({
 });
 ```
 
+## ✨ No nerd font
+
+> This has been taken from [#350](https://github.com/OXY2DEV/markview.nvim/issues/350)
+
+Copy this to your `config` option,
+
+```lua
+local presets = require("markview.presets");
+require("markview").setup(presets.no_nerd_fonts);
+```
+
 ------
 
 Also available in vimdoc, `:h markview.nvim-advanced`

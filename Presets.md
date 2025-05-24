@@ -142,6 +142,16 @@ require("markview").setup({
 
 <img src="https://github.com/OXY2DEV/markview.nvim/blob/images/v25/wiki/presets-tables.solid.png">
 
+## 🔖 No nerd fonts presets
+
+### 📚 Use:
+
+```lua
+local presets = require("markview.presets");
+
+require("markview").setup(presets.no_nerd_fonts);
+```
+
 ------
 
 Also available in vimdoc, `:h markview.nvim-presets`.
