@@ -732,4 +732,475 @@ presets.tables = {
 	}
 };
 
+------------------------------------------------------------------------------
+
+local links = {
+	default = {
+		icon = "↗ ",
+	},
+
+	["github%.com/[%a%d%-%_%.]+%/?$"] = {
+		icon = "↗ ",
+	},
+	["github%.com/[%a%d%-%_%.]+/[%a%d%-%_%.]+%/?$"] = {
+		icon = "↗ ",
+	},
+	["github%.com/[%a%d%-%_%.]+/[%a%d%-%_%.]+/tree/[%a%d%-%_%.]+%/?$"] = {
+		icon = "↗ ",
+	},
+	["github%.com/[%a%d%-%_%.]+/[%a%d%-%_%.]+/commits/[%a%d%-%_%.]+%/?$"] = {
+		icon = "↗ ",
+	},
+
+	["github%.com/[%a%d%-%_%.]+/[%a%d%-%_%.]+%/releases$"] = {
+		icon = "↗ ",
+	},
+	["github%.com/[%a%d%-%_%.]+/[%a%d%-%_%.]+%/tags$"] = {
+		icon = "↗ ",
+	},
+	["github%.com/[%a%d%-%_%.]+/[%a%d%-%_%.]+%/issues$"] = {
+		icon = "↗ ",
+	},
+	["github%.com/[%a%d%-%_%.]+/[%a%d%-%_%.]+%/pulls$"] = {
+		icon = "↗ ",
+	},
+
+	["github%.com/[%a%d%-%_%.]+/[%a%d%-%_%.]+%/wiki$"] = {
+		icon = "↗ ",
+	},
+
+	["developer%.mozilla%.org"] = {
+		icon = "↗ ",
+	},
+
+	["w3schools%.com"] = {
+		icon = "↗ ",
+	},
+
+	["stackoverflow%.com"] = {
+		icon = "↗ ",
+	},
+
+	["reddit%.com"] = {
+		icon = "↗ ",
+	},
+
+	["github%.com"] = {
+		icon = "↗ ",
+	},
+
+	["gitlab%.com"] = {
+		icon = "↗ ",
+	},
+
+	["dev%.to"] = {
+		icon = "↗ ",
+	},
+
+	["codepen%.io"] = {
+		icon = "↗ ",
+	},
+
+	["replit%.com"] = {
+		icon = "↗ ",
+	},
+
+	["jsfiddle%.net"] = {
+		icon = "↗ ",
+	},
+
+	["npmjs%.com"] = {
+		icon = "↗ ",
+	},
+
+	["pypi%.org"] = {
+		icon = "↗ ",
+	},
+
+	["mvnrepository%.com"] = {
+		icon = "↗ ",
+	},
+
+	["medium%.com"] = {
+		icon = "↗ ",
+	},
+
+	["linkedin%.com"] = {
+		icon = "↗ ",
+	},
+
+	["news%.ycombinator%.com"] = {
+		icon = "↗ ",
+	},
+};
+
+presets.no_nerd_fonts = {
+	preview = {
+		icon_provider = "",
+	},
+
+	markdown = {
+		block_quotes = {
+			["ABSTRACT"] = {
+				preview = "Abstract ",
+				icon = "",
+			},
+			["SUMMARY"] = {
+				preview = "Summary ",
+				icon = "",
+			},
+			["TLDR"] = {
+				preview = "Tldr ",
+				icon = "",
+			},
+			["TODO"] = {
+				preview = "Todo ",
+				icon = "",
+			},
+			["INFO"] = {
+				preview = "Info ",
+				icon = "",
+			},
+			["SUCCESS"] = {
+				preview = "Success ",
+				icon = "",
+			},
+			["CHECK"] = {
+				preview = "Check ",
+				icon = "",
+			},
+			["DONE"] = {
+				preview = "Done ",
+				icon = "",
+			},
+			["QUESTION"] = {
+				preview = "Question ",
+				icon = "",
+			},
+			["HELP"] = {
+				preview = "Help" ,
+				icon = "",
+			},
+			["FAQ"] = {
+				preview = "Faq ",
+				icon = "",
+			},
+			["FAILURE"] = {
+				preview = "Failure ",
+				icon = "",
+			},
+			["FAIL"] = {
+				preview = "Fail ",
+				icon = "",
+			},
+			["MISSING"] = {
+				preview = "Missing ",
+				icon = "",
+			},
+			["DANGER"] = {
+				preview = "Danger ",
+				icon = "",
+			},
+			["ERROR"] = {
+				preview = "Error ",
+				icon = "",
+			},
+			["BUG"] = {
+				preview = "Bug ",
+				icon = "",
+			},
+			["EXAMPLE"] = {
+				preview = "Example ",
+				icon = "",
+			},
+			["QUOTE"] = {
+				preview = "Quote ",
+				icon = "",
+			},
+			["CITE"] = {
+				preview = "Cite ",
+				icon = "",
+			},
+			["HINT"] = {
+				preview = "Hint ",
+				icon = "",
+			},
+			["ATTENTION"] = {
+				preview = "Attention ",
+				icon = "",
+			},
+
+
+			["NOTE"] = {
+				preview = " Note ",
+			},
+			["TIP"] = {
+				preview = " Tip ",
+			},
+			["IMPORTANT"] = {
+				preview = " Important ",
+			},
+			["WARNING"] = {
+				preview = " Warning ",
+			},
+			["CAUTION"] = {
+				preview = " Caution",
+			}
+		},
+
+		headings = {
+			heading_1 = {
+				sign = "",
+				icon = ""
+			},
+			heading_2 = {
+				sign = "",
+				icon = ""
+			},
+			heading_3 = {
+				icon = ""
+			},
+			heading_4 = {
+				icon = ""
+			},
+			heading_5 = {
+				icon = ""
+			},
+			heading_6 = {
+				icon = ""
+			},
+
+			setext_1 = {
+				sign = "",
+				icon = ""
+			},
+			setext_2 = {
+				sign = "",
+				icon = ""
+			}
+		},
+
+		reference_definitions = links,
+	},
+	markdown_inline = {
+		block_references = {
+			default = {
+				icon = "↗ ",
+			},
+		},
+
+		checkboxes = {
+			checked = { text = "✔" },
+			unchecked = { text = "✘" },
+
+			["/"] = { text = "/" },
+			[">"] = { text = ">" },
+			["<"] = { text = "<" },
+			["-"] = { text = "-" },
+
+			["?"] = { text = "?" },
+			["!"] = { text = "!" },
+			["*"] = { text = "*" },
+			['"'] = { text = '"' },
+			["l"] = { text = "l" },
+			["b"] = { text = "b" },
+			["i"] = { text = "i" },
+			["S"] = { text = "S" },
+			["I"] = { text = "I" },
+			["p"] = { text = "p" },
+			["c"] = { text = "c" },
+			["f"] = { text = "f" },
+			["k"] = { text = "k" },
+			["w"] = { text = "w" },
+			["u"] = { text = "u" },
+			["d"] = { text = "d" },
+		},
+
+		emails = {
+			default = {
+				icon = "📨 ",
+			},
+
+			["%@gmail%.com$"] = {
+				icon = "📨 ",
+			},
+
+			["%@outlook%.com$"] = {
+				icon = "📨 ",
+			},
+
+			["%@yahoo%.com$"] = {
+				icon = "📨 ",
+			},
+
+			["%@icloud%.com$"] = {
+				icon = "📨 ",
+			}
+		},
+
+		embed_files = {
+			default = {
+				icon = "↗ ",
+			}
+		},
+
+		footnotes = {
+			default = {
+				icon = "↗ ",
+			},
+
+			["^%d+$"] = {
+				icon = "↗ ",
+			}
+		},
+
+		hyperlinks = links,
+
+		images = {
+			default = {
+				icon = "🌄 ",
+			},
+
+			["%.svg$"] = { icon = "🌄 " },
+			["%.png$"] = { icon = "🌄 " },
+			["%.jpg$"] = { icon = "🌄 " },
+			["%.gif$"] = { icon = "🌄 " },
+			["%.pdf$"] = { icon = "🌄 " }
+		},
+
+		internal_links = {
+			default = {
+				icon = "↗ ",
+			},
+		},
+
+		uri_autolinks = links,
+	},
+	html = {
+		container_elements = {
+			["^a$"] = {
+				on_opening_tag = { conceal = "", virt_text_pos = "inline", virt_text = { { "↗ ", "MarkviewHyperlink" } } },
+			},
+		},
+
+		void_elements = {
+			["^br$"] = {
+				on_node = {
+					virt_text = {
+						{ "⤵", "Comment" },
+					}
+				}
+			},
+		}
+	},
+	latex = {
+		blocks = {
+			text = " LaTeX ",
+		},
+
+		commands = {
+			["vec"] = {
+				condition = function (item)
+					return #item.args == 1;
+				end,
+				on_command = {
+					conceal = ""
+				},
+
+				on_args = {
+					{
+						on_before = function (item)
+							return {
+								end_col = item.range[2] + 1,
+								conceal = "",
+
+								virt_text_pos = "inline",
+								virt_text = {
+									{ "", "MarkviewPalette2Fg" },
+									{ "(", "@punctuation.bracket.latex" }
+								},
+
+								hl_mode = "combine"
+							}
+						end,
+
+						after_offset = function (range)
+							return { range[1], range[2], range[3], range[4] - 1 };
+						end,
+						on_after = function (item)
+							return {
+								end_col = item.range[4],
+								conceal = "",
+
+								virt_text_pos = "inline",
+								virt_text = {
+									{ ")", "@punctuation.bracket" }
+								},
+
+								hl_mode = "combine"
+							}
+						end
+					}
+				}
+			},
+		},
+	},
+	typst = {
+		code_blocks = {
+			text = "Code",
+		},
+
+		headings = {
+			heading_1 = {
+				sign = "",
+				icon = " ",
+			},
+			heading_2 = {
+				sign = "",
+				icon = " "
+			},
+			heading_3 = {
+				icon = " "
+			},
+			heading_4 = {
+				icon = " "
+			},
+			heading_5 = {
+				icon = " "
+			},
+			heading_6 = {
+				icon = " "
+			}
+		},
+
+		labels = {
+			default = {
+				icon = "◪ ",
+			}
+		},
+
+
+		math_blocks = {
+			text = " Math ",
+		},
+
+		reference_links = {
+			default = {
+				icon = "↗ ",
+			},
+		},
+
+		terms = {
+			default = {
+				text = "↗ ",
+			},
+		},
+
+		url_links = links
+	},
+	yaml = {
+		enable = false,
+	}
+};
+
 return presets;

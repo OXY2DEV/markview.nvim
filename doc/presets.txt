@@ -104,4 +104,14 @@ Pre-defined configurations to take inspiration from.
 
     - solid
 
+------------------------------------------------------------------------------
+🔖 No nerd fonts preset                  *markview.nvim-presets.no_nerd_fonts*
+
+📚 Use: ~
+>lua
+    local presets = require("markview.presets");
+
+    require("markview").setup(presets.no_nerd_font);
+<
+
 vim:ft=help:tw=78:

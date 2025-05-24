@@ -67,6 +67,7 @@ markview.nvim-migration	migration.txt	/*markview.nvim-migration*
 markview.nvim-presets	presets.txt	/*markview.nvim-presets*
 markview.nvim-presets.headings	presets.txt	/*markview.nvim-presets.headings*
 markview.nvim-presets.hr	presets.txt	/*markview.nvim-presets.hr*
+markview.nvim-presets.no_nerd_fonts	presets.txt	/*markview.nvim-presets.no_nerd_fonts*
 markview.nvim-presets.tables	presets.txt	/*markview.nvim-presets.tables*
 markview.nvim-presets.use	presets.txt	/*markview.nvim-presets.use*
 markview.nvim-preview	preview_options.txt	/*markview.nvim-preview*
