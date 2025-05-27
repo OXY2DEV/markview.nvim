@@ -1,5 +1,32 @@
 # Changelog
 
+## [25.8.0](https://github.com/OXY2DEV/markview.nvim/compare/v25.7.0...v25.8.0) (2025-05-27)
+
+
+### Features
+
+* **gx:** Added option to disable `gx` mapping ([a9584cd](https://github.com/OXY2DEV/markview.nvim/commit/a9584cd5e87341c78162dfafeb1ac03f13d1f910)), closes [#346](https://github.com/OXY2DEV/markview.nvim/issues/346)
+* **markdown:** Added option to make table parsing strict ([68c9603](https://github.com/OXY2DEV/markview.nvim/commit/68c9603b6f88fd962444f8579024418fe5e170f1)), closes [#349](https://github.com/OXY2DEV/markview.nvim/issues/349)
+* **presets:** Added a preset for regular font users ([b88d735](https://github.com/OXY2DEV/markview.nvim/commit/b88d735155123d7b756f6521488551dafb9d8ba7)), closes [#350](https://github.com/OXY2DEV/markview.nvim/issues/350)
+
+
+### Bug Fixes
+
+* **blink:** Updated condition for blink.cmp source ([e966d1f](https://github.com/OXY2DEV/markview.nvim/commit/e966d1f7e230fceba6f793e27c6ac491ebc3d4cb))
+* **cmp, blink:** Fixed an issue with completion sources not loading ([183c0ed](https://github.com/OXY2DEV/markview.nvim/commit/183c0ede469be11a88a26094754a0bf596a140e9)), closes [#351](https://github.com/OXY2DEV/markview.nvim/issues/351)
+* **cmp:** Updated condition for nvim-cmp source ([e966d1f](https://github.com/OXY2DEV/markview.nvim/commit/e966d1f7e230fceba6f793e27c6ac491ebc3d4cb))
+* **core:** Minor load time improvements ([91e9a51](https://github.com/OXY2DEV/markview.nvim/commit/91e9a511a4693cdb263f9fea57a16bfc0bbf1465))
+* **core:** Reduced initial load time of parsers & renderers ([caa689a](https://github.com/OXY2DEV/markview.nvim/commit/caa689a1defabe56752f5d1dcea35a2c4eb97c0f))
+* **filetypes:** Added support for `shell` filetype ([165121d](https://github.com/OXY2DEV/markview.nvim/commit/165121d0ec0ba8d3b68576eedb97c1dbc4f2301a))
+* **hl:** Colorscheme highlight groups are now respected: ([23f8bda](https://github.com/OXY2DEV/markview.nvim/commit/23f8bda5a172287c3423a3ffe7640efefa52a48b))
+* **hl:** Fixed how highlight group definition is checked ([cd47dc5](https://github.com/OXY2DEV/markview.nvim/commit/cd47dc5de88de0d50ce5eb8f30a84719d792c4c4))
+* **icons:** Fixed option to disable icons ([1aa42c9](https://github.com/OXY2DEV/markview.nvim/commit/1aa42c981d305b4379e44eee00a78ff737858144)), closes [#350](https://github.com/OXY2DEV/markview.nvim/issues/350)
+* **list_items:** Fixed incorrect character for list item markers ([2089a0f](https://github.com/OXY2DEV/markview.nvim/commit/2089a0f08dd3f83eb5f348c0080d70a6b87c7b98))
+* **markdown:** Fixed variable name for table rows ([8bac6e9](https://github.com/OXY2DEV/markview.nvim/commit/8bac6e9463360450edf34f1a45e146ebca39e723))
+* **renderer:** Fixed a bug with renderers not working ([f0a6f99](https://github.com/OXY2DEV/markview.nvim/commit/f0a6f99b2c979a3394ea5d31eb41ba5dbabe0516))
+* **spec:** Minor load time improvement when calling `setup()` ([11e2cc3](https://github.com/OXY2DEV/markview.nvim/commit/11e2cc3ee127557f84ba7f21ff53849d0e2587ab))
+* **ts_directive:** Tree-sitter directive is no longer lazy loaded ([03687b5](https://github.com/OXY2DEV/markview.nvim/commit/03687b5f707aca81d21e9f20e24557d55f6930be)), closes [#347](https://github.com/OXY2DEV/markview.nvim/issues/347)
+
 ## [25.7.0](https://github.com/OXY2DEV/markview.nvim/compare/v25.6.0...v25.7.0) (2025-05-07)
 
 
