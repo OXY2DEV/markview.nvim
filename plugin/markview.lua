@@ -6,7 +6,7 @@ local function register_blink_source ()
 
 	local blink = package.loaded["blink.cmp"];
 
-	if vim.g.markview_blink_loaded ~= true or blink == nil then
+	if vim.g.markview_blink_loaded == true or blink == nil then
 		return;
 	end
 
@@ -76,7 +76,7 @@ local function register_cmp_source ()
 
 	local cmp = package.loaded["cmp"];
 
-	if vim.g.markview_cmp_loaded ~= true or cmp == nil then
+	if vim.g.markview_cmp_loaded == true or cmp == nil then
 		return;
 	end
 
