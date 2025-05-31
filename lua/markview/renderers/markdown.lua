@@ -1981,12 +1981,14 @@ markdown.list_item = function (buffer, item)
 
 	local checkbox = get_state(item.checkbox);
 
-	if checkbox and config.conceal_on_checkboxes == true then
-		vim.api.nvim_buf_set_extmark(buffer, markdown.ns, range.row_start, range.col_start + item.indent, {
-			undo_restore = false, invalidate = true,
-			end_col = range.col_start + (item.indent + #item.marker + 1),
-			conceal = ""
-		});
+	if checkbox then
+    if config.conceal_on_checkboxes == true then
+      vim.api.nvim_buf_set_extmark(buffer, markdown.ns, range.row_start, range.col_start + item.indent, {
+        undo_restore = false, invalidate = true,
+        end_col = range.col_start + (item.indent + #item.marker + 1),
+        conceal = ""
+      });
+    end
 
 		if not checkbox.scope_hl then
 			goto exit;
