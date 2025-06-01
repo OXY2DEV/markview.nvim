@@ -180,24 +180,6 @@ M.inline_link_range = {
 
 --- [ Markview | Internal ] ---------------------------------------------------------------
 
---- Table containing various plugin states.
----@class mkv.state
----
---- Should markview register new buffers?
----@field enable boolean
----
---- List of attached buffers.
----@field attached_buffers integer[]
----
---- Buffer local states.
----@field buffer_states { [integer]: { enable: boolean, hybrid_mode: boolean?, y: integer? } }
----
---- Source buffer for hybrid mode.
----@field splitview_source? integer
---- Preview buffer for hybrid mode.
----@field splitview_buffer? integer
---- Preview window for hybrid mode.
----@field splitview_window? integer
 M.states = {
 	enable = true,
 

@@ -11,17 +11,7 @@ local markview = {};
 local spec = require("markview.spec");
 local health = require("markview.health");
 
---- Plugin state variables.
----@class markview.state
----
----@field enable boolean Should markview register new buffers?
----
----@field attached_buffers integer[] List of attached buffers.
----@field buffer_states { [integer]: { enable: boolean, hybrid_mode: boolean?, y: integer? } } Buffer local states.
----
----@field splitview_source? integer Source buffer for hybrid mode.
----@field splitview_buffer? integer Preview buffer for hybrid mode.
----@field splitview_window? integer Preview window for hybrid mode.
+---@type markview.state
 markview.state = {
 	enable = true,
 
@@ -258,9 +248,9 @@ end
 --- Renders preview.
 ---@param buffer integer?
 ---@param state { enable: boolean, hybrid_mode: boolean? }?
----@param config? mkv.config
+---@param config? markview.config
 markview.render = function (buffer, state, config)
-	---+${lua}
+	---|fS
 
 	if config then
 		spec.tmp_config = vim.tbl_deep_extend("force", spec.default, config);
@@ -372,12 +362,12 @@ markview.render = function (buffer, state, config)
 		spec.tmp_config = nil;
 	end
 
-	---_
+	---|fE
 end
 
 --- Updates cursor position in splitview.
 markview.update_splitview_cursor = function ()
-	---+${lua}
+	---|fS
 
 	local utils = require("markview.utils");
 	local buffer = markview.state.splitview_source;
@@ -402,11 +392,11 @@ markview.update_splitview_cursor = function ()
 	local cursor = vim.api.nvim_win_get_cursor(utils.buf_getwin(buffer));
 	pcall(vim.api.nvim_win_set_cursor, pre_win, cursor);
 
-	---_
+	---|fE
 end
 
 markview.splitview_render = function ()
-	---+${lua}
+	---|fS
 
 	local utils = require("markview.utils");
 
@@ -457,14 +447,15 @@ markview.splitview_render = function ()
 		enable = true,
 		hybrid_mode = false
 	});
-	---_
+
+	---|fE
 end
 
 -------------------------------------------------------------------------------------------
 
 --- Various actions(provides core functionalities of `markview.nvim`).
 markview.actions = {
-	---+${lua}
+	---|fS
 
 	["__exec_callback"] = function (autocmd, ...)
 		if vim.list_contains({ "string", "integer" }, type(autocmd)) == false then
@@ -500,7 +491,7 @@ markview.actions = {
 	end,
 
 	["__splitview_setup"] = function ()
-		--+${lua}
+		---|fS
 
 		if markview.buf_is_safe(markview.state.splitview_source) == false then
 			return;
@@ -536,11 +527,11 @@ markview.actions = {
 		vim.wo[markview.state.splitview_window].wrap = vim.wo[win].wrap;
 		vim.wo[markview.state.splitview_window].linebreak = vim.wo[win].linebreak;
 
-		---_
+		---|fE
 	end,
 
 	["traceExport"] = function ()
-		---+${lua}
+		---|fS
 
 		local scrolloff = vim.fn.getwininfo(vim.api.nvim_get_current_win())[1].textoff;
 		local buf_width = vim.o.columns - scrolloff;
@@ -616,7 +607,7 @@ markview.actions = {
 		trace_file:write(table.concat(lines, "\n"));
 		trace_file:close();
 
-		---_
+		---|fE
 	end,
 	["traceShow"] = function (from, to)
 		health.trace_open(from, to);
@@ -625,7 +616,7 @@ markview.actions = {
 	--- Registers a buffer to be preview-able.
 	---@param buffer integer?
 	["attach"] = function (buffer, state)
-		---+${lua}
+		---|fS
 
 		---@type integer
 		buffer = buffer or vim.api.nvim_get_current_buf();
@@ -729,12 +720,12 @@ markview.actions = {
 		end
 
 		health.__child_indent_de();
-		---_
+		---|fE
 	end,
 	--- Detaches previewer from a buffer.
 	---@param buffer integer?
 	["detach"] = function (buffer)
-		---+${lua}
+		---|fS
 
 		---@type integer
 		buffer = buffer or vim.api.nvim_get_current_buf();
@@ -776,11 +767,11 @@ markview.actions = {
 		--- Clear decorations too!
 		markview.clear(buffer);
 		health.__child_indent_de()
-		---_
+		---|fE
 	end,
 
 	["disable"] = function (buffer)
-		---+${lua}
+		---|fS
 		---@type integer
 		buffer = buffer or vim.api.nvim_get_current_buf();
 
@@ -836,10 +827,10 @@ markview.actions = {
 			}
 		});
 		health.__child_indent_de();
-		---_
+		---|fE
 	end,
 	["enable"] = function (buffer)
-		---+${lua}
+		---|fS
 		---@type integer
 		buffer = buffer or vim.api.nvim_get_current_buf();
 
@@ -902,11 +893,11 @@ markview.actions = {
 			}
 		});
 		health.__child_indent_de();
-		---_
+		---|fE
 	end,
 
 	["hybridEnable"] = function (buffer)
-		---+${lua}
+		---|fS
 
 		buffer = buffer or vim.api.nvim_get_current_buf();
 
@@ -943,11 +934,11 @@ markview.actions = {
 			});
 		end
 
-		---_
+		---|fE
 	end,
 
 	["hybridDisable"] = function (buffer)
-		--+${lua}
+		---|fS
 
 		buffer = buffer or vim.api.nvim_get_current_buf();
 
@@ -984,11 +975,11 @@ markview.actions = {
 			});
 		end
 
-		---_
+		---|fE
 	end,
 
 	["splitOpen"] = function (buffer)
-		--++${lua}
+		--|fS
 
 		---@type integer
 		buffer = buffer or vim.api.nvim_get_current_buf();
@@ -1025,10 +1016,10 @@ markview.actions = {
 		});
 
 		markview.splitview_render();
-		---_
+		---|fE
 	end,
 	["splitClose"] = function ()
-		---+${lua}
+		---|fS
 		if type(markview.state.splitview_source) ~= "number" then
 			--- Splitview's source buffer isn't a number. Why?
 			--- Assuming it's `nil`, we should stop here.
@@ -1084,17 +1075,17 @@ markview.actions = {
 		if markview.state.buffer_states[buffer].enable == true then
 			markview.render(buffer);
 		end
-		---_
+		---|fE
 	end
 
-	---_
+	---|fE
 };
 
 --- Holds various functions that you can run
 --- vim `:Markview ...`.
 ---@type { [string]: function }
 markview.commands = {
-	---+${class}
+	---|fS
 
 	["traceExport"] = function ()
 		markview.actions.traceExport();
@@ -1115,11 +1106,11 @@ markview.commands = {
 	end,
 
 	["Toggle"] = function ()
-		---+${class}
+		---|fS
 		for _, buf in ipairs(markview.state.attached_buffers) do
 			markview.commands.toggle(buf);
 		end
-		---_
+		---|fE
 	end,
 	["Enable"] = function ()
 		for _, buf in ipairs(markview.state.attached_buffers) do
@@ -1187,7 +1178,7 @@ markview.commands = {
 	end,
 
 	["toggle"] = function (buffer)
-		---+${class}
+		---|fS
 		buffer = buffer or vim.api.nvim_get_current_buf();
 
 		local state = markview.state.buffer_states[buffer];
@@ -1199,7 +1190,7 @@ markview.commands = {
 		else
 			markview.commands.enable(buffer);
 		end
-		---_
+		---|fE
 	end,
 	["enable"] = function (buffer)
 		markview.actions.enable(buffer)
@@ -1278,7 +1269,7 @@ markview.commands = {
 	end,
 
 	["splitToggle"] = function ()
-		---+${class}
+		---|fS
 
 		if type(markview.state.splitview_source) ~= "number" then
 			markview.actions.splitOpen();
@@ -1288,7 +1279,7 @@ markview.commands = {
 		else
 			markview.actions.splitClose();
 		end
-		---_
+		---|fE
 	end,
 
 	["splitRedraw"] = function ()
@@ -1313,7 +1304,7 @@ markview.commands = {
 	["open"] = function ()
 		require("markview.links").open();
 	end
-	---_
+	---|fE
 };
 
 -------------------------------------------------------------------------------------------
@@ -1330,3 +1321,4 @@ markview.setup = function (config)
 end
 
 return markview;
+-- vim:foldmethod=marker:foldmarker=|fS,|fE:

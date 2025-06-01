@@ -6,41 +6,6 @@ local M = {};
 
 -- [ Markview | Configuration ] -----------------------------------------------------------
 
---- Configuration table for `markview.nvim`.
---- >[!NOTE]
---- > All options should be **dynamic**.
----@class mkv.config
----
----@field experimental? config.experimental | fun(): config.experimental
----@field highlight_groups? { [string]: config.hl } | fun(): { [string]: config.hl }
----@field preview? config.preview | fun(): config.preview
----@field renderers? config.renderer[] | fun(): config.renderer[]
----
----@field html? config.html | fun(): config.html
----@field latex? config.latex | fun(): config.latex
----@field markdown? config.markdown | fun(): config.markdown
----@field markdown_inline? config.markdown_inline | fun(): config.markdown_inline
----@field typst? config.typst | fun(): config.typst
----@field yaml? config.yaml | fun(): config.yaml
-M.config = {
-};
-
--- [ Markview | Configuration • Static ] --------------------------------------------------
-
---- Static configuration for `markview.nvim`.
----@class mkv.config_static
----
----@field experimental? config.experimental Experimental options.
----@field highlight_groups? { [string]: config.hl } Custom highlight groups.
----@field preview? config.preview Preview options.
----@field renderers? config.renderer[] Custom renderers.
----
----@field html? config.html HTML options.
----@field latex? config.latex LaTeX configuration.
----@field markdown? config.markdown Markdown configuration.
----@field markdown_inline? config.markdown_inline Inline markdown configuration.
----@field typst? config.typst Typst configuration.
----@field yaml? config.yaml YAML configuration.
 M.config = {
 	experimental = {},
 	highlight_groups = {},
