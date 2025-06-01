@@ -8,7 +8,7 @@ local utils = require("markview.utils");
 headings.get = function ()
 	local node = vim.treesitter.get_node();
 
-	while node:parent() do
+	while node and node:parent() do
 		if vim.list_contains({
 			"atx_heading",
 			"setext_heading"
@@ -175,7 +175,6 @@ end, {
 	end
 });
 
----+${lua, v24 commands}
 vim.api.nvim_create_user_command("HeadingIncrease", function ()
 	require("markview.health").notify("deprecation", {
 		ignore = true,
@@ -197,7 +196,6 @@ vim.api.nvim_create_user_command("HeadingDecrease", function ()
 
 	headings.decrease()
 end, {});
----_
 
 headings.setup = function ()
 end
