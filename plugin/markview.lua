@@ -311,7 +311,12 @@ vim.api.nvim_create_autocmd({
 		local buffer = event.buf;
 		markview.clean();
 
-		if markview.state.enable == false then
+		if vim.api.nvim_buf_is_valid(buffer) == false then
+			--- If the buffer got deleted before we
+			--- get here, we ignore it.
+			--- See #356
+			return;
+		elseif markview.state.enable == false then
 			--- New buffers shouldn't be registered.
 			return;
 		elseif markview.actions.__is_attached(buffer) == true then
