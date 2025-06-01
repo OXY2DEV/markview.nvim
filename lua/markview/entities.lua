@@ -1676,7 +1676,7 @@ entities.check = function ()
 		end
 	end
 
-	return vim.tbl_isempty(_inv), inv;
+	return vim.tbl_isempty(_inv), _inv;
 end
 
 --- Gets an entity from it's number/name.
