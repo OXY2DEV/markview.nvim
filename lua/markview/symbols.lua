@@ -1,8 +1,9 @@
 local symbols = {};
 
+--- Maps Github emoji short-hands to
+--- the actual symbol.
+---@type table<string, string>
 symbols.shorthands = {
-	---+${lua}
-
 	["+1"] = "👍",
 	["-1"] = "👎",
 	["100"] = "💯",
@@ -630,7 +631,7 @@ symbols.shorthands = {
 	["fish"] = "🐟",
 	["fish_cake"] = "🍥",
 	["fishing_pole_and_fish"] = "🎣",
-	["fishsticks"] = fishsticks,
+	["fishsticks"] = "🍟", -- There are no fish-sticks emoji (yet), have fries instead.
 	["fist"] = "✊",
 	["fist_left"] = "🤛",
 	["fist_oncoming"] = "👊",
@@ -1930,11 +1931,11 @@ symbols.shorthands = {
 	["zombie_man"] = "🧟",
 	["zombie_woman"] = "🧟",
 	["zzz"] = "💤"
-	---_
 };
 
+--- Superscript symbol map.
+---@type table<string, string>
 symbols.superscripts = {
-	---+${class}
 	["0"] = "⁰",
 	["1"] = "¹",
 	["2"] = "²",
@@ -2016,11 +2017,11 @@ symbols.superscripts = {
 	["Phi"] = "ᶲ",
 	["varphi"] = "ᵠ",
 	["chi"] = "ᵡ",
-	---_
 };
 
+--- Subscript symbol map.
+---@type table<string, string>
 symbols.subscripts = {
-	---+${class}
 	["0"] = "₀",
 	["1"] = "₁",
 	["2"] = "₂",
@@ -2097,10 +2098,10 @@ symbols.subscripts = {
 	["rho"] = "ᵨ",
 	["epsilon"] = "ᵩ",
 	["chi"] = "ᵪ",
-	---_
 };
 
---- Uses \ding{val}
+--- Dingbit symbols(\ding{val}).
+---@type table<string, string>
 symbols.decorative_punctuation = {
 	["123"] = "❛",
 	["125"] = "❝",
@@ -2112,8 +2113,9 @@ symbols.decorative_punctuation = {
 	["162"] = "❢",
 };
 
+--- Maps symbol names to the symbol.
+---@type table<string, string>
 symbols.entries = {
-	---+ ${class, Predefined LaTeX text-mode commands | Page 19}
 	["textasciicircum"] = "ˆ",
 	["textless"] = "<",
 
@@ -2169,8 +2171,7 @@ symbols.entries = {
 	["textvisiblespace"] = "␣",
 
 	["textgreater"] = ">",
-	---_
-	---+${class, Commands Defined to Work in Both Mode | Page 19}
+
 	["copyright"] = "©",
 	["dag"] = "†",
 	["ddag"] = "‡",
@@ -2182,9 +2183,7 @@ symbols.entries = {
 	["checkmark"] = "✓",
 	["circledR"] = "®",
 	["maltese"] = "✠",
-	---_
 
-	---+${class, Non-ASCII letters | Page 20}
 	["aa"] = "˚a",
 	["DH"] = "Ð",
 	["L"] = "L",
@@ -2211,8 +2210,7 @@ symbols.entries = {
 
 	["O"] = "Ø",
 	["SS"] = "SS",
-	---_
-	---+${class, textgreek Upright Greek Letters | Page 20}
+
 	["textalpha"] = "α",
 	["texteta"] = "η",
 	["textnu"] = "ν",
@@ -2272,15 +2270,12 @@ symbols.entries = {
 	["textMu"] = "Μ",
 	["textSigma"] = "Σ",
 	["textOmega"] = "Ω",
-	---_
 
-	---+${class, Letters Used to Typeset Vietnamese | Page 21}
 	["OHORN"] = "Ơ",
 	["ohorn"] = "ơ",
 	["UHORN"] = "Ư",
 	["uhorn"] = "ư",
-	---_
-	---+${class, Punctuation Marks Not Found in OT1 | Page 21}
+
 	["guillemetleft"] = "«",
 	["guilsinglleft"] = "‹",
 	["quotedblbase"] = "„",
@@ -2288,9 +2283,7 @@ symbols.entries = {
 	["guillemetright"] = "»",
 	["guilsinglright"] = "›",
 	["quotesinglbase"] = "‚",
-	---_
 
-	---+${class, fontawesome5 Decorative Marks & Symbols | Page 22}
 	["faAsterisk"] = "*",
 	["faExclamation"] = ",",
 	["faQuoteRight"] = "±",
@@ -2304,9 +2297,7 @@ symbols.entries = {
 
 	["faEllipsisV"] = '"',
 	["faQuoteLeft"] = "°",
-	---_
 
-	---+${class, Various math symbols}
 	["mathexclam"] = "!",
 	["mathoctothorpe"] = "#",
 	["mathdollar"] = "$",
@@ -4014,9 +4005,7 @@ symbols.entries = {
 	["mbfitsansvarpi"] = "𝟉",
 	["mbfDigamma"] = "𝟊",
 	["mbfdigamma"] = "𝟋",
-	---_
 
-	---+${class, Greek letters}
 	["Alpha"] = "A",
 	["alpha"] = "α",
 
@@ -4092,7 +4081,6 @@ symbols.entries = {
 
 	["Omega"] = "Ω",
 	["omega"] = "ω",
-	---_
 
 	["Digmma"] = "Ϝ",
 	["digmma"] = "ϝ",
@@ -4100,7 +4088,6 @@ symbols.entries = {
 	["ngeqslant"] = "⪈",
 	["nsucceq"] = "⋡",
 
-	---+${class, Symbols from unimathsymbols}
 	["sphat"] = "^",
 	["cent"] = "¢",
 	["yen"] = "¥",
@@ -4289,11 +4276,11 @@ symbols.entries = {
 	["ggcurly"] = "⪼",
 	["Top"] = "⫪",
 	["Bot"] = "⫫",
-	---_
 };
 
+--- Maps typst symbol names to the symbol.
+---@type table<string, string>
 symbols.typst_entries = {
-	---+${class}
 	["wj"] = "𝚠𝚓𝚘𝚒𝚗",
 	["zwj"] = "𝚣𝚠𝚓",
 	["zwnj"] = "𝚣𝚠𝚗𝚓",
@@ -5226,11 +5213,11 @@ symbols.typst_entries = {
 	["Im"] = "ℑ",
 	["dotless.i"] = "𝚤",
 	["dotless.j"] = "𝚥",
-	---_
 };
 
+--- Maps typst symbol short-hands to the symbol.
+---@type table<string, string>
 symbols.typst_shorthands = {
-	---+${class}
 	["bracket.l.double"] = "[|",
 	["bracket.r.double"] = "|]",
 	["bar.v.double"] = "||",
@@ -5271,11 +5258,13 @@ symbols.typst_shorthands = {
 	["arrow.l.r.double"] = "<=>",
 	["arrow.l.r.double.long"] = "<==>",
 	["arrow.l.r.long"] = "<->",
-	---_
 };
 
+---@alias font_chars table<string, string> Maps normal characters to font characters.
+
+--- Maps font names to the symbol maps.
+---@type table<string, font_chars>
 symbols.fonts = {
-	---+${clqss}
 	default = {
 		["A"] = "𝐴",
 		["B"] = "𝐵",
@@ -6311,18 +6300,23 @@ symbols.fonts = {
 		["8"] = "𝟖",
 		["9"] = "𝟗"
 	}
-	---_
 }
 
+---@param font string
+---@param text string
+---@return string
 symbols.tostring = function (font, text)
 	local _o = "";
 
 	for letter in string.gmatch(text, ".") do
-		if symbols.fonts and symbols.fonts[font] and symbols.fonts[font][letter] then
+		if symbols.fonts[font] and symbols.fonts[font][letter] then
+			-- Fonts.
 			_o = _o .. symbols.fonts[font][letter];
 		elseif type(symbols[font]) == "table" and symbols[font][letter] then
+			-- Superscript/Subscript.
 			_o = _o .. symbols[font][letter];
 		else
+			-- Unknown font/style.
 			_o = _o .. letter;
 		end
 	end
@@ -6331,3 +6325,4 @@ symbols.tostring = function (font, text)
 end
 
 return symbols;
+--- vim:foldmethod=indent:

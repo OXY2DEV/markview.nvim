@@ -1,14 +1,11 @@
 --- *Dynamic* highlight group related methods
 --- for `markview.nvim`.
---- 
 local highlights = {};
-local health = require("markview.health");
+
 local utils = require("markview.utils");
 
 local lerp = utils.lerp;
 local clamp = utils.clamp;
-
----+${func, Helper functions}
 
 --- Returns RGB value from the provided input.
 --- Supported input types,
@@ -19,8 +16,6 @@ local clamp = utils.clamp;
 ---@param input string | number[]
 ---@return number[]?
 highlights.rgb = function (input)
-	---+${func}
-
 	--- Lookup table for the regular color names.
 	--- For example,
 	---     • `red` → `#FF0000`.
@@ -28,7 +23,6 @@ highlights.rgb = function (input)
 	--- 
 	---@type { [string]: string }
 	local lookup = {
-		---+ ${class, Color name lookup table}
 		["red"] = "#FF0000",        ["lightred"] = "#FFBBBB",      ["darkred"] = "#8B0000",
 		["green"] = "#00FF00",      ["lightgreen"] = "#90EE90",    ["darkgreen"] = "#006400",    ["seagreen"] = "#2E8B57",
 		["blue"] = "#0000FF",       ["lightblue"] = "#ADD8E6",     ["darkblue"] = "#00008B",     ["slateblue"] = "#6A5ACD",
@@ -39,7 +33,6 @@ highlights.rgb = function (input)
 		["gray"] = "#808080",       ["lightgray"] = "#D3D3D3",     ["darkgray"] = "#A9A9A9",
 		["black"] = "#000000",      ["white"] = "#FFFFFF",
 		["orange"] = "#FFA500",     ["purple"] = "#800080",        ["violet"] = "#EE82EE"
-		---_
 	};
 
 	--- Lookup table for the Neovim-specific color names.
@@ -49,7 +42,6 @@ highlights.rgb = function (input)
 	--- 
 	---@type { [string]: string }
 	local lookup_nvim = {
-		---+ ${class, Neovim's color lookup table}
 		["nvimdarkblue"] = "#004C73",    ["nvimlightblue"] = "#A6DBFF",
 		["nvimdarkcyan"] = "#007373",    ["nvimlightcyan"] = "#8CF8F7",
 		["nvimdarkgray1"] = "#07080D",   ["nvimlightgray1"] = "#EEF1F8",
@@ -64,12 +56,9 @@ highlights.rgb = function (input)
 		["nvimdarkmagenta"] = "#470045", ["nvimlightmagenta"] = "#FFCAFF",
 		["nvimdarkred"] = "#590008",     ["nvimlightred"] = "#FFC0B9",
 		["nvimdarkyellow"] = "#6B5300",  ["nvimlightyellow"] = "#FCE094",
-		---_
 	};
 
 	if type(input) == "string" then
-		---+${lua}
-
 		--- Match cases,
 		---     • RR GG BB, # is optional.
 		---     • R G B, # is optional.
@@ -99,10 +88,7 @@ highlights.rgb = function (input)
 			return { tonumber(r, 16), tonumber(g, 16), tonumber(b, 16) };
 		end
 
-		---_
 	elseif type(input) == "number" then
-		---+${lua}
-
 		--- Format the number into a hexadecimal string.
 		--- Then get the **r**, **g**, **b** parts.
 		--- 
@@ -110,10 +96,7 @@ highlights.rgb = function (input)
 		local r, g, b = string.format("%06x", input):match("(%x%x)(%x%x)(%x%x)$");
 
 		return { tonumber(r, 16), tonumber(g, 16), tonumber(b, 16) };
-
-		---_
 	end
-	---_
 end
 
 --- Simple RGB *color-mixer* function.
@@ -157,8 +140,6 @@ end
 ---@param color number[]
 ---@return number[]
 highlights.rgb_to_hsl = function (color)
-	---+${func}
-
 	local nR, nG, nB = color[1] / 255, color[2] / 255, color[3] / 255;
 	local min, max = math.min(nR, nG, nB), math.max(nR, nG, nB);
 
@@ -186,8 +167,6 @@ highlights.rgb_to_hsl = function (color)
 	end
 
 	return { h * 60, s, l };
-
-	---_
 end
 
 --- HSL to RGB converter.
@@ -203,8 +182,6 @@ end
 ---
 ---@param color integer[]
 highlights.hsl_to_rgb = function (color)
-	---+${func}
-
 	local h, s, l = color[1] / 360, color[2], color[3];
 
 	if s == 0 then
@@ -247,8 +224,6 @@ highlights.hsl_to_rgb = function (color)
 		clamp(checker(tG) * 255, 0, 255),
 		clamp(checker(tB) * 255, 0, 255),
 	};
-
-	---_
 end
 
 --- Deprecated RGB to HSL converter.
@@ -320,8 +295,6 @@ end
 ---@param color number[]
 ---@return number[]
 highlights.rgb_to_xyz = function (color)
-	---+${func}
-
 	local RGB = {};
 
 	for c, channel in ipairs(color) do
@@ -347,15 +320,12 @@ highlights.rgb_to_xyz = function (color)
 		(RGB[1] * matrix[4] + RGB[2] * matrix[5] + RGB[3] * matrix[6]) * 100,
 		(RGB[1] * matrix[7] + RGB[2] * matrix[8] + RGB[3] * matrix[9]) * 100
 	}
-	---_
 end
 
 --- Turns XYZ color-space into RGB.
 ---@param color number[]
 ---@return number[]
 highlights.xyz_to_rgb = function (color)
-	---+${func}
-
 	local XYZ = color;
 
 	for c, channel in ipairs(color) do
@@ -388,15 +358,12 @@ highlights.xyz_to_rgb = function (color)
 	end
 
 	return RGB;
-	---_
 end
 
 --- Turns XYZ color-space into Lab.
 ---@param color number[]
 ---@return number[]
 highlights.xyz_to_lab = function (color)
-	---+${func}
-
 	local ref_point = { 95.047, 100, 108.883 };
 
 	local f = function (t)
@@ -412,15 +379,12 @@ highlights.xyz_to_lab = function (color)
 		500 * (  f(color[1] / ref_point[1]) - f(color[2] / ref_point[2]) ),
 		200 * (  f(color[2] / ref_point[2]) - f(color[3] / ref_point[3]) )
 	};
-	---_
 end
 
 --- Turns Lab color-space into XYZ.
 ---@param color number[]
 ---@return number[]
 highlights.lab_to_xyz = function (color)
-	---+${func}
-
 	local ref_point = { 95.047, 100, 108.883 };
 
 	local f_inv = function (t)
@@ -438,7 +402,6 @@ highlights.lab_to_xyz = function (color)
 		ref_point[2] * f_inv(tmp),
 		ref_point[3] * f_inv( tmp - (color[3] / 200) )
 	};
-	---_
 end
 
 --- Turns RGB color-space into Lab.
@@ -456,7 +419,6 @@ highlights.lab_to_rgb = function (Lab)
 	local XYZ = highlights.lab_to_xyz(Lab);
 	return highlights.xyz_to_rgb(XYZ);
 end
----_
 
 --- Holds info about highlight groups.
 ---@type string[]
@@ -474,8 +436,8 @@ highlights.set_hl = function (name, value)
 
 	local success, err = pcall(vim.api.nvim_set_hl, 0, name, value);
 
-	if success == false then
-		health.notify("hl", {
+	if success == false and err then
+		require("markview.health").notify("hl", {
 			group = name,
 			value = value,
 
@@ -489,8 +451,6 @@ end
 --- Creates highlight groups from an array of tables
 ---@param array { [string]: config.hl | fun(): config.hl }
 highlights.create = function (array)
-	---+${lua}
-
 	highlights.created = {};
 
 	if type(array) == "string" then
@@ -525,7 +485,6 @@ highlights.create = function (array)
 			end
 		end
 	end
-	---_
 end
 
 --- Destroys created highlight groups.
@@ -557,8 +516,6 @@ end
 ---@param dark any
 ---@return any
 highlights.get_property = function (property, groups, light, dark)
-	---+${lua}
-
 	local val;
 
 	for _, item in ipairs(groups) do
@@ -576,7 +533,6 @@ highlights.get_property = function (property, groups, light, dark)
 	end
 
 	return vim.list_contains({ "fg", "bg", "sp" }, property) and highlights.rgb(is_dark(light, dark)) or is_dark(light, dark);
-	---_
 end
 
 --- Gets color properties from a highlight group.
@@ -595,7 +551,6 @@ end
 ---@return config.hl
 ---@deprecated
 highlights.generate_heading = function (opts)
-	---+${lua}
 	local vim_bg = highlights.rgb_to_lab(highlights.get_property(
 		"bg",
 		opts.bg_fallbacks or { "Normal" },
@@ -621,7 +576,6 @@ highlights.generate_heading = function (opts)
 		bg = highlights.rgb_to_hex(res_bg),
 		fg = highlights.rgb_to_hex(h_fg)
 	};
-	---_
 end
 
 --- Generates a highlight group.
@@ -642,10 +596,7 @@ end
 
 ---@type { [string]: function }
 highlights.dynamic = {
-	---+${lua}
-
 	["0P"] = function ()
-		---+${hl}
 		local vim_bg = highlights.rgb_to_lab(highlights.get_property(
 			"bg",
 			{ "Normal" },
@@ -704,10 +655,8 @@ highlights.dynamic = {
 				}
 			}
 		};
-		---_
 	end,
 	["1P"] = function ()
-		---+${hl}
 		local vim_bg = highlights.rgb_to_lab(highlights.get_property(
 			"bg",
 			{ "Normal" },
@@ -766,10 +715,8 @@ highlights.dynamic = {
 				}
 			}
 		};
-		---_
 	end,
 	["2P"] = function ()
-		---+${hl}
 		local vim_bg = highlights.rgb_to_lab(highlights.get_property(
 			"bg",
 			{ "Normal" },
@@ -828,10 +775,8 @@ highlights.dynamic = {
 				}
 			}
 		};
-		---_
 	end,
 	["3P"] = function ()
-		---+${hl}
 		local vim_bg = highlights.rgb_to_lab(highlights.get_property(
 			"bg",
 			{ "Normal" },
@@ -890,10 +835,8 @@ highlights.dynamic = {
 				}
 			}
 		};
-		---_
 	end,
 	["4P"] = function ()
-		---+${hl}
 		local vim_bg = highlights.rgb_to_lab(highlights.get_property(
 			"bg",
 			{ "Normal" },
@@ -952,10 +895,8 @@ highlights.dynamic = {
 				}
 			}
 		};
-		---_
 	end,
 	["5P"] = function ()
-		---+${hl}
 		local vim_bg = highlights.rgb_to_lab(highlights.get_property(
 			"bg",
 			{ "Normal" },
@@ -1014,10 +955,8 @@ highlights.dynamic = {
 				}
 			}
 		};
-		---_
 	end,
 	["6P"] = function ()
-		---+${hl}
 		local vim_bg = highlights.rgb_to_lab(highlights.get_property(
 			"bg",
 			{ "Normal" },
@@ -1076,10 +1015,8 @@ highlights.dynamic = {
 				}
 			}
 		};
-		---_
 	end,
 	["7P"] = function ()
-		---+${hl}
 		local vim_bg = highlights.rgb_to_lab(highlights.get_property(
 			"bg",
 			{ "Normal" },
@@ -1138,10 +1075,8 @@ highlights.dynamic = {
 				}
 			}
 		};
-		---_
 	end,
 
-	---+${hl, Block quotes}
 	["BlockQuoteDefault"] = function ()
 		return {
 			default = true,
@@ -1183,8 +1118,6 @@ highlights.dynamic = {
 			link = "MarkviewPalette2Fg"
 		};
 	end,
-	---_
-	---+${hl, Checkboxes}
 	["CheckboxCancelled"] = function ()
 		return {
 			default = true,
@@ -1222,8 +1155,6 @@ highlights.dynamic = {
 			fg = vim.api.nvim_get_hl(0, { name = "MarkviewPalette0Fg" }).fg
 		};
 	end,
-	---_
-	---+${hl, Code blocks & Inline codes/Injections}
 	["Code"] = function ()
 		local vim_bg = highlights.rgb_to_hsl(highlights.get_property(
 			"bg",
@@ -1396,8 +1327,6 @@ highlights.dynamic = {
 			}
 		});
 	end,
-	---_
-	---+${hl, Headings}
 	["Heading1"] = function ()
 		return {
 			default = true,
@@ -1472,7 +1401,6 @@ highlights.dynamic = {
 			link = "MarkviewPalette6Sign"
 		};
 	end,
-	---_
 
 	["Gradient0"] = function ()
 		local from = highlights.get_property("bg", { "Normal" }, "#CDD6F4", "#1E1E2E");
@@ -1595,7 +1523,6 @@ highlights.dynamic = {
 		};
 	end,
 
-	---+${hl, Links}
 	["Hyperlink"] = function ()
 		return {
 			default = true,
@@ -1616,8 +1543,6 @@ highlights.dynamic = {
 			link = "@markup.link.url.markdown_inline"
 		}
 	end,
-	---_
-	---+${hl, Latex}
 	["Subscript"] = function ()
 		return {
 			default = true,
@@ -1630,8 +1555,6 @@ highlights.dynamic = {
 			link = "MarkviewPalette6Fg"
 		};
 	end,
-	---_
-	---+${hl, List Items}
 	["ListItemMinus"] = function ()
 		return {
 			default = true,
@@ -1650,8 +1573,6 @@ highlights.dynamic = {
 			link = "MarkviewPalette6Fg"
 		};
 	end,
-	---_
-	---+${hl, Tables}
 	["TableHeader"] = function ()
 		return {
 			default = true,
@@ -1686,8 +1607,6 @@ highlights.dynamic = {
 			link = "@markup.heading.markdown"
 		}
 	end,
-	---_
-	---_
 };
 
 highlights.groups = highlights.dynamic;
@@ -1703,3 +1622,4 @@ highlights.setup = function (opt)
 end
 
 return highlights;
+--- vim:foldmethod=indent:

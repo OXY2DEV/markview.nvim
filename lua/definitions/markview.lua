@@ -42,4 +42,15 @@
 ---@field args? { __is_arg_list: boolean?, [integer]: any } Arguments used to parse the configuration table. Use `__is_arg_list = true` if nested configs use different arguments.
 
 
+---@alias markview.renderer.option_map table<string, string[]>
+
+--- Maps a `node_type` to an option name.
+---@class markview.renderer.option_maps
+---
+---@field html markview.renderer.option_map
+---@field latex markview.renderer.option_map
+---@field markdown markview.renderer.option_map
+---@field markdown_inline markview.renderer.option_map
+---@field typst markview.renderer.option_map
+---@field yaml markview.renderer.option_map
 

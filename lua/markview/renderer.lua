@@ -10,18 +10,7 @@ renderer.__filter_cache = {
 	result = nil
 };
 
-
----@alias render_option table<string, string[]>
-
---- Maps a `class` to an option name.
----@class mkv.option_maps
----
----@field html render_option
----@field latex render_option
----@field markdown render_option
----@field markdown_inline render_option
----@field typst render_option
----@field yaml render_option
+---@type markview.renderer.option_maps
 renderer.option_maps = {
 	---|fS
 
@@ -98,7 +87,7 @@ renderer.option_maps = {
 
 --- Creates node class filters for hybrid mode.
 ---@param filter preview.ignore?
----@return render_option}
+---@return markview.renderer.option_map}
 local create_filter = function (filter)
 	---|fS
 
