@@ -1,6 +1,7 @@
 local health = {};
 
 --- Logs for health check
+---@type markview.health.log[]
 health.log = {};
 
 health.ns = vim.api.nvim_create_namespace("markview/health");
@@ -9,15 +10,6 @@ health.window = nil;
 
 --- Fixed version of deprecated options.
 health.fixed_config = nil;
-
----@class health.log.deprecation
----
----@field kind "deprecation"
----@field name string
----@field command boolean
----
----@field alternative? string
----@field tip? string
 
 health.child_indent = 0;
 
@@ -33,24 +25,19 @@ end
 
 --- Fancy print()
 ---@param handler string | nil
----@param opts table
+---@param opts markview.notify.opts
 health.notify = function (handler, opts)
-	---+${lua}
-
 	--- Wrapper for tostring()
-	---@param tbl string | [ string, string? ][]
+	---@param value string | [ string, string? ][]
 	---@return string
-	local function to_string(tbl)
-		---+${lua}
-		if vim.islist(tbl) == false then
-			return tostring(tbl);
+	local function to_string(value)
+		if vim.islist(value --[[ @as table ]]) == false then
+			return tostring(value);
 		end
-
-		---@cast tbl [ string, string? ][]
 
 		local _t = "";
 
-		for _, item in ipairs(tbl) do
+		for _, item in ipairs(value --[[ @as table ]]) do
 			if type(item[1]) == "string" then
 				if type(item[2]) == "string" and item[2]:match("VirtualText") then
 					_t = _t .. item[1]:gsub("^%s", "{"):gsub("%s$", "}");
@@ -61,53 +48,37 @@ health.notify = function (handler, opts)
 		end
 
 		return _t;
-		---_
 	end
 
 	if handler == "deprecation" then
-		---+${lua}
-
-		---@class notify.deprecation
-		---
-		---@field option string
-		---@field ignore? boolean
-		---@field alter? string Alternative.
-		---@field tip? string Additional string.
-
-		---@cast opts notify.deprecation
+		---@cast opts markview.notify.deprecation
 
 		local chunks = {
-			{ " markview.nvim: ", "DiagnosticError" },
+			{ "  markview.nvim ", "MarkviewPalette1" },
+			{ ": ", "@comment" },
 			{ string.format(" %s ", opts.option), "DiagnosticVirtualTextError" },
-			{ " is deprecated. ", "Normal" },
+			{ " is deprecated. ", "@comment" },
 		};
 
 		if opts.alter then
 			chunks = vim.list_extend(chunks, {
-				{ "Use ", "Normal" },
+				{ "Use ", "@comment" },
 				{ string.format(" %s ", opts.alter), "DiagnosticVirtualTextHint" },
-				{ " instead.", "Normal" },
+				{ " instead.", "@comment" },
 			});
 		end
 
-		if opts.tip then
+		if vim.islist(opts.tip --[[ @as table ]]) then
 			chunks = vim.list_extend(chunks, {
 				{ "\n" },
 				{ "  Tip: ", "DiagnosticVirtualTextWarn" },
 				{ " " },
 			});
-			chunks = vim.list_extend(chunks, opts.tip);
+			chunks = vim.list_extend(chunks, opts.tip --[[ @as table ]]);
 		end
 
+		---  markview.nvim :  foo  is deprecated. Use  bar  instead.
 		vim.api.nvim_echo(chunks, true, {});
-
-		---@class log.deprecation
-		---
-		---@field kind "deprecation"
-		---@field name string
-		---@field ignore boolean
-		---@field alternative? string
-		---@field tip? string
 
 		table.insert(health.log, {
 			kind = "deprecation",
@@ -117,17 +88,8 @@ health.notify = function (handler, opts)
 			alternative = opts.alter,
 			tip = opts.tip and to_string(opts.tip) or nil
 		});
-		---_
 	elseif handler == "type" then
-		---+${lua}
-
-		---@class notify.type
-		---
-		---@field option string
-		---@field uses string
-		---@field got string
-
-		---@cast opts notify.type
+		---@cast opts markview.notify.type_mismatch
 
 		local article_1 = "a ";
 		local article_2 = "a ";
@@ -144,22 +106,17 @@ health.notify = function (handler, opts)
 			article_2 = "";
 		end
 
+		---  markview.nvim :  foo  is a  bar , not a  baz .
 		vim.api.nvim_echo({
-			{ " markview.nvim: ", "DiagnosticWarn" },
+			{ "  markview.nvim ", "MarkviewPalette3" },
+			{ ": ", "@comment" },
 			{ string.format(" %s ", opts.option), "DiagnosticVirtualTextInfo" },
-			{ " is " .. article_1, "Normal" },
+			{ " is " .. article_1, "@comment" },
 			{ string.format(" %s ", opts.uses), "DiagnosticVirtualTextHint" },
-			{ ", not " .. article_2, "Normal" },
+			{ ", not " .. article_2, "@comment" },
 			{ string.format(" %s ", opts.got), "DiagnosticVirtualTextError" },
-			{ ".", "Normal" }
+			{ ".", "@comment" }
 		}, true, {});
-
-		---@class log.type
-		---
-		---@field kind "type_error"
-		---@field option string
-		---@field requires string
-		---@field received string
 
 		table.insert(health.log, {
 			kind = "type_error",
@@ -168,42 +125,32 @@ health.notify = function (handler, opts)
 			requires = opts.uses,
 			received = opts.got
 		});
-
-		---_
 	elseif handler == "hl" then
-		---+${lua}
+		---@cast opts markview.notify.hl
 
-		---@class notify.hl
-		---
-		---@field group string
-		---@field value any
-		---@field message string
-
-		---@cast opts notify.hl
-
-		local text = vim.split(vim.inspect(opts.value) or "", '\n', { trimempty = true });
-		local lines = {};
+		local text = vim.split(
+			vim.inspect(opts.value) or "",
+			"\n",
+			{ trimempty = true }
+		);
+		local lines = { { "\n" } };
 
 		for l, line in ipairs(text) do
-			table.insert(lines, { string.format("% " .. #text .. "d", l), "Special" });
-			table.insert(lines, { " │ ", "Comment" });
-			table.insert(lines, { line, "Normal" });
-			table.insert(lines, { "\n" });
+			lines = vim.list_extend(lines, {
+				{ string.format("% " .. #text .. "d ", l), "LineNr" },
+				{ line, "@comment" },
+
+				{ "\n" },
+			});
 		end
 
 		vim.api.nvim_echo(vim.list_extend({
-			{ " markview.nvim: ", "DiagnosticWarn" },
-			{ "Failed to set ", "Normal" },
+			{ "  markview.nvim ", "MarkviewPalette5" },
+			{ ": ", "@comment" },
+			{ "Failed to set ", "@comment" },
 			{ string.format(" %s ", opts.group), "DiagnosticVirtualTextInfo" },
-			{ ",\n", "Normal" }
+			{ ",", "@comment" }
 		}, lines), true, {});
-
-		---@class log.hl
-		---
-		---@field kind "string"
-		---@field group string
-		---@field value any
-		---@field message string
 
 		table.insert(health.log, {
 			kind = "hl",
@@ -213,19 +160,8 @@ health.notify = function (handler, opts)
 
 			message = opts.message
 		});
-		---_
 	elseif handler == "trace" then
-		---+${lua}
-
-		--- Tracing messages.
-		---@class notify.trace
-		---
-		---@field level? integer
-		---@field message [ string, string? ][] | string
-		---@field indent? integer
-		---@field child_indent? integer
-
-		---@cast opts notify.trace
+		---@cast opts markview.notify.trace
 
 		local config = {
 			{ "", "DiagnosticOk" },
@@ -247,17 +183,17 @@ health.notify = function (handler, opts)
 
 		local notif;
 
-		if vim.islist(opts.message) then
+		if vim.islist(opts.message --[[ @as table ]]) then
 			notif = vim.list_extend({
 				{ string.format("%s%s ", indent, icon), hl },
 				{ os.date("%H:%m"), "Comment" },
-				{ " | ", "Comment" },
-			}, opts.message);
+				{ " │ ", "@comment" },
+			}, opts.message --[[ @as table ]]);
 		else
 			notif = {
 				{ string.format("%s%s ", indent, icon), hl },
 				{ os.date("%H:%m"), "Comment" },
-				{ " | ", "Comment" },
+				{ " │ ", "Comment" },
 				{ opts.message or "", hl }
 			};
 		end
@@ -270,17 +206,6 @@ health.notify = function (handler, opts)
 			health.child_indent = opts.child_indent;
 		end
 
-		---@class logs.trace
-		---
-		---@field kind "trace"
-		---
-		---@field ignore boolean
-		---@field indent integer
-		---@field timestamp string
-		---@field message string
-		---@field notification [ string, string? ][]
-		---@field level integer
-
 		table.insert(health.log, {
 			kind = "trace",
 			ignore = true,
@@ -291,18 +216,25 @@ health.notify = function (handler, opts)
 			notification = notif or {},
 			level = opts.level
 		})
-		---_
 	else
 		---@cast opts { message: [ string, string? ][] }
-		vim.api.nvim_echo(vim.list_extend({ { " markview.nvim: ", "DiagnosticInfo" } }, opts.message), true, {});
+
+		vim.api.nvim_echo(
+			vim.list_extend(
+				{
+					{ "  markview.nvim ", "MarkviewPalette6" },
+					{ ": ", "@comment" },
+				},
+				opts.message
+			),
+			true,
+			{}
+		);
 	end
-	---_
 end
 
 --- Sets up the buffer & window for trace-view
 local function trace_view_setup ()
-	---+${lua}
-
 	if not health.buffer then
 		health.buffer = vim.api.nvim_create_buf(false, true);
 
@@ -364,19 +296,18 @@ local function trace_view_setup ()
 
 	vim.wo[health.window].cursorline = true;
 	vim.wo[health.window].statuscolumn = " ";
+	vim.wo[health.window].wrap = true;
 
 	vim.api.nvim_buf_set_keymap(health.buffer, "n", "q", "", {
 		callback = function ()
 			pcall(vim.api.nvim_win_close, health.window, true);
 		end
 	});
-	---_
 end
 
 --- Creates a new entry inside the trace-view buffer.
+---@param l integer
 local function create_entry(l)
-	---+${lua}
-
 	if not health.log[l] then
 		return;
 	end
@@ -394,28 +325,22 @@ local function create_entry(l)
 	end
 
 	vim.api.nvim_buf_set_lines(health.buffer, -1, -1, false, { text });
+	local lnum = vim.api.nvim_buf_line_count(health.buffer) - 1;
 
 	for _, hl in ipairs(highlights) do
-		vim.api.nvim_buf_add_highlight(
-			health.buffer,
-			health.ns,
-			hl[3],
-			vim.api.nvim_buf_line_count(health.buffer) - 1,
-			hl[1],
-			hl[2]
-		);
+		vim.api.nvim_buf_set_extmark(health.buffer, health.ns, lnum, hl[1], {
+			end_col = hl[2],
+			hl_group = hl[3]
+		});
 	end
-
-	---_
 end
 
 --- Opens trace-view window.
 health.trace_open = function (from, to)
-	---+${lua}
-
 	trace_view_setup();
 	vim.api.nvim_win_set_config(health.window, {
 		border = {
+			---@diagnostic disable: assign-type-mismatch
 			{ "╭", "MarkviewPalette7Fg" },
 			{ "─", "MarkviewPalette7Fg" },
 			{ "╮", "MarkviewPalette7Fg" },
@@ -424,6 +349,7 @@ health.trace_open = function (from, to)
 			{ "─", "MarkviewPalette7Fg" },
 			{ "╰", "MarkviewPalette7Fg" },
 			{ "│", "MarkviewPalette7Fg" },
+			---@diagnostic enable: assign-type-mismatch
 		},
 
 		title = {
@@ -500,8 +426,6 @@ health.trace_open = function (from, to)
 			vim.cmd("Markview traceExport");
 		end
 	});
-
-	---_
 end
 
 --- Holds icons for different filetypes.
@@ -517,15 +441,12 @@ health.supported_languages = {
 
 --- Health check function.
 health.check = function ()
-	---+${lua}
-
-	local spec = require("markview.spec");
 	local symbols = require("markview.symbols");
 	local utils = require("markview.utils");
 
 	local ver = vim.version();
 
- ------------------------------------------------------------------------------------------ 
+	------------------------------------------------------------------------------------------ 
 
 	vim.health.start("💻 Neovim:")
 
@@ -543,7 +464,7 @@ health.check = function ()
 		);
 	end
 
- ------------------------------------------------------------------------------------------ 
+	------------------------------------------------------------------------------------------ 
 
 	vim.health.start("💡 Parsers:")
 
@@ -561,7 +482,7 @@ health.check = function ()
 		end
 	end
 
- ------------------------------------------------------------------------------------------ 
+	---------------------------------------------------------------------------------------- 
 
 	vim.health.start("✨ Icon providers:");
 
@@ -577,13 +498,13 @@ health.check = function ()
 		vim.health.info("`echasnovski/mini.icons` not found.");
 	end
 
- ------------------------------------------------------------------------------------------ 
+	------------------------------------------------------------------------------------------ 
 
 	vim.health.start("🚧 Configuration:");
 	local errors = false;
 
 	for _, entry in ipairs(health.log) do
-		if entry.type == "trace" or entry.ignore == true then
+		if entry.kind == "trace" or entry.ignore == true then
 			goto continue;
 		end
 
@@ -602,7 +523,7 @@ health.check = function ()
 				vim.health.info(string.format("Tip: %s", entry.tip));
 			end
 		elseif entry.kind == "type_error" then
-			vim.health.warn(string.format("%s expects `%s`, not `%s`.", entrtype_errory.option, entry.requires, entry.receives));
+			vim.health.warn(string.format("%s expects `%s`, not `%s`.", entry.option, entry.requires, entry.received));
 		elseif entry.kind == "hl" then
 			vim.health.warn(string.format("Failed to set highlight: `%s`. Error: %s.", entry.group, entry.message));
 		end
@@ -617,7 +538,7 @@ health.check = function ()
 		vim.health.ok("No errors found!")
 	end
 
- ------------------------------------------------------------------------------------------ 
+	------------------------------------------------------------------------------------------ 
 
 	vim.health.start("💬 Symbols:")
 	vim.health.info("📖 If any of the symbols aren't showing up then your font doesn't support it! You may want to `update your font`!");
@@ -650,7 +571,7 @@ health.check = function ()
 	for font, _ in pairs(symbols.fonts) do
 		vim.health.info(string.format("%-20s" , "`" .. font .. "`") .. symbols.tostring(font, "ABCDEFGHIJKLMNOPQRSTUVWXYZ abcdefghijklmnopqrstuvwxyz 0123456789"));
 	end
-	---_
 end
 
 return health;
+--- vim:foldmethod=indent:
