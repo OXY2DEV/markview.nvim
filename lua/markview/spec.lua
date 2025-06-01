@@ -2734,6 +2734,7 @@ spec.default = {
 };
 
 spec.config = vim.deepcopy(spec.default);
+spec.tmp_config = nil;
 
 spec.fixup = {
 	---+${lua}
@@ -3542,6 +3543,8 @@ spec.get = function (keys, opts)
 
 	if type(opts.source) == "table" or type(opts.source) == "function" then
 		val = opts.source;
+	elseif spec.tmp_config then
+		val = spec.tmp_config;
 	elseif spec.config then
 		val = spec.config;
 	else

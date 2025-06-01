@@ -258,8 +258,13 @@ end
 --- Renders preview.
 ---@param buffer integer?
 ---@param state { enable: boolean, hybrid_mode: boolean? }?
-markview.render = function (buffer, state)
+---@param config? mkv.config
+markview.render = function (buffer, state, config)
 	---+${lua}
+
+	if config then
+		spec.tmp_config = vim.tbl_deep_extend("force", spec.default, config);
+	end
 
 	---@type integer
 	buffer = buffer or vim.api.nvim_get_current_buf();
@@ -362,6 +367,11 @@ markview.render = function (buffer, state)
 			end
 		end
 	end
+
+	if config then
+		spec.tmp_config = nil;
+	end
+
 	---_
 end
 
