@@ -122,7 +122,8 @@ utils.find_attached_wins = function (buf)
 end
 
 utils.buf_getwin = function (buffer)
-	local wins = vim.fn.win_findbuf(buffer);
+	-- `win_findbuf()` doesn't support 0;
+	local wins = vim.fn.win_findbuf(buffer == 0 and vim.api.nvim_get_current_buf() or buffer);
 
 	if vim.list_contains(wins, vim.api.nvim_get_current_win()) then
 		return vim.api.nvim_get_current_win();
