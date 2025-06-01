@@ -130,8 +130,12 @@ Commonly used functions can be found inside `require("markview").actions`. These
 
 You can manually show previews via these functions,
 
-- `markview.render(buffer)`
+- `markview.render(buffer, state, config)`
   Renders preview on `buffer`(defaults to current buffer).
+
+  + `buffer`, buffer ID.
+  + `state`, buffer state(`{ enable: boolean, hybrid_mode: boolean }).
+  + `config`, custom config to use(doesn't merge with user config).
 
 - `markview.clear(buffer)`
   Clears previews of `buffer`(defaults to current buffer).
