@@ -14,12 +14,10 @@ local health = require("markview.health");
 ---@param cmd_hl? string Highlight group for the command.
 ---@return commands.opts
 local operator = function (name, text_pos, cmd_conceal, cmd_hl)
-	---+${func}
 	return {
 		condition = function (item)
 			return #item.args == 1;
 		end,
-
 
 		on_command = function (item)
 			local symbols = require("markview.symbols");
@@ -71,7 +69,6 @@ local operator = function (name, text_pos, cmd_conceal, cmd_hl)
 			}
 		}
 	};
-	---_
 end
 
 spec.warnings = {};
@@ -111,13 +108,9 @@ spec.notify = function (chunks, opts)
 	end
 end
 
----@type mkv.config
+---@type markview.config
 spec.default = {
-	---+${conf}
-
 	experimental = {
-		---+${conf}
-
 		read_chunk_size = 1024,
 
 		prefer_nvim = false,
@@ -146,24 +139,16 @@ spec.default = {
 			"^%a%a%a %a%a%a %d%d %d%d%:%d%d%:%d%d ... %d%d%d%d$", --- UNIX date time
 			"^%d%d%d%d%-%d%d%-%d%dT%d%d%:%d%d%:%d%dZ$",           --- ISO 8601
 		}
-
-		---_
 	};
 
 	highlight_groups = {},
 
 	preview = {
-		---+${conf}
-
 		enable = true,
 		map_gx = true,
 
 		callbacks = {
-			---+${func}
-
 			on_attach = function (_, wins)
-				---+${lua}
-
 				--- Initial state for attached buffers.
 				---@type string
 				local attach_state = spec.get({ "preview", "enable" }, { fallback = true, ignore_enable = true });
@@ -180,24 +165,18 @@ spec.default = {
 					--- be 3.
 					vim.wo[win].conceallevel = 3;
 				end
-
-				---_
 			end,
 
 			on_detach = function (_, wins)
-				---+${lua}
 				for _, win in ipairs(wins) do
 					--- Only set `conceallevel`.
 					--- `concealcursor` will be
 					--- set via `on_hybrid_disable`.
 					vim.wo[win].conceallevel = 0;
 				end
-				---_
 			end,
 
 			on_enable = function (_, wins)
-				---+${lua}
-
 				--- Initial state for attached buffers.
 				---@type string
 				local attach_state = spec.get({ "preview", "enable" }, { fallback = true, ignore_enable = true });
@@ -229,21 +208,15 @@ spec.default = {
 						vim.wo[win].conceallevel = 3;
 					end
 				end
-
-				---_
 			end,
 
 			on_disable = function (_, wins)
-				---+${lua}
 				for _, win in ipairs(wins) do
 					vim.wo[win].conceallevel = 0;
 				end
-				---_
 			end,
 
 			on_hybrid_enable = function (_, wins)
-				---+${lua}
-
 				---@type string[]
 				local preview_modes = spec.get({ "preview", "modes" }, { fallback = {}, ignore_enable = true });
 				---@type string[]
@@ -260,13 +233,9 @@ spec.default = {
 				for _, win in ipairs(wins) do
 					vim.wo[win].concealcursor = concealcursor;
 				end
-
-				---_
 			end,
 
 			on_hybrid_disable = function (_, wins)
-				---+${lua}
-
 				---@type string[]
 				local preview_modes = spec.get({ "preview", "modes" }, { fallback = {}, ignore_enable = true });
 				local concealcursor = "";
@@ -280,13 +249,9 @@ spec.default = {
 				for _, win in ipairs(wins) do
 					vim.wo[win].concealcursor = concealcursor;
 				end
-
-				---_
 			end,
 
 			on_mode_change = function (_, wins, current_mode)
-				---+${lua}
-
 				---@type string[]
 				local preview_modes = spec.get({ "preview", "modes" }, { fallback = {}, ignore_enable = true });
 				---@type string[]
@@ -309,16 +274,12 @@ spec.default = {
 						vim.wo[win].concealcursor = "";
 					end
 				end
-				---_
 			end,
 
 			on_splitview_open = function (_, _, win)
-				---+${lua}
 				vim.wo[win].conceallevel = 3;
 				vim.wo[win].concealcursor = "n";
-				---_
 			end
-			---_
 		},
 		debounce = 150,
 		icon_provider = "internal",
@@ -338,19 +299,14 @@ spec.default = {
 		splitview_winopts = {
 			split = "right"
 		}
-
-		---_
 	},
 
 	renderers = {},
 
 	markdown = {
-		---+${lua}
-
 		enable = true,
 
 		block_quotes = {
-			---+${class}
 			enable = true,
 			wrap = true,
 
@@ -359,7 +315,6 @@ spec.default = {
 				hl = "MarkviewBlockQuoteDefault"
 			},
 
-			---+${conf}
 			["ABSTRACT"] = {
 				preview = "󱉫 Abstract",
 				hl = "MarkviewBlockQuoteNote",
@@ -595,14 +550,9 @@ spec.default = {
 
 				border = "▋"
 			}
-			---_
-
-			---_
 		},
 
 		code_blocks = {
-			---+${conf, Code blocks}
-
 			enable = true,
 
 			style = "block",
@@ -635,13 +585,9 @@ spec.default = {
 				end,
 				pad_hl = "MarkviewCode"
 			}
-
-			---_
 		},
 
 		headings = {
-			---+ ${class, Headings}
-
 			enable = true,
 
 			shift_width = 1,
@@ -652,80 +598,59 @@ spec.default = {
 			org_shift_width = 1,
 
 			heading_1 = {
-				---+ ${conf, Heading 1}
 				style = "icon",
 				sign = "󰌕 ", sign_hl = "MarkviewHeading1Sign",
 
 				icon = "󰼏  ", hl = "MarkviewHeading1",
-				---_
 			},
 			heading_2 = {
-				---+ ${conf, Heading 2}
 				style = "icon",
 				sign = "󰌖 ", sign_hl = "MarkviewHeading2Sign",
 
 				icon = "󰎨  ", hl = "MarkviewHeading2",
-				---_
 			},
 			heading_3 = {
-				---+ ${conf, Heading 3}
 				style = "icon",
 
 				icon = "󰼑  ", hl = "MarkviewHeading3",
-				---_
 			},
 			heading_4 = {
-				---+ ${conf, Heading 4}
 				style = "icon",
 
 				icon = "󰎲  ", hl = "MarkviewHeading4",
-				---_
 			},
 			heading_5 = {
-				---+ ${conf, Heading 5}
 				style = "icon",
 
 				icon = "󰼓  ", hl = "MarkviewHeading5",
-				---_
 			},
 			heading_6 = {
-				---+ ${conf, Heading 6}
 				style = "icon",
 
 				icon = "󰎴  ", hl = "MarkviewHeading6",
-				---_
 			},
 
 			setext_1 = {
-				---+ ${conf, Setext heading 1}
 				style = "decorated",
 
 				sign = "󰌕 ", sign_hl = "MarkviewHeading1Sign",
 				icon = "  ", hl = "MarkviewHeading1",
 				border = "▂"
-				---_
 			},
 			setext_2 = {
-				---+ ${conf, Setext heading 2}
 				style = "decorated",
 
 				sign = "󰌖 ", sign_hl = "MarkviewHeading2Sign",
 				icon = "  ", hl = "MarkviewHeading2",
 				border = "▁"
-				---_
 			}
-
-			---_
 		},
 
 		horizontal_rules = {
-			---+ ${class, Horizontal rules}
 			enable = true,
 
 			parts = {
 				{
-					---+ ${conf, Left portion}
-
 					type = "repeating",
 					direction = "left",
 
@@ -752,7 +677,6 @@ spec.default = {
 						"MarkviewGradient8", "MarkviewGradient8",
 						"MarkviewGradient9", "MarkviewGradient9"
 					}
-					---_
 				},
 				{
 					type = "text",
@@ -761,7 +685,6 @@ spec.default = {
 					hl = "MarkviewIcon3Fg"
 				},
 				{
-					---+ ${conf, Right portion}
 					type = "repeating",
 					direction = "right",
 
@@ -787,14 +710,11 @@ spec.default = {
 						"MarkviewGradient8", "MarkviewGradient8",
 						"MarkviewGradient9", "MarkviewGradient9"
 					}
-					---_
 				}
 			}
-			---_
 		},
 
 		list_items = {
-			---+${conf, List items}
 			enable = true,
 			wrap = true,
 
@@ -841,12 +761,9 @@ spec.default = {
 				add_padding = true,
 				conceal_on_checkboxes = true
 			}
-			---_
 		},
 
 		metadata_minus = {
-			---+${lua}
-
 			enable = true,
 
 			hl = "MarkviewCode",
@@ -854,13 +771,9 @@ spec.default = {
 
 			border_top = "▄",
 			border_bottom = "▀"
-
-			---_
 		},
 
 		metadata_plus = {
-			---+${lua}
-
 			enable = true,
 
 			hl = "MarkviewCode",
@@ -868,21 +781,15 @@ spec.default = {
 
 			border_top = "▄",
 			border_bottom = "▀"
-
-			---_
 		},
 
 		reference_definitions = {
-			---+${lua}
-
 			enable = true,
 
 			default = {
 				icon = " ",
 				hl = "MarkviewPalette4Fg"
 			},
-
-			---+${lua, Github sites}
 
 			["github%.com/[%a%d%-%_%.]+%/?$"] = {
 				--- github.com/<user>
@@ -940,9 +847,6 @@ spec.default = {
 				icon = " ",
 				hl = "MarkviewPalette0Fg"
 			},
-
-			---_
-			---+${lua, Commonly used sites by programmers}
 
 			["developer%.mozilla%.org"] = {
 				priority = -9999,
@@ -1055,15 +959,9 @@ spec.default = {
 				icon = " ",
 				hl = "MarkviewPalette2Fg"
 			},
-
-			---_
-
-			---_
 		},
 
 		tables = {
-			---+ ${class, Tables}
-
 			enable = true,
 			strict = false,
 
@@ -1098,20 +996,12 @@ spec.default = {
 				align_right = "TableAlignRight",
 				align_center = { "TableAlignCenter", "TableAlignCenter" }
 			}
-
-			---_
 		},
-
-		---_
 	},
 	markdown_inline = {
-		---+${lua}
-
 		enable = true,
 
 		block_references = {
-			---+${lua}
-
 			enable = true,
 
 			default = {
@@ -1120,12 +1010,9 @@ spec.default = {
 				hl = "MarkviewPalette6Fg",
 				file_hl = "MarkviewPalette0Fg",
 			},
-
-			---_
 		},
 
 		checkboxes = {
-			---+ ${conf, Minimal style checkboxes}
 			enable = true,
 
 			checked = { text = "󰗠", hl = "MarkviewCheckboxChecked", scope_hl = "MarkviewCheckboxChecked" },
@@ -1152,20 +1039,15 @@ spec.default = {
 			["w"] = { text = "", hl = "MarkviewCheckboxProgress" },
 			["u"] = { text = "󰔵", hl = "MarkviewCheckboxChecked" },
 			["d"] = { text = "󰔳", hl = "MarkviewCheckboxUnchecked" },
-			---_
 		},
 
 		emails = {
-			---+${lua}
-
 			enable = true,
 
 			default = {
 				icon = " ",
 				hl = "MarkviewEmail"
 			},
-
-			---+${lua, Commonly used email service providers}
 
 			["%@gmail%.com$"] = {
 				--- user@gmail.com
@@ -1194,32 +1076,20 @@ spec.default = {
 				icon = "󰀸 ",
 				hl = "MarkviewPalette6Fg"
 			}
-
-			---_
-
-			---_
 		},
 
 		embed_files = {
-			---+${lua}
-
 			enable = true,
 
 			default = {
 				icon = "󰠮 ",
 				hl = "MarkviewPalette7Fg"
 			}
-
-			---_
 		},
 
 		entities = {
-			---+${lua}
-
 			enable = true,
 			hl = "Special"
-
-			---_
 		},
 
 		emoji_shorthands = {
@@ -1231,8 +1101,6 @@ spec.default = {
 		},
 
 		footnotes = {
-			---+${lua}
-
 			enable = true,
 
 			default = {
@@ -1246,13 +1114,9 @@ spec.default = {
 				icon = "󰯓 ",
 				hl = "MarkviewPalette4Fg"
 			}
-
-			---_
 		},
 
 		highlights = {
-			---+${lua}
-
 			enable = true,
 
 			default = {
@@ -1261,21 +1125,15 @@ spec.default = {
 
 				hl = "MarkviewPalette3"
 			}
-
-			---_
 		},
 
 		hyperlinks = {
-			---+${lua}
-
 			enable = true,
 
 			default = {
 				icon = "󰌷 ",
 				hl = "MarkviewHyperlink",
 			},
-
-			---+${lua, Github sites}
 
 			["github%.com/[%a%d%-%_%.]+%/?$"] = {
 				--- github.com/<user>
@@ -1333,9 +1191,6 @@ spec.default = {
 				icon = " ",
 				hl = "MarkviewPalette0Fg"
 			},
-
-			---_
-			---+${lua, Commonly used sites by programmers}
 
 			["developer%.mozilla%.org"] = {
 				priority = -9999,
@@ -1448,15 +1303,9 @@ spec.default = {
 				icon = " ",
 				hl = "MarkviewPalette2Fg"
 			},
-
-			---_
-
-			---_
 		},
 
 		images = {
-			---+${lua}
-
 			enable = true,
 
 			default = {
@@ -1469,46 +1318,32 @@ spec.default = {
 			["%.jpg$"] = { icon = "󰈥 " },
 			["%.gif$"] = { icon = "󰵸 " },
 			["%.pdf$"] = { icon = " " }
-
-			---_
 		},
 
 		inline_codes = {
-			---+${lua}
-
 			enable = true,
 			hl = "MarkviewInlineCode",
 
 			padding_left = " ",
 			padding_right = " "
-
-			---_
 		},
 
 		internal_links = {
-			---+${lua}
-
 			enable = true,
 
 			default = {
 				icon = " ",
 				hl = "MarkviewPalette7Fg",
 			},
-
-			---_
 		},
 
 		uri_autolinks = {
-			---+${lua}
-
 			enable = true,
 
 			default = {
 				icon = " ",
 				hl = "MarkviewEmail"
 			},
-
-			---+${lua, Github sites}
 
 			["github%.com/[%a%d%-%_%.]+%/?$"] = {
 				--- github.com/<user>
@@ -1566,9 +1401,6 @@ spec.default = {
 				icon = " ",
 				hl = "MarkviewPalette0Fg"
 			},
-
-			---_
-			---+${lua, Commonly used sites by programmers}
 
 			["developer%.mozilla%.org"] = {
 				priority = -9999,
@@ -1681,24 +1513,13 @@ spec.default = {
 				icon = " ",
 				hl = "MarkviewPalette2Fg"
 			},
-
-			---_
-
-			---_
 		},
-
-		---_
 	},
 	html = {
-		---+${lua}
 		enable = true,
 
 		container_elements = {
-			---+${lua}
-
 			enable = true,
-
-			---+${lua, Various inline elements used in markdown}
 
 			["^a$"] = {
 				on_opening_tag = { conceal = "", virt_text_pos = "inline", virt_text = { { "", "MarkviewHyperlink" } } },
@@ -1755,14 +1576,9 @@ spec.default = {
 				on_node = { hl_group = "Underlined" },
 				on_closing_tag = { conceal = "" },
 			},
-
-			---_
-			---_
 		},
 
 		headings = {
-			---+${lua}
-
 			enable = true,
 
 			heading_1 = {
@@ -1783,16 +1599,10 @@ spec.default = {
 			heading_6 = {
 				hl_group = "MarkviewPalette6Bg"
 			},
-
-			---_
 		},
 
 		void_elements = {
-			---+${lua}
-
 			enable = true,
-
-			---+${lua, Various void elements used in markdown}
 
 			["^hr$"] = {
 				on_node = {
@@ -1822,22 +1632,12 @@ spec.default = {
 					}
 				}
 			},
-
-			---_
-
-			---_
 		}
-
-		---_
 	},
 	latex = {
-		---+${lua}
-
 		enable = true,
 
 		blocks = {
-			---+${lua}
-
 			enable = true,
 
 			hl = "MarkviewCode",
@@ -1846,16 +1646,10 @@ spec.default = {
 
 			text = "  LaTeX ",
 			text_hl = "MarkviewCodeInfo"
-
-			---_
 		},
 
 		commands = {
-			---+${lua}
-
 			enable = true,
-
-			---+${lua, Various commonly used LaTeX math commands}
 
 			["boxed"] = {
 				condition = function (item)
@@ -2076,10 +1870,6 @@ spec.default = {
 				local symbols = require("markview.symbols");
 				return operator(symbols.entries.Vert, "inline", 6);
 			end,
-
-			---_
-
-			---_
 		},
 
 		escapes = {
@@ -2087,8 +1877,6 @@ spec.default = {
 		},
 
 		fonts = {
-			---+${lua}
-
 			enable = true,
 
 			default = {
@@ -2109,33 +1897,23 @@ spec.default = {
 			mathsfbfit = { enable = true },
 			mathtt = { enable = true },
 			mathrm = { enable = true },
-
-			---_
 		},
 
 		inlines = {
-			---+${lua}
-
 			enable = true,
 
 			padding_left = " ",
 			padding_right = " ",
 
 			hl = "MarkviewInlineCode"
-
-			---_
 		},
 
 		parenthesis = {
-			---+${lua}
-
 			enable = true,
 
 			left = "(",
 			right = "(",
 			hl = "@punctuation.bracket"
-
-			---_
 		},
 
 		subscripts = {
@@ -2159,17 +1937,11 @@ spec.default = {
 		texts = {
 			enable = true
 		},
-
-		---_
 	},
 	typst = {
-		---+${lua}
-
 		enable = true,
 
 		code_blocks = {
-			---+${lua}
-
 			enable = true,
 
 			style = "block",
@@ -2183,21 +1955,15 @@ spec.default = {
 
 			hl = "MarkviewCode",
 			text_hl = "MarkviewIcon5"
-
-			---_
 		},
 
 		code_spans = {
-			---+${lua}
-
 			enable = true,
 
 			padding_left = " ",
 			padding_right = " ",
 
 			hl = "MarkviewCode"
-
-			---_
 		},
 
 		escapes = {
@@ -2205,60 +1971,44 @@ spec.default = {
 		},
 
 		headings = {
-			---+ ${class, Headings}
 			enable = true,
 			shift_width = 1,
 
 			heading_1 = {
-				---+ ${conf, Heading 1}
 				style = "icon",
 				sign = "󰌕 ", sign_hl = "MarkviewHeading1Sign",
 
 				icon = "󰼏  ", hl = "MarkviewHeading1",
-				---_
 			},
 			heading_2 = {
-				---+ ${conf, Heading 2}
 				style = "icon",
 				sign = "󰌖 ", sign_hl = "MarkviewHeading2Sign",
 
 				icon = "󰎨  ", hl = "MarkviewHeading2",
-				---_
 			},
 			heading_3 = {
-				---+ ${conf, Heading 3}
 				style = "icon",
 
 				icon = "󰼑  ", hl = "MarkviewHeading3",
-				---_
 			},
 			heading_4 = {
-				---+ ${conf, Heading 4}
 				style = "icon",
 
 				icon = "󰎲  ", hl = "MarkviewHeading4",
-				---_
 			},
 			heading_5 = {
-				---+ ${conf, Heading 5}
 				style = "icon",
 
 				icon = "󰼓  ", hl = "MarkviewHeading5",
-				---_
 			},
 			heading_6 = {
-				---+ ${conf, Heading 6}
 				style = "icon",
 
 				icon = "󰎴  ", hl = "MarkviewHeading6",
-				---_
 			}
-			---_
 		},
 
 		labels = {
-			---+${lua}
-
 			enable = true,
 
 			default = {
@@ -2267,13 +2017,9 @@ spec.default = {
 				icon = " ",
 				padding_right = " "
 			}
-
-			---_
 		},
 
 		list_items = {
-			---+${conf, List items}
-
 			enable = true,
 
 			indent_size = function (buffer)
@@ -2303,13 +2049,9 @@ spec.default = {
 			marker_dot = {
 				add_padding = true,
 			}
-
-			---_
 		},
 
 		math_blocks = {
-			---+${lua}
-
 			enable = true,
 
 			text = " 󰪚 Math ",
@@ -2318,26 +2060,18 @@ spec.default = {
 
 			hl = "MarkviewCode",
 			text_hl = "MarkviewCodeInfo"
-
-			---_
 		},
 
 		math_spans = {
-			---+${lua}
-
 			enable = true,
 
 			padding_left = " ",
 			padding_right = " ",
 
 			hl = "MarkviewInlineCode"
-
-			---_
 		},
 
 		raw_blocks = {
-			---+${lua}
-
 			enable = true,
 
 			style = "block",
@@ -2368,34 +2102,24 @@ spec.default = {
 				end,
 				pad_hl = "MarkviewCode"
 			}
-
-			---_
 		},
 
 		raw_spans = {
-			---+${lua}
-
 			enable = true,
 
 			padding_left = " ",
 			padding_right = " ",
 
 			hl = "MarkviewInlineCode"
-
-			---_
 		},
 
 		reference_links = {
-			---+${lua}
-
 			enable = true,
 
 			default = {
 				icon = " ",
 				hl = "MarkviewHyperlink"
 			},
-
-			---_
 		},
 
 		subscripts = {
@@ -2417,29 +2141,21 @@ spec.default = {
 		},
 
 		terms = {
-			---+${lua}
-
 			enable = true,
 
 			default = {
 				text = " ",
 				hl = "MarkviewPalette6Fg"
 			},
-
-			---_
 		},
 
 		url_links = {
-			---+${lua}
-
 			enable = true,
 
 			default = {
 				icon = " ",
 				hl = "MarkviewEmail"
 			},
-
-			---+${lua, Github sites}
 
 			["github%.com/[%a%d%-%_%.]+%/?$"] = {
 				--- github.com/<user>
@@ -2497,9 +2213,6 @@ spec.default = {
 				icon = " ",
 				hl = "MarkviewPalette0Fg"
 			},
-
-			---_
-			---+${lua, Commonly used sites by programmers}
 
 			["developer%.mozilla%.org"] = {
 				priority = -9999,
@@ -2612,22 +2325,12 @@ spec.default = {
 				icon = " ",
 				hl = "MarkviewPalette2Fg"
 			},
-
-			---_
-
-			---_
 		}
-
-		---_
 	},
 	yaml = {
-		---+${lua}
-
 		enable = true,
 
 		properties = {
-			---+${lua}
-
 			enable = true,
 
 			data_types = {
@@ -2724,23 +2427,15 @@ spec.default = {
 				text = " 󰹉 ",
 				hl = nil
 			}
-
-			---_
 		}
-
-		---_
 	}
-	---_
 };
 
 spec.config = vim.deepcopy(spec.default);
 spec.tmp_config = nil;
 
 spec.fixup = {
-	---+${lua}
-
 	["buf_ignore"] = function (value)
-		---+${lua}
 		health.notify("deprecation", {
 			option = "buf_ignore",
 			alter = "preview → ignore_buftypes"
@@ -2755,10 +2450,8 @@ spec.fixup = {
 				ignore_buftypes = value;
 			}
 		};
-		---_
 	end,
 	["callbacks"] = function (value)
-		---+${lua}
 		health.notify("deprecation", {
 			option = "callbacks",
 			alter = "preview → callbacks"
@@ -2773,10 +2466,8 @@ spec.fixup = {
 				callbacks = value;
 			}
 		};
-		---_
 	end,
 	["debounce"] = function (value)
-		---+${lua}
 		health.notify("deprecation", {
 			option = "debounce",
 			alter = "preview → debounce"
@@ -2791,10 +2482,8 @@ spec.fixup = {
 				debounce = value;
 			}
 		};
-		---_
 	end,
 	["filetypes"] = function (value)
-		---+${lua}
 		health.notify("deprecation", {
 			option = "filetypes",
 			alter = "preview → filetypes"
@@ -2809,10 +2498,8 @@ spec.fixup = {
 				filetypes = value;
 			}
 		};
-		---_
 	end,
 	["hybrid_modes"] = function (value)
-		---+${lua}
 		health.notify("deprecation", {
 			option = "hybrid_modes",
 			alter = "preview → hybrid_modes"
@@ -2827,20 +2514,16 @@ spec.fixup = {
 				hybrid_modes = value;
 			}
 		};
-		---_
 	end,
 	["ignore_nodes"] = function (_)
-		---+${lua}
 		health.notify("deprecation", {
 			option = "ignore_nodes",
 			alter = "preview → ignore_previews"
 		});
 
 		return {};
-		---_
 	end,
 	["initial_state"] = function (value)
-		---+${lua}
 		health.notify("deprecation", {
 			option = "initial_state",
 			alter = "preview → enable"
@@ -2855,10 +2538,8 @@ spec.fixup = {
 				}
 			};
 		end
-		---_
 	end,
 	["max_file_length"] = function (value)
-		---+${lua}
 		health.notify("deprecation", {
 			option = "max_file_length",
 			alter = "preview → max_buf_lines"
@@ -2873,10 +2554,8 @@ spec.fixup = {
 				}
 			};
 		end
-		---_
 	end,
 	["modes"] = function (value)
-		---+${lua}
 		health.notify("deprecation", {
 			option = "modes",
 			alter = "preview → modes"
@@ -2891,10 +2570,8 @@ spec.fixup = {
 				modes = value;
 			}
 		};
-		---_
 	end,
 	["render_distance"] = function (value)
-		---+${lua}
 		health.notify("deprecation", {
 			option = "render_distance",
 			alter = "preview → draw_range"
@@ -2917,10 +2594,8 @@ spec.fixup = {
 		end
 
 		return {};
-		---_
 	end,
 	["split_conf"] = function (value)
-		---+${lua}
 		health.notify("deprecation", {
 			option = "split_conf",
 			alter = "preview → splitview_winopts"
@@ -2941,12 +2616,9 @@ spec.fixup = {
 				splitview_winopts = value;
 			}
 		};
-		---_
 	end,
 
 	["injections"] = function ()
-		---+${lua}
-
 		health.notify("deprecation", {
 			option = "injections",
 			tip = {
@@ -2957,13 +2629,10 @@ spec.fixup = {
 
 		return {};
 
-		---_
 	end,
 
 
 	["block_quotes"] = function (config)
-		---+${lua}
-
 		local _o = {
 			markdown = {
 				block_quotes = {};
@@ -2973,8 +2642,6 @@ spec.fixup = {
 		--- Handles old callout definitions.
 		---@param callouts table[]
 		local handle_callouts = function (callouts)
-			---+${lua}
-
 			health.notify("deprecation", {
 				option = "markdown → block_quotes → callouts",
 				tip = {
@@ -3004,8 +2671,6 @@ spec.fixup = {
 					};
 				end
 			end
-
-			---_
 		end
 
 		for key, value in pairs(config) do
@@ -3019,12 +2684,8 @@ spec.fixup = {
 		end
 
 		return _o;
-
-		---_
 	end,
 	["code_blocks"] = function (config)
-		---+${lua}
-
 		local _o = {
 			preview = {},
 			markdown = {
@@ -3069,10 +2730,8 @@ spec.fixup = {
 		end
 
 		return _o;
-		---_
 	end,
 	["headings"] = function (value)
-		---+${lua}
 		health.notify("deprecation", {
 			option = "headings",
 			alter = "markdown → headings"
@@ -3083,10 +2742,8 @@ spec.fixup = {
 				headings = value
 			}
 		};
-		---_
 	end,
 	["horizontal_rules"] = function (value)
-		---+${lua}
 		health.notify("deprecation", {
 			option = "horizontal_rules",
 			alter = "markdown → horizontal_rules"
@@ -3097,10 +2754,8 @@ spec.fixup = {
 				horizontal_rules = value
 			}
 		};
-		---_
 	end,
 	["list_items"] = function (value)
-		---+${lua}
 		health.notify("deprecation", {
 			option = "list_items",
 			alter = "markdown → list_items"
@@ -3111,10 +2766,8 @@ spec.fixup = {
 				list_items = value
 			}
 		};
-		---_
 	end,
 	["tables"] = function (config)
-		---+${lua}
 		local _o = {
 			markdown = {
 				tables = {}
@@ -3141,23 +2794,17 @@ spec.fixup = {
 		end
 
 		return _o;
-		---_
 	end,
 
 	["inline_codes"] = function (value)
-		---+${lua}
 
 		return {
 			markdown_inline = {
 				inline_codes = value
 			}
 		};
-
-		---_
 	end,
 	["checkboxes"] = function (config)
-		---+${lua}
-
 		local _o = {
 			markdown_inline = {
 				checkboxes = {}
@@ -3188,12 +2835,8 @@ spec.fixup = {
 		end
 
 		return _o;
-
-		---_
 	end,
 	["links"] = function (config)
-		---+${lua}
-
 		local _o = {
 			markdown_inline = {}
 		};
@@ -3202,8 +2845,6 @@ spec.fixup = {
 		---@param opt string
 		---@param val table
 		local function handle_link (opt, val)
-			---+${lua}
-
 			local _l = {
 				default = {}
 			};
@@ -3234,7 +2875,6 @@ spec.fixup = {
 			end
 
 			_o.markdown_inline[opt] = _l;
-			---_
 		end
 
 		for k, v in pairs(config) do
@@ -3248,12 +2888,8 @@ spec.fixup = {
 		end
 
 		return _o;
-
-		---_
 	end,
 	["footnotes"] = function (config)
-		---+${lua}
-
 		local _o = {
 			markdown_inline = {
 				footnotes = {}
@@ -3264,8 +2900,6 @@ spec.fixup = {
 		---@param opt string
 		---@param val table
 		local function handle_link (opt, val)
-			---+${lua}
-
 			local _l = {
 				default = {}
 			};
@@ -3296,18 +2930,13 @@ spec.fixup = {
 			end
 
 			_o.markdown_inline[opt] = _l;
-			---_
 		end
 
 		handle_link("footnotes", config);
 		return _o;
-
-		---_
 	end,
 
 	["html"] = function (value)
-		---+${lua}
-
 		if value.entities then
 			health.notify("deprecation", {
 				option = "html → entities",
@@ -3325,12 +2954,9 @@ spec.fixup = {
 				void_elements = value.void_elements
 			}
 		};
-		---_
 	end,
 
 	["latex"] = function (config)
-		---+${lua}
-
 		local _o = {
 			latex = {}
 		};
@@ -3413,17 +3039,13 @@ spec.fixup = {
 		end
 
 		return _o;
-		---_
 	end
-	---_
 };
 
 --- Tries to fix deprecated config spec
 ---@param config table?
 ---@return table
 spec.fix_config = function (config)
-	---+${lua}
-
 	if type(config) ~= "table" then
 		return {};
 	end
@@ -3463,35 +3085,21 @@ spec.fix_config = function (config)
 	end
 
 	return vim.tbl_deep_extend("force", main, fixed);
-	---_
 end
 
 --- Setup function for markview.
----@param config mkv.config?
+---@param config markview.config?
 spec.setup = function (config)
 	config = spec.fix_config(config);
 	spec.config = vim.tbl_deep_extend("force", spec.config, config);
 end
 
---- Options for the configuration table parser.
----@class spec.options
----
----@field fallback any Fallback value to return.
----@field eval? string[] Keys that should be evaluated(defaults to `vim.tbl_keys()`).
----@field eval_ignore? string[] Keys that shouldn't be evaluated.
----@field ignore_enable? boolean Whether to ignore `enable = false` when parsing config
----@field source? table Custom source config(defaults to `spec.config` when nil).
----@field eval_args? any[] Arguments used to evaluate the output value's keys.
----@field args? { __is_arg_list: boolean?, [integer]: any } Arguments used to parse the configuration table. Use `__is_arg_list = true` if nested configs use different arguments.
-
 --- Function to retrieve configuration options
 --- from a config table.
 ---@param keys ( string | integer )[]
----@param opts spec.options
+---@param opts markview.spec.get_opts
 ---@return any
 spec.get = function (keys, opts)
-	---+${lua}
-
 	--- In case the values are correctly provided..
 	keys = keys or {};
 	opts = opts or {};
@@ -3502,28 +3110,22 @@ spec.get = function (keys, opts)
 	---@param args any[]?
 	---@return any
 	local function to_static(val, args)
-		---+${lua}
-
 		if type(val) ~= "function" then
 			return val;
 		end
 
 		args = args or {};
 
-		---@diagnostic disable
 		if pcall(val, unpack(args)) then
 			return val(unpack(args));
 		else
 			return nil;
 		end
-		---@diagnostic enable
-		---_
 	end
 
 	---@param index integer | string
 	---@return any
 	local function get_arg(index)
-		---+${lua}
 		if type(opts.args) ~= "table" then
 			return {};
 		elseif opts.args.__is_arg_list == true then
@@ -3531,7 +3133,6 @@ spec.get = function (keys, opts)
 		else
 			return opts.args;
 		end
-		---_
 	end
 
 	--- Temporarily store the value.
@@ -3613,8 +3214,7 @@ spec.get = function (keys, opts)
 	else
 		return val;
 	end
-
-	---_
 end
 
 return spec;
+-- vim:foldmethod=indent
