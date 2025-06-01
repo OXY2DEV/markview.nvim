@@ -2,14 +2,14 @@ local checkboxes = {};
 local spec = require("markview.spec");
 local utils = require("markview.utils");
 
----@class markcheck.config
+---@class markview.extras.checkbox.config
 ---
----@field default string                                    Default checkbox state.
+---@field default string Default checkbox state.
 ---@field remove_style
 ---| "disable" Clears state.
 ---| "checkbox" Removes checkbox.
 ---| "list_item" Removes list item.
----@field states string[][]                                 List of sets containing various checkbox states.
+---@field states string[][] List of sets containing various checkbox states.
 checkboxes.config = {
 	default = "X",
 	remove_style = "disable",
@@ -27,9 +27,10 @@ checkboxes.config = {
 	}
 };
 
---- Holds checkbox states for different lines
---- for each buffer.
----@type { [integer]: { [integer]: string? } }
+--- When key is a buffer, maps a line number to a checkbox state.
+---@class markview.extras.checkbox.state
+---
+---@field [integer] { [integer]: string }
 checkboxes.cache = {};
 
 --- Cache the checkbox state of a specific line.
@@ -62,7 +63,7 @@ checkboxes.get_state_coords = function (state)
 	return nil;
 end
 
---- Normalizes {num} between 0 & {max}
+--- Normalizes `num` between 0 & `max`.
 ---@param num number
 ---@param max number
 ---@return number
@@ -84,8 +85,6 @@ local normalize = function (num, max)
 end
 
 
----+${class, Checkbox toggle}
-
 --- Checkbox toggle sub-module.
 local toggler = {};
 
@@ -96,7 +95,6 @@ local toggler = {};
 ---@return string
 ---@return table
 toggler.__remove_checkbox = function (buffer, lnum, line)
-	---+${func}
 	local before, state, after;
 
 	--- Pattern should change based on the list
@@ -125,7 +123,6 @@ toggler.__remove_checkbox = function (buffer, lnum, line)
 	end
 
 	return line, { before, state, after };
-	---_
 end
 
 --- Adds checkbox to lines
@@ -135,7 +132,6 @@ end
 ---@return string
 ---@return string[]
 toggler.__add_checkbox = function (buffer, lnum, line)
-	---+${func}
 	local before, state, after;
 	local cached_state;
 
@@ -174,7 +170,6 @@ toggler.__add_checkbox = function (buffer, lnum, line)
 
 		return before .. string.format(" [%s]", cached_state or checkboxes.config.default or "") .. after, { before, state, after };
 	end
-	---_
 end
 
 --- Function to run if the text has list item markers.
@@ -184,7 +179,6 @@ end
 ---@param lines string[]
 ---@return string[]
 toggler.__has_markers = function (buffer, from, to, lines)
-	---+${func}
 	local state = "normal";
 	local tolerance = spec.get({ "experimental", "list_empty_line_tolerance" }, { fallback = 3 });
 	local empty_lines = 0;
@@ -272,7 +266,6 @@ toggler.__has_markers = function (buffer, from, to, lines)
 	end
 
 	return lines;
-	---_
 end
 
 --- Initializes the checkbox toggler on a specified
@@ -281,7 +274,6 @@ end
 ---@param from integer?
 ---@param to integer?
 toggler.init = function (buffer, from, to)
-	---+${func}
 	buffer = buffer or vim.api.nvim_get_current_buf();
 
 	local pos = vim.fn.getpos;
@@ -315,18 +307,12 @@ toggler.init = function (buffer, from, to)
 	end
 
 	vim.api.nvim_buf_set_lines(buffer, row_start, row_end, false, lines);
-	---_
 end
-
----_
----+${class, Checkbox state changer}
 
 --- Checkbox state changer sub-module
 local changer = {};
 
 changer.init = function (buffer, from, to, x, y)
-	---+${func}
-
 	--- Set some default values
 	buffer = buffer or vim.api.nvim_get_current_buf();
 	x = x or 0;
@@ -385,12 +371,7 @@ changer.init = function (buffer, from, to, x, y)
 	end
 
 	vim.api.nvim_buf_set_lines(buffer, row_start, row_end, false, lines);
-	---_
 end
-
----_
-
----+${class, Interactive checkbox state changer}
 
 local interactive = {};
 
@@ -404,8 +385,6 @@ interactive.coordinate = nil;
 
 --- Draws the UI.
 interactive.__draw = function ()
-	---+${func}
-
 	if not interactive.ui_buffer or vim.api.nvim_buf_is_valid(interactive.ui_buffer) == false then
 		interactive.ui_buffer = vim.api.nvim_create_buf(false, true);
 	end
@@ -483,7 +462,6 @@ interactive.__draw = function ()
 		#vim.fn.strcharpart(line, 0, erange[3]),
 		{ set[math.min(#set, x)] }
 	);
-	---_
 end
 
 --- Closes the interactive state changer
@@ -512,8 +490,6 @@ end
 --- Caches keymaps for h, j, k & l.
 ---@param buffer integer
 interactive.__cache_keymaps = function (buffer)
-	---+${func}
-
 	for _, keymap in ipairs(vim.api.nvim_buf_get_keymap(buffer, "n")) do
 		if vim.list_contains({ "h", "j", "k", "l" }, keymap.lhs) then
 			table.insert(interactive.keymaps, keymap);
@@ -543,10 +519,8 @@ interactive.__cache_keymaps = function (buffer)
 			interactive.__l();
 		end
 	});
-	---_
 end
 
----+${class, Various movements}
 interactive.__h = function ()
 	local set = checkboxes.config.states[interactive.coordinate[2]];
 
@@ -582,13 +556,10 @@ interactive.__k = function ()
 	};
 	interactive.__draw();
 end
----_
 
 --- Initiates an interactive checkbox state
 --- changer.
 interactive.init = function ()
-	---+${func}
-
 	local buffer = vim.api.nvim_get_current_buf();
 	local cursor = vim.api.nvim_win_get_cursor(0);
 
@@ -632,10 +603,7 @@ interactive.init = function ()
 			interactive.__close();
 		end
 	end);
-	---_
 end
-
----_
 
 checkboxes.toggler = toggler;
 checkboxes.change = changer;
@@ -705,7 +673,6 @@ end, {
 	range = true
 });
 
----+${lua, v24 commands}
 vim.api.nvim_create_user_command("CheckboxToggle", function (params)
 	require("markview.health").notify("deprecation", {
 		ignore = true,
@@ -780,9 +747,8 @@ vim.api.nvim_create_user_command("CheckboxNext", function (params)
 		checkboxes.change.init(0, nil, nil, 1, 0);
 	end
 end, { range = true});
----_
 
----@param config markcheck.config?
+---@param config markview.extras.checkbox.config?
 checkboxes.setup = function (config)
 	if not config then
 		return;
