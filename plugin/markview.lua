@@ -89,17 +89,17 @@ local function register_cmp_source ()
 	});
 
     ---|fS "feat: Modify nvim-cmp sources"
-    cmp.setup.filetype(filetypes, {
-        sources = vim.list_extend(sources, {
-            {
-                name = "cmp-markview",
-                keyword_length = 1,
-                options = {}
-            }
-        })
-    });
-
+	cmp.setup.filetype(filetypes, {
+		sources = vim.list_extend(sources, {
+			{
+				name = "cmp-markview",
+				keyword_length = 1,
+				options = {}
+			}
+		})
+	});
     ---|fE
+
 	vim.g.markview_cmp_loaded = true;
 	require("markview.health").notify("trace", {
 		level = 5,
@@ -163,26 +163,26 @@ local function set_ts_directive ()
 	---|fE
 end
 
--- at least for cmp this must be
--- done once the buffer filetype
--- is set in order that the parent
--- config returned is correct.
+-- `nvim-cmp`'s get_config() depends
+-- on the current buffer to get filetype
+-- related configs.
+---@type string[]
 local filetypes = require("markview.spec").get({ "preview", "filetypes" }, {
 	fallback = {},
 	ignore_enable = true
 });
+
 vim.api.nvim_create_autocmd("FileType", {
-  pattern = filetypes,
+	pattern = filetypes,
 	callback = function()
 		register_blink_source();
 		register_cmp_source();
-		-- have the autocmd removed
-		-- after firing at which point
-		-- the filetype specializations
-		-- have been registered.
-		return true
+
+		-- This will make the autocmd only
+		-- fire once.
+		return true;
 	end
-})
+});
 
 
 -- BUG, Certain plugin(s) will try to call
