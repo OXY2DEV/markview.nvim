@@ -101,11 +101,10 @@ function source:complete(params, callback)
 			end
 		end
 		---_
-	else
-		return;
 	end
 
-	callback(comp);
+    -- callback must /always/ be called.
+	return callback(comp)
 end
 
 return source

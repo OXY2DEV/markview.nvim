@@ -88,21 +88,17 @@ local function register_cmp_source ()
 		ignore_enable = true
 	});
 
-	for _, filetype in ipairs(filetypes) do
-		---|fS "feat: Modify nvim-cmp sources"
-
-		cmp.setup.filetype(filetype, {
-			sources = vim.list_extend(sources, {
-				{
-					name = "cmp-markview",
-					keyword_length = 1,
-					options = {}
-				}
-			})
-		});
-
-		---|fE
-	end
+    ---|fS "feat: Modify nvim-cmp sources"
+	cmp.setup.filetype(filetypes, {
+		sources = vim.list_extend(sources, {
+			{
+				name = "cmp-markview",
+				keyword_length = 1,
+				options = {}
+			}
+		})
+	});
+    ---|fE
 
 	vim.g.markview_cmp_loaded = true;
 	require("markview.health").notify("trace", {
@@ -167,6 +163,28 @@ local function set_ts_directive ()
 	---|fE
 end
 
+-- `nvim-cmp`'s get_config() depends
+-- on the current buffer to get filetype
+-- related configs.
+---@type string[]
+local filetypes = require("markview.spec").get({ "preview", "filetypes" }, {
+	fallback = {},
+	ignore_enable = true
+});
+
+vim.api.nvim_create_autocmd("FileType", {
+	pattern = filetypes,
+	callback = function()
+		register_blink_source();
+		register_cmp_source();
+
+		-- This will make the autocmd only
+		-- fire once.
+		return true;
+	end
+});
+
+
 -- BUG, Certain plugin(s) will try to call
 -- the directives before `VimEnter`.
 --
@@ -177,11 +195,9 @@ vim.api.nvim_create_autocmd("VimEnter", {
 	group = augroup,
 	callback = function ()
 		require("markview.highlights").setup();
-
-		register_blink_source();
-		register_cmp_source();
 	end
 });
+
 
 -- Updates the highlight groups.
 vim.api.nvim_create_autocmd("ColorScheme", {
