@@ -163,28 +163,26 @@ local function set_ts_directive ()
 	---|fE
 end
 
-
-
-local function register_completions()
-    -- at least for cmp this must be
-    -- done once the buffer filetype
-    -- is set in order that the parent
-    -- config returned is correct.
-	local filetypes = require("markview.spec").get({ "preview", "filetypes" }, {
-		fallback = {},
-		ignore_enable = true
-	});
-    for _, filetype in ipairs(filetypes) do
-        vim.api.nvim_create_autocmd("FileType", {
-          pattern = filetype,
-            callback = function()
-		        register_blink_source();
-		        register_cmp_source();
-            end
-        })
-    end
-
-end
+-- at least for cmp this must be
+-- done once the buffer filetype
+-- is set in order that the parent
+-- config returned is correct.
+local filetypes = require("markview.spec").get({ "preview", "filetypes" }, {
+	fallback = {},
+	ignore_enable = true
+});
+vim.api.nvim_create_autocmd("FileType", {
+  pattern = filetypes,
+	callback = function()
+		register_blink_source();
+		register_cmp_source();
+		-- have the autocmd removed
+		-- after firing at which point
+		-- the filetype specializations
+		-- have been registered.
+		return true
+	end
+})
 
 
 -- BUG, Certain plugin(s) will try to call
@@ -197,8 +195,6 @@ vim.api.nvim_create_autocmd("VimEnter", {
 	group = augroup,
 	callback = function ()
 		require("markview.highlights").setup();
-
-        register_completions()
 	end
 });
 
