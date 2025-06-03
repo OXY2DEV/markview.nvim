@@ -535,13 +535,6 @@ spec.default = {
 		headings = {
 			enable = true,
 
-			shift_width = 1,
-
-			org_indent = false,
-			org_indent_wrap = true,
-			org_shift_char = " ",
-			org_shift_width = 1,
-
 			heading_1 = {
 				style = "icon",
 				sign = "󰌕 ", sign_hl = "MarkviewHeading1Sign",
@@ -588,7 +581,14 @@ spec.default = {
 				sign = "󰌖 ", sign_hl = "MarkviewHeading2Sign",
 				icon = "  ", hl = "MarkviewHeading2",
 				border = "▁"
-			}
+			},
+
+			shift_width = 1,
+
+			org_indent = false,
+			org_indent_wrap = true,
+			org_shift_char = " ",
+			org_shift_width = 1,
 		},
 
 		horizontal_rules = {
@@ -910,7 +910,6 @@ spec.default = {
 			enable = true,
 			strict = false,
 
-			col_min_width = 10,
 			block_decorator = true,
 			use_virt_lines = false,
 

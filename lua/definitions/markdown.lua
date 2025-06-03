@@ -8,12 +8,12 @@
 ---@field block_quotes markview.config.markdown.block_quotes Block quote configuration.
 ---@field code_blocks markview.config.markdown.code_blocks Fenced code block configuration.
 ---@field headings markview.config.markdown.headings Heading configuration.
----@field horizontal_rules markdown.horizontal_rules Horizontal rules configuration.
----@field list_items markdown.list_items List items configuration.
----@field metadata_minus markdown.metadata_minus YAML metadata configuration.
----@field metadata_plus markdown.metadata_plus TOML metadata configuration.
----@field reference_definitions markdown.reference_definitions Reference link definition configuration.
----@field tables markdown.tables Table configuration.
+---@field horizontal_rules markview.config.markdown.hr Horizontal rules configuration.
+---@field list_items markview.config.markdown.list_items List items configuration.
+---@field metadata_minus markview.config.markdown.metadata YAML metadata configuration.
+---@field metadata_plus markview.config.markdown.metadata TOML metadata configuration.
+---@field reference_definitions markview.config.markdown.ref_def Reference link definition configuration.
+---@field tables markview.config.markdown.tables Table configuration.
 
 ------------------------------------------------------------------------------
 
@@ -182,38 +182,34 @@
 ---@field text string[]
 ---@field range node.range
 
--- [ Markdown | Horizontal rules ] --------------------------------------------------------
+------------------------------------------------------------------------------
 
 --- Configuration for horizontal rules.
----@class markdown.horizontal_rules
+---@class markview.config.markdown.hr
 ---
 ---@field enable boolean Enables preview of horizontal rules.
 ---
----@field parts ( horizontal_rules.text | horizontal_rules.repeating )[] Parts for the horizontal rules.
+---@field parts ( markview.config.markdown.hr.text | markview.config.markdown.hr.repeating )[] Parts for the horizontal rules.
 
--- [ Markdown | Horizontal rules > Type definitions ] -------------------------------------
-
----@class horizontal_rules.text
+---@class markview.config.markdown.hr.text
 ---
 ---@field type "text" Part name.
 ---
 ---@field hl? string Highlight group for this part.
 ---@field text string Text to show.
 
----@class horizontal_rules.repeating
+---@class markview.config.markdown.hr.repeating
 ---
 ---@field type "repeating" Part name.
 ---
 ---@field direction "left" | "right" Direction from which the highlight groups are applied from.
 ---
 ---@field repeat_amount integer | fun(buffer: integer, item: __markdown.horizontal_rules): integer How many times to repeat the text.
----@field repeat_hl? boolean | fun(buffer: integer, item: __markdown.horizontal_rules): boolean Whether to repeat the highlight groups.
----@field repeat_text? boolean | fun(buffer: integer, item: __markdown.horizontal_rules): boolean Whether to repeat the text.
+---@field repeat_hl? boolean Whether to repeat the highlight groups.
+---@field repeat_text? boolean Whether to repeat the text.
 ---
 ---@field text string | string[] Text to repeat.
 ---@field hl? string | string[] Highlight group for the text.
-
--- [ Markdown | Horizontal rules > Parameters ] -------------------------------------------
 
 ---@class __markdown.horizontal_rules
 ---
@@ -221,45 +217,25 @@
 ---@field text string[]
 ---@field range node.range
 
--- [ Markdown | List items ] --------------------------------------------------------------
+------------------------------------------------------------------------------
 
 --- Configuration for list items.
----@class markdown.list_items
+---@class markview.config.markdown.list_items
 ---
 ---@field enable boolean
 ---
 ---@field indent_size integer | fun(buffer: integer, item: __markdown.list_items): integer Indentation size for list items.
 ---@field shift_width integer | fun(buffer: integer, item: __markdown.list_items): integer Virtual indentation size for previewed list items.
 ---
----@field marker_dot list_items.ordered Configuration for `n.` list items.
----@field marker_minus list_items.unordered Configuration for `-` list items.
----@field marker_parenthesis list_items.ordered Configuration for `n)` list items.
----@field marker_plus list_items.unordered Configuration for `+` list items.
----@field marker_star list_items.unordered Configuration for `*` list items.
+---@field marker_dot markview.config.markdown.list_items.ordered Configuration for `n.` list items.
+---@field marker_minus markview.config.markdown.list_items.unordered Configuration for `-` list items.
+---@field marker_parenthesis markview.config.markdown.list_items.ordered Configuration for `n)` list items.
+---@field marker_plus markview.config.markdown.list_items.unordered Configuration for `+` list items.
+---@field marker_star markview.config.markdown.list_items.unordered Configuration for `*` list items.
 ---
 ---@field wrap? boolean Enables wrap support.
 
--- [ Markdown | List items • Static ] -----------------------------------------------------
-
---- Configuration for list items.
----@class markdown.list_items_static
----
----@field enable boolean
----
----@field indent_size integer Indentation size for list items.
----@field shift_width integer Virtual indentation size for previewed list items.
----
----@field marker_dot list_items.ordered Configuration for `n.` list items.
----@field marker_minus list_items.unordered Configuration for `-` list items.
----@field marker_parenthesis list_items.ordered Configuration for `n)` list items.
----@field marker_plus list_items.unordered Configuration for `+` list items.
----@field marker_star list_items.unordered Configuration for `*` list items.
----
----@field wrap? boolean Enables wrap support.
-
--- [ Markdown | List items > Type definitions ] -------------------------------------------
-
----@class list_items.unordered
+---@class markview.config.markdown.list_items.unordered
 ---
 ---@field add_padding boolean
 ---@field conceal_on_checkboxes? boolean
@@ -267,13 +243,11 @@
 ---@field hl? string
 ---@field text string
 
----@class list_items.ordered
+---@class markview.config.markdown.list_items.ordered
 ---
 ---@field add_padding boolean
 ---@field conceal_on_checkboxes? boolean
 ---@field enable? boolean
-
--- [ Markdown | List items > Parameters ] -------------------------------------------------
 
 ---@class __markdown.list_items
 ---
@@ -287,25 +261,10 @@
 ---
 ---@field __block boolean Indicates whether the list item is the children of a block quote.
 
--- [ Markdown | Metadata minus ] ----------------------------------------------------------
+------------------------------------------------------------------------------
 
---- Configuration for YAML metadata.
----@class markdown.metadata_minus
----
----@field enable boolean
----
----@field border_bottom? string | fun(buffer: integer, item: __markdown.metadata_minus): string?
----@field border_bottom_hl? string | fun(buffer: integer, item: __markdown.metadata_minus): string?
----@field border_hl? string | fun(buffer: integer, item: __markdown.metadata_minus): string?
----@field border_top? string | fun(buffer: integer, item: __markdown.metadata_minus): string?
----@field border_top_hl? string | fun(buffer: integer, item: __markdown.metadata_minus): string?
----
----@field hl? string | fun(buffer: integer, item: __markdown.metadata_minus): string?
-
--- [ Markdown | Metadata minus • Static ] -------------------------------------------------
-
---- Static configuration for YAML metadata.
----@class markdown.metadata_minus_static
+--- Configuration for YAML/TOML metadata.
+---@class markview.config.markdown.metadata
 ---
 ---@field enable boolean
 ---
@@ -316,8 +275,6 @@
 ---@field border_top_hl? string Highlight group for the top border.
 ---
 ---@field hl? string Background highlight group.
-
--- [ Markdown | Metadata minus > Parameters ] ---------------------------------------------
 
 ---@class __markdown.metadata_minus
 ---
@@ -325,55 +282,21 @@
 ---@field text string[]
 ---@field range node.range
 
--- [ Markdown | Metadata plus ] -----------------------------------------------------------
-
---- Configuration for TOML metadata.
----@class markdown.metadata_plus
----
----@field enable boolean
----
----@field border_bottom? string | fun(buffer: integer, item: __markdown.metadata_plus): string?
----@field border_bottom_hl? string | fun(buffer: integer, item: __markdown.metadata_plus): string?
----@field border_hl? string | fun(buffer: integer, item: __markdown.metadata_plus): string?
----@field border_top? string | fun(buffer: integer, item: __markdown.metadata_plus): string?
----@field border_top_hl? string | fun(buffer: integer, item: __markdown.metadata_plus): string?
----
----@field hl? string | fun(buffer: integer, item: __markdown.metadata_plus): string?
-
--- [ Markdown | Metadata plus • Static ] --------------------------------------------------
-
---- Static configuration for TOML metadata.
----@class markdown.metadata_plus_static
----
----@field enable boolean
----
----@field border_bottom? string Bottom border.
----@field border_bottom_hl? string Highlight group for the bottom border.
----@field border_hl? string Primary highlight group for the borders.
----@field border_top? string Top border.
----@field border_top_hl? string Highlight group for the top border.
----
----@field hl? string Background highlight group.
-
--- [ Markdown | Metadata plus > Parameters ] ----------------------------------------------
-
 ---@class __markdown.metadata_plus
 ---
 ---@field class "markdown_metadata_plus"
 ---@field text string[]
 ---@field range node.range
 
--- [ Markdown | Reference definitions ] ---------------------------------------------------
+------------------------------------------------------------------------------
 
 --- Configuration for reference definitions.
----@class markdown.reference_definitions
+---@class markview.config.markdown.ref_def
 ---
 ---@field enable boolean
 ---
 ---@field default config.inline_generic Default configuration for reference definitions.
 ---@field [string] config.inline_generic Configuration for reference definitions whose description matches `string`.
-
--- [ Markdown | Reference definitions > Parameters ] --------------------------------------
 
 ---@class __markdown.reference_definitions
 ---
@@ -395,24 +318,10 @@
 ---@field label integer[] Range of the label node(result of `TSNode:range()`).
 ---@field description? integer[] Range of the description node. Same as `label`.
 
--- [ Markdown | Tables ] ------------------------------------------------------------------
+------------------------------------------------------------------------------
 
 --- Configuration for tables.
----@class markdown.tables
----
----@field enable boolean
----@field strict boolean When `true`, leading & trailing whitespaces are not considered part of the cell.
----
----@field block_decorator boolean
----@field use_virt_lines boolean
----
----@field hl tables.parts | fun(buffer: integer, item: __markdown.tables): tables.parts
----@field parts tables.parts | fun(buffer: integer, item: __markdown.tables): tables.parts
-
--- [ Markdown | Tables • Static ] ---------------------------------------------------------
-
---- Static configuration for tables.
----@class markdown.tables_static
+---@class markview.config.markdown.tables
 ---
 ---@field enable boolean
 ---@field strict boolean When `true`, leading & trailing whitespaces are not considered part of the cell.
@@ -420,13 +329,11 @@
 ---@field block_decorator boolean Whether to draw top & bottom border.
 ---@field use_virt_lines boolean Whether to use virtual lines for the borders.
 ---
----@field hl tables.parts Highlight groups for the parts.
----@field parts tables.parts Parts for the table.
-
--- [ Markdown | Tables > Type definitions ] -----------------------------------------------
+---@field hl markview.config.markdown.tables.parts Highlight groups for the parts.
+---@field parts markview.config.markdown.tables.parts Parts for the table.
 
 --- Parts that make the previewed table.
----@class tables.parts
+---@class markview.config.markdown.tables.parts
 ---
 ---@field align_center [ string, string ]
 ---@field align_left string
@@ -437,8 +344,6 @@
 ---@field row string[]
 ---@field bottom string[]
 ---@field overlap string[]
-
--- [ Markdown | Tables > Parameters ] -----------------------------------------------------
 
 ---@class __markdown.tables
 ---
