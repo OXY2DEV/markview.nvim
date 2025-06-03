@@ -3,7 +3,7 @@
 >[!TIP]
 > Type definitions are available in [definitions/preview.lua]().
 
-Options that change when & how previews are shown are part of this.
+Options that change when & how previews are shown are part of this. Default value can be found [here]().
 
 ```lua
 ---@type markview.config.preview
@@ -13,43 +13,28 @@ preview = {
 
     callbacks = {
         on_attach = function (_, wins)
-            --- Initial state for attached buffers.
-            ---@type string
+            ---@type boolean
             local attach_state = spec.get({ "preview", "enable" }, { fallback = true, ignore_enable = true });
 
             if attach_state == false then
-                --- Attached buffers will not have their previews
-                --- enabled.
-                --- So, don't set options.
                 return;
             end
 
             for _, win in ipairs(wins) do
-                --- Preferred conceal level should
-                --- be 3.
                 vim.wo[win].conceallevel = 3;
             end
         end,
 
         on_detach = function (_, wins)
             for _, win in ipairs(wins) do
-                --- Only set `conceallevel`.
-                --- `concealcursor` will be
-                --- set via `on_hybrid_disable`.
                 vim.wo[win].conceallevel = 0;
             end
         end,
 
         on_enable = function (_, wins)
-            --- Initial state for attached buffers.
-            ---@type string
             local attach_state = spec.get({ "preview", "enable" }, { fallback = true, ignore_enable = true });
 
             if attach_state == false then
-                -- If the window's aren't initially
-                -- attached, we need to set the 
-                -- 'concealcursor' too.
-
                 ---@type string[]
                 local preview_modes = spec.get({ "preview", "modes" }, { fallback = {}, ignore_enable = true });
                 ---@type string[]
@@ -437,4 +422,57 @@ List of Vim-mode short-hands where preview will be shown. Possible values are,
   default: `{}`
 
 List of Vim-mode short-hands where `hybrid mode` will be used. Possible values are the same as [modes](#modes).
+
+## linewise_hybrid_mode
+
+- type: `boolean`
+  default: `false`
+
+Makes `hybrid mode` show the raw version of the line under the cursor instead of all the lines creating the tree-sitter node under the cursor.
+
+>[!TIP]
+> You can modify [edit_range](#edit_range) to change how many lines are shown as raw!
+
+## max_buf_lines
+
+- type: `integer`
+  default: `1000`
+
+Maximum number of lines a buffer can have for it to be rendered entirely.
+
+If the number of lines is larger than this value, only the lines in the [draw_range](#draw_range) surrounding the cursor will be rendered.
+
+>[!CAUTION]
+> Setting this to a large value may impact performance negatively!
+
+## draw_range
+
+- type: `[ integer, integer ]`
+  default: `{ 2 * vim.o.lines, 2 * vim.o.lines }`
+
+Number of lines `before` & `after` the cursor to render/draw.
+
+>[!IMPORTANT]
+> This is done for **every cursor** a buffer has! A large value will impact performance negatively!
+
+## edit_range
+
+>[!NOTE]
+> This option only affects `hybrid mode`!
+
+- type: `[ integer, integer ]`
+  default: `{ 0, 0 }`
+
+Number of lines `before` & `after` that will be considered being edited.
+
+If [linewise_hybrid_mode](#linewise_hybrid_mode) is enabled, this determines the number of lines that will shown raw around each cursor.
+
+Otherwise, this will be used determine which nodes are considered under the cursor.
+
+## splitview_winopts
+
+- type: `vim.api.keyset.win_config`
+  default: `{ split = "right" }`
+
+Window configuration for the splitview window.
 
