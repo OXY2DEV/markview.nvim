@@ -7,7 +7,7 @@
 ---
 ---@field block_quotes markview.config.markdown.block_quotes Block quote configuration.
 ---@field code_blocks markview.config.markdown.code_blocks Fenced code block configuration.
----@field headings markdown.headings Heading configuration.
+---@field headings markview.config.markdown.headings Heading configuration.
 ---@field horizontal_rules markdown.horizontal_rules Horizontal rules configuration.
 ---@field list_items markdown.list_items List items configuration.
 ---@field metadata_minus markdown.metadata_minus YAML metadata configuration.
@@ -112,21 +112,21 @@
 ---@field language? integer[] Range of the language string.
 ---@field info_string? integer[] Range of info string.
 
--- [ Markdown | Headings ] ----------------------------------------------------------------
+------------------------------------------------------------------------------
 
----@class markdown.headings
+---@class markview.config.markdown.headings
 ---
 ---@field enable boolean Enables preview of headings.
 ---
----@field heading_1 headings.atx | fun(buffer: integer, item: __markdown.atx): headings.atx
----@field heading_2 headings.atx | fun(buffer: integer, item: __markdown.atx): headings.atx
----@field heading_3 headings.atx | fun(buffer: integer, item: __markdown.atx): headings.atx
----@field heading_4 headings.atx | fun(buffer: integer, item: __markdown.atx): headings.atx
----@field heading_5 headings.atx | fun(buffer: integer, item: __markdown.atx): headings.atx
----@field heading_6 headings.atx | fun(buffer: integer, item: __markdown.atx): headings.atx
+---@field heading_1 markview.config.markdown.headings.atx
+---@field heading_2 markview.config.markdown.headings.atx
+---@field heading_3 markview.config.markdown.headings.atx
+---@field heading_4 markview.config.markdown.headings.atx
+---@field heading_5 markview.config.markdown.headings.atx
+---@field heading_6 markview.config.markdown.headings.atx
 ---
----@field setext_1 headings.setext | fun(buffer: integer, item: __markdown.setext): headings.setext
----@field setext_2 headings.setext | fun(buffer: integer, item: __markdown.setext): headings.setext
+---@field setext_1 markview.config.markdown.headings.setext
+---@field setext_2 markview.config.markdown.headings.setext
 ---
 ---@field shift_width integer Amount of spaces to add before the heading(per level).
 ---
@@ -135,9 +135,7 @@
 ---@field org_shift_char? string Shift char for org indent.
 ---@field org_indent_wrap? boolean Whether to enable wrap support. May have severe performance issues!
 
--- [ Markdown | Headings > Type definitions ] ---------------------------------------------
-
----@class headings.atx
+---@class markview.config.markdown.headings.atx
 ---
 ---@field align? "left" | "center" | "right" Label alignment.
 ---@field corner_left? string Left corner.
@@ -155,7 +153,7 @@
 ---@field sign_hl? string Highlight group for the sign.
 ---@field style "simple" | "label" | "icon" Preview style.
 
----@class headings.setext
+---@class markview.config.markdown.headings.setext
 ---
 ---@field border string Text to use for the preview border.
 ---@field border_hl? string Highlight group for the border.
@@ -165,8 +163,6 @@
 ---@field sign? string Text to show in the sign column.
 ---@field sign_hl? string Highlight group for the sign.
 ---@field style "simple" | "decorated" Preview style.
-
--- [ Markdown | Headings > Parameters ] ---------------------------------------------------
 
 ---@class __markdown.atx
 ---
