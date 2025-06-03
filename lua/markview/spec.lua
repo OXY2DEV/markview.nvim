@@ -290,7 +290,7 @@ spec.default = {
 
 		filetypes = { "markdown", "quarto", "rmd", "typst" },
 		ignore_buftypes = { "nofile" },
-		ignore_previews = {},
+		raw_previews = {},
 
 		modes = { "n", "no", "c" },
 		hybrid_modes = {},

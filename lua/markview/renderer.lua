@@ -86,7 +86,7 @@ renderer.option_maps = {
 
 
 --- Creates node class filters for hybrid mode.
----@param filter preview.ignore?
+---@param filter markview.config.preview.raw
 ---@return markview.renderer.option_map}
 local create_filter = function (filter)
 	---|fS
@@ -94,8 +94,8 @@ local create_filter = function (filter)
 	local spec = require("markview.spec");
 
 	--- Ignore queries.
-	---@type preview.ignore
-	local filters = filter or spec.get({ "preview", "ignore_previews" }, { fallback = {} });
+	---@type markview.config.preview.raw
+	local filters = filter or spec.get({ "preview", "raw_previews" }, { fallback = {} });
 
 	--- To save time, do not recalculate node filters
 	--- if the configuration hasn't changed!
@@ -293,7 +293,7 @@ end
 --- Filters provided content.
 --- [Used for hybrid mode]
 ---@param content table
----@param filter table?
+---@param filter markview.config.preview.raw
 ---@param clear [ integer, integer ]
 ---@return table
 renderer.filter = function (content, filter, clear)
@@ -336,7 +336,7 @@ renderer.filter = function (content, filter, clear)
 	end
 
 	--- Node filters.
-	---@type preview.ignore
+	---@type markview.config.preview.raw
 	local result_filters = create_filter(filter);
 
 	---@type { [string]: table }
