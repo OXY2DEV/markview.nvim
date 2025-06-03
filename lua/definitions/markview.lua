@@ -29,6 +29,7 @@
 ---@field typst? config.typst | fun(): config.typst Typst configuration.
 ---@field yaml? config.yaml | fun(): config.yaml YAML configuration.
 
+
 --- Options used for retrieving values from
 --- the configuration table.
 ---@class markview.spec.get_opts
@@ -43,6 +44,7 @@
 
 
 ---@alias markview.renderer.option_map table<string, string[]>
+
 
 --- Maps a `node_type` to an option name.
 ---@class markview.renderer.option_maps

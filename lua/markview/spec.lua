@@ -111,41 +111,42 @@ end
 ---@type markview.config
 spec.default = {
 	experimental = {
-		read_chunk_size = 1024,
-
-		prefer_nvim = false,
-		file_open_command = "tabnew",
-		list_empty_line_tolerance = 3,
-
 		date_formats = {
-			"^%d%d%d%d%-%d%d%-%d%d$",                   --- YYYY-MM-DD
-			"^%d%d%-%d%d%-%d%d%d%d$",                   --- DD-MM-YYYY, MM-DD-YYYY
-			"^%d%d%-%d%d%-%d%d$",                       --- DD-MM-YY, MM-DD-YY, YY-MM-DD
+			"^%d%d%d%d%-%d%d%-%d%d$",      --- YYYY-MM-DD
+			"^%d%d%-%d%d%-%d%d%d%d$",      --- DD-MM-YYYY, MM-DD-YYYY
+			"^%d%d%-%d%d%-%d%d$",          --- DD-MM-YY, MM-DD-YY, YY-MM-DD
 
-			"^%d%d%d%d%/%d%d%/%d%d$",                   --- YYYY/MM/DD
-			"^%d%d%/%d%d%/%d%d%d%d$",                   --- DD/MM/YYYY, MM/DD/YYYY
+			"^%d%d%d%d%/%d%d%/%d%d$",      --- YYYY/MM/DD
+			"^%d%d%/%d%d%/%d%d%d%d$",      --- DD/MM/YYYY, MM/DD/YYYY
 
-			"^%d%d%d%d%.%d%d%.%d%d$",                   --- YYYY.MM.DD
-			"^%d%d%.%d%d%.%d%d%d%d$",                   --- DD.MM.YYYY, MM.DD.YYYY
+			"^%d%d%d%d%.%d%d%.%d%d$",      --- YYYY.MM.DD
+			"^%d%d%.%d%d%.%d%d%d%d$",      --- DD.MM.YYYY, MM.DD.YYYY
 
-			"^%d%d %a+ %d%d%d%d$",                      --- DD Month YYYY
-			"^%a+ %d%d %d%d%d%d$",                      --- Month DD, YYYY
-			"^%d%d%d%d %a+ %d%d$",                      --- YYYY Month DD
+			"^%d%d %a+ %d%d%d%d$",         --- DD Month YYYY
+			"^%a+ %d%d %d%d%d%d$",         --- Month DD, YYYY
+			"^%d%d%d%d %a+ %d%d$",         --- YYYY Month DD
 
-			"^%a+%, %a+ %d%d%, %d%d%d%d$",              --- Day, Month DD, YYYY
+			"^%a+%, %a+ %d%d%, %d%d%d%d$", --- Day, Month DD, YYYY
 		},
 
 		date_time_formats = {
 			"^%a%a%a %a%a%a %d%d %d%d%:%d%d%:%d%d ... %d%d%d%d$", --- UNIX date time
 			"^%d%d%d%d%-%d%d%-%d%dT%d%d%:%d%d%:%d%dZ$",           --- ISO 8601
-		}
+		},
+
+		prefer_nvim = false,
+		file_open_command = "tabnew",
+
+		list_empty_line_tolerance = 3,
+
+		read_chunk_size = 1024,
 	};
 
 	highlight_groups = {},
 
 	preview = {
 		enable = true,
-		map_gx = true,
+		enable_hybrid_mode = true,
 
 		callbacks = {
 			on_attach = function (_, wins)
@@ -281,24 +282,28 @@ spec.default = {
 				vim.wo[win].concealcursor = "n";
 			end
 		},
+
+		map_gx = true,
+
 		debounce = 150,
 		icon_provider = "internal",
-
-		draw_range = { 2 * vim.o.lines, 2 * vim.o.lines },
-		edit_range = { 0, 0 },
-
-		modes = { "n", "no", "c" },
-		hybrid_modes = {},
-		linewise_hybrid_mode = false,
-		max_buf_lines = 1000,
 
 		filetypes = { "markdown", "quarto", "rmd", "typst" },
 		ignore_buftypes = { "nofile" },
 		ignore_previews = {},
 
+		modes = { "n", "no", "c" },
+		hybrid_modes = {},
+
+		linewise_hybrid_mode = false,
+		max_buf_lines = 1000,
+
+		draw_range = { 2 * vim.o.lines, 2 * vim.o.lines },
+		edit_range = { 0, 0 },
+
 		splitview_winopts = {
 			split = "right"
-		}
+		},
 	},
 
 	renderers = {},
