@@ -476,27 +476,22 @@ spec.default = {
 			},
 
 			["NOTE"] = {
-				match_string = "NOTE",
 				hl = "MarkviewBlockQuoteNote",
 				preview = "󰋽 Note",
 			},
 			["TIP"] = {
-				match_string = "TIP",
 				hl = "MarkviewBlockQuoteOk",
 				preview = " Tip",
 			},
 			["IMPORTANT"] = {
-				match_string = "IMPORTANT",
 				hl = "MarkviewBlockQuoteSpecial",
 				preview = " Important",
 			},
 			["WARNING"] = {
-				match_string = "WARNING",
 				hl = "MarkviewBlockQuoteWarn",
 				preview = " Warning",
 			},
 			["CAUTION"] = {
-				match_string = "CAUTION",
 				hl = "MarkviewBlockQuoteError",
 				preview = "󰳦 Caution",
 			}
