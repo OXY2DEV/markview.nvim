@@ -980,6 +980,10 @@ Enables Obsidian-style titles in callouts.
 - type: [markview.config.markdown.code_blocks]()
   [default]()
 
+See also,
+
+- [icon_provider](), for disabling icons.
+
 Changes how fenced code blocks look.
 
 ```lua
@@ -1138,5 +1142,317 @@ Highlight group for the padding around the line.
 - type: `"simple" | "block"`
   default: `"MarkviewCode"`
 
-Highlight group used for the top & bottom part of the code block.
+Changes how code blocks are shown. Supported values are,
+
++ `"simple"`
+  Entire line is highlighted. Useful when `wrap` is enabled.
+
++ `"block"`
+  A block is created around the code block and paddings are added before & after each line.
+
+### sign
+
+- type: `boolean`
+  default: `true`
+
+Enables language icon in the sign column.
+
+## headings
+
+- type: [markview.config.markdown.headings]()
+
+Changes how ATX & Setext headings are shown.
+
+```lua
+headings = {
+    enable = true,
+
+    shift_width = 1,
+
+    org_indent = false,
+    org_indent_wrap = true,
+    org_shift_char = " ",
+    org_shift_width = 1,
+
+    heading_1 = {
+        style = "icon",
+        sign = "󰌕 ", sign_hl = "MarkviewHeading1Sign",
+
+        icon = "󰼏  ", hl = "MarkviewHeading1",
+    },
+    heading_2 = {
+        style = "icon",
+        sign = "󰌖 ", sign_hl = "MarkviewHeading2Sign",
+
+        icon = "󰎨  ", hl = "MarkviewHeading2",
+    },
+    heading_3 = {
+        style = "icon",
+
+        icon = "󰼑  ", hl = "MarkviewHeading3",
+    },
+    heading_4 = {
+        style = "icon",
+
+        icon = "󰎲  ", hl = "MarkviewHeading4",
+    },
+    heading_5 = {
+        style = "icon",
+
+        icon = "󰼓  ", hl = "MarkviewHeading5",
+    },
+    heading_6 = {
+        style = "icon",
+
+        icon = "󰎴  ", hl = "MarkviewHeading6",
+    },
+
+    setext_1 = {
+        style = "decorated",
+
+        sign = "󰌕 ", sign_hl = "MarkviewHeading1Sign",
+        icon = "  ", hl = "MarkviewHeading1",
+        border = "▂"
+    },
+    setext_2 = {
+        style = "decorated",
+
+        sign = "󰌖 ", sign_hl = "MarkviewHeading2Sign",
+        icon = "  ", hl = "MarkviewHeading2",
+        border = "▁"
+    }
+},
+```
+
+### enable
+
+- type: `boolean`
+  default: `true`
+
+Self-explanatory.
+
+### heading_1
+
+- type: [markview.config.markdown.headings.atx]()
+  [default]()
+
+Changes how level 1 ATX headings are shown.
+
+```lua
+heading_1 = {
+    align = nil,
+
+    corner_left = nil,
+    corner_left_hl = nil,
+
+    corner_right = nil,
+    corner_right_hl = nil,
+
+    hl = nil,
+
+    icon = nil,
+    icon_hl = nil,
+
+    padding_left = nil,
+    padding_left_hl = nil,
+
+    padding_right = nil,
+    padding_right_hl = nil,
+
+    sign = nil,
+    sign_hl = nil,
+
+    style = nil,
+},
+```
+
+#### align
+
+>[!IMPORTANT]
+> This only has effect if [style](#atx_style) is set to `label`.
+
+- type: `"left" | "center" | "right"`
+
+Allows pinning the heading text to a specific side of the window. Useful if a buffer is being viewed by a single window.
+
+#### corner_left
+
+>[!IMPORTANT]
+> This only has effect if [style](#atx_style) is set to `label`.
+
+- type: `string`
+
+Text used as the left corner of the label.
+
+#### corner_left_hl
+
+>[!IMPORTANT]
+> This only has effect if [style](#atx_style) is set to `label`.
+
+- type: `tring"`
+
+Highlight group for [corner_left](#corner_left).
+
+#### corner_right
+
+>[!IMPORTANT]
+> This only has effect if [style](#atx_style) is set to `label`.
+
+- type: `string`
+
+Text used as the right corner of the label.
+
+#### corner_right_hl
+
+>[!IMPORTANT]
+> This only has effect if [style](#atx_style) is set to `label`.
+
+- type: `tring"`
+
+Highlight group for [corner_right](#corner_right).
+
+<h4 id="atx_hl">hl</h4>
+
+- type: `string`
+
+Highlight group for [heading_1](#heading_1).
+
+This will be used by [corner_left_hl](#corner_left_hl), [corner_right_hl](#corner_right_hl), [padding_left_hl](#padding_left_hl), [padding_right_hl](#padding_right_hl), [icon_hl](#atx_icon_hl) & [sign_hl](#sign_hl).
+
+<h4 id="atx_icon">icon</h4>
+
+>[!IMPORTANT]
+> This option isn't used if [style](#atx_style) is set to `simple`. 
+
+- type: `string`
+
+Text used for icon(added after [padding_left](#padding_left) when [style](atx_style) is `label`).
+
+<h4 id="atx_icon_hl">icon_hl</h4>
+
+>[!IMPORTANT]
+> This option isn't used if [style](#atx_style) is set to `simple`. 
+
+- type: `string`
+
+Highlight group for [icon](#atx_icon).
+
+#### padding_left
+
+>[!IMPORTANT]
+> This only has effect if [style](#atx_style) is set to `label`.
+
+- type: `string`
+
+Text used as the left padding of the label.
+
+#### padding_left_hl
+
+>[!IMPORTANT]
+> This only has effect if [style](#atx_style) is set to `label`.
+
+- type: `tring"`
+
+Highlight group for [padding_left](#padding_left).
+
+#### padding_right
+
+>[!IMPORTANT]
+> This only has effect if [style](#atx_style) is set to `label`.
+
+- type: `string`
+
+Text used as the right padding of the label.
+
+#### padding_right_hl
+
+>[!IMPORTANT]
+> This only has effect if [style](#atx_style) is set to `label`.
+
+- type: `tring"`
+
+Highlight group for [padding_right](#padding_right).
+
+<h4 id="atx_sign">sign</h4>
+
+- type: `string`
+
+Text used as the right padding of the label.
+
+#### sign_hl
+
+- type: `tring"`
+
+Highlight group for [sign](#atx_sign).
+
+#### style
+
+- type: `"simple" | "label" | "icon"`
+
+Heading style. Possible values are,
+
++ `"simple"`
+  The heading line is highlighted.
+
++ `"label"`
+  Glow-like headings, supports corners, paddings & icon.
+
++ `"icon"`
+  Only shows the icon.
+
+### heading_2
+
+- type: [markview.config.markdown.headings.atx]()
+  [default]()
+
+Changes how level 2 ATX headings are shown. Options are same as [heading_1](#heading_1).
+
+### heading_3
+
+- type: [markview.config.markdown.headings.atx]()
+  [default]()
+
+Changes how level 3 ATX headings are shown. Options are same as [heading_1](#heading_1).
+
+### heading_4
+
+- type: [markview.config.markdown.headings.atx]()
+  [default]()
+
+Changes how level 4 ATX headings are shown. Options are same as [heading_1](#heading_1).
+
+### heading_5
+
+- type: [markview.config.markdown.headings.atx]()
+  [default]()
+
+Changes how level 5 ATX headings are shown. Options are same as [heading_1](#heading_1).
+
+### heading_6
+
+- type: [markview.config.markdown.headings.atx]()
+  [default]()
+
+Changes how level 6 ATX headings are shown. Options are same as [heading_1](#heading_1).
+
+### setext_1
+
+- type: [markview.config.markdown.headings.setext]()
+  [default]()
+
+Changes how level 1 Setext headings are shown.
+
+```lua
+setext_1 = {
+	border = nil,
+	border_hl = nil,
+	hl = nil,
+	icon = nil,
+	icon_hl = nil,
+	sign = nil,
+	sign_hl = nil,
+	style = nil,
+}
+```
+
 
