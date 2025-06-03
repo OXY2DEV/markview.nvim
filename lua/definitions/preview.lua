@@ -17,16 +17,17 @@
 ---| "devicons" `nvim-web-devicons` as icon provider.
 ---| "mini" `mini.icons` as icon provider.
 ---
+---@field filetypes? string[] Buffer filetypes where the plugin should attach.
+---@field ignore_buftypes? string[] Buftypes that should be ignored(e.g. nofile).
+---@field raw_previews? markview.config.preview.raw Options that will show up as raw in hybrid mode.
+---
 ---@field modes? string[] VIM-modes where previews will be shown.
 ---@field hybrid_modes? string[] VIM-modes where `hybrid mode` is enabled. Options that should/shouldn't be previewed in `hybrid_modes`.
 ---
----@field ignore_previews? preview.ignore
 --- Clear lines around the cursor in `hybrid mode`, instead of nodes?
 ---@field linewise_hybrid_mode? boolean
---- Buffer filetypes where the plugin should attach.
----@field filetypes? string[]
---- Buftypes that should be ignored(e.g. nofile).
----@field ignore_buftypes? string[]
+---
+---
 --- Condition to check if a buffer should be attached or not.
 ---@field condition? fun(buffer: integer): boolean
 --- Maximum number of lines a buffer can have before switching to partial rendering.
@@ -61,17 +62,16 @@
 ---@field on_splitview_open? fun(source: integer, preview_buf: integer, preview_win: integer): nil Called when opening splitview.
 
 
---- Items to ignore when rendering.
----@class preview.ignore
+---@class markview.config.preview.raw
 ---
----@field html? ignore_html[]
----@field latex? ignore_latex[]
----@field markdown? ignore_md[]
----@field markdown_inline? ignore_inline[]
----@field typst? ignore_typst[]
----@field yaml? ignore_yaml[]
+---@field html? markview.config.preview.raw.html[]
+---@field latex? markview.config.preview.raw.latex[]
+---@field markdown? markview.config.preview.raw.markdown[]
+---@field markdown_inline? markview.config.preview.raw.markdown_inline[]
+---@field typst? markview.config.preview.raw.typst[]
+---@field yaml? markview.config.preview.raw.yaml[]
 
----@alias ignore_html
+---@alias markview.config.preview.raw.html
 ---| "!container_elements"
 ---| "!headings"
 ---| "!void_elements"
@@ -80,7 +80,7 @@
 ---| "headings"
 ---| "void_elements"
 
----@alias ignore_latex
+---@alias markview.config.preview.raw.latex
 ---| "!blocks"
 ---| "!commands"
 ---| "!escapes"
@@ -103,7 +103,7 @@
 ---| "symbols"
 ---| "texts"
 
----@alias ignore_md
+---@alias markview.config.preview.raw.markdown
 ---| "!block_quotes"
 ---| "!code_blocks"
 ---| "!headings"
@@ -126,7 +126,7 @@
 ---
 ---| "checkboxes"
 
----@alias ignore_inline
+---@alias markview.config.preview.raw.markdown_inline
 ---| "!block_references"
 ---| "!checkboxes"
 ---| "!emails"
@@ -155,7 +155,7 @@
 ---| "internal_links"
 ---| "uri_autolinks"
 
----@alias ignore_typst
+---@alias markview.config.preview.raw.typst
 ---| "!code_blocks"
 ---| "!code_spans"
 ---| "!escapes"
@@ -190,7 +190,7 @@
 ---| "terms"
 ---| "url_links"
 
----@alias ignore_yaml
+---@alias markview.config.preview.raw.yaml
 ---| "!properties"
 ---
 ---| "properties"
