@@ -500,18 +500,15 @@ spec.default = {
 		code_blocks = {
 			enable = true,
 
-			style = "block",
-
-			label_direction = "right",
-
 			border_hl = "MarkviewCode",
 			info_hl = "MarkviewCodeInfo",
+
+			label_direction = "right",
+			label_hl = nil,
 
 			min_width = 60,
 			pad_amount = 2,
 			pad_char = " ",
-
-			sign = true,
 
 			default = {
 				block_hl = "MarkviewCode",
@@ -529,7 +526,10 @@ spec.default = {
 					end
 				end,
 				pad_hl = "MarkviewCode"
-			}
+			},
+
+			style = "block",
+			sign = true,
 		},
 
 		headings = {
@@ -2573,7 +2573,6 @@ spec.fixup = {
 		});
 
 		return {};
-
 	end,
 
 
@@ -2742,7 +2741,6 @@ spec.fixup = {
 	end,
 
 	["inline_codes"] = function (value)
-
 		return {
 			markdown_inline = {
 				inline_codes = value

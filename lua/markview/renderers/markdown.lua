@@ -1157,7 +1157,7 @@ end
 markdown.block_quote = function (buffer, item)
 	---+${func, Renders Block quotes & Callouts/Alerts}
 
-	---@type markdown.block_quotes?
+	---@type markview.config.markdown.block_quotes?
 	local main_config = spec.get({ "markdown", "block_quotes" }, { fallback = nil, eval_args = { buffer, item } });
 	local range = item.range;
 
@@ -1168,7 +1168,7 @@ markdown.block_quote = function (buffer, item)
 		return;
 	end
 
-	---@type block_quotes.opts
+	---@type markview.config.markdown.block_quotes.opts
 	local config;
 
 	if item.callout then
