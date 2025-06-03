@@ -326,8 +326,6 @@ spec.default = {
 
 				title = true,
 				icon = "󱉫",
-
-				border = "▋"
 			},
 			["SUMMARY"] = {
 				hl = "MarkviewBlockQuoteNote",
@@ -335,8 +333,6 @@ spec.default = {
 
 				title = true,
 				icon = "󱉫",
-
-				border = "▋"
 			},
 			["TLDR"] = {
 				hl = "MarkviewBlockQuoteNote",
@@ -344,8 +340,6 @@ spec.default = {
 
 				title = true,
 				icon = "󱉫",
-
-				border = "▋"
 			},
 			["TODO"] = {
 				hl = "MarkviewBlockQuoteNote",
@@ -353,8 +347,6 @@ spec.default = {
 
 				title = true,
 				icon = "",
-
-				border = "▋"
 			},
 			["INFO"] = {
 				hl = "MarkviewBlockQuoteNote",
@@ -362,8 +354,6 @@ spec.default = {
 
 				custom_title = true,
 				icon = "",
-
-				border = "▋"
 			},
 			["SUCCESS"] = {
 				hl = "MarkviewBlockQuoteOk",
@@ -371,8 +361,6 @@ spec.default = {
 
 				title = true,
 				icon = "󰗠",
-
-				border = "▋"
 			},
 			["CHECK"] = {
 				hl = "MarkviewBlockQuoteOk",
@@ -380,8 +368,6 @@ spec.default = {
 
 				title = true,
 				icon = "󰗠",
-
-				border = "▋"
 			},
 			["DONE"] = {
 				hl = "MarkviewBlockQuoteOk",
@@ -389,8 +375,6 @@ spec.default = {
 
 				title = true,
 				icon = "󰗠",
-
-				border = "▋"
 			},
 			["QUESTION"] = {
 				hl = "MarkviewBlockQuoteWarn",
@@ -398,8 +382,6 @@ spec.default = {
 
 				title = true,
 				icon = "󰋗",
-
-				border = "▋"
 			},
 			["HELP"] = {
 				hl = "MarkviewBlockQuoteWarn",
@@ -407,8 +389,6 @@ spec.default = {
 
 				title = true,
 				icon = "󰋗",
-
-				border = "▋"
 			},
 			["FAQ"] = {
 				hl = "MarkviewBlockQuoteWarn",
@@ -416,8 +396,6 @@ spec.default = {
 
 				title = true,
 				icon = "󰋗",
-
-				border = "▋"
 			},
 			["FAILURE"] = {
 				hl = "MarkviewBlockQuoteError",
@@ -425,8 +403,6 @@ spec.default = {
 
 				title = true,
 				icon = "󰅙",
-
-				border = "▋"
 			},
 			["FAIL"] = {
 				hl = "MarkviewBlockQuoteError",
@@ -434,8 +410,6 @@ spec.default = {
 
 				title = true,
 				icon = "󰅙",
-
-				border = "▋"
 			},
 			["MISSING"] = {
 				hl = "MarkviewBlockQuoteError",
@@ -443,8 +417,6 @@ spec.default = {
 
 				title = true,
 				icon = "󰅙",
-
-				border = "▋"
 			},
 			["DANGER"] = {
 				hl = "MarkviewBlockQuoteError",
@@ -452,8 +424,6 @@ spec.default = {
 
 				title = true,
 				icon = "",
-
-				border = "▋"
 			},
 			["ERROR"] = {
 				hl = "MarkviewBlockQuoteError",
@@ -461,8 +431,6 @@ spec.default = {
 
 				title = true,
 				icon = "",
-
-				border = "▋"
 			},
 			["BUG"] = {
 				hl = "MarkviewBlockQuoteError",
@@ -470,8 +438,6 @@ spec.default = {
 
 				title = true,
 				icon = "",
-
-				border = "▋"
 			},
 			["EXAMPLE"] = {
 				hl = "MarkviewBlockQuoteSpecial",
@@ -479,8 +445,6 @@ spec.default = {
 
 				title = true,
 				icon = "󱖫",
-
-				border = "▋"
 			},
 			["QUOTE"] = {
 				hl = "MarkviewBlockQuoteDefault",
@@ -488,8 +452,6 @@ spec.default = {
 
 				title = true,
 				icon = "",
-
-				border = "▋"
 			},
 			["CITE"] = {
 				hl = "MarkviewBlockQuoteDefault",
@@ -497,8 +459,6 @@ spec.default = {
 
 				title = true,
 				icon = "",
-
-				border = "▋"
 			},
 			["HINT"] = {
 				hl = "MarkviewBlockQuoteOk",
@@ -506,8 +466,6 @@ spec.default = {
 
 				title = true,
 				icon = "",
-
-				border = "▋"
 			},
 			["ATTENTION"] = {
 				hl = "MarkviewBlockQuoteWarn",
@@ -515,45 +473,32 @@ spec.default = {
 
 				title = true,
 				icon = "",
-
-				border = "▋"
 			},
-
 
 			["NOTE"] = {
 				match_string = "NOTE",
 				hl = "MarkviewBlockQuoteNote",
 				preview = "󰋽 Note",
-
-				border = "▋"
 			},
 			["TIP"] = {
 				match_string = "TIP",
 				hl = "MarkviewBlockQuoteOk",
 				preview = " Tip",
-
-				border = "▋"
 			},
 			["IMPORTANT"] = {
 				match_string = "IMPORTANT",
 				hl = "MarkviewBlockQuoteSpecial",
 				preview = " Important",
-
-				border = "▋"
 			},
 			["WARNING"] = {
 				match_string = "WARNING",
 				hl = "MarkviewBlockQuoteWarn",
 				preview = " Warning",
-
-				border = "▋"
 			},
 			["CAUTION"] = {
 				match_string = "CAUTION",
 				hl = "MarkviewBlockQuoteError",
 				preview = "󰳦 Caution",
-
-				border = "▋"
 			}
 		},
 

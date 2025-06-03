@@ -1185,6 +1185,12 @@ markdown.block_quote = function (buffer, item)
 			{ "default" },
 			{ source = main_config, eval_args = { buffer, item } }
 		);
+
+		---@type markview.config.markdown.block_quotes.opts
+		local default = spec.get({ "default" }, { source = main_config, eval_args = { buffer, item } });
+
+		-- Inherit undefined option values from `default`.
+		config = vim.tbl_deep_extend("force", default, config);
 	else
 		config = spec.get({ "default" }, { source = main_config, eval_args = { buffer, item } });
 	end
