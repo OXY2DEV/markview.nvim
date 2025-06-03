@@ -153,7 +153,7 @@ preview = {
 
     filetypes = { "markdown", "quarto", "rmd", "typst" },
     ignore_buftypes = { "nofile" },
-    ignore_previews = {},
+    raw_previews = {},
 
     modes = { "n", "no", "c" },
     hybrid_modes = {},
@@ -368,4 +368,73 @@ Debounce delay for updating previews.
 
 >[!CAUTION]
 > Smaller values may impact performance negatively!
+
+## icon_provider
+
+- type: `"" | "internal" | "devicons" | "mini"`
+  default: `"internal"`
+
+Icon provider to use in various parts of the plugin(e.g. `code blocks`). 
+
+## filetypes
+
+- type: `string[]`
+  default: `{ "markdown", "quarto", "rmd", "typst" }`
+
+Filetypes that should show previews. The plugin will attach to any buffers matching any of these filetypes.
+
+## ignore_buftypes
+
+- type: `string[]`
+  default: `{ "nofile" }`
+
+Buftypes that should be ignored by this plugin. Buffers whose filetype matches any of these will not be attached to(even if the filetype matches [filetypes](#filetypes)).
+
+## raw_previews
+
+>[!IMPORTANT]
+> This option only has effects if [hybrid_modes](#hybrid_modes) is active!
+
+- type: `markview.config.preview.raw`
+  default: `{}`
+
+A map of language & preview options defining what should be shown as raw text in `hybrid mode`.
+
+```lua
+raw_previews = {
+	-- This will cause only table's to show
+    -- up as raw markdown in hybrid mode.
+	markdown = { "tables" },
+
+	-- An empty list means everything will show
+    -- up as raw.
+    markdown_inline = {},
+    html = {},
+    latex = {},
+    typst = {},
+    yaml = {},
+}
+```
+
+## modes
+
+- type: `string[]`
+  default: `{ "n", "no", "c" }`
+
+List of Vim-mode short-hands where preview will be shown. Possible values are,
+
++ `n`, Normal mode
++ `i`, Insert mode
++ `v`, Visual mode
++ `V`, Visual-line mode
++ ``, Visual-block mode
++ `no`, Normal-operation mode
++ `c`, Command mode
+
+## hybrid_modes
+
+- type: `string[]`
+  default: `{}`
+
+List of Vim-mode short-hands where `hybrid mode` will be used. Possible values are the same as [modes](#modes).
 
