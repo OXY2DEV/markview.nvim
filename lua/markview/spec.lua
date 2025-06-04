@@ -1854,10 +1854,6 @@ spec.default = {
 
 		parenthesis = {
 			enable = true,
-
-			left = "(",
-			right = "(",
-			hl = "@punctuation.bracket"
 		},
 
 		subscripts = {
