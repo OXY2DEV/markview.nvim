@@ -2179,7 +2179,7 @@ Self-explanatory.
 - type: [markview.config.__inline_generic]()
   [default]()
 
-Default configuration. See [how inline elements are configured].
+Default configuration. See [how inline elements are configured]().
 
 ### \[string\]
 
