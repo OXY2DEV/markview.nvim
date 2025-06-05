@@ -169,7 +169,7 @@ typst.code_block = function (buffer, item)
 				{ config.text, utils.set_hl(config.text_hl or config.hl) },
 			},
 
-			sign_text = config.sign == true and sign or nil,
+			sign_text = config.sign,
 			sign_hl_group = utils.set_hl(config.sign_hl or config.hl)
 		});
 
@@ -555,8 +555,11 @@ typst.list_item = function (buffer, item)
 		return;
 	end
 
-	local indent = main_config.indent_size;
-	local shift  = main_config.shift_width;
+	local indent = type(main_config.indent_size) == "number" and main_config.indent_size or 1;
+	local shift  = type(main_config.shift_width) == "number" and main_config.shift_width or 1;
+
+	---@cast indent integer
+	---@cast shift integer
 
 	local range = item.range;
 
