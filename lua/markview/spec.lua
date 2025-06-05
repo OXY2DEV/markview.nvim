@@ -2302,11 +2302,11 @@ spec.default = {
 			default = {
 				use_types = true,
 
-				border_top = " │ ",
-				border_middle = " │ ",
-				border_bottom = " ╰╸",
+				border_top = nil,
+				border_middle = nil,
+				border_bottom = nil,
 
-				border_hl = "MarkviewComment"
+				border_hl = nil,
 			},
 
 			["^tags$"] = {
