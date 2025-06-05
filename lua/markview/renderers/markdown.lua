@@ -2118,14 +2118,19 @@ markdown.metadata_minus = function (buffer, item)
 		} or nil
 	});
 
-	if not config.hl then return; end
+	for r = range.row_start + 1, range.row_end - 2, 1 do
+		vim.api.nvim_buf_set_extmark(buffer, markdown.ns, r, 0, {
+			undo_restore = false, invalidate = true,
 
-	vim.api.nvim_buf_set_extmark(buffer, markdown.ns, range.row_start + 1, 0, {
-		undo_restore = false, invalidate = true,
-		end_row = range.row_end - 1,
+			virt_text_pos = "inline",
+			virt_text = {
+				{ "   ", utils.set_hl(config.hl) }
+			},
 
-		line_hl_group = utils.set_hl(config.hl)
-	});
+			right_gravity = false,
+			line_hl_group = utils.set_hl(config.hl)
+		});
+	end
 	---_
 end
 
@@ -2181,14 +2186,19 @@ markdown.metadata_plus = function (buffer, item)
 		} or nil
 	});
 
-	if not config.hl then return; end
+	for r = range.row_start + 1, range.row_end - 1, 1 do
+		vim.api.nvim_buf_set_extmark(buffer, markdown.ns, r, 0, {
+			undo_restore = false, invalidate = true,
 
-	vim.api.nvim_buf_set_extmark(buffer, markdown.ns, range.row_start + 1, 0, {
-		undo_restore = false, invalidate = true,
-		end_row = range.row_end - 1,
+			virt_text_pos = "inline",
+			virt_text = {
+				{ "   ", utils.set_hl(config.hl) }
+			},
 
-		line_hl_group = utils.set_hl(config.hl)
-	});
+			line_hl_group = utils.set_hl(config.hl)
+		});
+	end
+
 	---_
 end
 
