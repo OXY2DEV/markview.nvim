@@ -39,30 +39,6 @@
 ---@field preview_hl? string Highlight group for the preview.
 ---@field title? boolean Whether the block quote can have a title or not.
 
----@class __markdown.block_quotes
----
----@field class "markdown_block_quote"
----
----@field callout string? Callout text(text inside `[!...]`).
----@field title string? Title of the callout.
----
----@field text string[]
----@field range __block_quotes.range
----
----@field __nested boolean Is the node nested?
-
----@class __block_quotes.range
----
----@field row_start integer
----@field row_end integer
----@field col_start integer
----@field col_end integer
----
----@field callout_start? integer Start column of callout text(after `[!`).
----@field callout_end? integer End column of callout text(before `]`).
----@field title_start? integer Start column of the title.
----@field title_end? integer End column of the title.
-
 ------------------------------------------------------------------------------
 
 --- Configuration for code blocks.
@@ -90,33 +66,11 @@
 ---@field block_hl string | fun(buffer: integer, line: string): string? Highlight group for the background of the line.
 ---@field pad_hl string | fun(buffer: integer, line: string): string? Highlight group for the padding of the line.
 
-
----@class __markdown.code_blocks
----
----@field class "markdown_code_block"
----
----@field delimiters [ string, string ] Code block delimiters.
----@field language string? Language string(typically after ```).
----@field info_string string? Extra information regarding the code block.
----
----@field text string[]
----@field range __code_blocks.range
-
----@class __code_blocks.range
----
----@field row_start integer
----@field row_end integer
----@field col_start integer
----@field col_end integer
----
----@field language? integer[] Range of the language string.
----@field info_string? integer[] Range of info string.
-
 ------------------------------------------------------------------------------
 
 ---@class markview.config.markdown.headings
 ---
----@field enable boolean Enables preview of headings.
+---@field enable boolean
 ---
 ---@field heading_1 markview.config.markdown.headings.atx
 ---@field heading_2 markview.config.markdown.headings.atx
@@ -135,52 +89,48 @@
 ---@field org_shift_char? string Shift char for org indent.
 ---@field org_indent_wrap? boolean Whether to enable wrap support. May have severe performance issues!
 
+
 ---@class markview.config.markdown.headings.atx
 ---
 ---@field align? "left" | "center" | "right" Label alignment.
+---
 ---@field corner_left? string Left corner.
 ---@field corner_left_hl? string Highlight group for left corner.
+---
 ---@field corner_right? string Right corner.
 ---@field corner_right_hl? string Highlight group for right corner.
+---
 ---@field hl? string Base Highlight group.
+---
 ---@field icon? string Icon.
 ---@field icon_hl? string Highlight group for icon.
+---
 ---@field padding_left? string Left padding.
 ---@field padding_left_hl? string Highlight group for left padding.
+---
 ---@field padding_right? string Right padding.
 ---@field padding_right_hl? string Highlight group for right padding.
+---
 ---@field sign? string Text to show on the sign column.
 ---@field sign_hl? string Highlight group for the sign.
+---
 ---@field style "simple" | "label" | "icon" Preview style.
+
 
 ---@class markview.config.markdown.headings.setext
 ---
 ---@field border string Text to use for the preview border.
 ---@field border_hl? string Highlight group for the border.
+---
 ---@field hl? string Base highlight group.
+---
 ---@field icon? string Text to use for the icon.
 ---@field icon_hl? string Highlight group for the icon.
+---
 ---@field sign? string Text to show in the sign column.
 ---@field sign_hl? string Highlight group for the sign.
+---
 ---@field style "simple" | "decorated" Preview style.
-
----@class __markdown.atx
----
----@field class "markdown_atx_heading"
----
----@field marker "#" | "##" | "###" | "####" | "#####" | "######" Heading marker.
----
----@field text string[]
----@field range node.range
-
----@class __markdown.setext
----
----@field class "markdown_setext_heading"
----
----@field marker "---" | "===" Heading marker.
----
----@field text string[]
----@field range node.range
 
 ------------------------------------------------------------------------------
 
@@ -188,8 +138,13 @@
 ---@class markview.config.markdown.hr
 ---
 ---@field enable boolean Enables preview of horizontal rules.
----
----@field parts ( markview.config.markdown.hr.text | markview.config.markdown.hr.repeating )[] Parts for the horizontal rules.
+---@field parts markview.config.markdown.hr.part[] Parts for the horizontal rules.
+
+
+---@alias markview.config.markdown.hr.part
+---| markview.config.markdown.hr.text
+---| markview.config.markdown.hr.repeating
+
 
 ---@class markview.config.markdown.hr.text
 ---
@@ -198,24 +153,19 @@
 ---@field hl? string Highlight group for this part.
 ---@field text string Text to show.
 
+
 ---@class markview.config.markdown.hr.repeating
 ---
 ---@field type "repeating" Part name.
 ---
 ---@field direction "left" | "right" Direction from which the highlight groups are applied from.
 ---
----@field repeat_amount integer | fun(buffer: integer, item: __markdown.horizontal_rules): integer How many times to repeat the text.
+---@field repeat_amount integer | fun(buffer: integer, item: markview.parsed.markdown.hr): integer How many times to repeat the text.
 ---@field repeat_hl? boolean Whether to repeat the highlight groups.
 ---@field repeat_text? boolean Whether to repeat the text.
 ---
 ---@field text string | string[] Text to repeat.
 ---@field hl? string | string[] Highlight group for the text.
-
----@class __markdown.horizontal_rules
----
----@field class "markdown_hr"
----@field text string[]
----@field range node.range
 
 ------------------------------------------------------------------------------
 
@@ -224,8 +174,8 @@
 ---
 ---@field enable boolean
 ---
----@field indent_size integer | fun(buffer: integer, item: __markdown.list_items): integer Indentation size for list items.
----@field shift_width integer | fun(buffer: integer, item: __markdown.list_items): integer Virtual indentation size for previewed list items.
+---@field indent_size integer | fun(buffer: integer, item: markview.parsed.markdown.list_items): integer Indentation size for list items.
+---@field shift_width integer | fun(buffer: integer, item: markview.parsed.markdown.list_items): integer Virtual indentation size for previewed list items.
 ---
 ---@field marker_dot markview.config.markdown.list_items.ordered Configuration for `n.` list items.
 ---@field marker_minus markview.config.markdown.list_items.unordered Configuration for `-` list items.
@@ -235,6 +185,7 @@
 ---
 ---@field wrap? boolean Enables wrap support.
 
+
 ---@class markview.config.markdown.list_items.unordered
 ---
 ---@field add_padding boolean
@@ -243,23 +194,12 @@
 ---@field hl? string
 ---@field text string
 
+
 ---@class markview.config.markdown.list_items.ordered
 ---
 ---@field add_padding boolean
 ---@field conceal_on_checkboxes? boolean
 ---@field enable? boolean
-
----@class __markdown.list_items
----
----@field class "markdown_list_item"
----@field candidates integer[] List of line numbers(0-indexed) from `range.row_start` that should be indented.
----@field marker "-" | "+" | "*" | string List marker text.
----@field checkbox? string Checkbox state(if there is a checkbox).
----@field indent integer Spaces before the list marker.
----@field text string[]
----@field range node.range
----
----@field __block boolean Indicates whether the list item is the children of a block quote.
 
 ------------------------------------------------------------------------------
 
@@ -276,18 +216,6 @@
 ---
 ---@field hl? string Background highlight group.
 
----@class __markdown.metadata_minus
----
----@field class "markdown_metadata_minus"
----@field text string[]
----@field range node.range
-
----@class __markdown.metadata_plus
----
----@field class "markdown_metadata_plus"
----@field text string[]
----@field range node.range
-
 ------------------------------------------------------------------------------
 
 --- Configuration for reference definitions.
@@ -295,28 +223,8 @@
 ---
 ---@field enable boolean
 ---
----@field default config.inline_generic Default configuration for reference definitions.
----@field [string] config.inline_generic Configuration for reference definitions whose description matches `string`.
-
----@class __markdown.reference_definitions
----
----@field class "markdown_link_ref_definition"
----
----@field label? string Visible part of the reference link definition.
----@field description? string Description of the reference link.
----
----@field text string[]
----@field range __reference_definitions.range
-
----@class __reference_definitions.range
----
----@field row_start integer
----@field row_end integer
----@field col_start integer
----@field col_end integer
----
----@field label integer[] Range of the label node(result of `TSNode:range()`).
----@field description? integer[] Range of the description node. Same as `label`.
+---@field default markview.config.__inline Default configuration for reference definitions.
+---@field [string] markview.config.__inline Configuration for reference definitions whose description matches `string`.
 
 ------------------------------------------------------------------------------
 
@@ -332,58 +240,19 @@
 ---@field hl markview.config.markdown.tables.parts Highlight groups for the parts.
 ---@field parts markview.config.markdown.tables.parts Parts for the table.
 
+
 --- Parts that make the previewed table.
 ---@class markview.config.markdown.tables.parts
 ---
 ---@field align_center [ string, string ]
 ---@field align_left string
 ---@field align_right string
+---
 ---@field top string[]
 ---@field header string[]
 ---@field separator string[]
 ---@field row string[]
 ---@field bottom string[]
+---
 ---@field overlap string[]
-
----@class __markdown.tables
----
----@field class "markdown_table"
----@field has_alignment_markers boolean Are there any alignment markers(e.g. `:-`, `-:`, `:-:`)?
----
----@field top_border boolean Can we draw the top border?
----@field bottom_border boolean Can we draw the bottom border?
----@field border_overlap boolean Is the table's borders overlapping another table?
----
----@field alignments ( "left" | "center" | "right" | "default" )[] Text alignments.
----@field header __tables.cell[]
----@field separator __tables.cell[]
----@field rows __tables.cell[][]
----
----@field text string[]
----@field range node.range
-
----@class __tables.cell
----
----@field class "separator" | "column" | "missing_separator"
----
----@field text string
----
----@field col_start integer
----@field col_end integer
-
--- [ Markdown | Misc ] --------------------------------------------------------------------
-
----@class __markdown.checkboxes
----
----@field class "markdown_checkbox"
----@field state string State of the checkbox(text inside `[]`).
----@field text string[],
----@field range node.range
-
----@class __markdown.sections
----
----@field class "markdown_section"
----@field level integer
----@field text string[]
----@field range node.range
 

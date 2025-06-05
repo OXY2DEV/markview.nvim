@@ -37,10 +37,8 @@ end
 ---@param buffer integer
 ---@param TSNode table
 ---@param text string[]
----@param range node.range
+---@param range markview.parsed.range
 markdown.atx_heading = function (buffer, TSNode, text, range)
-	---+${lua}
-
 	local marker = TSNode:named_child(0);
 
 	if text[1]:match("^%s+") then
@@ -49,7 +47,6 @@ markdown.atx_heading = function (buffer, TSNode, text, range)
 		range.col_start = range.col_start + text[1]:match("^%s+"):len();
 	end
 
-	---@type __markdown.atx
 	markdown.insert({
 		class = "markdown_atx_heading",
 
@@ -58,17 +55,14 @@ markdown.atx_heading = function (buffer, TSNode, text, range)
 
 		range = range
 	});
-	---_
 end
 
 --- Setext heading parser.
 ---@param buffer integer
 ---@param TSNode table
 ---@param text string[]
----@param range node.range
+---@param range markview.parsed.range
 markdown.setext_heading = function (buffer, TSNode, text, range)
-	---+${lua}
-
 	local marker = TSNode:named_child(1);
 
 	markdown.insert({
@@ -79,17 +73,13 @@ markdown.setext_heading = function (buffer, TSNode, text, range)
 
 		range = range
 	});
-	---_
 end
 
---- Block quote parser
 ---@param buffer integer
 ---@param TSNode table
 ---@param lines string[]
----@param range __block_quotes.range
+---@param range markview.parsed.markdown.block_quotes.range
 markdown.block_quote = function (buffer, TSNode, lines, range)
-	---+${lua}
-
 	local text = vim.api.nvim_buf_get_lines(buffer, range.row_start, range.row_end, false);
 
 	if lines[1]:match("^[^%>]+") then
@@ -97,7 +87,7 @@ markdown.block_quote = function (buffer, TSNode, lines, range)
 	end
 
 	for l, line in ipairs(text) do
-		--- We want to get text after the start column.
+		-- We want to get text after the start column.
 		text[l] = line:sub(range.col_start + 1);
 	end
 
@@ -114,7 +104,6 @@ markdown.block_quote = function (buffer, TSNode, lines, range)
 		range.title_end = range.col_start + title_end;
 	end
 
-	---@type __markdown.block_quotes
 	markdown.insert({
 		class = "markdown_block_quote",
 		__nested = TSNode:parent() ~= nil,
@@ -125,13 +114,11 @@ markdown.block_quote = function (buffer, TSNode, lines, range)
 
 		range = range
 	});
-	---_
 end
 
+---@param text string[]
+---@param range markview.parsed.markdown.block_quotes.range
 markdown.checkbox = function (_, _, text, range)
-	---+${lua}
-
-	---@type __markdown.checkboxes
 	markdown.insert({
 		class = "markdown_checkbox",
 		state = text[1]:match("^%[(.)%]"),
@@ -139,27 +126,25 @@ markdown.checkbox = function (_, _, text, range)
 		text = text,
 		range = range
 	});
-	---_
 end
 
---- Code block parser
----@param range __code_blocks.range
+---@param buffer integer
+---@param TSNode table
+---@param range markview.parsed.markdown.code_blocks.range
 markdown.code_block = function (buffer, TSNode, _, range)
-	---+${lua}
-
-	--- Parser is unreliable.
-	--- Use buffer lines.
+	-- Parser is unreliable.
+	-- Use buffer lines instead.
 	---@type string[]
 	local text = vim.api.nvim_buf_get_lines(buffer, range.row_start, range.row_end, false);
 
-	--- Fix range when leading whitespace(s)
-	--- are present.
+	-- Fix range when leading whitespace(s)
+	-- are present.
 	if text[1]:sub(range.col_start + 1):match("^%s+") then
 		range.col_start = range.col_start + text[1]:sub(range.col_start + 1):match("^%s+"):len();
 	end
 
-	--- Modify the text so that only the text
-	--- inside the node's range is visible.
+	-- Modify the text so that only the text
+	-- inside the node's range is visible.
 	for l, line in ipairs(text) do
 		text[l] = line:sub(range.col_start + 1);
 	end
@@ -183,7 +168,6 @@ markdown.code_block = function (buffer, TSNode, _, range)
 	local start_delim = TSNode:child(0);
 	local end_delim   = TSNode:child(TSNode:child_count() - 1);
 
-	---@type __markdown.code_blocks
 	markdown.insert({
 		class = "markdown_code_block",
 
@@ -197,33 +181,26 @@ markdown.code_block = function (buffer, TSNode, _, range)
 		text = text,
 		range = range
 	});
-	---_
 end
 
 --- Horizontal rule parser.
 ---@param text string[]
----@param range node.range
+---@param range markview.parsed.range
 markdown.hr = function (_, _, text, range)
-	---+${lua}
-
-	---@type __markdown.horizontal_rules
 	markdown.insert({
 		class = "markdown_hr",
 
 		text = text,
 		range = range
 	});
-	---_
 end
 
 --- Reference link definition parser.
 ---@param buffer integer
 ---@param TSNode table
 ---@param text string[]
----@param range __reference_definitions.range
+---@param range markview.parsed.markdown.reference_definitions.range
 markdown.link_ref = function (buffer, TSNode, text, range)
-	---+${lua}
-
 	--- [link]: destination
 	---   0   1   2
 	--- These 3 nodes always exist.
@@ -244,7 +221,6 @@ markdown.link_ref = function (buffer, TSNode, text, range)
 		range.description = { n_desc:range() };
 	end
 
-	---@type __markdown.reference_definitions
 	markdown.insert({
 		class = "markdown_link_ref_definition",
 
@@ -258,15 +234,12 @@ markdown.link_ref = function (buffer, TSNode, text, range)
 	if label and desc then
 		inline.cache.link_ref[label] = desc;
 	end
-	---_
 end
 
 --- List item parser.
 ---@param buffer integer
----@param range node.range
-markdown.list_item = function (buffer, TSNode, _, range)
-	---+${lua}
-
+---@param range markview.parsed.range
+markdown.list_item = function (buffer, _, _, range)
 	---@type string[]
 	local text = vim.api.nvim_buf_get_lines(buffer, range.row_start, range.row_end, false);
 
@@ -312,8 +285,6 @@ markdown.list_item = function (buffer, TSNode, _, range)
 	local candidates = {};
 
 	for l, line in ipairs(text) do
-		---+${lua}
-
 		if list_tolerance >= tolerance_limit then
 			break;
 		end
@@ -365,10 +336,8 @@ markdown.list_item = function (buffer, TSNode, _, range)
 				table.insert(candidates, (l - 1));
 			end
 		end
-		---_
 	end
 
-	---@type __markdown.list_items
 	markdown.insert({
 		class = "markdown_list_item",
 
@@ -380,48 +349,40 @@ markdown.list_item = function (buffer, TSNode, _, range)
 		text = text,
 		range = range
 	});
-	---_
 end
 
 --- Minus metadata parser.
 ---@param text string[]
----@param range node.range
+---@param range markview.parsed.range
 markdown.metadata_minus = function (_, _, text, range)
-	---+${lua}
-
-	---@type __markdown.metadata_minus
 	table.insert(markdown.content, {
 		class = "markdown_metadata_minus",
 
 		text = text,
 		range = range
 	});
-	---_
 end
 
 --- Plus metadata parser.
 ---@param text string[]
----@param range node.range
+---@param range markview.parsed.range
 markdown.metadata_plus = function (_, _, text, range)
-	---+${lua}
-
-	---@type __markdown.metadata_plus
 	table.insert(markdown.content, {
 		class = "markdown_metadata_plus",
 
 		text = text,
 		range = range
 	});
-	---_
 end
 
+---@param buffer integer
+---@param TSNode table
+---@param text string[]
+---@param range markview.parsed.markdown.reference_definitions.range
 markdown.section = function (buffer, TSNode, text, range)
-	---+${lua}
-
 	local heading = TSNode:child(0);
 	local heading_text = vim.treesitter.get_node_text(heading, buffer);
 
-	---@type __markdown.sections
 	table.insert(markdown.content, {
 		class = "markdown_section",
 		level = heading_text:match("^%s*(#+)"):len(),
@@ -429,7 +390,6 @@ markdown.section = function (buffer, TSNode, text, range)
 		text = text,
 		range = range
 	});
-	---_
 end
 
 --- Checks if a table is overlapping with another table.
@@ -441,8 +401,6 @@ end
 ---@return boolean
 ---@return boolean
 local function overlap (row_start)
-	---+${lua}
-
 	local top_border, border_overlap = true, false;
 
 	for _, item in ipairs(markdown.sorted.markdown_table or {}) do
@@ -458,7 +416,6 @@ local function overlap (row_start)
 	end
 
 	return top_border, border_overlap;
-	---_
 end
 
 --- LPeg-based parser for markdown table rows.
@@ -605,10 +562,8 @@ end
 
 --- Table parser.
 ---@param text string[]
----@param range node.range
+---@param range markview.parsed.range
 markdown.table = function (_, _, text, range)
-	---+${lua}
-
 	local header, separator, rows = {}, {}, {};
 	local has_alignment_markers = false;
 	local aligns = {};
@@ -669,7 +624,6 @@ markdown.table = function (_, _, text, range)
 
 	local top_border, border_overlap = overlap(range.row_start);
 
-	---@type __markdown.tables
 	markdown.insert({
 		class = "markdown_table",
 
@@ -688,7 +642,6 @@ markdown.table = function (_, _, text, range)
 		range = range
 	});
 	table.insert(markdown.cache.table_ends, range.row_end);
-	---_
 end
 
 --- Markdown parser.
@@ -699,8 +652,6 @@ end
 ---@return table[]
 ---@return table
 markdown.parse = function (buffer, TSTree, from, to)
-	---+${lua}
-
 	-- Clear the previous contents
 	markdown.sorted = {}
 	markdown.content = {};
@@ -793,7 +744,6 @@ markdown.parse = function (buffer, TSTree, from, to)
 	end
 
 	return markdown.content, markdown.sorted;
-	---_
 end
 
 return markdown;
