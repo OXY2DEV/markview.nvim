@@ -1,9 +1,10 @@
 ---@meta
 
+--- Experimental options.
 ---@class markview.config.experimental
 ---
----@field date_formats string[] String formats for detecting date in YAML.
----@field date_time_formats string[] String formats for detecting date & time in YAML.
+---@field date_formats string[] List of lua patterns for detecting date in YAML.
+---@field date_time_formats string[] List of lua patterns for detecting date & time in YAML.
 ---
 ---@field prefer_nvim boolean Opens text file inside Neovim.
 ---@field file_open_command string Command used to open files inside Neovim.

@@ -1,15 +1,15 @@
 ---@meta
 
+--- Preview options.
 ---@class markview.config.preview
 ---
 ---@field enable? boolean Enables *preview* when attaching to new buffers.
 ---@field enable_hybrid_mode? boolean Enables `hybrid mode` when attaching to new buffers.
 ---
+---@field map_gx? boolean Re-maps `gx` to custom URL opener.
+---
 ---@field callbacks? markview.config.preview.callbacks Callback functions.
 ---
----@field map_gx? boolean  Whether to map `gx` to custom URL opener.
----
----@field debounce? integer Debounce delay for updating previews.
 --- Icon provider.
 ---@field icon_provider?
 ---| "" Disable icons.
@@ -17,37 +17,29 @@
 ---| "devicons" `nvim-web-devicons` as icon provider.
 ---| "mini" `mini.icons` as icon provider.
 ---
+---@field debounce? integer Debounce delay for updating previews.
 ---@field filetypes? string[] Buffer filetypes where the plugin should attach.
 ---@field ignore_buftypes? string[] Buftypes that should be ignored(e.g. nofile).
 ---@field raw_previews? markview.config.preview.raw Options that will show up as raw in hybrid mode.
 ---
----@field modes? string[] VIM-modes where previews will be shown.
----@field hybrid_modes? string[] VIM-modes where `hybrid mode` is enabled. Options that should/shouldn't be previewed in `hybrid_modes`.
+---@field condition? fun(buffer: integer): boolean Condition to check if a buffer should be attached or not.
 ---
---- Clear lines around the cursor in `hybrid mode`, instead of nodes?
----@field linewise_hybrid_mode? boolean
+---@field modes? string[] Vim-modes where previews will be shown.
+---@field hybrid_modes? string[] Vim-modes where `hybrid mode` is enabled. Options that should/shouldn't be previewed in `hybrid_modes`.
 ---
+---@field linewise_hybrid_mode? boolean Clear lines around the cursor in `hybrid mode`, instead of nodes.
+---@field max_buf_lines? integer Maximum number of lines a buffer can have before switching to partial rendering.
 ---
---- Condition to check if a buffer should be attached or not.
----@field condition? fun(buffer: integer): boolean
---- Maximum number of lines a buffer can have before switching to partial rendering.
----@field max_buf_lines? integer
+---@field draw_range? [ integer, integer ] Lines above & below the cursor to show preview.
+---@field edit_range? [ integer, integer ] Lines above & below the cursor to not preview in `hybrid mode`.
 ---
---- Lines before & after the cursor that is considered being edited.
---- Edited content isn't rendered.
----@field edit_range? [ integer, integer ]
---- Lines before & after the cursor that is considered being previewed.
----@field draw_range? [ integer, integer ]
----
---- Window options for the `splitview` window.
---- See `:h nvim.open_win()`.
----@field splitview_winopts? table
+---@field splitview_winopts? table Window options for the `splitview` window. See `:h nvim.open_win()`.
 
 
 --- Callback functions for specific events.
 ---@class markview.config.preview.callbacks
 ---
----@field on_attach? fun(buf: integer, wins: integer[]): nil Called when attaching to a buffer.
+---@field on_attach? fun(buf: integer, wins: integer[]): nil Called when attaching to a buffers.
 ---@field on_detach? fun(buf: integer, wins: integer[]): nil Called when detaching from a buffer.
 ---
 ---@field on_disable? fun(buf: integer, wins: integer[]): nil Called when disabling preview of a buffer. Also called when using `splitOpen`.
@@ -62,6 +54,8 @@
 ---@field on_splitview_open? fun(source: integer, preview_buf: integer, preview_win: integer): nil Called when opening splitview.
 
 
+--- Elements that should be shown as raw when hovering
+--- in `hybrid mode`.
 ---@class markview.config.preview.raw
 ---
 ---@field html? markview.config.preview.raw.html[]
