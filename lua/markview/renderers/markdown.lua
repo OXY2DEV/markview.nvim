@@ -1889,7 +1889,7 @@ end
 markdown.list_item = function (buffer, item)
 	---+${func, Renders List items}
 
-	---@type markdown.list_items_static?
+	---@type markview.config.markdown.list_items?
 	local main_config = spec.get({ "markdown", "list_items" }, {
 		fallback = nil,
 		eval_args = { buffer, item }
@@ -1900,9 +1900,14 @@ markdown.list_item = function (buffer, item)
 		return;
 	end
 
-	---@type list_items.ordered | list_items.unordered
+	---@type markview.config.markdown.list_items.ordered | markview.config.markdown.list_items.unordered
 	local config;
-	local shift_width, indent_size = main_config.shift_width or 1, main_config.indent_size or 1;
+
+	local shift_width = type(main_config.shift_width) == "number" and main_config.shift_width or 1;
+	local indent_size = type(main_config.indent_size) == "number" and main_config.indent_size or 1;
+
+	---@cast indent_size integer
+	---@cast shift_width integer
 
 	if item.marker == "-" then
 		config = spec.get({ "marker_minus" }, {
