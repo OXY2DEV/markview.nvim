@@ -1884,16 +1884,16 @@ spec.default = {
 		code_blocks = {
 			enable = true,
 
-			style = "block",
-			text_direction = "right",
+			hl = "MarkviewCode",
 
 			min_width = 60,
 			pad_amount = 3,
 			pad_char = " ",
 
-			text = "󰣖 Code",
+			style = "block",
 
-			hl = "MarkviewCode",
+			text = "󰣖 Code",
+			text_direction = "right",
 			text_hl = "MarkviewIcon5"
 		},
 
