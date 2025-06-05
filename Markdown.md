@@ -1047,7 +1047,7 @@ Highlight group used for the info string.
 ### label_direction
 
 - type: `"left" | "right"`
-  default: `"left"`
+  default: `"right"`
 
 Which side the language name & icon should be shown on.
 
@@ -1140,7 +1140,7 @@ Highlight group for the padding around the line.
 ### style
 
 - type: `"simple" | "block"`
-  default: `"MarkviewCode"`
+  default: `"block"`
 
 Changes how code blocks are shown. Supported values are,
 
@@ -1792,6 +1792,7 @@ Indentation size in list items.
 ### shift_size
 
 - type: `integer | fun(bufnr: integer): integer`
+  default: `4`
 
 Number of spaces to add per indent level of a list item.
 
@@ -2186,7 +2187,7 @@ Default configuration. See [how inline elements are configured]().
 - type: [markview.config.__inline_generic]()
   [default]()
 
-Configuration for reference links whose destination matches `string`. See [how inline elements are configured]().
+Configuration for reference link definitions whose destination matches `string`. See [how inline elements are configured]().
 
 >[!NOTE]
 > The structure for reference links is `[label]: <destination>`.
