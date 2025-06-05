@@ -63,7 +63,6 @@ yaml.property = function (buffer, item)
 			border = config.border_middle;
 			border_hl = config.border_middle_hl or config.border_hl or config.hl;
 		else
-			border = string.rep(" ", vim.fn.strdisplaywidth(config.text[item.type]))
 			border_hl = config.border_hl or config.hl;
 		end
 
