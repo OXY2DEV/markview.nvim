@@ -1,23 +1,15 @@
 ---@meta
 
-local M = {};
-
  ------------------------------------------------------------------------------------------
 
 --- Configuration for YAML.
----@class config.yaml
+---@class markview.config.yaml
 ---
 ---@field enable boolean
----@field properties yaml.properties
-M.yaml = {
-	enable = true,
-	properties = {}
-};
-
--- [ YAML | Properties ] ------------------------------------------------------------------
+---@field properties markview.config.yaml.properties
 
 --- Configuration for YAML properties.
----@class yaml.properties
+---@class markview.config.yaml.properties
 ---
 ---@field enable boolean
 ---
@@ -25,13 +17,6 @@ M.yaml = {
 ---
 ---@field default properties.opts Default configuration for properties.
 ---@field [string] properties.opts Configuration for properties whose name matches `string`.
-M.yaml_properties = {
-	enable = true,
-	default = {},
-	data_types = {},
-};
-
--- [ YAML | Properties > Types ] ----------------------------------------------------------
 
 ---@class properties.opts
 ---
@@ -47,14 +32,6 @@ M.yaml_properties = {
 ---@field text? string
 ---
 ---@field use_types? boolean When `true`, the configuration table merges with the value's data type configuration.
-M.properties_opts = {
-	use_types = true,
-
-	text = "π",
-	hl = "Title"
-};
-
--- [ YAML | Properties > Parameters ] -----------------------------------------------------
 
 ---@class __yaml.properties
 ---
@@ -64,21 +41,4 @@ M.properties_opts = {
 ---@field value string
 ---@field text string[]
 ---@field range node.range
-M.__yaml_properties = {
-	class = "yaml_property",
-	type = "checkbox",
 
-	key = "key",
-	value = "value",
-
-	text = { "key: value" },
-	range = {
-		row_start = 0,
-		row_end = 0,
-
-		col_start = 0,
-		col_end = 10
-	}
-};
-
-return M;
