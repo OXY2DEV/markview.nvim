@@ -3,14 +3,12 @@ local yaml = {};
 local spec = require("markview.spec");
 local utils = require("markview.utils");
 
-yaml.cache = {};
-
 yaml.ns = vim.api.nvim_create_namespace("markview/yaml");
 
 ---@param buffer integer
----@param item __yaml.properties
+---@param item markview.parsed.yaml.properties
 yaml.property = function (buffer, item)
-	---+${func}
+	---@type markview.config.yaml.properties
 	local main_config = spec.get({ "yaml", "properties" }, { fallback = nil });
 	local range = item.range;
 
@@ -18,6 +16,7 @@ yaml.property = function (buffer, item)
 		return;
 	end
 
+	---@type markview.config.yaml.properties.opts
 	local config = utils.match(
 		main_config,
 		item.key,
@@ -73,12 +72,11 @@ yaml.property = function (buffer, item)
 			}
 		});
 	end
-	---_
 end
 
+---@param buffer integer
+---@param content table
 yaml.render = function (buffer, content)
-	yaml.cache = {};
-
 	local custom = spec.get({ "renderers" }, { fallback = {} });
 
 	for _, item in ipairs(content or {}) do
