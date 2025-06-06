@@ -1,5 +1,6 @@
 ---@meta
 
+------------------------------------------------------------------------------
 
 ---@class markview.notify.deprecation
 ---
@@ -41,6 +42,10 @@
 ---
 ---@field kind "deprecation" | "type_mismatch" | "hl" | "trace"
 ---@field ignore? boolean Should this be ignored?
+---
+---@field indent integer Nesting.
+---@field timestamp string Time string.
+---@field level integer Log level.
 ---
 ---@field notification? [ string, string? ][] Virtual text style message to show.
 ---

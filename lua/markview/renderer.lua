@@ -86,7 +86,7 @@ renderer.option_maps = {
 
 
 --- Creates node class filters for hybrid mode.
----@param filter markview.config.preview.raw
+---@param filter? markview.config.preview.raw
 ---@return markview.renderer.option_map}
 local create_filter = function (filter)
 	---|fS
@@ -216,7 +216,7 @@ end
 
 --- Range modifiers for various node type.
 --- Used to fix ranges of specific block nodes.
----@type { [string]: fun(range: node.range): node.range }
+---@type { [string]: fun(range: markview.parsed.range): markview.parsed.range }
 renderer.range_modifiers = {
 	---|fS
 
@@ -280,8 +280,8 @@ renderer.range_modifiers = {
 
 --- Fixes node ranges for `hybrid mode`.
 ---@param class string
----@param range node.range
----@return node.range
+---@param range markview.parsed.range
+---@return markview.parsed.range
 renderer.fix_range = function (class, range)
 	if renderer.range_modifiers[class] == nil then
 		return range;
@@ -293,14 +293,14 @@ end
 --- Filters provided content.
 --- [Used for hybrid mode]
 ---@param content table
----@param filter markview.config.preview.raw
+---@param filter? markview.config.preview.raw
 ---@param clear [ integer, integer ]
 ---@return table
 renderer.filter = function (content, filter, clear)
 	---|fS
 
 	--- Checks if `pos` is inside of `range`.
-	---@param range node.range
+	---@param range markview.parsed.range
 	---@param pos [ integer, integer ]
 	---@return boolean
 	local within = function (range, pos)

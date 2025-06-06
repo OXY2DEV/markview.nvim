@@ -1,11 +1,17 @@
 --- *Dynamic* highlight group related methods
 --- for `markview.nvim`.
 local highlights = {};
-
 local utils = require("markview.utils");
 
 local lerp = utils.lerp;
 local clamp = utils.clamp;
+
+
+---@class markview.hl
+---
+---@field group_name? string
+---@field value? table
+
 
 --- Returns RGB value from the provided input.
 --- Supported input types,
@@ -449,7 +455,7 @@ highlights.set_hl = function (name, value)
 end
 
 --- Creates highlight groups from an array of tables
----@param array { [string]: config.hl | fun(): config.hl }
+---@param array { [string]: markview.hl | fun(): markview.hl }
 highlights.create = function (array)
 	highlights.created = {};
 
@@ -548,7 +554,7 @@ highlights.color = function (opt, fallback, on_light, on_dark)
 end
 
 --- Generates a heading highlight group.
----@return config.hl
+---@return markview.hl
 ---@deprecated
 highlights.generate_heading = function (opts)
 	local vim_bg = highlights.rgb_to_lab(highlights.get_property(
@@ -579,8 +585,8 @@ highlights.generate_heading = function (opts)
 end
 
 --- Generates a highlight group.
----@param opts { source_opt: string?, output_opt: string?, hl_opts: config.hl?, source: string[], fallback_light: string, fallback_dark: string }
----@return config.hl
+---@param opts { source_opt: string?, output_opt: string?, hl_opts: markview.hl?, source: string[], fallback_light: string, fallback_dark: string }
+---@return markview.hl
 highlights.hl_generator = function (opts)
 	local hi = highlights.get_property(
 		opts.source_opt or "fg",
@@ -1612,7 +1618,7 @@ highlights.dynamic = {
 highlights.groups = highlights.dynamic;
 
 --- Setup function.
----@param opt { [string]: config.hl }?
+---@param opt { [string]: markview.hl }?
 highlights.setup = function (opt)
 	if type(opt) == "table" then
 		highlights.groups = vim.tbl_extend("force", highlights.groups, opt);

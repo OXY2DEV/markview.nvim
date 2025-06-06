@@ -3,7 +3,7 @@
 ------------------------------------------------------------------------------
 
 --- Configuration table for HTML preview.
----@class config.html
+---@class markview.config.html
 ---
 ---@field enable boolean
 ---

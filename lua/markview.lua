@@ -579,8 +579,6 @@ markview.actions = {
 				goto continue;
 			end
 
-			---@cast entry logs.trace
-
 			table.insert(lines, string.format(
 				"%s|%s| %s",
 				center(

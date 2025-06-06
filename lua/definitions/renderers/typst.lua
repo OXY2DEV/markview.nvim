@@ -3,7 +3,7 @@
 ------------------------------------------------------------------------------
 
 --- Configuration for Typst.
----@class config.typst
+---@class markview.config.typst
 ---
 ---@field enable boolean
 ---
