@@ -24,7 +24,7 @@ require("markview").setup({
 
 ## 🔖 Heading presets
 
-### 📚 Use:
+### 📚 Usage:
 
 ```lua
 local presets = require("markview.presets").headings;
@@ -64,7 +64,7 @@ require("markview").setup({
 
 ## 🔖 Horizontal rules presets
 
-### 📚 Use:
+### 📚 Usage:
 
 ```lua
 local presets = require("markview.horizontal_rules").horizontal_rules;
@@ -108,7 +108,7 @@ require("markview").setup({
 
 ## 🔖 Tables presets
 
-### 📚 Use:
+### 📚 Usage:
 
 ```lua
 local presets = require("markview.presets").tables;
@@ -144,7 +144,7 @@ require("markview").setup({
 
 ## 🔖 No nerd fonts presets
 
-### 📚 Use:
+### 📚 Usage:
 
 ```lua
 local presets = require("markview.presets");
