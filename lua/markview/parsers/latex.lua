@@ -55,10 +55,8 @@ end
 --- LaTeX block parser.
 ---@param buffer integer
 ---@param text string[]
----@param range node.range
+---@param range markview.parsed.range
 latex.block = function (buffer, TSNode, text, range)
-	---+${lua}
-
 	local parent = TSNode:parent();
 
 	while parent do
@@ -117,17 +115,14 @@ latex.block = function (buffer, TSNode, text, range)
 		text = text,
 		range = range
 	});
-	---_
 end
 
 --- LaTeX command parser.
 ---@param buffer integer
 ---@param TSNode table
 ---@param text string[]
----@param range node.range
+---@param range markview.parsed.range
 latex.command = function (buffer, TSNode, text, range)
-	---+${lua}
-
 	local args = {};
 	local nodes = TSNode:field("arg");
 
@@ -150,7 +145,6 @@ latex.command = function (buffer, TSNode, text, range)
 		});
 	end
 
-	---@type __latex.commands
 	latex.insert({
 		class = "latex_command",
 
@@ -163,35 +157,30 @@ latex.command = function (buffer, TSNode, text, range)
 		text = text,
 		range = range
 	});
-	---_
 end
 
 --- LaTeX escaped character parser.
 ---@param TSNode table
 ---@param text string[]
----@param range node.range
+---@param range markview.parsed.range
 latex.escaped = function (_, TSNode, text, range)
-	---+${lua}
 	if within_text_mode(TSNode) then
 		return;
 	end
 
-	---@type __latex.escapes
 	latex.insert({
 		class = "latex_escaped",
 
 		text = text,
 		range = range
 	});
-	---_
 end
 
 --- LaTeX font parser.
 ---@param TSNode table
 ---@param text string[]
----@param range node.range
+---@param range markview.parsed.latex.fonts.range
 latex.font = function (buffer, TSNode, text, range)
-	---+${lua}
 	if within_text_mode(TSNode) then
 		return;
 	end
@@ -212,15 +201,12 @@ latex.font = function (buffer, TSNode, text, range)
 		text = text,
 		range = range
 	});
-	---_
 end
 
 --- Inline LaTeX parser.
 ---@param text string[]
----@param range node.range
+---@param range markview.parsed.range
 latex.inline = function (buffer, TSNode, text, range)
-	---+${lua}
-
 	local parent = TSNode:parent();
 
 	while parent do
@@ -277,7 +263,6 @@ latex.inline = function (buffer, TSNode, text, range)
 		return;
 	end
 
-	---@type __latex.inlines
 	latex.insert({
 		class = inline == true and "latex_inline" or "latex_block",
 		marker = marker,
@@ -285,15 +270,13 @@ latex.inline = function (buffer, TSNode, text, range)
 		text = text,
 		range = range
 	});
-	---_
 end
 
 --- {} parser.
 ---@param buffer integer
 ---@param text string[]
----@param range node.range
+---@param range markview.parsed.range
 latex.parenthesis = function (buffer, TSNode, text, range)
-	---+${lua}
 	if within_text_mode(TSNode) then
 		return;
 	end
@@ -307,23 +290,19 @@ latex.parenthesis = function (buffer, TSNode, text, range)
 		return;
 	end
 
-	---@type __latex.parenthesis
 	latex.insert({
 		class = "latex_parenthesis",
 
 		text = text,
 		range = range
 	});
-	---_
 end
 
 --- Subscript parser.
 ---@param TSNode table
 ---@param text string[]
----@param range node.range
+---@param range markview.parsed.range
 latex.subscript = function (_, TSNode, text, range)
-	---+${lua}
-
 	local node = TSNode;
 	local level, preview = 0, true;
 
@@ -362,16 +341,13 @@ latex.subscript = function (_, TSNode, text, range)
 		text = text,
 		range = range
 	});
-	---_
 end
 
 --- Superscript parser.
 ---@param TSNode table
 ---@param text string[]
----@param range node.range
+---@param range markview.parsed.range
 latex.superscript = function (_, TSNode, text, range)
-	---+${lua}
-
 	local node = TSNode;
 	local level, preview = 0, true;
 
@@ -415,16 +391,13 @@ latex.superscript = function (_, TSNode, text, range)
 		text = text,
 		range = range
 	});
-	---_
 end
 
 --- Symbol parser.
 ---@param TSNode table
 ---@param text string[]
----@param range node.range
+---@param range markview.parsed.range
 latex.symbol = function (_, TSNode, text, range)
-	---+${lua}
-
 	local node = TSNode;
 	local style;
 
@@ -439,7 +412,6 @@ latex.symbol = function (_, TSNode, text, range)
 		node = node:parent();
 	end
 
-	---@type __latex.symbols
 	latex.insert({
 		class = "latex_symbol",
 		name = text[1]:sub(2),
@@ -448,42 +420,34 @@ latex.symbol = function (_, TSNode, text, range)
 		text = text,
 		range = range
 	});
-	---_
 end
 
 --- Text mode parser.
 ---@param text string[]
----@param range node.range
+---@param range markview.parsed.range
 latex.text = function (_, _, text, range)
-	---+${lua}
-
-	---@type __latex.text
 	latex.insert({
 		class = "latex_text",
 
 		text = text,
 		range = range
 	});
-	---_
 end
 
 --- Word parser.
 ---@param TSNode table
 ---@param text string[]
----@param range node.range
+---@param range markview.parsed.range
 latex.word = function (_, TSNode, text, range)
-	---+${lua}
 	if within_text_mode(TSNode) then
 		return;
 	end
 
-	---@type __latex.word
 	latex.insert({
 		class = "latex_word",
 		text = text,
 		range = range
 	});
-	---_
 end
 
 --- LaTeX parser function.
@@ -494,8 +458,6 @@ end
 ---@return table[]
 ---@return table
 latex.parse = function (buffer, TSTree, from, to)
-	---+${lua}
-
 	--- Clear the previous contents
 	latex.sorted = {};
 	latex.content = {};
@@ -609,7 +571,6 @@ latex.parse = function (buffer, TSTree, from, to)
 	end
 
 	return latex.content, latex.sorted;
-	---_
 end
 
 return latex;

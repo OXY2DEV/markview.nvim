@@ -1,7 +1,7 @@
 ---@meta
 
 --- Configuration for LaTeX.
----@class config.latex
+---@class markview.config.latex
 ---
 ---@field enable boolean
 ---
@@ -16,6 +16,7 @@
 ---@field symbols? markview.config.latex.symbols TeX math symbols configuration(e.g. `\alpha`).
 ---@field texts? markview.config.latex.texts Text block configuration(`\text{}`).
 
+------------------------------------------------------------------------------
 
 --- Configuration table for latex math blocks.
 ---@class markview.config.latex.blocks
@@ -29,14 +30,7 @@
 ---@field text string
 ---@field text_hl? string
 
----@class markview.parsed.latex.blocks
----
----@field class "latex_block"
----@field marker string
----
----@field text string[]
----@field range node.range
-
+------------------------------------------------------------------------------
 
 --- Configuration for LaTeX commands.
 ---@class markview.config.latex.commands
@@ -50,7 +44,7 @@
 ---@field condition? fun(item: markview.parsed.latex.commands): boolean Condition used to determine if a command is valid.
 ---
 ---@field command_offset? fun(range: integer[]): integer[] Modifies the command's range(`{ row_start, col_start, row_end, col_end }`).
----@field on_command? config.extmark Extmark configuration to use on the command.
+---@field on_command? table Extmark configuration to use on the command.
 ---@field on_args? markview.config.latex.commands.arg_opts[]? Configuration table for each argument.
 
 ---@class markview.config.latex.commands.arg_opts
@@ -59,21 +53,11 @@
 ---@field before_offset? fun(range: integer[]): integer[] Modifies the range of the argument(only for `on_before`).
 ---@field condition? fun(item: table): boolean Can be used to change when the command preview is shown.
 ---@field content_offset? fun(range: integer[]): table Modifies the argument's range(only for `on_content`).
----@field on_after? config.extmark Extmark configuration to use at the end of the argument.
----@field on_before? config.extmark Extmark configuration to use at the start of the argument.
----@field on_content? config.extmark Extmark configuration to use on the argument.
+---@field on_after? table Extmark configuration to use at the end of the argument.
+---@field on_before? table Extmark configuration to use at the start of the argument.
+---@field on_content? table Extmark configuration to use on the argument.
 
---- LaTeX commands(must have at least 1 argument).
----@class markview.parsed.latex.commands
----
----@field class "latex_command"
----
----@field command { name: string, range: integer[] } Command name(without `\`) and it's range.
----@field args { text: string, range: integer[] }[] List of arguments(inside `{...}`) with their text & range.
----
----@field text string[]
----@field range node.range
-
+------------------------------------------------------------------------------
 
 --- Configuration table for latex escaped characters.
 ---@class markview.config.latex.escapes
@@ -81,42 +65,24 @@
 ---@field enable boolean Enables escaped character preview.
 ---@field hl? string Highlight group for the escaped character.
 
-
---- Escaped characters.
----@class markview.parsed.latex.escapes
----
----@field class "latex_escaped"
----
----@field text string[]
----@field range node.range
-
+------------------------------------------------------------------------------
 
 --- Configuration table for latex math fonts.
 ---@class markview.config.latex.fonts
 ---
 ---@field enable boolean
 ---
----@field default fonts.opts
----@field [string] fonts.opts
+---@field default markview.config.latex.fonts.opts
+---@field [string] markview.config.latex.fonts.opts
 
 
 --- Configuration for a specific fonts.
----@class fonts.opts
+---@class markview.config.latex.fonts.opts
 ---
 ---@field enable? boolean Whether to enable this font.
 ---@field hl? string | fun(buffer: integer, item: markview.parsed.latex.fonts): string? Highlight group for this font.
 
-
---- Math fonts
----@class markview.parsed.latex.fonts
----
----@field class "latex_font"
----
----@field name string Font name.
----
----@field text string[]
----@field range node.range
-
+------------------------------------------------------------------------------
 
 --- Configuration table for inline latex math.
 ---@class markview.config.latex.inlines
@@ -133,27 +99,12 @@
 ---@field padding_right? string Right padding.
 ---@field padding_right_hl? string Highlight group for right padding.
 
---- Inline LaTeX(typically made using `$...$`).
----@class markview.parsed.latex.inlines
----
----@field class "latex_inlines"
----@field marker string
----
----@field closed boolean Is there a closing `$`?
----@field text string[]
----@field range node.range
-
+------------------------------------------------------------------------------
 
 --- Configuration table for {}.
 ---@alias markview.config.latex.parenthesis { enable: boolean }
 
---- {} in LaTeX.
----@class markview.parsed.latex.parenthesis
----
----@field class "latex_parenthesis"
----@field text string[]
----@field range node.range
-
+------------------------------------------------------------------------------
 
 --- Configuration for subscripts.
 ---@class markview.config.latex.subscripts
@@ -162,18 +113,7 @@
 ---@field fake_preview? boolean When `true`, subscript characters are *faked*.
 ---@field hl? string | string[] Highlight group for the subscript text. Can be a list to use different hl for nested subscripts.
 
---- Subscript text(e.g. _h, _{hi}, _{+} etc.).
----@class markview.parsed.latex.subscripts
----
----@field class "latex_subscript"
----
----@field parenthesis boolean Is the text within `{...}`?
----@field level integer Level of the subscript text. Used for handling nested subscript text.
----@field preview boolean Can the text be previewed?
----
----@field text string[]
----@field range node.range
-
+------------------------------------------------------------------------------
 
 --- Configuration for superscripts.
 ---@class markview.config.latex.superscripts
@@ -182,18 +122,7 @@
 ---@field fake_preview? boolean When `true`, superscript characters are *faked*.
 ---@field hl? string | string[] Highlight group for the superscript text. Can be a list to use different hl for nested superscripts.
 
---- Superscript text(e.g. ^h, ^{hi}, ^{+} etc.).
----@class markview.parsed.latex.superscripts
----
----@field class "latex_superscript"
----
----@field parenthesis boolean Is the text within `{...}`?
----@field level integer Level of the superscript text. Used for handling nested superscript text.
----@field preview boolean Can the text be previewed?
----
----@field text string[]
----@field range node.range
-
+------------------------------------------------------------------------------
 
 --- Configuration table for TeX math symbols.
 ---@class markview.config.latex.symbols
@@ -201,34 +130,8 @@
 ---@field enable boolean
 ---@field hl? string Highlight group for the symbols.
 
---- Math symbols in LaTeX(e.g. \Alpha).
----@class markview.parsed.latex.symbols
----
----@field class "latex_symbols"
----@field name string Symbol name(without the `\`).
----@field style "superscripts" | "subscripts" | nil Text styles to apply(if possible).
----
----@field text string[]
----@field range node.range
-
+------------------------------------------------------------------------------
 
 --- Configuration table for text.
 ---@alias markview.config.latex.texts { enable: boolean }
-
---- `\text{}` nodes.
----@class markview.parsed.latex.text
----
----@field class "latex_text"
----@field text string[]
----@field range node.range
-
-
---- Groups of characters(without any spaces between them).
---- Used for applying fonts & text styles.
----@class markview.parsed.latex.word
----
----@field class "latex_word"
----
----@field text string[]
----@field range node.range
 
