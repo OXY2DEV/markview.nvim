@@ -1,11 +1,12 @@
 # LaTeX Options
 
 >[!TIP]
-> You can find the type definitions in [definitions/latex.lua]().
+> You can find the type definitions in [definitions/latex.lua](https://github.com/OXY2DEV/markview.nvim/blob/a803117f272cc47733b67ebbaf1acb91095da276/lua/definitions/renderers/latex.lua).
 
-Options that change how $LaTeX$ is shown in previews are part of this. You can find the default values [here]().
+Options that change how $LaTeX$ is shown in previews are part of this. You can find the default values [here](https://github.com/OXY2DEV/markview.nvim/blob/a803117f272cc47733b67ebbaf1acb91095da276/lua/markview/spec.lua#L1581-L1880).
 
 ```lua
+---@type markview.config.latex
 latex = {
     enable = true,
 
@@ -317,8 +318,8 @@ Enables LaTeX previewing.
 
 ## blocks
 
-- type: [markview.config.latex.blocks]()
-  [default]()
+- type: [markview.config.latex.blocks](https://github.com/OXY2DEV/markview.nvim/blob/a803117f272cc47733b67ebbaf1acb91095da276/lua/definitions/renderers/latex.lua#L21-L31)
+  [default](https://github.com/OXY2DEV/markview.nvim/blob/a803117f272cc47733b67ebbaf1acb91095da276/lua/markview/spec.lua#L1584-L1593)
 
 Changes how LaTeX blocks are shown.
 
@@ -381,13 +382,13 @@ Highlight group for [text](#text).
 
 ## commands
 
-- type: [markview.config.latex.commands]()
-  [default]()
+- type: [markview.config.latex.commands](https://github.com/OXY2DEV/markview.nvim/blob/a803117f272cc47733b67ebbaf1acb91095da276/lua/definitions/renderers/latex.lua#L35-L58)
+  [default](https://github.com/OXY2DEV/markview.nvim/blob/a803117f272cc47733b67ebbaf1acb91095da276/lua/markview/spec.lua#L1595-L1817)
 
 Changes how LaTeX commands are shown.
 
 >[!IMPORTANT]
-> `operator()` can be found [here]().
+> `operator()` can be found [here](https://github.com/OXY2DEV/markview.nvim/blob/a803117f272cc47733b67ebbaf1acb91095da276/lua/markview/spec.lua#L10-L72).
 
 ```lua
 ---@type markview.config.latex.commands
@@ -625,7 +626,7 @@ Self-explanatory.
 
 ### \[string\]
 
-- type: [markview.config.latex.commands.opts]()
+- type: [markview.config.latex.commands.opts](https://github.com/OXY2DEV/markview.nvim/blob/a803117f272cc47733b67ebbaf1acb91095da276/lua/definitions/renderers/latex.lua#L42-L48)
 
 Configuration for `\string{...}`.
 
@@ -648,7 +649,7 @@ Configuration for `\string{...}`.
 
 See also,
 
-- [markview.parsed.latex.commands]()
+- [markview.parsed.latex.commands](https://github.com/OXY2DEV/markview.nvim/blob/a803117f272cc47733b67ebbaf1acb91095da276/lua/definitions/parsers/latex.lua#L14-L23)
 
 Additional condition(s) for this command(e.g. specific number of arguments).
 
@@ -658,7 +659,7 @@ Additional condition(s) for this command(e.g. specific number of arguments).
 
 See also,
 
-- [markview.parsed.range]()
+- [markview.parsed.range](https://github.com/OXY2DEV/markview.nvim/blob/a803117f272cc47733b67ebbaf1acb91095da276/lua/definitions/markview.lua#L61-L66)
 
 Modifies the range of this command.
 
@@ -675,6 +676,7 @@ Configuration for the extmark added to the command text. See `{opts}` in `:h nvi
 Configuration for the extmark added to the each argument. See `{opts}` in `:h nvim_buf_set_extmark()`.
 
 ```lua
+---@type markview.config.latex.commands.arg_opts[]
 on_args = {
     {
         after_offset = function (range)
@@ -777,12 +779,13 @@ Self-explanatory.
 >[!NOTE]
 > You need a modern font(font that support math symbols) for fonts to appear correctly!
 
-- type: [markview.config.latex.fonts]()
+- type: [markview.config.latex.fonts](https://github.com/OXY2DEV/markview.nvim/blob/a803117f272cc47733b67ebbaf1acb91095da276/lua/definitions/renderers/latex.lua#L70-L83)
   [default]()
 
 Changes how fonts are shown in LaTeX.
 
 ```lua
+---@type markview.config.latex.fonts
 fonts = {
     enable = true,
 
@@ -907,7 +910,7 @@ Configuration for `\mathrm{}`. Same as [default](#fonts_default).
 
 ## inlines
 
-- type: [markview.config.latex.inlines]()
+- type: [markview.config.latex.inlines](https://github.com/OXY2DEV/markview.nvim/blob/a803117f272cc47733b67ebbaf1acb91095da276/lua/definitions/renderers/latex.lua#L87-L100)
   [default]()
 
 Configuration for inline maths. See [how inline elements are configured]().
@@ -928,11 +931,12 @@ Self-explanatory.
 ## subscripts
 
 - type: `markview.config.latex.subscripts`
-  [default]()
+  [default](https://github.com/OXY2DEV/markview.nvim/blob/a803117f272cc47733b67ebbaf1acb91095da276/lua/markview/spec.lua#L1859-L1863)
 
 Configuration for subscripts(`_` & `_{}`).
 
 ```lua
+---@type markview.config.latex.subscripts
 subscripts = {
     enable = true,
 
@@ -957,18 +961,19 @@ Highlight group for subscript text.
 ## subscripts
 
 - type: `markview.config.latex.superscripts`
-  [default]()
+  [default](https://github.com/OXY2DEV/markview.nvim/blob/a803117f272cc47733b67ebbaf1acb91095da276/lua/markview/spec.lua#L1865-L1869)
 
 Configuration for subscripts(`^` & `^{}`). Same as [subscripts](#subscripts).
 
 ## symbols
 
 - type: `markview.config.latex.symbols`
-  [default]()
+  [default](https://github.com/OXY2DEV/markview.nvim/blob/a803117f272cc47733b67ebbaf1acb91095da276/lua/markview/spec.lua#L1871-L1875)
 
 Configuration for subscripts(`^` & `^{}`). Same as [subscripts](#subscripts).
 
 ```lua
+---@type markview.config.latex.symbols
 symbols = {
     enable = true,
 
