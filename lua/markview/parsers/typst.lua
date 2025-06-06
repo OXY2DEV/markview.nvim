@@ -1,5 +1,4 @@
 local typst = {};
-local utils = require("markview.utils");
 
 typst.cache = {
 	list_item_number = 0
@@ -25,9 +24,8 @@ end
 --- Typst code parser.
 ---@param TSNode table
 ---@param text string[]
----@param range node.range
+---@param range markview.parsed.range
 typst.code = function (buffer, TSNode, text, range)
-	---+${func}
 	local node = TSNode:parent();
 
 	while node do
@@ -49,7 +47,6 @@ typst.code = function (buffer, TSNode, text, range)
 	end
 
 	if inline == true then
-		---@type __typst.code_spans
 		typst.insert({
 			class = "typst_code_span",
 
@@ -57,7 +54,6 @@ typst.code = function (buffer, TSNode, text, range)
 			range = range
 		});
 	else
-		---@type __typst.code_block
 		typst.insert({
 			class = "typst_code_block",
 
@@ -65,16 +61,13 @@ typst.code = function (buffer, TSNode, text, range)
 			range = range
 		});
 	end
-	---_
 end
 
 --- Typst emphasized text parser.
 ---@param TSNode table
 ---@param text string[]
----@param range node.range
+---@param range markview.parsed.range
 typst.emphasis = function (_, TSNode, text, range)
-	---+${lua}
-
 	local _n = TSNode:parent();
 
 	while _n do
@@ -85,23 +78,19 @@ typst.emphasis = function (_, TSNode, text, range)
 		_n = _n:parent();
 	end
 
-	---@type __typst.emphasis
 	typst.insert({
 		class = "typst_emphasis",
 
 		text = text,
 		range = range
 	});
-	---_
 end
 
 --- Typst escaped character parser.
 ---@param TSNode table
 ---@param text string[]
----@param range node.range
+---@param range markview.parsed.range
 typst.escaped = function (_, TSNode, text, range)
-	---+${func}
-
 	local node = TSNode:parent();
 
 	while node do
@@ -112,25 +101,20 @@ typst.escaped = function (_, TSNode, text, range)
 		node = node:parent();
 	end
 
-	---@type __typst.escapes
 	typst.insert({
 		class = "typst_escaped",
 
 		text = text,
 		range = range
 	});
-	---_
 end
 
 --- Typst heading parser.
 ---@param text string[]
----@param range node.range
+---@param range markview.parsed.range
 typst.heading = function (_, _, text, range)
-	---+${func}
-
 	local level = text[1]:match("^(%=+)"):len();
 
-	---@type __typst.headings
 	typst.insert({
 		class = "typst_heading",
 		level = level,
@@ -138,32 +122,26 @@ typst.heading = function (_, _, text, range)
 		text = text,
 		range = range
 	});
-	---_
 end
 
 --- Typst label parser.
 ---@param text string[]
----@param range node.range
+---@param range markview.parsed.range
 typst.label = function (_, _, text, range)
-	---+${lua}
-
-	---@type __typst.labels
 	typst.insert({
 		class = "typst_label",
 
 		text = text,
 		range = range
 	});
-	---_
 end
 
 --- Typst list item parser.
 ---@param buffer integer
 ---@param TSNode table
 ---@param text string[]
----@param range node.range
+---@param range markview.parsed.range
 typst.list_item = function (buffer, TSNode, text, range)
-	---+${func}
 	local line = vim.api.nvim_buf_get_lines(buffer, range.row_start, range.row_start + 1, false)[1]:sub(0, range.col_start);
 	local marker = text[1]:match("^([%-%+])") or text[1]:match("^(%d+%.)");
 	local number;
@@ -199,7 +177,6 @@ typst.list_item = function (buffer, TSNode, text, range)
 
 	range.row_end = row_end;
 
-	---@type __typst.list_items
 	typst.insert({
 		class = "typst_list_item",
 		indent = line:match("(%s*)$"):len(),
@@ -209,16 +186,13 @@ typst.list_item = function (buffer, TSNode, text, range)
 		text = text,
 		range = range
 	});
-	---_
 end
 
 --- Typst list item parser.
 ---@param buffer integer
 ---@param text string[]
----@param range node.range
+---@param range markview.parsed.range
 typst.math = function (buffer, _, text, range)
-	---+${func}
-
 	local from, to = vim.api.nvim_buf_get_lines(buffer, range.row_start, range.row_start + 1, false)[1]:sub(0, range.col_start), vim.api.nvim_buf_get_lines(buffer, range.row_end, range.row_end + 1, true)[1]:sub(0, range.col_end);
 	local inline = false;
 
@@ -230,25 +204,20 @@ typst.math = function (buffer, _, text, range)
 		inline = true;
 	end
 
-	---@type __typst.maths
 	typst.insert({
 		class = inline == true and "typst_math_span" or "typst_math_block",
 
 		text = text,
 		range = range
 	});
-	---_
 end
 
 --- Typst url links parser.
 ---@param text string[]
----@param range inline_link.range
+---@param range markview.parsed.typst.url_links.range
 typst.link_url = function (_, _, text, range)
-	---+${lua}
-
 	range.label = { range.row_start, range.col_start, range.row_end, range.col_end }
 
-	---@type __typst.url_links
 	typst.insert({
 		class = "typst_link_url",
 		label = text[1],
@@ -256,18 +225,14 @@ typst.link_url = function (_, _, text, range)
 		text = text,
 		range = range
 	});
-	---_
 end
 
 --- Typst reference link parser.
 ---@param text string[]
----@param range inline_link.range
+---@param range markview.parsed.typst.reference_links.range
 typst.link_ref = function (_, _, text, range)
-	---+${lua}
-
 	range.label = { range.row_start, range.col_start + 1, range.row_end, range.col_end };
 
-	---@type __typst.reference_links
 	typst.insert({
 		class = "typst_link_ref",
 		label = text[1]:gsub("^%@", ""),
@@ -275,17 +240,14 @@ typst.link_ref = function (_, _, text, range)
 		text = text,
 		range = range
 	});
-	---_
 end
 
 --- Typst code block parser.
 ---@param buffer integer
 ---@param TSNode table
 ---@param text string[]
----@param range node.range
+---@param range markview.parsed.range
 typst.raw_block = function (buffer, TSNode, text, range)
-	---+${func}
-
 	local lang_node = TSNode:field("lang")[1];
 	local language;
 
@@ -299,7 +261,6 @@ typst.raw_block = function (buffer, TSNode, text, range)
 	    ::continue::
 	end
 
-	---@type __typst.raw_blocks
 	typst.insert({
 		class = "typst_raw_block",
 		language = language,
@@ -307,32 +268,25 @@ typst.raw_block = function (buffer, TSNode, text, range)
 		text = text,
 		range = range
 	});
-	---_
 end
 
 --- Typst inline code parser.
 ---@param text string[]
----@param range node.range
+---@param range markview.parsed.range
 typst.raw_span = function (_, _, text, range)
-	---+${lua}
-
-	---@type __typst.raw_spans
 	typst.insert({
 		class = "typst_raw_span",
 
 		text = text,
 		range = range
 	});
-	---_
 end
 
 --- Typst strong text parser.
 ---@param TSNode table
 ---@param text string[]
----@param range node.range
+---@param range markview.parsed.range
 typst.strong = function (_, TSNode, text, range)
-	---+${lua}
-
 	local _n = TSNode:parent();
 
 	while _n do
@@ -343,22 +297,19 @@ typst.strong = function (_, TSNode, text, range)
 		_n = _n:parent();
 	end
 
-	---@type __typst.strong
 	typst.insert({
 		class = "typst_strong",
 
 		text = text,
 		range = range
 	});
-	---_
 end
 
 --- Typst subscript parser.
 ---@param TSNode table
 ---@param text string[]
----@param range node.range
+---@param range markview.parsed.range
 typst.subscript = function (_, TSNode, text, range)
-	---+${func}
 	local par = TSNode:type() == "group";
 	local lvl = 0;
 
@@ -374,7 +325,6 @@ typst.subscript = function (_, TSNode, text, range)
 
 	range.col_start = range.col_start - 1;
 
-	---@type __typst.subscripts
 	typst.insert({
 		class = "typst_subscript",
 		parenthesis = par,
@@ -384,16 +334,14 @@ typst.subscript = function (_, TSNode, text, range)
 		text = text,
 		range = range
 	});
-	---_
 end
 
 
 --- Typst superscript parser.
 ---@param TSNode table
 ---@param text string[]
----@param range node.range
+---@param range markview.parsed.range
 typst.superscript = function (_, TSNode, text, range)
-	---+${func}
 	local par = TSNode:type() == "group";
 	local lvl = 0;
 	local pre = true;
@@ -410,7 +358,6 @@ typst.superscript = function (_, TSNode, text, range)
 
 	range.col_start = range.col_start - 1;
 
-	---@type __typst.superscripts
 	typst.insert({
 		class = "typst_superscript",
 		parenthesis = par,
@@ -421,15 +368,13 @@ typst.superscript = function (_, TSNode, text, range)
 		text = text,
 		range = range
 	});
-	---_
 end
 
 --- Typst symbol parser.
 ---@param TSNode table
 ---@param text string[]
----@param range node.range
+---@param range markview.parsed.range
 typst.symbol = function (_, TSNode, text, range)
-	---+${func}
 	for _, line in ipairs(text) do
 		if not line:match("^[%a%.]+$") then
 			return;
@@ -437,12 +382,10 @@ typst.symbol = function (_, TSNode, text, range)
 	end
 
 	local _n = TSNode:parent();
-	local style;
 
 	while _n do
 		if vim.list_contains({ "raw_span", "raw_blck", "code", "field" }, _n:type()) then
 			return;
-		elseif vim.list_contains({ "sub", "sup" }, _n:type()) then
 		end
 
 		_n = _n:parent();
@@ -455,17 +398,14 @@ typst.symbol = function (_, TSNode, text, range)
 		text = text,
 		range = range
 	});
-	---_
 end
 
 --- Typst code block parser.
 ---@param buffer integer
 ---@param TSNode table
 ---@param text string[]
----@param range inline_link.range
+---@param range markview.parsed.typst.terms.range
 typst.term = function (buffer, TSNode, text, range)
-	---+${lua}
-
 	if TSNode:field("term")[1] == nil then
 		return;
 	end
@@ -481,7 +421,6 @@ typst.term = function (buffer, TSNode, text, range)
 
 	range.label = { TSNode:field("term")[1]:range() };
 
-	---@type __typst.terms
 	typst.insert({
 		class = "typst_term",
 		label = vim.treesitter.get_node_text(
@@ -492,31 +431,25 @@ typst.term = function (buffer, TSNode, text, range)
 		text = text,
 		range = range
 	});
-	---_
 end
 
 --- Typst regular text parser.
 ---@param text string[]
----@param range node.range
+---@param range markview.parsed.range
 typst.text = function (_, _, text, range)
-	---+${lua}
-
-	---@type __typst.text
 	typst.insert({
 		class = "typst_text",
 
 		text = text,
 		range = range
 	});
-	---_
 end
 
 --- Typst single word symbol parser.
 ---@param TSNode table
 ---@param text string[]
----@param range node.range
+---@param range markview.parsed.range
 typst.idet = function (_, TSNode, text, range)
-	---+${funx}
 	local symbols = require("markview.symbols");
 	if not symbols.typst_entries[text[1]] then return; end
 
@@ -530,7 +463,6 @@ typst.idet = function (_, TSNode, text, range)
 		_n = _n:parent();
 	end
 
-	---@type __typst.symbols
 	typst.insert({
 		class = "typst_symbol",
 		name = text[1],
@@ -538,7 +470,6 @@ typst.idet = function (_, TSNode, text, range)
 		text = text,
 		range = range
 	});
-	---_
 end
 
 --- Parser for typst.
@@ -549,8 +480,6 @@ end
 ---@return table[]
 ---@return table
 typst.parse = function (buffer, TSTree, from, to)
-	---+${lua}
-
 	typst.cache = {
 		list_item_number = 0
 	};
@@ -646,7 +575,6 @@ typst.parse = function (buffer, TSTree, from, to)
 	end
 
 	return typst.content, typst.sorted;
-	---_
 end
 
 return typst;
