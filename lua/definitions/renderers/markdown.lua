@@ -30,7 +30,7 @@
 --- Static configuration options for various types of block quotes.
 ---@class markview.config.markdown.block_quotes.opts
 ---
----@field border string | string[] Text for the border.
+---@field border? string | string[] Text for the border.
 ---@field border_hl? string | string[] Highlight group for the border.
 ---@field hl? string Base highlight group for the block quote.
 ---@field icon? string Icon to show before the block quote title.

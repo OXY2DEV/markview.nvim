@@ -104,8 +104,8 @@
 ---
 ---@field enable boolean
 ---
----@field indent_size integer Indentation size for list items.
----@field shift_width integer Preview indentation size for list items.
+---@field indent_size integer | fun(buffer: integer, item: markview.parsed.typst.list_items): integer Indentation size for list items.
+---@field shift_width integer | fun(buffer: integer, item: markview.parsed.typst.list_items): integer Preview indentation size for list items.
 ---
 ---@field marker_dot markview.config.typst.list_items.typst Configuration for `n.` list items.
 ---@field marker_minus markview.config.typst.list_items.typst Configuration for `-` list items.

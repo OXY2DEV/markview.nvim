@@ -53,9 +53,9 @@
 ---@field before_offset? fun(range: integer[]): integer[] Modifies the range of the argument(only for `on_before`).
 ---@field condition? fun(item: table): boolean Can be used to change when the command preview is shown.
 ---@field content_offset? fun(range: integer[]): table Modifies the argument's range(only for `on_content`).
----@field on_after? table Extmark configuration to use at the end of the argument.
----@field on_before? table Extmark configuration to use at the start of the argument.
----@field on_content? table Extmark configuration to use on the argument.
+---@field on_after? table | fun(item: markview.parsed.latex.commands): table Extmark configuration to use at the end of the argument.
+---@field on_before? table | fun(item: markview.parsed.latex.commands): table Extmark configuration to use at the start of the argument.
+---@field on_content? table | fun(item: markview.parsed.latex.commands): table Extmark configuration to use on the argument.
 
 ------------------------------------------------------------------------------
 

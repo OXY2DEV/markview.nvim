@@ -12,7 +12,7 @@ local health = require("markview.health");
 ---@param text_pos? "overlay" | "inline" `virt_text_pos` extmark options.
 ---@param cmd_conceal? integer Characters to conceal.
 ---@param cmd_hl? string Highlight group for the command.
----@return commands.opts
+---@return markview.config.latex.commands.opts
 local operator = function (name, text_pos, cmd_conceal, cmd_hl)
 	return {
 		condition = function (item)
@@ -1802,6 +1802,8 @@ spec.default = {
 			["max"] = operator("max"),
 			["Pr"] = operator("Pr"),
 			["sup"] = operator("sup"),
+
+			---@diagnostic disable:assign-type-mismatch
 			["sqrt"] = function ()
 				local symbols = require("markview.symbols");
 				return operator(symbols.entries.sqrt, "inline", 5);
@@ -1814,6 +1816,7 @@ spec.default = {
 				local symbols = require("markview.symbols");
 				return operator(symbols.entries.Vert, "inline", 6);
 			end,
+			---@diagnostic enable:assign-type-mismatch
 		},
 
 		escapes = {
@@ -1988,6 +1991,9 @@ spec.default = {
 
 			marker_dot = {
 				add_padding = true,
+
+				text = "%d.",
+				hl = "MarkviewListItemStar"
 			}
 		},
 

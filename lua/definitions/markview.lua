@@ -69,5 +69,27 @@
 
 ---@class markview.config.__inline
 ---
----@field [string] any
+---@field enable? boolean Only valid if it's a top level option, Used for disabling previews.
+---
+---@field corner_left? string Left corner.
+---@field corner_left_hl? string Highlight group for the left corner.
+---
+---@field padding_left? string Left padding(added after `corner_left`).
+---@field padding_left_hl? string Highlight group for the left padding.
+---
+---@field icon? string Icon(added after `padding_left`).
+---@field icon_hl? string Highlight group for the icon.
+---
+---@field hl? string Default highlight group(used by `*_hl` options when they are not set).
+---
+---@field padding_right? string Right padding.
+---@field padding_right_hl? string Highlight group for the right padding.
+---
+---@field corner_right? string Right corner(added after `padding_right`).
+---@field corner_right_hl? string Highlight group for the right corner.
+---
+---
+---
+---@field block_hl? string Only for `block_references`, highlight group for the block name.
+---@field file_hl? string Only for `block_references`, highlight group for the file name.
 

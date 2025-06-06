@@ -8,7 +8,7 @@
 ---
 ---@field ignore? boolean
 ---@field alter? string Alternative.
----@field tip? string Additional string.
+---@field tip? [ string, string ][] Additional string.
 
 ---@class markview.notify.type_mismatch
 ---
