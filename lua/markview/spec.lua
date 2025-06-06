@@ -2976,7 +2976,28 @@ spec.fixup = {
 		end
 
 		return _o;
-	end
+	end,
+
+	["preview"] = function (config)
+		local _o = {
+			previews = {}
+		};
+
+		for k, v in pairs(config) do
+			if k == "ignore_previews" then
+				health.notify("deprecation", {
+					option = "preview → ignore_previews",
+					alter = "preview → raw_previews"
+				});
+
+				_o.preview.raw_previews = v;
+			else
+				_o.preview[k] = v;
+			end
+		end
+
+		return _o;
+	end,
 };
 
 --- Tries to fix deprecated config spec
