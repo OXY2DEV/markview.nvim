@@ -5,7 +5,6 @@ local spec = require("markview.spec");
 local utils = require("markview.utils");
 
 --- Cached values.
----@type __latex.cache
 latex.cache = {
 	font_regions = {},
 	style_regions = {
@@ -19,12 +18,11 @@ latex.cache = {
 latex.ns = vim.api.nvim_create_namespace("markview/latex");
 
 ---@param buffer integer
----@param item __latex.blocks
+---@param item markview.parsed.latex.blocks
 latex.block = function (buffer, item)
-	---+${func}
 	local range = item.range;
 
-	---@type latex.blocks_static?
+	---@type markview.config.latex.blocks?
 	local config = spec.get({ "latex", "blocks" }, { fallback = nil, eval_args = { buffer, item } });
 
 	if not config then
@@ -64,15 +62,12 @@ latex.block = function (buffer, item)
 			line_hl_group = utils.set_hl(config.hl)
 		});
 	end
-	---_
 end
 
 ---@param buffer integer
----@param item __latex.commands
+---@param item markview.parsed.latex.commands
 latex.command = function (buffer, item)
-	--+${func}
-
-	---@type latex.commands?
+	---@type markview.config.latex.commands?
 	local main_config = spec.get({ "latex", "commands" }, { fallback = nil });
 	local config;
 
@@ -87,7 +82,7 @@ latex.command = function (buffer, item)
 	if not main_config then
 		return;
 	else
-		---@type commands.opts
+		---@type markview.config.latex.commands.opts
 		config = utils.match(main_config, command_name, { default = false });
 
 		if type(config) ~= "table" or vim.tbl_isempty(config) == true then
@@ -130,7 +125,7 @@ latex.command = function (buffer, item)
 			goto continue;
 		end
 
-		---@type commands.arg_opts
+		---@type markview.config.latex.commands.arg_opts
 		local arg_conf = on_args[a];
 
 		if arg_conf.on_before then
@@ -176,15 +171,12 @@ latex.command = function (buffer, item)
 
 	    ::continue::
 	end
-	---_
 end
 
 ---@param buffer integer
----@param item __latex.escapes
+---@param item markview.parsed.latex.escapes
 latex.escaped = function (buffer, item)
-	---+${func}
-
-	---@type latex.escapes?
+	---@type markview.config.latex.escapes?
 	local config = spec.get({ "latex", "escapes" }, { fallback = nil, eval_args = { buffer, item } });
 
 	if not config then
@@ -198,15 +190,12 @@ latex.escaped = function (buffer, item)
 		end_col = range.col_start + 1,
 		conceal = ""
 	});
-	---_
 end
 
 ---@param buffer integer
----@param item __latex.fonts
+---@param item markview.parsed.latex.fonts
 latex.font = function (buffer, item)
-	---+${func}
-
-	---@type latex.fonts?
+	---@type markview.config.latex.fonts?
 	local main_config = spec.get({ "latex", "fonts" }, { fallback = nil });
 
 	if main_config == nil then
@@ -215,7 +204,7 @@ latex.font = function (buffer, item)
 		return;
 	end
 
-	---@type fonts.opts?
+	---@type markview.config.latex.fonts.opts?
 	local config = utils.match(main_config, item.name, { key_mod = "^%s$", eval_args = { buffer, item } });
 
 	if config == nil then
@@ -252,17 +241,14 @@ latex.font = function (buffer, item)
 		end_row = range.row_end,
 		end_col = range.col_end,
 
-		hl_group = utils.set_hl(config.hl)
+		hl_group = utils.set_hl(config.hl --[[ @as string ]])
 	});
-	---_
 end
 
 ---@param buffer integer
----@param item __latex.inlines
+---@param item markview.parsed.latex.inlines
 latex.inline = function (buffer, item)
-	---+${func}
-
-	---@type latex.inlines_static?
+	---@type markview.config.latex.inlines?
 	local config = spec.get({ "latex", "inlines" }, { fallback = nil, eval_args = { buffer, item } });
 	local range = item.range;
 
@@ -347,15 +333,12 @@ latex.inline = function (buffer, item)
 			}
 		});
 	end
-	---_
 end
 
 ---@param buffer integer
----@param item __latex.parenthesis
+---@param item markview.parsed.latex.parenthesis
 latex.parenthesis = function (buffer, item)
-	---+${func}
-
-	---@type latex.parenthesis?
+	---@type markview.config.latex.parenthesis?
 	local config = spec.get({ "latex", "parenthesis" }, { fallback = nil });
 
 	if not config then
@@ -377,15 +360,12 @@ latex.parenthesis = function (buffer, item)
 		end_col = range.col_end,
 		conceal = ""
 	});
-	---_
 end
 
 ---@param buffer integer
----@param item __latex.subscripts
+---@param item markview.parsed.latex.subscripts
 latex.subscript = function (buffer, item)
-	---+${func}
-
-	---@type latex.subscripts?
+	---@type markview.config.latex.subscripts?
 	local config = spec.get({ "latex", "subscripts" }, { fallback = nil, eval_args = { buffer, item } });
 
 	if not config then
@@ -395,7 +375,7 @@ latex.subscript = function (buffer, item)
 	local range = item.range;
 	local hl;
 
-	if vim.islist(config.hl) then
+	if vim.islist(config.hl --[[ @as string[] ]]) then
 		hl = config.hl[utils.clamp(item.level, 1, #config.hl)];
 	elseif type(config.hl) == "string" then
 		hl = config.hl;
@@ -493,15 +473,12 @@ latex.subscript = function (buffer, item)
 
 		hl_group = utils.set_hl(hl)
 	});
-	---_
 end
 
 ---@param buffer integer
----@param item __latex.superscripts
+---@param item markview.parsed.latex.superscripts
 latex.superscript = function (buffer, item)
-	---+${func}
-
-	---@type latex.subscripts?
+	---@type markview.config.latex.subscripts?
 	local config = spec.get({ "latex", "superscripts" }, { fallback = nil, eval_args = { buffer, item } });
 
 	if not config then
@@ -511,7 +488,7 @@ latex.superscript = function (buffer, item)
 	local range = item.range;
 	local hl;
 
-	if vim.islist(config.hl) then
+	if vim.islist(config.hl --[[ @as string[] ]]) then
 		hl = config.hl[utils.clamp(item.level, 1, #config.hl)];
 	elseif type(config.hl) == "string" then
 		hl = config.hl;
@@ -609,19 +586,17 @@ latex.superscript = function (buffer, item)
 
 		hl_group = utils.set_hl(hl)
 	});
-	---_
 end
 
 --------------------------------------------------------------------------------------------
 
 --- Gets text style.
 ---@param buffer integer
----@param range node.range
+---@param range markview.parsed.range
 ---@param opts { symbol: string?, text: string? }
 ---@return string | nil
 ---@return string | nil
 local get_style = function (buffer, range, opts)
-	---+${lua}
 	opts = opts or {};
 
 	local function is_smaller (range_1, range_2)
@@ -662,7 +637,6 @@ local get_style = function (buffer, range, opts)
 	local text, hl;
 	local styles = latex.cache.style_regions or {};
 
-	---+${lua, Get the smallest style node that contains this range}
 	for _, entry in ipairs(styles.subscripts or {}) do
 		if utils.within_range(entry.range, range) then
 			if _o == nil then
@@ -692,10 +666,9 @@ local get_style = function (buffer, range, opts)
 			end
 		end
 	end
-	---_
 
 	if _o == nil then
-		---@type latex.fonts?
+		---@type markview.config.latex.fonts?
 		local main_config = spec.get({ "latex", "fonts" }, { fallback = nil });
 
 		if main_config == nil then
@@ -704,7 +677,7 @@ local get_style = function (buffer, range, opts)
 			return;
 		end
 
-		---@type fonts.opts?
+		---@type markview.config.latex.fonts.opts?
 		local config = spec.get({ "default" }, { source = main_config });
 
 		if config == nil then
@@ -719,14 +692,14 @@ local get_style = function (buffer, range, opts)
 			text = result_text(symbols.fonts.default);
 		end
 	elseif _o.class == "latex_subscript" then
-		---@type latex.subscripts?
+		---@type markview.config.latex.subscripts?
 		local config = spec.get({ "latex", "subscripts" }, { fallback = nil, eval_args = { buffer, _o } });
 
 		if not config then
 			return;
 		end
 
-		if vim.islist(config.hl) then
+		if vim.islist(config.hl --[[ @as string[] ]]) then
 			---@type string
 			hl = config.hl[utils.clamp(_o.level, 1, #config.hl)];
 		elseif type(config.hl) == "string" then
@@ -736,14 +709,14 @@ local get_style = function (buffer, range, opts)
 
 		text = result_text(symbols.subscripts);
 	elseif _o.class == "latex_superscript" then
-		---@type latex.subscripts?
+		---@type markview.config.latex.subscripts?
 		local config = spec.get({ "latex", "superscripts" }, { fallback = nil, eval_args = { buffer, _o } });
 
 		if not config then
 			return;
 		end
 
-		if vim.islist(config.hl) then
+		if vim.islist(config.hl --[[ @as string[] ]]) then
 			---@type string
 			hl = config.hl[utils.clamp(_o.level, 1, #config.hl)];
 		elseif type(config.hl) == "string" then
@@ -753,7 +726,7 @@ local get_style = function (buffer, range, opts)
 
 		text = result_text(symbols.superscripts);
 	elseif _o.class == "latex_font" then
-		---@type latex.fonts?
+		---@type markview.config.latex.fonts?
 		local main_config = spec.get({ "latex", "fonts" }, { fallback = nil });
 
 		if main_config == nil then
@@ -762,8 +735,8 @@ local get_style = function (buffer, range, opts)
 			return;
 		end
 
-		---@type fonts.opts?
-		local config = utils.match(main_config, _o.name, { key_mod = "^%s$", eval_args = { buffer, item } });
+		---@type markview.config.latex.fonts.opts?
+		local config = utils.match(main_config, _o.name, { key_mod = "^%s$", eval_args = { buffer, _o } });
 
 		if config == nil then
 			return;
@@ -777,15 +750,12 @@ local get_style = function (buffer, range, opts)
 	end
 
 	return text, hl;
-	---_
 end
 
 ---@param buffer integer
----@param item __latex.symbols
+---@param item markview.parsed.latex.symbols
 latex.symbol = function (buffer, item)
-	---+${func}
-
-	---@type latex.symbols?
+	---@type markview.config.latex.symbols?
 	local config = spec.get({ "latex", "symbols" }, { fallback = nil, eval_args = { buffer, item } });
 
 	if not config then
@@ -811,15 +781,12 @@ latex.symbol = function (buffer, item)
 
 		hl_mode = "combine"
 	});
-	---_
 end
 
 ---@param buffer integer
----@param item __latex.text
+---@param item markview.parsed.latex.text
 latex.text = function (buffer, item)
-	---+${func}
-
-	---@type latex.texts?
+	---@type markview.config.latex.texts?
 	local config = spec.get({ "latex", "texts" }, { fallback = nil });
 
 	if not config then
@@ -839,15 +806,12 @@ latex.text = function (buffer, item)
 		end_col = range.col_end,
 		conceal = ""
 	});
-	---_
 end
 
 ---@param buffer integer
----@param item __latex.word
+---@param item markview.parsed.latex.word
 latex.word = function (buffer, item)
-	---+${func}
-
-	---@type latex.fonts?
+	---@type markview.config.latex.fonts?
 	local config = spec.get({ "latex", "fonts" }, { fallback = nil });
 
 	if not config then
@@ -870,7 +834,6 @@ latex.word = function (buffer, item)
 		virt_text = { { _o, utils.set_hl(hl) } },
 		hl_mode = "combine"
 	});
-	---_
 end
 
 --- Renders LaTeX preview.

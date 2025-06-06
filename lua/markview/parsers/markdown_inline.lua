@@ -26,10 +26,8 @@ inline.cache = {
 
 --- Checkbox parser.
 ---@param buffer integer
----@param range node.range
+---@param range markview.parsed.range
 inline.checkbox = function (buffer, _, text, range)
-	---+${lua}
-
 	local line = vim.api.nvim_buf_get_lines(buffer, range.row_start, range.row_start + 1, false)[1];
 
 	local before = line:sub(0, range.col_start);
@@ -39,7 +37,6 @@ inline.checkbox = function (buffer, _, text, range)
 		return;
 	end
 
-	---@type __inline.checkboxes
 	inline.insert({
 		class = "inline_checkbox",
 		state = inner:gsub("[%[%]]", ""),
@@ -51,34 +48,30 @@ inline.checkbox = function (buffer, _, text, range)
 	--- Cache the current checkbox.
 	--- TODO, Has no use *yet*.
 	inline.cache.checkbox[range.row_start] = inline.content[#inline.content];
-	---_
 end
 
 --- Inline code parser.
 ---@param text string[]
----@param range node.range
+---@param range markview.parsed.range
 inline.code_span = function (_, _, text, range)
-	---+${lua}
-
-	---@type __inline.inline_codes
 	inline.insert({
 		class = "inline_code_span",
 
 		text = text,
 		range = range
 	});
-	---_
 end
 
 --- Embed file link parser.
 ---@param text string[]
----@param range inline_link.range
+---@param range markview.parsed.markdown_inline.block_refs.range | markview.parsed.range
 inline.embed_file = function (_, _, text, range)
-	---+${lua}
 	if text[1]:match("%#%^(.+)%]%]$") then
-		local file, block = text[1]:match("^%!%[%[(.*)%#%^(.+)%]%]$");
-		range.label = { range.row_start, range.col_start + 3, range.row_end, range.col_end - 2 };
+		---@cast range markview.parsed.markdown_inline.block_refs.range
 
+		local file, block = text[1]:match("^%!%[%[(.*)%#%^(.+)%]%]$");
+
+		range.label = { range.row_start, range.col_start + 3, range.row_end, range.col_end - 2 };
 		range.block = { range.row_start, range.col_start + 3 + #file + 2, range.row_end, range.col_end - 2 };
 
 		if file ~= "" then
@@ -87,7 +80,6 @@ inline.embed_file = function (_, _, text, range)
 			file = nil;
 		end
 
-		---@type __inline.embed_files
 		inline.insert({
 			class = "inline_link_block_ref",
 			file = file,
@@ -98,7 +90,8 @@ inline.embed_file = function (_, _, text, range)
 			range = range
 		});
 	else
-		---@type __inline.embed_files
+		---@cast range markview.parsed.range
+
 		inline.insert({
 			class = "inline_link_embed_file",
 			label = text[1]:match("%[%[([^%[+])%]%]"),
@@ -107,18 +100,14 @@ inline.embed_file = function (_, _, text, range)
 			range = range
 		});
 	end
-	---_
 end
 
 --- Email parser.
 ---@param text string[]
----@param range inline_link.range
+---@param range markview.parsed.markdown_inline.emails.range
 inline.email = function (_, _, text, range)
-	---+${lua}
-
 	range.label = { range.row_start, range.col_start + 1, range.row_end, range.col_end - 1 };
 
-	---@type __inline.emails
 	inline.insert({
 		class = "inline_link_email",
 		label = text[1]:sub(range.col_start + 2, range.col_end - 1),
@@ -126,14 +115,11 @@ inline.email = function (_, _, text, range)
 		text = text,
 		range = range
 	});
-	---_
 end
 
 --- Github like emoji shorthand parser.
----@param range node.range
+---@param range markview.parsed.range
 inline.emojis = function (_, TSNode, text, range)
-	---+${lua}
-
 	local parent = TSNode:parent();
 
 	while parent do
@@ -158,7 +144,6 @@ inline.emojis = function (_, TSNode, text, range)
 		for short_code in _line:gmatch("%:[%a%d%_%+%-]+%:") do
 			local c_s, c_e = _line:find(short_code, 0, #_line, true);
 
-			---@type __inline.emojis
 			inline.insert({
 				class = "inline_emoji",
 				name = short_code:gsub(":", ""),
@@ -178,16 +163,12 @@ inline.emojis = function (_, TSNode, text, range)
 			end, 1);
 		end
 	end
-	---_
 end
 
 --- Uri autolink parser.
 ---@param text string[]
----@param range node.range
+---@param range markview.parsed.range
 inline.entity = function (_, _, text, range)
-	---+${lua}
-
-	---@type __inline.entities
 	inline.insert({
 		class = "inline_entity",
 		name = text[1]:gsub("[^%a%d]", ""),
@@ -195,35 +176,27 @@ inline.entity = function (_, _, text, range)
 		text = text,
 		range = range
 	});
-	---_
 end
 
 --- Uri autolink parser.
 ---@param text string[]
----@param range node.range
+---@param range markview.parsed.range
 inline.escaped = function (_, _, text, range)
-	---+${lua}
-
-	---@type __inline.escaped
 	inline.insert({
 		class = "inline_escaped",
 
 		text = text[1]:sub(range.col_start + 1, range.col_end - 1),
 		range = range
 	});
-	---_
 end
 
 --- Footnote parser.
 ---@param text string[]
----@param range inline_link.range
+---@param range markview.parsed.markdown_inline.footnotes.range
 inline.footnote = function (_, _, text, range)
-	---+${lua}
-
 	local label = table.concat(text, ""):gsub("^%[%^", ""):gsub("%]$", "");
 	range.label = { range.row_start, range.col_start + 2, range.row_end, range.col_end - 1 };
 
-	---@type __inline.footnotes
 	inline.insert({
 		class = "inline_footnote",
 
@@ -232,16 +205,13 @@ inline.footnote = function (_, _, text, range)
 
 		range = range
 	});
-	---_
 end
 
 --- Highlight parser.
 ---@param TSNode table
 ---@param text string[]
----@param range node.range
+---@param range markview.parsed.range
 inline.highlights = function (_, TSNode, text, range)
-	---+${lua}
-
 	local parent = TSNode:parent();
 
 	while parent do
@@ -264,9 +234,8 @@ inline.highlights = function (_, TSNode, text, range)
 		end);
 
 		for highlight in _line:gmatch("%=%=[^=]+%=%=") do
-			local c_s, c_e = _line:find(highlight, 0, #_line, true);
+			local c_s, c_e = _line:find(highlight, 0, true);
 
-			---@type __inline.highlights
 			inline.insert({
 				class = "inline_highlight",
 				text = { highlight },
@@ -285,23 +254,23 @@ inline.highlights = function (_, TSNode, text, range)
 			end, 1);
 		end
 	end
-	---_
 end
 
 --- Image link parser.
 ---@param TSNode table
 ---@param text string[]
----@param range inline_link.range
+---@param range markview.parsed.range | markview.parsed.markdown_inline.images.range
 inline.image = function (buffer, TSNode, text, range)
-	---+${lua}
 	if text[1]:match("^%!%[%[") and text[1]:match("%]%]$") then
+		---@cast range markview.parsed.range
+
 		--- This is an embed file,
 		--- Not an image!
 		inline.embed_file(buffer, TSNode, text, range);
 		return;
 	end
 
-	---@cast range inline_link.range
+	---@cast range markview.parsed.markdown_inline.images.range
 
 	local link_label;
 	local link_desc;
@@ -318,7 +287,6 @@ inline.image = function (buffer, TSNode, text, range)
 
 	range.label = range.label or { range.row_start, range.col_start + 2, range.row_end, range.col_start - 3 };
 
-	---@type __inline.images
 	inline.insert({
 		class = "inline_link_image",
 
@@ -328,16 +296,13 @@ inline.image = function (buffer, TSNode, text, range)
 
 		range = range
 	});
-	---_
 end
 
 --- Hyperlink parser.
 ---@param buffer integer
 ---@param text string[]
----@param range inline_link.range
+---@param range markview.parsed.markdown_inline.hyperlinks.range
 inline.hyperlink = function (buffer, TSNode, text, range)
-	---+${lua}
-
 	local link_desc;
 	local link_label;
 
@@ -353,7 +318,6 @@ inline.hyperlink = function (buffer, TSNode, text, range)
 
 	range.label = range.label or { range.row_start, range.col_start + 1, range.row_end, range.col_start - 1 };
 
-	---@type __inline.hyperlinks
 	inline.insert({
 		class = "inline_link_hyperlink",
 
@@ -363,16 +327,15 @@ inline.hyperlink = function (buffer, TSNode, text, range)
 
 		range = range
 	});
-	---_
 end
 
---- Uri autolink parser.
+--- URI autolink parser.
 ---@param text string[]
----@param range inline_link.range
+---@param range markview.parsed.markdown_inline.block_refs.range | markview.parsed.markdown_inline.internal_links.range
 inline.internal_link = function (_, _, text, range)
-	---+${lua}
 	if string.match(text[1], "%#%^.+$") ~= nil then
-		--- Embed files
+		---@cast range markview.parsed.markdown_inline.block_refs.range
+
 		local file, block = text[1]:match("^%[%[(.*)%#%^(.+)$");
 		range.label = { range.row_start, range.col_start + 2, range.row_end, range.col_end - 2 };
 
@@ -384,9 +347,9 @@ inline.internal_link = function (_, _, text, range)
 			file = nil;
 		end
 
-		---@type __inline.block_references
 		inline.insert({
 			class = "inline_link_block_ref",
+
 			file = file,
 			block = block,
 			label = string.format("%s#^%s", file, block),
@@ -396,6 +359,8 @@ inline.internal_link = function (_, _, text, range)
 			range = range
 		});
 	else
+		---@cast range markview.parsed.markdown_inline.internal_links.range
+
 		local label = text[1]:match("^%[%[(.+)%]%]");
 		local alias_start, alias_end, alias = text[1]:find("%|([^%|]+)%]%]$");
 
@@ -405,7 +370,6 @@ inline.internal_link = function (_, _, text, range)
 
 		range.label = { range.row_start, range.col_start + 2, range.row_end, range.col_end - 2 };
 
-		---@type __inline.internal_links
 		inline.insert({
 			class = "inline_link_internal",
 
@@ -416,17 +380,14 @@ inline.internal_link = function (_, _, text, range)
 			range = range
 		});
 	end
-	---_
 end
 
 --- Reference link parser.
 ---@param buffer integer
 ---@param TSNode table
 ---@param text string[]
----@param range inline_link.range
+---@param range markview.parsed.markdown_inline.hyperlinks.range
 inline.reference_link = function (buffer, TSNode, text, range)
-	---+${lua}
-
 	local link_desc;
 	local link_label;
 
@@ -451,17 +412,14 @@ inline.reference_link = function (buffer, TSNode, text, range)
 
 		range = range
 	});
-	---_
 end
 
 --- Shortcut link parser.
 ---@param buffer integer
 ---@param TSNode table
 ---@param text string[]
----@param range inline_link.range
+---@param range markview.parsed.markdown_inline.internal_links.range | markview.parsed.markdown_inline.hyperlinks.range
 inline.shortcut_link = function (buffer, TSNode, text, range)
-	---+${lua}
-
 	local s_line = vim.api.nvim_buf_get_lines(buffer, range.row_start, range.row_start + 1, false)[1];
 	local e_line = vim.api.nvim_buf_get_lines(buffer, range.row_end, range.row_end + 1, false)[1];
 
@@ -488,6 +446,8 @@ inline.shortcut_link = function (buffer, TSNode, text, range)
 			goto invalid_link;
 		end
 
+		---@cast range markview.parsed.markdown_inline.internal_links.range
+
 		text[1]     = "[" .. text[1];
 		text[#text] = text[#text] .. "]";
 
@@ -500,6 +460,8 @@ inline.shortcut_link = function (buffer, TSNode, text, range)
 	end
 
 	::invalid_link::
+
+	---@cast range markview.parsed.markdown_inline.hyperlinks.range
 
 	local link_desc;
 	local link_label;
@@ -524,16 +486,13 @@ inline.shortcut_link = function (buffer, TSNode, text, range)
 		text = text,
 		range = range
 	});
-	---_
 end
 
 --- Uri autolink parser.
 ---@param TSNode table
 ---@param text string[]
----@param range inline_link.range
+---@param range markview.parsed.markdown_inline.uri_autolinks.range
 inline.uri_autolink = function (_, TSNode, text, range)
-	---+${lua}
-
 	range.label = { range.row_start, range.col_start + 1, range.row_end, range.col_end - 1 };
 
 	inline.insert({
@@ -545,7 +504,6 @@ inline.uri_autolink = function (_, TSNode, text, range)
 
 		range = range
 	});
-	---_
 end
 
 --- Inline markdown parser.
@@ -556,8 +514,6 @@ end
 ---@return table[]
 ---@return table
 inline.parse = function (buffer, TSTree, from, to)
-	---+${lua}
-
 	inline.sorted = {};
 	inline.content = {};
 
@@ -671,7 +627,6 @@ inline.parse = function (buffer, TSTree, from, to)
 	end
 
 	return inline.content, inline.sorted;
-	---_
 end
 
 return inline;

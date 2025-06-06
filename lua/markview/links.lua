@@ -10,8 +10,6 @@ local spec = require("markview.spec");
 ---@type { [string]: fun(buffer: integer, node: table): string? }
 local processors = {};
 
----+${lua}
-
 ---@param buffer integer
 ---@param node table
 ---@return string?
@@ -63,9 +61,11 @@ processors.shortcut_link = function (buffer, node)
 
 	if ( range[1] == range[3] ) and before:match("%[$") and after:match("^%]") then
 		-- Obsidian internal links or embed files.
-		return text:gsub("^%[", ""):gsub("%]$", "");
+		local _text = text:gsub("^%[", ""):gsub("%]$", "");
+		return _text;
 	else
-		return text:gsub("\n", ""):gsub("^%[", ""):gsub("%]$", "");
+		local _text = text:gsub("\n", ""):gsub("^%[", ""):gsub("%]$", "");
+		return _text;
 	end
 end
 
@@ -99,7 +99,6 @@ processors.url = function (buffer, node)
 	return vim.treesitter.get_node_text(node, buffer);
 end
 
----_
 
 --- [ Stuff ] ------------------------------------------------------------------------------
 
@@ -107,8 +106,6 @@ end
 ---@param address string
 ---@return boolean
 links.__text_file = function (address)
-	---+${lua}
-
     local file = io.open(address, "rb");
 
 	if file == nil then
@@ -160,14 +157,12 @@ links.__text_file = function (address)
 	else
 		return false;
 	end
-	---_
 end
 
 --- Internal functions to open links.
 ---@param buffer integer
 ---@param address string?
 links.__open = function (buffer, address)
-	---+${lua}
 	if type(address) ~= "string" then
 		vim.api.nvim_buf_call(buffer, function ()
 			address = vim.fn.expand("<cfile>");
@@ -180,8 +175,7 @@ links.__open = function (buffer, address)
 	---@param path string
 	---@return boolean
 	local function can_open (path)
-		---+${lua}
-
+		---@diagnostic disable-next-line: undefined-field
 		local stat = vim.uv.fs_stat(path)
 
 		if stat == nil then
@@ -191,14 +185,11 @@ links.__open = function (buffer, address)
 		end
 
 		return true;
-		---_
 	end
 
 	--- Wrapper for `vim.ui.open`.
 	---@param path string
 	local ui_open = function (path)
-		---+${lua}
-
 		local cmd, err = vim.ui.open(path);
 
 		if cmd then
@@ -208,7 +199,6 @@ links.__open = function (buffer, address)
 				message = { err, "DiagnosticError" }
 			});
 		end
-		---_
 	end
 
 	if can_open(address) == false then
@@ -229,14 +219,11 @@ links.__open = function (buffer, address)
 		--- This is a file, but not a text file.
 		ui_open(address);
 	end
-	---_
 end
 
 --- `Tree-sitter` based link opener.
 ---@param buffer integer
 links.treesitter = function (buffer)
-	---+${lua}
-
 	local utils = require("markview.utils");
 	local node;
 
@@ -244,7 +231,7 @@ links.treesitter = function (buffer)
 		node = vim.treesitter.get_node({ ignore_injections = false });
 	else
 		local primary_win = utils.buf_getwin(buffer);
-		local cursor = vimm.api.nvim_win_get_cursor(primary_win);
+		local cursor = vim.api.nvim_win_get_cursor(primary_win);
 
 		node = vim.treesitter.get_node({ bufnr = buffer, pos = cursor, ignore_injections = true });
 	end
@@ -259,7 +246,6 @@ links.treesitter = function (buffer)
 
 		node = node:parent();
 	end
-	---_
 end
 
 --- Opens the link under the cursor.
@@ -270,8 +256,6 @@ end
 --- Fallback to the `<cfile>` if no node
 --- was found.
 links.open = function ()
-	---+${lua}
-
 	local utils = require("markview.utils");
 	local buffer = vim.api.nvim_get_current_buf();
 
@@ -303,7 +287,6 @@ links.open = function ()
 
 		links.__open(buffer);
 	end
-	---_
 end
 
 return links;

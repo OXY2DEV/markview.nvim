@@ -21,10 +21,8 @@ end
 ---@param buffer integer
 ---@param TSNode table
 ---@param text string[]
----@param range node.range
+---@param range markview.parsed.range
 yaml.property = function (buffer, TSNode, text, range)
-	---+${lua}
-
 	local key, value = TSNode:field("key")[1], TSNode:field("value")[1];
 
 	local key_text = key and vim.treesitter.get_node_text(key, buffer) or nil;
@@ -35,7 +33,6 @@ yaml.property = function (buffer, TSNode, text, range)
 	---@param str string?
 	---@return boolean
 	local function is_date (str)
-		---+${lua}
 		if type(str) ~= "string" then
 			return false;
 		end
@@ -50,7 +47,6 @@ yaml.property = function (buffer, TSNode, text, range)
 		end
 
 		return false;
-		---_
 	end
 
 	--- Checks if {str} matches any of the
@@ -58,7 +54,6 @@ yaml.property = function (buffer, TSNode, text, range)
 	---@param str string?
 	---@return boolean
 	local function is_date_time (str)
-		---+${lua}
 		if type(str) ~= "string" then
 			return false;
 		end
@@ -73,13 +68,11 @@ yaml.property = function (buffer, TSNode, text, range)
 		end
 
 		return false;
-		---_
 	end
 
 	--- Checks if this node contains
 	--- a list.
 	local function is_list()
-		---+${lua}
 		if type(value) ~= "table" then
 			return false;
 		elseif value:child(0) == nil then
@@ -92,7 +85,6 @@ yaml.property = function (buffer, TSNode, text, range)
 		end
 
 		return true;
-		---_
 	end
 
 	local value_type = "unknown";
@@ -117,7 +109,6 @@ yaml.property = function (buffer, TSNode, text, range)
 		range.row_end = range.row_start + #text - 1;
 	end
 
-	---@type __yaml.properties
 	yaml.insert({
 		class = "yaml_property",
 		type = value_type,
@@ -128,7 +119,6 @@ yaml.property = function (buffer, TSNode, text, range)
 		text = text,
 		range = range
 	});
-	---_
 end
 
 --- YAML parser.
@@ -139,8 +129,6 @@ end
 ---@return table[]
 ---@return table
 yaml.parse = function (buffer, TSTree, from, to)
-	---+${lua}
-
 	-- Clear the previous contents
 	yaml.sorted = {};
 	yaml.content = {};
@@ -200,7 +188,6 @@ yaml.parse = function (buffer, TSTree, from, to)
 	end
 
 	return yaml.content, yaml.sorted;
-	---_
 end
 
 return yaml;

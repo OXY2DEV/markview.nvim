@@ -11,25 +11,30 @@ typst.cache = {
 	subscripts = {}
 };
 
+---@param list string[]
+---@return string
+local concat = function (list)
+	for i, item in ipairs(list) do
+		list[i] = utils.escape_string(item);
+	end
+
+	return table.concat(list);
+end
+
 --- Applies text transformation based on the **filetype**.
 ---
 --- Uses for getting the output text of filetypes that contain
 --- special syntaxes(e.g. JSON, Markdown).
 typst.get_visual_text = {
-	---+${class}
 	["Markdown"] = function (str)
-		---+${lua}
-
 		str = str:gsub("\\%`", " ");
 
 		for inline_code in str:gmatch("`(.-)`") do
-			---+${custom, Handle inline codes}
 			str = str:gsub(concat({
 				"`",
 				inline_code,
 				"`"
 			}), inline_code);
-			---_
 		end
 
 		for escaped in str:gmatch("\\([%\\%*%_%{%}%[%]%(%)%#%+%-%.%!%%<%>$])") do
@@ -40,18 +45,15 @@ typst.get_visual_text = {
 		end
 
 		for link, _, address, _ in str:gmatch("%!%[([^%)]*)%]([%(%[])([^%)]*)([%)%]])") do
-			---+${custom, Handle image links}
 			str = str:gsub(concat({
 				"![",
 				link,
 				"]",
 				address,
 			}), concat({ link }))
-			---_
 		end
 
 		for link in str:gmatch("%!%[([^%)]*)%]") do
-			---+${custom, Handle image links without address}
 			str = str:gsub(concat({
 				"![",
 				link,
@@ -59,11 +61,9 @@ typst.get_visual_text = {
 			}), concat({
 				string.rep("X", vim.fn.strdisplaywidth(link))
 			}))
-			---_
 		end
 
 		for link, _, address, _ in str:gmatch("%[([^%)]*)%]([%(%[])([^%)]*)([%)%]])") do
-			---+${custom, Handle hyperlinks}
 			str = str:gsub(concat({
 				"[",
 				link,
@@ -72,11 +72,9 @@ typst.get_visual_text = {
 			}), concat({
 				string.rep("X", vim.fn.strdisplaywidth(link))
 			}));
-			---_
 		end
 
 		for link in str:gmatch("%[([^%)]+)%]") do
-			---+${custom, Handle shortcut links}
 			str = str:gsub(concat({
 				"[",
 				link,
@@ -84,11 +82,9 @@ typst.get_visual_text = {
 			}), concat({
 				string.rep("X", vim.fn.strdisplaywidth(link))
 			}))
-			---_
 		end
 
 		for str_b, content, str_a in str:gmatch("([*]+)(.-)([*]+)") do
-			---+${custom, Handle italics & bold text}
 			if content == "" then
 				goto continue;
 			elseif #str_b ~= #str_a then
@@ -104,11 +100,9 @@ typst.get_visual_text = {
 			str = str:gsub(str_b .. content .. str_a, string.rep("X", vim.fn.strdisplaywidth(content)))
 
 			::continue::
-			---_
 		end
 
 		for striked in str:gmatch("%~%~(.-)%~%~") do
-			---+${custom, Handle strike-through text}
 			str = str:gsub(concat({
 				"~~",
 				striked,
@@ -116,11 +110,9 @@ typst.get_visual_text = {
 			}), concat({
 				string.rep("X", vim.fn.strdisplaywidth(striked))
 			}));
-			---_
 		end
 
 		return str;
-		---_
 	end,
 	["JSON"] = function (str)
 		return str:gsub('"', "");
@@ -143,16 +135,13 @@ typst.get_visual_text = {
 
 		return self[ft](line);
 	end
-	---_
 };
 
 typst.ns = vim.api.nvim_create_namespace("markview/typst");
 
 ---@param buffer integer
----@param item __typst.code_block
+---@param item markview.parsed.typst.code_block
 typst.code_block = function (buffer, item)
-	---+${func, Renders Code blocks}
-
 	local config = spec.get({ "typst", "code_blocks" }, { fallback = nil, eval_args = { buffer, item } });
 	local range = item.range;
 
@@ -169,7 +158,7 @@ typst.code_block = function (buffer, item)
 				{ config.text, utils.set_hl(config.text_hl or config.hl) },
 			},
 
-			sign_text = config.sign == true and sign or nil,
+			sign_text = config.sign,
 			sign_hl_group = utils.set_hl(config.sign_hl or config.hl)
 		});
 
@@ -274,15 +263,12 @@ typst.code_block = function (buffer, item)
 			});
 		end
 	end
-	---_
 end
 
 ---@param buffer integer
----@param item __typst.code_spans
+---@param item markview.parsed.typst.code_spans
 typst.code_span = function (buffer, item)
-	---+${lua}
-
-	---@type typst.code_spans_static?
+	---@type markview.config.typst.code_spans?
 	local config = spec.get({ "typst", "code_spans" }, { fallback = nil, eval_args = { buffer, item } });
 	local range = item.range;
 
@@ -376,14 +362,11 @@ typst.code_span = function (buffer, item)
 			});
 		end
 	end
-	---_
 end
 
 ---@param buffer integer
----@param item __typst.emphasis
+---@param item markview.parsed.typst.emphasis
 typst.emphasis = function (buffer, item)
-	---+${lua}
-
 	local range = item.range;
 
 	vim.api.nvim_buf_set_extmark(buffer, typst.ns, range.row_start, range.col_start, {
@@ -397,15 +380,12 @@ typst.emphasis = function (buffer, item)
 		end_col = range.col_end,
 		conceal = ""
 	});
-	---_
 end
 
 ---@param buffer integer
----@param item __typst.escapes
+---@param item markview.parsed.typst.escapes
 typst.escaped = function (buffer, item)
-	---+${lua}
-
-	---@type typst.escapes?
+	---@type markview.config.typst.escapes?
 	local config = spec.get({ "typst", "escapes" }, { fallback = nil, eval_args = { buffer, item } });
 
 	if not config then
@@ -419,15 +399,12 @@ typst.escaped = function (buffer, item)
 		end_col = range.col_start + 1,
 		conceal = "",
 	});
-	---_
 end
 
 ---@param buffer integer
----@param item __typst.headings
+---@param item markview.parsed.typst.headings
 typst.heading = function (buffer, item)
-	---+${func}
-
-	---@type typst.headings?
+	---@type markview.config.typst.headings?
 	local main_config = spec.get({ "typst", "headings" }, { fallback = nil });
 
 	if not main_config then
@@ -462,22 +439,19 @@ typst.heading = function (buffer, item)
 			hl_mode = "combine"
 		});
 	end
-	---_
 end
 
 ---@param buffer integer
----@param item __typst.labels
+---@param item markview.parsed.typst.labels
 typst.label = function (buffer, item)
-	---+${func}
-
-	---@type typst.labels?
+	---@type markview.config.typst.labels?
 	local main_config = spec.get({ "typst", "labels" }, { fallback = nil, eval_args = { buffer, item } });
 
 	if not main_config then
 		return;
 	end
 
-	---@type config.inline_generic_static?
+	---@type markview.config.__inline?
 	local config = utils.match(
 		main_config,
 		item.text[1]:gsub("^%@", ""),
@@ -528,17 +502,14 @@ typst.label = function (buffer, item)
 
 		hl_mode = "combine"
 	});
-	---_
 end
 
 ---@param buffer integer
----@param item __typst.list_items
+---@param item markview.parsed.typst.list_items
 typst.list_item = function (buffer, item)
-	---+${func}
-
-	---@type typst.list_items?
+	---@type markview.config.typst.list_items?
 	local main_config = spec.get({ "typst", "list_items" }, { fallback = nil });
-	---@type list_items.ordered | list_items.unordered | nil
+	---@type markview.config.typst.list_items.typst | nil
 	local config;
 
 	if not main_config then return; end
@@ -555,8 +526,11 @@ typst.list_item = function (buffer, item)
 		return;
 	end
 
-	local indent = main_config.indent_size;
-	local shift  = main_config.shift_width;
+	local indent = type(main_config.indent_size) == "number" and main_config.indent_size or 1;
+	local shift  = type(main_config.shift_width) == "number" and main_config.shift_width or 1;
+
+	---@cast indent integer
+	---@cast shift integer
 
 	local range = item.range;
 
@@ -599,22 +573,19 @@ typst.list_item = function (buffer, item)
 			}
 		});
 	end
-	---_
 end
 
 ---@param buffer integer
----@param item __typst.reference_links
+---@param item markview.parsed.typst.reference_links
 typst.link_ref = function (buffer, item)
-	---+${func}
-
-	---@type typst.reference_links?
+	---@type markview.config.typst.reference_links?
 	local main_config = spec.get({ "typst", "reference_links" }, { fallback = nil, eval_args = { buffer, item } });
 
 	if not main_config then
 		return;
 	end
 
-	---@type config.inline_generic_static?
+	---@type markview.config.__inline?
 	local config = utils.match(
 		main_config,
 		item.label,
@@ -663,22 +634,19 @@ typst.link_ref = function (buffer, item)
 
 		hl_mode = "combine"
 	});
-	---_
 end
 
 ---@param buffer integer
----@param item __typst.url_links
+---@param item markview.parsed.typst.url_links
 typst.link_url = function (buffer, item)
-	---+${func}
-
-	---@type typst.url_links?
+	---@type markview.config.typst.url_links?
 	local main_config = spec.get({ "typst", "url_links" }, { fallback = nil });
 
 	if not main_config then
 		return;
 	end
 
-	---@type config.inline_generic_static?
+	---@type markview.config.__inline?
 	local config = utils.match(
 		main_config,
 		item.label,
@@ -724,16 +692,14 @@ typst.link_url = function (buffer, item)
 
 		hl_mode = "combine"
 	});
-	---_
 end
 
 ---@param buffer integer
----@param item __typst.maths
+---@param item markview.parsed.typst.maths
 typst.math_block = function (buffer, item)
-	---+${func}
 	local range = item.range;
 
-	---@type typst.math_blocks?
+	---@type markview.config.typst.math_blocks?
 	local config = spec.get({ "typst", "math_blocks" }, { fallback = nil, eval_args = { buffer, item } });
 
 	if not config then
@@ -772,13 +738,12 @@ typst.math_block = function (buffer, item)
 			line_hl_group = utils.set_hl(config.hl)
 		});
 	end
-	---_
 end
 
+---@param buffer integer
+---@param item markview.parsed.typst.maths
 typst.math_span = function (buffer, item)
-	---+${lua}
-
-	---@type config.inline_generic_static?
+	---@type markview.config.__inline?
 	local config = spec.get({ "typst", "math_spans" }, { fallback = nil, eval_args = { buffer, item } });
 	local range = item.range;
 
@@ -861,16 +826,12 @@ typst.math_span = function (buffer, item)
 			}
 		});
 	end
-
-	---_
 end
 
 ---@param buffer integer
----@param item __typst.raw_blocks
+---@param item markview.parsed.typst.raw_blocks
 typst.raw_block = function (buffer, item)
-	---+${func, Renders Code blocks}
-
-	---@type typst.raw_blocks_static?
+	---@type markview.config.typst.raw_blocks?
 	local config = spec.get({ "typst", "raw_blocks" }, { fallback = nil, eval_args = { buffer, item } });
 	local range = item.range;
 
@@ -884,10 +845,8 @@ typst.raw_block = function (buffer, item)
 
 	--- Gets highlight configuration for a line.
 	---@param line string
-	---@return code_blocks.opts_static
+	---@return markview.config.typst.raw_blocks.opts
 	local function get_line_config(line)
-		---+${lua}
-
 		local line_conf = utils.match(config, item.language, {
 			eval_args = { buffer, line },
 			def_fallback = {
@@ -901,11 +860,9 @@ typst.raw_block = function (buffer, item)
 		});
 
 		return line_conf;
-		---_
 	end
 
 	local function render_simple ()
-		---+${lua}
 		if config.label_direction == nil or config.label_direction == "left" then
 			vim.api.nvim_buf_set_extmark(buffer, typst.ns, range.row_start, range.col_start, {
 				undo_restore = false, invalidate = true,
@@ -947,7 +904,7 @@ typst.raw_block = function (buffer, item)
 				undo_restore = false, invalidate = true,
 				end_row = l,
 
-				line_hl_group = utils.set_hl(line_config.block_hl)
+				line_hl_group = utils.set_hl(line_config.block_hl --[[ @as string ]])
 			});
 		end
 
@@ -959,12 +916,9 @@ typst.raw_block = function (buffer, item)
 
 			line_hl_group = utils.set_hl(config.border_hl)
 		});
-		---_
 	end
 
 	local function render_block ()
-		---+${lua}
-
 		local pad_amount = config.pad_amount or 0;
 		local block_width = config.min_width or 60;
 
@@ -1025,8 +979,6 @@ typst.raw_block = function (buffer, item)
 
 		--- Line padding
 		for l, width in ipairs(line_widths) do
-			---+${lua}
-
 			local line = item.text[l + 1];
 			local line_config = get_line_config(line);
 
@@ -1038,7 +990,7 @@ typst.raw_block = function (buffer, item)
 					virt_text = {
 						{
 							string.rep(" ", pad_amount),
-							utils.set_hl(line_config.pad_hl)
+							utils.set_hl(line_config.pad_hl --[[ @as string ]])
 						}
 					},
 				});
@@ -1050,11 +1002,11 @@ typst.raw_block = function (buffer, item)
 					virt_text = {
 						{
 							string.rep(" ", block_width - (( 2 * pad_amount) + width)),
-							utils.set_hl(line_config.block_hl)
+							utils.set_hl(line_config.block_hl --[[ @as string ]])
 						},
 						{
 							string.rep(" ", pad_amount),
-							utils.set_hl(line_config.pad_hl)
+							utils.set_hl(line_config.pad_hl --[[ @as string ]])
 						}
 					},
 				});
@@ -1064,7 +1016,7 @@ typst.raw_block = function (buffer, item)
 					undo_restore = false, invalidate = true,
 					end_col = range.col_start + #line,
 
-					hl_group = utils.set_hl(line_config.block_hl)
+					hl_group = utils.set_hl(line_config.block_hl --[[ @as string ]])
 				});
 			else
 				local buf_line = vim.api.nvim_buf_get_lines(buffer, range.row_start + l, range.row_start + l + 1, false)[1];
@@ -1079,20 +1031,19 @@ typst.raw_block = function (buffer, item)
 						},
 						{
 							string.rep(" ", pad_amount),
-							utils.set_hl(line_config.pad_hl)
+							utils.set_hl(line_config.pad_hl --[[ @as string ]])
 						},
 						{
 							string.rep(" ", block_width - (2 * pad_amount)),
-							utils.set_hl(line_config.block_hl)
+							utils.set_hl(line_config.block_hl --[[ @as string ]])
 						},
 						{
 							string.rep(" ", pad_amount),
-							utils.set_hl(line_config.pad_hl)
+							utils.set_hl(line_config.pad_hl --[[ @as string ]])
 						},
 					},
 				});
 			end
-			---_
 		end
 
 		--- Bottom border
@@ -1112,8 +1063,6 @@ typst.raw_block = function (buffer, item)
 				}
 			}
 		});
-
-		---_
 	end
 
 	if config.style == "simple" or ( vim.o.wrap == true or vim.wo[win].wrap == true ) then
@@ -1121,15 +1070,12 @@ typst.raw_block = function (buffer, item)
 	elseif config.style == "block" then
 		render_block()
 	end
-	---_
 end
 
 ---@param buffer integer
----@param item __typst.raw_spans
+---@param item markview.parsed.typst.raw_spans
 typst.raw_span = function (buffer, item)
-	---+${func}
-
-	---@type typst.raw_spans_static?
+	---@type markview.config.typst.raw_spans?
 	local config = spec.get({ "typst", "raw_spans" }, { fallback = nil, eval_args = { buffer, item } });
 
 	if not config then
@@ -1174,14 +1120,11 @@ typst.raw_span = function (buffer, item)
 
 		hl_mode = "combine"
 	});
-	---_
 end
 
 ---@param buffer integer
----@param item __typst.strong
+---@param item markview.parsed.typst.strong
 typst.strong = function (buffer, item)
-	---+${lua}
-
 	local range = item.range;
 
 	vim.api.nvim_buf_set_extmark(buffer, typst.ns, range.row_start, range.col_start, {
@@ -1195,15 +1138,12 @@ typst.strong = function (buffer, item)
 		end_col = range.col_end,
 		conceal = ""
 	});
-	---_
 end
 
 ---@param buffer integer
----@param item __typst.subscripts
+---@param item markview.parsed.typst.subscripts
 typst.subscript = function (buffer, item)
-	-- ---+${func}
-
-	---@type typst.subscripts?
+	---@type markview.config.typst.subscripts?
 	local config = spec.get({ "typst", "subscripts" }, { fallback = nil, eval_args = { buffer, item } });
 
 	if not config then
@@ -1216,7 +1156,7 @@ typst.subscript = function (buffer, item)
 
 	if type(config.hl) == "string" then
 		hl = config.hl --[[ @as string ]];
-	elseif vim.islist(config.hl) == true then
+	elseif vim.islist(config.hl --[[ @as table ]]) == true then
 		hl = config.hl[utils.clamp(item.level, 1, #config.hl)];
 	end
 
@@ -1239,8 +1179,6 @@ typst.subscript = function (buffer, item)
 			break;
 		end
 	end
-
-	---+${Lua, Render markers}
 
 	if config.fake_preview == false or previewable == false then
 		if item.parenthesis then
@@ -1338,8 +1276,6 @@ typst.subscript = function (buffer, item)
 		end
 	end
 
-	---_
-
 	if previewable == true and config.fake_preview ~= false then
 		table.insert(typst.cache.subscripts, item);
 	else
@@ -1351,15 +1287,12 @@ typst.subscript = function (buffer, item)
 			hl_group = utils.set_hl(hl)
 		});
 	end
-	-- ---_
 end
 
 ---@param buffer integer
----@param item __typst.superscripts
+---@param item markview.parsed.typst.superscripts
 typst.superscript = function (buffer, item)
-	-- ---+${func}
-
-	---@type typst.superscripts?
+	---@type markview.config.typst.superscripts?
 	local config = spec.get({ "typst", "superscripts" }, { fallback = nil, eval_args = { buffer, item } });
 
 	if not config then
@@ -1372,7 +1305,7 @@ typst.superscript = function (buffer, item)
 
 	if type(config.hl) == "string" then
 		hl = config.hl --[[ @as string ]];
-	elseif vim.islist(config.hl) == true then
+	elseif vim.islist(config.hl --[[ @as table ]]) == true then
 		hl = config.hl[utils.clamp(item.level, 1, #config.hl)];
 	end
 
@@ -1395,8 +1328,6 @@ typst.superscript = function (buffer, item)
 			break;
 		end
 	end
-
-	---+${Lua, Render markers}
 
 	if config.fake_preview == false or previewable == false then
 		if item.parenthesis then
@@ -1494,8 +1425,6 @@ typst.superscript = function (buffer, item)
 		end
 	end
 
-	---_
-
 	if previewable == true and config.fake_preview ~= false then
 		table.insert(typst.cache.superscripts, item);
 	else
@@ -1507,15 +1436,12 @@ typst.superscript = function (buffer, item)
 			hl_group = utils.set_hl(hl)
 		});
 	end
-	-- ---_
 end
 
 ---@param buffer integer
----@param item __typst.symbols
+---@param item markview.parsed.typst.symbols
 typst.symbol = function (buffer, item)
-	---+${func}
-
-	---@type typst.symbols?
+	---@type markview.config.typst.symbols?
 	local config = spec.get({ "typst", "symbols" }, { fallback = nil, eval_args = { buffer, item } });
 
 	if not config then
@@ -1537,22 +1463,19 @@ typst.symbol = function (buffer, item)
 		},
 		hl_mode = "combine"
 	});
-	---_
 end
 
 ---@param buffer integer
----@param item __typst.terms
+---@param item markview.parsed.typst.terms
 typst.term = function (buffer, item)
-	---+${func}
-
-	---@type typst.terms?
+	---@type markview.config.typst.terms?
 	local main_config = spec.get({ "typst", "terms" }, { fallback = nil });
 
 	if not main_config then
 		return;
 	end
 
-	---@type term.opts?
+	---@type markview.config.typst.terms.opts?
 	local config = utils.match(
 		main_config,
 		item.label,
@@ -1577,14 +1500,11 @@ typst.term = function (buffer, item)
 			{ config.text or "", utils.set_hl(config.hl) }
 		}
 	});
-	---_
 end
 
 ---@param buffer integer
----@param item __typst.text
+---@param item markview.parsed.typst.text
 typst.text = function (buffer, item)
-	---+${func}
-
 	local range = item.range;
 	local style;
 
@@ -1645,7 +1565,6 @@ typst.text = function (buffer, item)
 		},
 		hl_mode = "combine"
 	});
-	---_
 end
 
 --- Renders typst previews.

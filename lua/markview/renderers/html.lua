@@ -7,18 +7,16 @@ html.ns = vim.api.nvim_create_namespace("markview/html");
 
 --- Renders container elements
 ---@param buffer integer
----@param item __html.container_elements
+---@param item markview.parsed.html.container_elements
 html.container_element = function (buffer, item)
-	---+${func}
-
-	---@type html.container_elements?
+	---@type markview.config.html.container_elements?
 	local main_config = spec.get({ "html", "container_elements" }, { fallback = nil });
 
 	if not main_config then
 		return;
 	end
 
-	---@type container_elements.opts?
+	---@type markview.config.html.container_elements.opts?
 	local config = utils.match(main_config, item.name, {
 		ignore_keys = { "enable" },
 		default = false,
@@ -98,16 +96,13 @@ html.container_element = function (buffer, item)
 			}, close_conf)
 		)
 	end
-	---_
 end
 
 --- Renders headings.
 ---@param buffer integer
----@param item __html.headings
+---@param item markview.parsed.html.headings
 html.heading = function (buffer, item)
-	---+${func}
-
-	---@type html.headings
+	---@type markview.config.html.headings
 	local main_config = spec.get({ "html", "headings" }, { fallback = nil });
 
 	if not main_config then
@@ -117,8 +112,6 @@ html.heading = function (buffer, item)
 	end
 
 	local range = item.range;
-
-	---@type config.extmark
 	local config = spec.get({ "heading_" .. item.level }, { source = main_config, eval_args = { buffer, item } });
 
 	vim.api.nvim_buf_set_extmark(
@@ -134,23 +127,20 @@ html.heading = function (buffer, item)
 			end_col = range.col_end,
 		}, config)
 	);
-	---_
 end
 
 --- Renders void elements
 ---@param buffer integer
----@param item __html.void_elements
+---@param item markview.parsed.html.void_elements
 html.void_element = function (buffer, item)
-	---+${func}
-
-	---@type html.void_elements?
+	---@type markview.config.html.void_elements?
 	local main_config = spec.get({ "html", "void_elements" }, { fallback = nil });
 
 	if not main_config then
 		return;
 	end
 
-	---@type void_elements.opts
+	---@type markview.config.html.void_elements.opts
 	local config = utils.match(main_config, item.name, { default = false, eval_args = { buffer, item } })
 
 	if not main_config then
@@ -181,14 +171,12 @@ html.void_element = function (buffer, item)
 			}, node_conf)
 		)
 	end
-	---_
 end
 
 --- Renders HTML elements
 ---@param buffer integer
 ---@param content table[]
 html.render = function (buffer, content)
-	---+${func}
 	html.cache = {
 		font_regions = {},
 		style_regions = {
@@ -220,7 +208,6 @@ html.render = function (buffer, content)
 			});
 		end
 	end
-	---_
 end
 
 --- Clears decorations of HTML elements

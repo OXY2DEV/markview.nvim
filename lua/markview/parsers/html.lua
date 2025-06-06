@@ -12,7 +12,6 @@ html.sorted = {}
 --- Wrapper for `table.insert()`.
 ---@param data table
 html.insert = function (data)
-	---+${func}
 	table.insert(html.content, data);
 
 	if not html.sorted[data.class] then
@@ -20,21 +19,16 @@ html.insert = function (data)
 	end
 
 	table.insert(html.sorted[data.class], data);
-	---_
 end
 
 --- Heading element parser
 ---@param buffer integer
 ---@param TSNode table
 ---@param text string[]
----@param range node.range
+---@param range markview.parsed.range
 html.heading = function (buffer, TSNode, text, range)
-	---+${func}
-
-	---@type table The opening tag.
 	local tag = vim.treesitter.get_node_text(TSNode:named_child(0):named_child(0), buffer);
 
-	---@type __html.headings
 	html.insert({
 		class = "html_heading",
 		level = tonumber(tag:match("^h(%d)$")),
@@ -42,16 +36,14 @@ html.heading = function (buffer, TSNode, text, range)
 		text = text,
 		range = range
 	});
-	---_
 end
 
 --- Container element parser
 ---@param buffer integer
 ---@param TSNode table
 ---@param text string[]
----@param range node.range
+---@param range markview.parsed.range
 html.element = function (buffer, TSNode, text, range)
-	---+${func}
 	local opening_tag, closing_tag;
 
 	for child in TSNode:iter_children() do
@@ -73,7 +65,6 @@ html.element = function (buffer, TSNode, text, range)
 		return;
 	end
 
-	---@type __html.container_elements
 	html.insert({
 		class = "html_container_element",
 		name = string.lower(vim.treesitter.get_node_text(opening_tag:child(1), buffer) or ""),
@@ -90,19 +81,16 @@ html.element = function (buffer, TSNode, text, range)
 		text = text,
 		range = range
 	});
-	---_
 end
 
 --- Void element parser
 ---@param buffer integer
 ---@param TSNode table
 ---@param text string[]
----@param range node.range
+---@param range markview.parsed.range
 html.element_void = function (buffer, TSNode, text, range)
-	---+${func}
 	local tag = TSNode:child(0);
 
-	---@type __html.void_elements
 	html.insert({
 		class = "html_void_element",
 		name = string.lower(vim.treesitter.get_node_text(tag:child(1), buffer) or ""),
@@ -110,7 +98,6 @@ html.element_void = function (buffer, TSNode, text, range)
 		text = text,
 		range = range
 	});
-	---_
 end
 
 --- HTML parser
@@ -121,7 +108,6 @@ end
 ---@return table[]
 ---@return table
 html.parse = function (buffer, TSTree, from, to)
-	---+${func}
 	-- Clear the previous contents
 	html.sorted = {};
 	html.content = {};
@@ -202,7 +188,6 @@ html.parse = function (buffer, TSTree, from, to)
 	end
 
 	return html.content, html.sorted;
-	---_
 end
 
 return html;

@@ -22,10 +22,8 @@ local function tbl_clamp(value, index)
 	return value[index];
 end
 
---- Holds nodes for post-process effects.
----@type table[]
-markdown.cache = {};
-
+---@param list string[]
+---@return string
 local concat = function (list)
 	for i, item in ipairs(list) do
 		list[i] = utils.escape_string(item);
@@ -33,6 +31,10 @@ local concat = function (list)
 
 	return table.concat(list);
 end
+
+--- Holds nodes for post-process effects.
+---@type table[]
+markdown.cache = {};
 
 --- Cached configuration to increase performance.
 markdown.__inline_config = {
@@ -78,13 +80,11 @@ end
 ---@return string
 ---@return integer
 markdown.output = function (str, buffer)
-	---+${func}
 	local decorations = 0;
 
 	--- Checks if syntax exists in {str}.
 	---@return boolean
 	local function has_syntax ()
-		---+${lua, Conditions}
 		if str:match("`(.-)`") then
 			return true;
 		elseif str:match("\\([%\\%*%_%{%}%[%]%(%)%#%+%-%.%!%%<%>$])") then
@@ -118,7 +118,6 @@ markdown.output = function (str, buffer)
 		elseif str:match("%<(%S+)%>") then
 			return true;
 		end
-		---_
 
 		return false;
 	end
@@ -146,7 +145,6 @@ markdown.output = function (str, buffer)
 	str = str:gsub("\\%`", " ");
 
 	for inline_code in str:gmatch("`(.-)`") do
-		---+${custom, Handle inline codes}
 		if not codes or codes.enable == false then
 			str = str:gsub(
 				concat({
@@ -154,7 +152,9 @@ markdown.output = function (str, buffer)
 					utils.escape_string(inline_code),
 					"`"
 				}),
-				concat({ content })
+				concat({
+					inline_code
+				})
 			);
 		else
 			local _codes = spec.get({}, {
@@ -191,7 +191,6 @@ markdown.output = function (str, buffer)
 				_codes.corner_left or ""
 			}));
 		end
-		---_
 	end
 
 	for escaped in str:gmatch("\\([%\\%*%_%{%}%[%]%(%)%#%+%-%.%!%%<%>$])") do
@@ -203,7 +202,6 @@ markdown.output = function (str, buffer)
 	end
 
 	for latex in str:gmatch("%$([^%$]*)%$") do
-		---+${custom, Handle LaTeX blocks}
 		str = str:gsub(
 			concat({
 				"$",
@@ -217,11 +215,9 @@ markdown.output = function (str, buffer)
 			}),
 			1
 		);
-		---_
 	end
 
 	for str_b, content, str_a in str:gmatch("([%*]+)(.-)([%*]+)") do
-		---+${custom, Handle italics & bold text}
 		if content == "" then
 			goto continue;
 		elseif #str_b ~= #str_a then
@@ -241,11 +237,9 @@ markdown.output = function (str, buffer)
 		);
 
 	    ::continue::
-		---_
 	end
 
 	for striked in str:gmatch("%~%~(.-)%~%~") do
-		---+${custom, Handle strike-through text}
 		str = str:gsub(
 			concat({
 				"~~",
@@ -257,11 +251,9 @@ markdown.output = function (str, buffer)
 			}),
 			1
 		);
-		---_
 	end
 
 	for entity in str:gmatch("%&([%d%a%#]+);") do
-		---+${custom, Handle entities}
 		if not emo then
 			break;
 		elseif not entities.get(entity:gsub("%#", "")) then
@@ -280,11 +272,9 @@ markdown.output = function (str, buffer)
 		);
 
 	    ::continue::
-		---_
 	end
 
 	for emoji in str:gmatch(":([%a%d%_%+%-]+):") do
-		---+${lua, Handles emoji shorthands}
 		if not ent then
 			break;
 		elseif not symbols.shorthands[emoji] then
@@ -303,11 +293,9 @@ markdown.output = function (str, buffer)
 		);
 
 		::continue::
-		---_
 	end
 
 	for highlight in str:gmatch("%=%=(.-)%=%=") do
-		---+${custom, Handle highlighted text}
 		if not hls then goto continue; end
 
 		local _hls = utils.match(
@@ -350,11 +338,9 @@ markdown.output = function (str, buffer)
 		}));
 
 		::continue::
-		---_
 	end
 
 	for ref in str:gmatch("%!%[%[([^%]]+)%]%]") do
-		---+${custom, Handle embed files & block references}
 		if ref:match("%#%^(.+)") and blref then
 			local _blref = utils.match(
 				blref,
@@ -437,11 +423,9 @@ markdown.output = function (str, buffer)
 				_embed.corner_right or ""
 			}));
 		end
-		---_
 	end
 
 	for ref in str:gmatch("%[%[%#%^([^%]]+)%]%]") do
-		---+${custom, Handle block references}
 		if not blref then goto continue; end
 
 		local _blref = utils.match(
@@ -486,11 +470,9 @@ markdown.output = function (str, buffer)
 		}));
 
 		::continue::
-		---_
 	end
 
 	for link in str:gmatch("%[%[([^%]]+)%]%]") do
-		---+${custom, Handle internal links}
 		if not int then
 			str = str:gsub(
 				concat({
@@ -500,7 +482,7 @@ markdown.output = function (str, buffer)
 				}),
 				concat({
 					" ",
-					string.rep("X", vim.fn.strdisplaywidth(alias or link)),
+					string.rep("X", vim.fn.strdisplaywidth(link)),
 					" "
 				})
 			);
@@ -548,11 +530,9 @@ markdown.output = function (str, buffer)
 				_int.corner_right or ""
 			}));
 		end
-		---_
 	end
 
 	for link, p_s, address, p_e in str:gmatch("%!%[([^%]]*)%]([%(%[])([^%)]*)([%)%]])") do
-		---+${custom, Handle image links}
 		if not image then
 			str = str:gsub(
 				concat({
@@ -609,11 +589,9 @@ markdown.output = function (str, buffer)
 				_image.corner_right or ""
 			}));
 		end
-		---_
 	end
 
 	for link in str:gmatch("%!%[([^%]]*)%]") do
-		---+${custom, Handle image links without address}
 		if not image then
 			str = str:gsub(
 				concat({
@@ -628,7 +606,7 @@ markdown.output = function (str, buffer)
 		else
 			local _image = utils.match(
 				image,
-				address,
+				"",
 				{
 					fallback = {},
 					eval_args = {
@@ -667,11 +645,9 @@ markdown.output = function (str, buffer)
 				_image.corner_right or ""
 			}));
 		end
-		---_
 	end
 
 	for link, p_s, address, p_e in str:gmatch("%[([^%]]*)%]([%(%[])([^%)]*)([%)%]])") do
-		---+${custom, Handle hyperlinks}
 		if not hyper then
 			str = str:gsub(
 				concat({
@@ -729,11 +705,9 @@ markdown.output = function (str, buffer)
 				_hyper.corner_right or ""
 			}));
 		end
-		---_
 	end
 
 	for link in str:gmatch("%[([^%]]+)%]") do
-		---+${custom, Handle shortcut links}
 		if not hyper then
 			str = str:gsub(
 				concat({
@@ -786,11 +760,9 @@ markdown.output = function (str, buffer)
 				_hyper.corner_right or ""
 			}));
 		end
-		---_
 	end
 
 	for address, domain in str:gmatch("%<([^%s%@]-)@(%S+)%>") do
-		---+${custom, Handle emails}
 		if not email then
 			break;
 		end
@@ -839,11 +811,9 @@ markdown.output = function (str, buffer)
 			_email.padding_right or "",
 			_email.corner_left or ""
 		}));
-		---_
 	end
 
 	for address in str:gmatch("%<(%S+)%>") do
-		---+${custom, Handle uri autolinks}
 		if not uri then
 			break;
 		elseif not address:match("^ht") and not address:match("%:%/%/") then
@@ -891,11 +861,9 @@ markdown.output = function (str, buffer)
 		}));
 
 	    ::continue::
-		---_
 	end
 
 	return str, decorations;
-	---_
 end
 
 --- Applies text transformation based on the **filetype**.
@@ -903,24 +871,18 @@ end
 --- Uses for getting the output text of filetypes that contain
 --- special syntaxes(e.g. JSON, Markdown).
 markdown.get_visual_text = {
-	---+${class}
 	["Markdown"] = function (str)
-		---+${lua}
-
 		str = str:gsub("\\%`", " ");
 
 		for inline_code in str:gmatch("`(.-)`") do
-			---+${custom, Handle inline codes}
 			str = str:gsub(concat({
 				"`",
 				inline_code,
 				"`"
 			}), inline_code);
-			---_
 		end
 
 		for str_b, content, str_a in str:gmatch("([*]+)(.-)([*]+)") do
-			---+${custom, Handle italics & bold text}
 			if content == "" then
 				goto continue;
 			elseif #str_b ~= #str_a then
@@ -936,11 +898,9 @@ markdown.get_visual_text = {
 			str = str:gsub(str_b .. content .. str_a, string.rep("X", vim.fn.strdisplaywidth(content)))
 
 			::continue::
-			---_
 		end
 
 		for striked in str:gmatch("%~%~(.-)%~%~") do
-			---+${custom, Handle strike-through text}
 			str = str:gsub(concat({
 				"~~",
 				striked,
@@ -948,7 +908,6 @@ markdown.get_visual_text = {
 			}), concat({
 				string.rep("X", vim.fn.strdisplaywidth(striked))
 			}));
-			---_
 		end
 
 		for escaped in str:gmatch("\\([%\\%*%_%{%}%[%]%(%)%#%+%-%.%!%%<%>$])") do
@@ -959,7 +918,6 @@ markdown.get_visual_text = {
 		end
 
 		for link, m1, address, m2 in str:gmatch("%!%[([^%)]*)%]([%(%[])([^%)]*)([%)%]])") do
-			---+${custom, Handle image links}
 			str = str:gsub(concat({
 				"![",
 				link,
@@ -968,11 +926,9 @@ markdown.get_visual_text = {
 				address,
 				m2
 			}), link);
-			---_
 		end
 
 		for link in str:gmatch("%!%[([^%)]*)%]") do
-			---+${custom, Handle image links without address}
 			str = str:gsub(concat({
 				"![",
 				link,
@@ -980,11 +936,9 @@ markdown.get_visual_text = {
 			}), concat({
 				string.rep("X", vim.fn.strdisplaywidth(link))
 			}))
-			---_
 		end
 
 		for link, m1, address, m2 in str:gmatch("%[([^%)]*)%]([%(%[])([^%)]*)([%)%]])") do
-			---+${custom, Handle hyperlinks}
 			str = str:gsub(concat({
 				"[",
 				link,
@@ -995,11 +949,9 @@ markdown.get_visual_text = {
 			}),
 				string.rep("X", vim.fn.strdisplaywidth(link))
 			);
-			---_
 		end
 
 		for link in str:gmatch("%[([^%)]+)%]") do
-			---+${custom, Handle shortcut links}
 			str = str:gsub(concat({
 				"[",
 				link,
@@ -1007,11 +959,9 @@ markdown.get_visual_text = {
 			}), concat({
 				string.rep("X", vim.fn.strdisplaywidth(link)),
 			}))
-			---_
 		end
 
 		return str;
-		---_
 	end,
 	["JSON"] = function (str)
 		return str:gsub('"', "");
@@ -1034,7 +984,6 @@ markdown.get_visual_text = {
 
 		return self[ft](line);
 	end
-	---_
 };
 
 ---@type integer Namespace for markdown.
@@ -1042,11 +991,9 @@ markdown.ns = vim.api.nvim_create_namespace("markview/markdown");
 
 --- Renders atx headings.
 ---@param buffer integer
----@param item __markdown.atx
+---@param item markview.parsed.markdown.atx
 markdown.atx_heading = function (buffer, item)
-	---+${func, Renders ATX headings}
-
-	---@type markdown.headings?
+	---@type markview.config.markdown.headings?
 	local main_config = spec.get({ "markdown", "headings" }, { fallback = nil, eval_args = { buffer, item } });
 
 	if not main_config then
@@ -1055,7 +1002,7 @@ markdown.atx_heading = function (buffer, item)
 		return;
 	end
 
-	---@type headings.atx
+	---@type markview.config.markdown.headings.atx
 	local config = spec.get({ "heading_" .. #item.marker }, { source = main_config, eval_args = { buffer, item } });
 	local shift_width = spec.get({ "shift_width" }, { source = main_config, fallback = 1, eval_args = { buffer, item } });
 
@@ -1148,16 +1095,13 @@ markdown.atx_heading = function (buffer, item)
 			hl_mode = "combine"
 		});
 	end
-	---_
 end
 
 --- Renders block quotes, callouts & alerts.
 ---@param buffer integer
----@param item __markdown.block_quotes
+---@param item markview.parsed.markdown.block_quotes
 markdown.block_quote = function (buffer, item)
-	---+${func, Renders Block quotes & Callouts/Alerts}
-
-	---@type markdown.block_quotes?
+	---@type markview.config.markdown.block_quotes?
 	local main_config = spec.get({ "markdown", "block_quotes" }, { fallback = nil, eval_args = { buffer, item } });
 	local range = item.range;
 
@@ -1168,7 +1112,7 @@ markdown.block_quote = function (buffer, item)
 		return;
 	end
 
-	---@type block_quotes.opts
+	---@type markview.config.markdown.block_quotes.opts
 	local config;
 
 	if item.callout then
@@ -1185,6 +1129,12 @@ markdown.block_quote = function (buffer, item)
 			{ "default" },
 			{ source = main_config, eval_args = { buffer, item } }
 		);
+
+		---@type markview.config.markdown.block_quotes.opts
+		local default = spec.get({ "default" }, { source = main_config, eval_args = { buffer, item } });
+
+		-- Inherit undefined option values from `default`.
+		config = vim.tbl_deep_extend("force", default, config);
 	else
 		config = spec.get({ "default" }, { source = main_config, eval_args = { buffer, item } });
 	end
@@ -1291,12 +1241,11 @@ markdown.block_quote = function (buffer, item)
 		--- When `wrap` is enabled, run post-processing effects.
 		table.insert(markdown.cache, item);
 	end
-	---_
 end
 
 --- Renders [ ], [x] & [X].
 ---@param buffer integer
----@param item __inline.checkboxes
+---@param item markview.parsed.markdown.checkboxes
 markdown.checkbox = function (buffer, item)
 	--- Wrapper for the inline checkbox renderer function.
 	--- Used for [ ] & [X] checkboxes.
@@ -1305,11 +1254,9 @@ end
 
 --- Renders fenced code blocks.
 ---@param buffer integer
----@param item __markdown.code_blocks
+---@param item markview.parsed.markdown.code_blocks
 markdown.code_block = function (buffer, item)
-	---+${func, Renders Code blocks}
-
-	---@type markdown.code_blocks_static?
+	---@type markview.config.markdown.code_blocks?
 	local config = spec.get({ "markdown", "code_blocks" }, { fallback = nil, eval_args = { buffer, item } });
 
 	local delims = item.delimiters;
@@ -1328,7 +1275,6 @@ markdown.code_block = function (buffer, item)
 	--- Column end for concealing code block language string.
 	---@return integer
 	local function lang_conceal_to ()
-		---+${lua}
 		if item.info_string == nil then
 			return range.col_start + #delims[1];
 		elseif item.info_string:match("^%{[^%}]+%}%s?") then
@@ -1340,15 +1286,12 @@ markdown.code_block = function (buffer, item)
 			local _to = item.info_string:match("^%S+%s?"):len();
 			return info_range[2] + _to;
 		end
-		---_
 	end
 
 	--- Gets highlight configuration for a line.
 	---@param line string
-	---@return code_blocks.opts_static
+	---@return markview.config.markdown.code_blocks.opts
 	local function get_line_config(line)
-		---+${lua}
-
 		local line_conf = utils.match(config, item.language, {
 			eval_args = { buffer, line },
 			def_fallback = {
@@ -1362,13 +1305,10 @@ markdown.code_block = function (buffer, item)
 		});
 
 		return line_conf;
-		---_
 	end
 
 	--- Renders simple style code blocks.
 	local function render_simple()
-		---+${lua}
-
 		local conceal_to = lang_conceal_to();
 
 		if config.label_direction == nil or config.label_direction == "left" then
@@ -1423,7 +1363,7 @@ markdown.code_block = function (buffer, item)
 				undo_restore = false, invalidate = true,
 				end_row = l,
 
-				line_hl_group = utils.set_hl(line_config.block_hl)
+				line_hl_group = utils.set_hl(line_config.block_hl --[[ @as string ]])
 			});
 		end
 
@@ -1434,13 +1374,10 @@ markdown.code_block = function (buffer, item)
 
 			line_hl_group = utils.set_hl(config.border_hl)
 		});
-		---_
 	end
 
 	--- Renders block style code blocks.
 	local function render_block ()
-		---+${lua}
-
 		local pad_amount = config.pad_amount or 0;
 		local block_width = config.min_width or 60;
 
@@ -1464,7 +1401,6 @@ markdown.code_block = function (buffer, item)
 
 		--- Render top
 		if config.label_direction == nil or config.label_direction == "left" then
-			---+${Left aligned label}
 			local avail_top  = block_width - (label_width + 2);
 
 			vim.api.nvim_buf_set_extmark(buffer, markdown.ns, range.row_start, range.col_start, {
@@ -1538,9 +1474,7 @@ markdown.code_block = function (buffer, item)
 			end
 
 			::no_info::
-			---_
 		else
-			---+${Right aligned label}
 			local avail_top  = math.max(block_width - (label_width + 3));
 
 			vim.api.nvim_buf_set_extmark(buffer, markdown.ns, range.row_start, range.col_start, {
@@ -1622,13 +1556,10 @@ markdown.code_block = function (buffer, item)
 			end
 
 			::no_info::
-			---_
 		end
 
 		--- Line padding
 		for l, width in ipairs(line_widths) do
-			---+${lua}
-
 			local line = item.text[l + 1];
 			local line_config = get_line_config(line);
 
@@ -1640,7 +1571,7 @@ markdown.code_block = function (buffer, item)
 					virt_text = {
 						{
 							string.rep(" ", pad_amount),
-							utils.set_hl(line_config.pad_hl)
+							utils.set_hl(line_config.pad_hl --[[ @as string ]])
 						}
 					},
 				});
@@ -1652,11 +1583,11 @@ markdown.code_block = function (buffer, item)
 					virt_text = {
 						{
 							string.rep(" ", math.max(0, block_width - (( 2 * pad_amount) + width))),
-							utils.set_hl(line_config.block_hl)
+							utils.set_hl(line_config.block_hl --[[ @as string ]])
 						},
 						{
 							string.rep(" ", pad_amount),
-							utils.set_hl(line_config.pad_hl)
+							utils.set_hl(line_config.pad_hl --[[ @as string ]])
 						}
 					},
 				});
@@ -1666,7 +1597,7 @@ markdown.code_block = function (buffer, item)
 					undo_restore = false, invalidate = true,
 					end_col = range.col_start + #line,
 
-					hl_group = utils.set_hl(line_config.block_hl)
+					hl_group = utils.set_hl(line_config.block_hl --[[ @as string ]])
 				});
 			else
 				local buf_line = vim.api.nvim_buf_get_lines(buffer, range.row_start + l, range.row_start + l + 1, false)[1];
@@ -1681,20 +1612,19 @@ markdown.code_block = function (buffer, item)
 						},
 						{
 							string.rep(" ", pad_amount),
-							utils.set_hl(line_config.pad_hl)
+							utils.set_hl(line_config.pad_hl --[[ @as string ]])
 						},
 						{
 							string.rep(" ", math.max(0, block_width - (2 * pad_amount))),
-							utils.set_hl(line_config.block_hl)
+							utils.set_hl(line_config.block_hl --[[ @as string ]])
 						},
 						{
 							string.rep(" ", pad_amount),
-							utils.set_hl(line_config.pad_hl)
+							utils.set_hl(line_config.pad_hl --[[ @as string ]])
 						},
 					},
 				});
 			end
-			---_
 		end
 
 		--- Render bottom
@@ -1729,7 +1659,6 @@ markdown.code_block = function (buffer, item)
 				}
 			});
 		end
-		---_
 	end
 
 	if config.style == "simple" or ( vim.o.wrap == true or vim.wo[win].wrap == true ) then
@@ -1737,16 +1666,13 @@ markdown.code_block = function (buffer, item)
 	elseif config.style == "block" then
 		render_block()
 	end
-	---_
 end
 
 --- Renders horizontal rules/line breaks.
 ---@param buffer integer
----@param item __markdown.horizontal_rules
+---@param item markview.parsed.markdown.hr
 markdown.hr = function (buffer, item)
-	---+${func, Horizontal rules}
-
-	---@type markdown.horizontal_rules?
+	---@type markview.config.markdown.hr?
 	local config = spec.get({ "markdown", "horizontal_rules" }, { fallback = nil, eval_args = { buffer, item } });
 	local range = item.range;
 
@@ -1803,16 +1729,13 @@ markdown.hr = function (buffer, item)
 
 		hl_mode = "combine"
 	});
-	---_
 end
 
 --- Renders reference link definitions.
 ---@param buffer integer
----@param item __markdown.reference_definitions
+---@param item markview.parsed.markdown.reference_definitions
 markdown.link_ref_definition = function (buffer, item)
-	---+${func}
-
-	---@type markdown.reference_definitions?
+	---@type markview.config.markdown.ref_def?
 	local main_config = spec.get({ "markdown", "reference_definitions" }, { fallback = nil });
 	local range = item.range;
 
@@ -1820,7 +1743,7 @@ markdown.link_ref_definition = function (buffer, item)
 		return;
 	end
 
-	---@type config.inline_generic_static?
+	---@type markview.config.__inline
 	local config = utils.match(
 		main_config,
 		item.description or "",
@@ -1835,7 +1758,6 @@ markdown.link_ref_definition = function (buffer, item)
 
 	local r_label = range.label;
 
-	---+${class}
 	vim.api.nvim_buf_set_extmark(buffer, markdown.ns, r_label[1], r_label[2], {
 		undo_restore = false, invalidate = true,
 		end_col = r_label[2] + 1,
@@ -1873,17 +1795,13 @@ markdown.link_ref_definition = function (buffer, item)
 
 		hl_mode = "combine"
 	});
-	--_
-	---_
 end
 
 --- Renders list items
 ---@param buffer integer
----@param item __markdown.list_items
+---@param item markview.parsed.markdown.list_items
 markdown.list_item = function (buffer, item)
-	---+${func, Renders List items}
-
-	---@type markdown.list_items_static?
+	---@type markview.config.markdown.list_items?
 	local main_config = spec.get({ "markdown", "list_items" }, {
 		fallback = nil,
 		eval_args = { buffer, item }
@@ -1894,9 +1812,14 @@ markdown.list_item = function (buffer, item)
 		return;
 	end
 
-	---@type list_items.ordered | list_items.unordered
+	---@type markview.config.markdown.list_items.ordered | markview.config.markdown.list_items.unordered
 	local config;
-	local shift_width, indent_size = main_config.shift_width or 1, main_config.indent_size or 1;
+
+	local shift_width = type(main_config.shift_width) == "number" and main_config.shift_width or 1;
+	local indent_size = type(main_config.indent_size) == "number" and main_config.indent_size or 1;
+
+	---@cast indent_size integer
+	---@cast shift_width integer
 
 	if item.marker == "-" then
 		config = spec.get({ "marker_minus" }, {
@@ -1961,7 +1884,7 @@ markdown.list_item = function (buffer, item)
 
 	--- Gets checkbox state
 	---@param state string?
-	---@return checkboxes.opts?
+	---@return markview.config.markdown_inline.checkboxes.opts?
 	local function get_state (state)
 		local checkboxes = spec.get({ "markdown_inline", "checkboxes" }, { fallback = nil });
 
@@ -2052,16 +1975,13 @@ markdown.list_item = function (buffer, item)
 		--- When `wrap` is enabled, run post-processing effects.
 		table.insert(markdown.cache, item);
 	end
-	---_
 end
 
 --- Renders metadatas.
 ---@param buffer integer
----@param item __markdown.metadata_minus
+---@param item markview.parsed.markdown.metadata_minus
 markdown.metadata_minus = function (buffer, item)
-	---+${func, Renders YAML metadata blocks}
-
-	---@type markdown.metadata_minus_static?
+	---@type markview.config.markdown.metadata?
 	local config = spec.get({ "markdown", "metadata_minus" }, { fallback = nil, eval_args = { buffer, item } });
 	local range = item.range;
 
@@ -2107,24 +2027,26 @@ markdown.metadata_minus = function (buffer, item)
 		} or nil
 	});
 
-	if not config.hl then return; end
+	for r = range.row_start + 1, range.row_end - 2, 1 do
+		vim.api.nvim_buf_set_extmark(buffer, markdown.ns, r, 0, {
+			undo_restore = false, invalidate = true,
 
-	vim.api.nvim_buf_set_extmark(buffer, markdown.ns, range.row_start + 1, 0, {
-		undo_restore = false, invalidate = true,
-		end_row = range.row_end - 1,
+			virt_text_pos = "inline",
+			virt_text = {
+				{ "   ", utils.set_hl(config.hl) }
+			},
 
-		line_hl_group = utils.set_hl(config.hl)
-	});
-	---_
+			right_gravity = false,
+			line_hl_group = utils.set_hl(config.hl)
+		});
+	end
 end
 
 --- Renders + metadatas.
 ---@param buffer integer
----@param item __markdown.metadata_plus
+---@param item markview.parsed.markdown.metadata_plus
 markdown.metadata_plus = function (buffer, item)
-	---+${func, Renders TOML metadata blocks}
-
-	---@type markdown.metadata_plus_static?
+	---@type markview.config.markdown.metadata?
 	local config = spec.get({ "markdown", "metadata_plus" }, { fallback = nil, eval_args = { buffer, item } });
 	local range = item.range;
 
@@ -2170,24 +2092,25 @@ markdown.metadata_plus = function (buffer, item)
 		} or nil
 	});
 
-	if not config.hl then return; end
+	for r = range.row_start + 1, range.row_end - 1, 1 do
+		vim.api.nvim_buf_set_extmark(buffer, markdown.ns, r, 0, {
+			undo_restore = false, invalidate = true,
 
-	vim.api.nvim_buf_set_extmark(buffer, markdown.ns, range.row_start + 1, 0, {
-		undo_restore = false, invalidate = true,
-		end_row = range.row_end - 1,
+			virt_text_pos = "inline",
+			virt_text = {
+				{ "   ", utils.set_hl(config.hl) }
+			},
 
-		line_hl_group = utils.set_hl(config.hl)
-	});
-	---_
+			line_hl_group = utils.set_hl(config.hl)
+		});
+	end
 end
 
 --- Render org mode like section indentations.
 ---@param buffer integer
----@param item __markdown.sections
+---@param item markview.parsed.markdown.sections
 markdown.section = function (buffer, item)
-	---+${lua}
-
-	---@type markdown.headings?
+	---@type markview.config.markdown.headings?
 	local main_config = spec.get({ "markdown", "headings" }, { fallback = nil, eval_args = { buffer, item } });
 
 	if main_config == nil then
@@ -2235,16 +2158,13 @@ markdown.section = function (buffer, item)
 		--- When `wrap` is enabled, run post-processing effects.
 		table.insert(markdown.cache, item);
 	end
-	---_
 end
 
 --- Renders setext headings.
 ---@param buffer integer
----@param item __markdown.setext
+---@param item markview.parsed.markdown.setext
 markdown.setext_heading = function (buffer, item)
-	---+${func, Renders Setext headings}
-
-	---@type markdown.headings?
+	---@type markview.config.markdown.headings?
 	local main_config = spec.get({ "markdown", "headings" }, { fallback = nil, eval_args = { buffer, item } });
 	local lvl = item.marker:match("%=") and 1 or 2;
 
@@ -2254,7 +2174,7 @@ markdown.setext_heading = function (buffer, item)
 		return;
 	end
 
-	---@type headings.setext
+	---@type markview.config.markdown.headings.setext
 	local config = spec.get({ "setext_" .. lvl }, { source = main_config });
 	local range = item.range;
 
@@ -2327,16 +2247,13 @@ markdown.setext_heading = function (buffer, item)
 			});
 		end
 	end
-	---_
 end
 
 --- Renders tables.
 ---@param buffer integer
----@param item __markdown.tables
+---@param item markview.parsed.markdown.tables
 markdown.table = function (buffer, item)
-	---+${func, Renders Tables}
-
-	---@type markdown.tables_static?
+	---@type markview.config.markdown.tables?
 	local config = spec.get({ "markdown", "tables" }, { fallback = nil, eval_args = { buffer, item } });
 	local range = item.range;
 
@@ -2391,19 +2308,16 @@ markdown.table = function (buffer, item)
 	---@type integer[] Invisible width used for text wrapping in Neovim.
 	local vim_width = {};
 
-	---+${custom, Get the width of the column(s)}
-
 	---@type integer Current column number.
 	local c = 1;
 
 	markdown.__new_config();
 
-	---+${custom, Calculate heading column widths}
 	for _, col in ipairs(item.header) do
 		if col.class == "column" then
-			local o, dec = markdown.output(col.text, buffer);
+			local _o, dec = markdown.output(col.text, buffer);
+			local o = vim.fn.strdisplaywidth(_o);
 
-			o = vim.fn.strdisplaywidth(o);
 			table.insert(visible_texts.header, o);
 
 			if not col_widths[c] or col_widths[c] < o then
@@ -2421,9 +2335,7 @@ markdown.table = function (buffer, item)
 			c = c + 1;
 		end
 	end
-	---_
 
-	---+${custom, Calculate separator column widths}
 	c = 1;
 
 	for _, col in ipairs(item.separator) do
@@ -2445,18 +2357,16 @@ markdown.table = function (buffer, item)
 			c = c + 1;
 		end
 	end
-	---_
 
-	---+${custom, Calculate various row's column widths}
 	for r, row in ipairs(item.rows) do
 		c = 1;
 		table.insert(visible_texts.rows, {})
 
 		for _, col in ipairs(row) do
 			if col.class == "column" then
-				local o, dec = markdown.output(col.text, buffer);
+				local _o, dec = markdown.output(col.text, buffer);
+				local o = vim.fn.strdisplaywidth(_o);
 
-				o = vim.fn.strdisplaywidth(o);
 				table.insert(visible_texts.rows[r], o);
 
 				if not col_widths[c] or col_widths[c] < o then
@@ -2475,12 +2385,8 @@ markdown.table = function (buffer, item)
 			end
 		end
 	end
-	---_
-	---_
 
 	if is_wrapped == true then
-		---+${lua}
-
 		local win = utils.buf_getwin(buffer);
 		local width = vim.api.nvim_win_get_width(win);
 
@@ -2495,13 +2401,11 @@ markdown.table = function (buffer, item)
 			--- TODO, Check if a more accurate(& faster) method exists or not.
 			return;
 		end
-
-		---_
 	end
 
-	---@type tables.parts
+	---@type markview.config.markdown.tables.parts
 	local parts = config.parts;
-	---@type tables.parts
+	---@type markview.config.markdown.tables.parts
 	local hls = config.hl;
 
 	local function get_border(from, index)
@@ -2534,7 +2438,6 @@ markdown.table = function (buffer, item)
 
 	for p, part in ipairs(item.header) do
 		if part.class == "separator" then
-			---+${custom, Handle | in the header}
 			local border, border_hl = get_border("header", 2);
 			local top, top_hl = get_border("top", 4);
 
@@ -2594,9 +2497,7 @@ markdown.table = function (buffer, item)
 					})
 				end
 			end
-			---_
 		elseif part.class == "missing_seperator" then
-			---+${custom, Handle missing last |}
 			local border, border_hl = get_border("header", p == 1 and 1 or 3);
 			local top, top_hl = get_border("top", p == 1 and 1 or 3);
 
@@ -2653,9 +2554,7 @@ markdown.table = function (buffer, item)
 					})
 				end
 			end
-			---_
 		elseif part.class == "column" then
-			---+${custom, Handle columns of text inside the header}
 			local visible_width = visible_texts.header[c];
 			local column_width  = col_widths[c];
 
@@ -2735,7 +2634,6 @@ markdown.table = function (buffer, item)
 			end
 
 			c = c + 1;
-			---_
 		end
 	end
 
@@ -2746,8 +2644,6 @@ markdown.table = function (buffer, item)
 		local y = range.col_start + sep.col_start;
 
 		if sep.class == "separator" then
-			---+${custom, Handle | in the header}
-
 			if is_wrapped == true then
 				goto continue;
 			end
@@ -2772,9 +2668,7 @@ markdown.table = function (buffer, item)
 
 				hl_mode = "combine"
 			})
-			---_
 		elseif sep.class == "missing_seperator" then
-			---+${custom, Handle missing last |}
 			local border, border_hl = get_border("separator", s == 1 and 1 or 3);
 
 			vim.api.nvim_buf_set_extmark(buffer, markdown.ns, x, y, {
@@ -2787,7 +2681,6 @@ markdown.table = function (buffer, item)
 				right_gravity = s ~= 1,
 				hl_mode = "combine"
 			});
-			---_
 		elseif sep.class == "column" then
 			local border, border_hl = get_border("separator", 2);
 			local align, align_hl;
@@ -2796,7 +2689,6 @@ markdown.table = function (buffer, item)
 			local left = col_widths[c] - width;
 
 			if is_wrapped == true then
-				---+${lua, Wrapping enabled}
 				if left > 0 then
 					vim.api.nvim_buf_set_extmark(buffer, markdown.ns, x, (range.col_start + sep.col_end) - 2, {
 						undo_restore = false, invalidate = true,
@@ -2812,9 +2704,7 @@ markdown.table = function (buffer, item)
 						hl_mode = "combine"
 					});
 				end
-				---_
 			elseif item.alignments[c] == "default" then
-				---+${custom, Normal columns}
 				if left > 0 then
 					vim.api.nvim_buf_set_extmark(buffer, markdown.ns, x, y, {
 						undo_restore = false, invalidate = true,
@@ -2857,9 +2747,7 @@ markdown.table = function (buffer, item)
 						hl_mode = "combine"
 					});
 				end
-				---_
 			elseif item.alignments[c] == "left" then
-				---+${custom, Left aligned columns}
 				align = parts.align_left or "";
 				align_hl = hls.align_left;
 
@@ -2907,9 +2795,7 @@ markdown.table = function (buffer, item)
 						hl_mode = "combine"
 					});
 				end
-				---_
 			elseif item.alignments[c] == "right" then
-				---+${custom, Right aligned columns}
 				align = parts.align_right or "";
 				align_hl = hls.align_right;
 
@@ -2957,9 +2843,7 @@ markdown.table = function (buffer, item)
 						hl_mode = "combine"
 					});
 				end
-				---_
 			elseif item.alignments[c] == "center" then
-				---+${custom, Center aligned columns}
 				align = parts.align_center or { "", "" };
 				align_hl = hls.align_center or {};
 
@@ -3009,7 +2893,6 @@ markdown.table = function (buffer, item)
 						hl_mode = "combine"
 					});
 				end
-				---_
 			end
 
 			c = c + 1;
@@ -3027,7 +2910,6 @@ markdown.table = function (buffer, item)
 
 		for _, part in ipairs(row) do
 			if part.class == "separator" then
-				---+${custom, Handle | in the header}
 				local border, border_hl = get_border("row", 2);
 
 				if r == 1 then
@@ -3050,9 +2932,7 @@ markdown.table = function (buffer, item)
 						hl_mode = "combine"
 					})
 				end
-				---_
 			elseif part.class == "missing_seperator" then
-				---+${custom, Handle missing last |}
 				local border, border_hl = get_border("row", r == 1 and 1 or 3);
 
 				vim.api.nvim_buf_set_extmark(buffer, markdown.ns, range.row_start + 1 + r, range.col_start + part.col_start, {
@@ -3071,9 +2951,7 @@ markdown.table = function (buffer, item)
 					right_gravity = r ~= 1,
 					hl_mode = "combine"
 				})
-				---_
 			elseif part.class == "column" then
-				---+${custom, Handle columns of text inside the header}
 				local visible_width = visible_texts.rows[r][c];
 				local column_width  = col_widths[c];
 
@@ -3150,7 +3028,6 @@ markdown.table = function (buffer, item)
 				end
 
 				c = c + 1;
-				---_
 			end
 		end
 	end
@@ -3160,7 +3037,6 @@ markdown.table = function (buffer, item)
 
 	for p, part in ipairs(item.rows[#item.rows] or {}) do
 		if part.class == "separator" then
-			---+${custom, Handle | in the header}
 			local border, border_hl = get_border("row", 2);
 			local bottom, bottom_hl = bottom_part(4);
 
@@ -3217,9 +3093,7 @@ markdown.table = function (buffer, item)
 					})
 				end
 			end
-			---_
 		elseif part.class == "missing_seperator" then
-			---+${custom, Handle missing last |}
 			local border, border_hl = get_border("row", p == 1 and 1 or 3);
 			local bottom, bottom_hl = bottom_part(p == 1 and 1 or 3);
 
@@ -3273,9 +3147,7 @@ markdown.table = function (buffer, item)
 					})
 				end
 			end
-			---_
 		elseif part.class == "column" then
-			---+${custom, Handle columns of text inside the last row}
 			local visible_width = visible_texts.rows[#visible_texts.rows][c];
 			local column_width  = col_widths[c];
 
@@ -3359,10 +3231,8 @@ markdown.table = function (buffer, item)
 			end
 
 			c = c + 1;
-			---_
 		end
 	end
-	---_
 end
 
 
@@ -3400,12 +3270,15 @@ end
 
 --- Renders wrapped block quotes, callouts & alerts.
 ---@param buffer integer
----@param item __markdown.block_quotes
+---@param item markview.parsed.markdown.block_quotes
 markdown.__block_quote = function (buffer, item)
-	---+${func, Post renderer for wrapped block quotes}
-
-	---@type markdown.block_quotes?
+	---@type markview.config.markdown.block_quotes?
 	local main_config = spec.get({ "markdown", "block_quotes" }, { fallback = nil });
+
+	if not main_config then
+		return;
+	end
+
 	---@type string[]
 	local keys = vim.tbl_keys(main_config);
 	local range = item.range;
@@ -3424,7 +3297,7 @@ markdown.__block_quote = function (buffer, item)
 	local config;
 
 	if item.callout then
-		---@type block_quotes.opts
+		---@type markview.config.markdown.block_quotes.opts
 		config = spec.get(
 			{ string.lower(item.callout) },
 			{ source = main_config, eval_args = { buffer, item } }
@@ -3436,7 +3309,7 @@ markdown.__block_quote = function (buffer, item)
 			{ source = main_config, eval_args = { buffer, item } }
 		);
 	else
-		---@type block_quotes.opts
+		---@type markview.config.markdown.block_quotes.opts
 		config = spec.get({ "default" }, { source = main_config, eval_args = { buffer, item } });
 	end
 
@@ -3482,6 +3355,7 @@ markdown.__block_quote = function (buffer, item)
 						right_gravity = false,
 
 						virt_text_pos = "inline",
+						---@diagnostic disable-next-line
 						virt_text = vim.list_extend(virt_text, {
 							{ string.rep(" ", item.__nested and 0 or range.col_start) },
 							{
@@ -3518,16 +3392,13 @@ markdown.__block_quote = function (buffer, item)
 
 		::skip_line::
 	end
-	---_
 end
 
 --- Renders wrapped block quotes, callouts & alerts.
 ---@param buffer integer
----@param item __markdown.list_items
+---@param item markview.parsed.markdown.list_items
 markdown.__list_item = function (buffer, item)
-	---+${lua}
-
-	---@type markdown.list_items?
+	---@type markview.config.markdown.list_items?
 	local main_config = spec.get({ "markdown", "list_items" }, { fallback = nil });
 	local range = item.range;
 
@@ -3535,7 +3406,7 @@ markdown.__list_item = function (buffer, item)
 		return;
 	end
 
-	---@type list_items.ordered | list_items.unordered
+	---@type markview.config.markdown.list_items.ordered | markview.config.markdown.list_items.unordered
 	local config;
 	local shift_width, indent_size = main_config.shift_width or 1, main_config.indent_size or 1;
 
@@ -3592,7 +3463,7 @@ markdown.__list_item = function (buffer, item)
 
 	--- Gets checkbox state
 	---@param state string?
-	---@return checkboxes.opts?
+	---@return markview.config.markdown_inline.checkboxes.opts?
 	local function get_state (state)
 		local checkboxes = spec.get({ "markdown_inline", "checkboxes" }, { fallback = nil });
 
@@ -3659,6 +3530,7 @@ markdown.__list_item = function (buffer, item)
 						right_gravity = false,
 
 						virt_text_pos = "inline",
+						---@diagnostic disable-next-line
 						virt_text = vim.list_extend(virt_text, {
 							{ string.rep(" ", has_space and pad_width - 1 or pad_width) }
 						}),
@@ -3685,16 +3557,13 @@ markdown.__list_item = function (buffer, item)
 
 		::skip_line::
 	end
-	---_
 end
 
 --- Renders wrapped block quotes, callouts & alerts.
 ---@param buffer integer
----@param item __markdown.sections
+---@param item markview.parsed.markdown.sections
 markdown.__section = function (buffer, item)
-	---+${lua}
-
-	---@type markdown.headings?
+	---@type markview.config.markdown.headings?
 	local main_config = spec.get({ "markdown", "headings" }, { fallback = nil, eval_args = { buffer, item } });
 
 	if main_config == nil then
@@ -3751,6 +3620,7 @@ markdown.__section = function (buffer, item)
 						right_gravity = false,
 
 						virt_text_pos = "inline",
+						---@diagnostic disable-next-line
 						virt_text = vim.list_extend(virt_text, {
 							{ string.rep(shift_char, math.max(0, shift_width * (item.level - 1))) }
 						}),
@@ -3770,17 +3640,6 @@ markdown.__section = function (buffer, item)
 						hl_mode = "combine",
 					});
 				end
-				-- vim.api.nvim_buf_set_extmark(buffer, markdown.ns, l, c - 1, {
-				-- 	undo_restore = false, invalidate = true,
-				-- 	right_gravity = false,
-				--
-				-- 	virt_text_pos = "inline",
-				-- 	virt_text = {
-				-- 		{ string.rep(shift_char, shift_width * (item.level - 1)) }
-				-- 	},
-				--
-				-- 	hl_mode = "combine",
-				-- });
 			end
 
 		    ::continue::
@@ -3788,7 +3647,6 @@ markdown.__section = function (buffer, item)
 
 		::skip_line::
 	end
-	---_
 end
 
  -----------------------------------------------------------------------------------------

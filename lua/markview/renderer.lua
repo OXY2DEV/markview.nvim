@@ -10,18 +10,7 @@ renderer.__filter_cache = {
 	result = nil
 };
 
-
----@alias render_option table<string, string[]>
-
---- Maps a `class` to an option name.
----@class mkv.option_maps
----
----@field html render_option
----@field latex render_option
----@field markdown render_option
----@field markdown_inline render_option
----@field typst render_option
----@field yaml render_option
+---@type markview.renderer.option_maps
 renderer.option_maps = {
 	---|fS
 
@@ -97,16 +86,16 @@ renderer.option_maps = {
 
 
 --- Creates node class filters for hybrid mode.
----@param filter preview.ignore?
----@return render_option}
+---@param filter? markview.config.preview.raw
+---@return markview.renderer.option_map}
 local create_filter = function (filter)
 	---|fS
 
 	local spec = require("markview.spec");
 
 	--- Ignore queries.
-	---@type preview.ignore
-	local filters = filter or spec.get({ "preview", "ignore_previews" }, { fallback = {} });
+	---@type markview.config.preview.raw
+	local filters = filter or spec.get({ "preview", "raw_previews" }, { fallback = {} });
 
 	--- To save time, do not recalculate node filters
 	--- if the configuration hasn't changed!
@@ -227,7 +216,7 @@ end
 
 --- Range modifiers for various node type.
 --- Used to fix ranges of specific block nodes.
----@type { [string]: fun(range: node.range): node.range }
+---@type { [string]: fun(range: markview.parsed.range): markview.parsed.range }
 renderer.range_modifiers = {
 	---|fS
 
@@ -291,8 +280,8 @@ renderer.range_modifiers = {
 
 --- Fixes node ranges for `hybrid mode`.
 ---@param class string
----@param range node.range
----@return node.range
+---@param range markview.parsed.range
+---@return markview.parsed.range
 renderer.fix_range = function (class, range)
 	if renderer.range_modifiers[class] == nil then
 		return range;
@@ -304,14 +293,14 @@ end
 --- Filters provided content.
 --- [Used for hybrid mode]
 ---@param content table
----@param filter table?
+---@param filter? markview.config.preview.raw
 ---@param clear [ integer, integer ]
 ---@return table
 renderer.filter = function (content, filter, clear)
 	---|fS
 
 	--- Checks if `pos` is inside of `range`.
-	---@param range node.range
+	---@param range markview.parsed.range
 	---@param pos [ integer, integer ]
 	---@return boolean
 	local within = function (range, pos)
@@ -347,7 +336,7 @@ renderer.filter = function (content, filter, clear)
 	end
 
 	--- Node filters.
-	---@type preview.ignore
+	---@type markview.config.preview.raw
 	local result_filters = create_filter(filter);
 
 	---@type { [string]: table }

@@ -10,11 +10,9 @@ inline.ns = vim.api.nvim_create_namespace("markview/inline");
 
 --- Render checkbox.
 ---@param buffer integer
----@param item __inline.checkboxes
+---@param item markview.parsed.markdown_inline.checkboxes | markview.parsed.markdown.checkboxes
 inline.checkbox = function (buffer, item)
-	---+${func, Renders Checkboxes}
-
-	---@type inline.checkboxes?
+	---@type markview.config.markdown_inline.checkboxes?
 	local main_config = spec.get({ "markdown_inline", "checkboxes" }, { fallback = nil });
 
 	if not main_config then
@@ -46,16 +44,13 @@ inline.checkbox = function (buffer, item)
 			{ config.text, utils.set_hl(config.hl) }
 		}
 	});
-	---_
 end
 
 --- Render inline codes.
 ---@param buffer integer
----@param item __inline.inline_codes
+---@param item markview.parsed.markdown_inline.inline_codes
 inline.code_span = function (buffer, item)
-	---+${func, Render Inline codes}
-
-	---@type config.inline_generic?
+	---@type markview.config.__inline?
 	local config = spec.get({ "markdown_inline", "inline_codes" }, { fallback = nil, eval_args = { buffer, item } });
 	local range = item.range;
 
@@ -150,14 +145,12 @@ inline.code_span = function (buffer, item)
 			});
 		end
 	end
-	---_
 end
 
 --- Render entity reference.
 ---@param buffer integer
----@param item __inline.entities
+---@param item markview.parsed.markdown_inline.entities
 inline.entity = function (buffer, item)
-	---+${func, Renders Character entities}
 	local config = spec.get({ "markdown_inline", "entities" }, { fallback = nil });
 	local range = item.range;
 
@@ -177,15 +170,12 @@ inline.entity = function (buffer, item)
 			{ entities.get(item.name), utils.set_hl(config.hl) }
 		}
 	});
-	---_
 end
 
 --- Render escaped characters.
 ---@param buffer integer
----@param item __inline.escapes
+---@param item markview.parsed.markdown_inline.escapes
 inline.escaped = function (buffer, item)
-	---+${func, Render Escaped characters}
-
 	---@type { enable: boolean }?
 	local config = spec.get({ "markdown_inline", "escapes" }, { fallback = nil });
 	local range = item.range;
@@ -199,16 +189,13 @@ inline.escaped = function (buffer, item)
 		end_col = range.col_start + 1,
 		conceal = ""
 	});
-	---_
 end
 
 --- Render footnotes.
 ---@param buffer integer
----@param item __inline.footnotes
+---@param item markview.parsed.markdown_inline.footnotes
 inline.footnote = function (buffer, item)
-	---+${func}
-
-	---@type inline.footnotes?
+	---@type markview.config.markdown_inline.footnotes?
 	local main_config = spec.get({ "markdown_inline", "footnotes" }, { fallback = nil });
 	local range = item.range;
 
@@ -216,7 +203,7 @@ inline.footnote = function (buffer, item)
 		return;
 	end
 
-	---@type config.inline_generic?
+	---@type markview.config.__inline?
 	local config = utils.match(
 		main_config,
 		item.label,
@@ -229,7 +216,6 @@ inline.footnote = function (buffer, item)
 		return;
 	end
 
-	---+${custom, Draw the parts for the autolinks}
 	vim.api.nvim_buf_set_extmark(buffer, inline.ns, range.row_start, range.col_start, {
 		undo_restore = false, invalidate = true,
 		end_col = range.col_start + 2,
@@ -265,17 +251,13 @@ inline.footnote = function (buffer, item)
 
 		hl_mode = "combine"
 	});
-	---_
-	---_
 end
 
 --- Render ==highlights==.
 ---@param buffer integer
----@param item __inline.highlights
+---@param item markview.parsed.markdown_inline.highlights
 inline.highlight = function (buffer, item)
-	---+${func, Render Email links}
-
-	---@type inline.highlights?
+	---@type markview.config.markdown_inline.highlights?
 	local main_config = spec.get({ "markdown_inline", "highlights" }, { fallback = nil });
 	local range = item.range;
 
@@ -283,7 +265,7 @@ inline.highlight = function (buffer, item)
 		return;
 	end
 
-	---@type config.inline_generic?
+	---@type markview.config.__inline?
 	local config = utils.match(
 		main_config,
 		table.concat(item.text, "\n"),
@@ -296,7 +278,6 @@ inline.highlight = function (buffer, item)
 		return;
 	end
 
-	---+${custom, Draw the parts for the email}
 	vim.api.nvim_buf_set_extmark(buffer, inline.ns, range.row_start, range.col_start, {
 		undo_restore = false, invalidate = true,
 		end_col = range.col_start + 2,
@@ -332,16 +313,12 @@ inline.highlight = function (buffer, item)
 
 		hl_mode = "combine"
 	});
-	---_
-	---_
 end
 
 --- Renders :emojis:.
 ---@param buffer integer
----@param item __inline.emojis
+---@param item markview.parsed.markdown_inline.emojis
 inline.emoji = function (buffer, item)
-	---+${lua}
-
 	local config = spec.get({ "markdown_inline", "emoji_shorthands" }, { fallback = nil });
 	local range = item.range;
 
@@ -361,16 +338,13 @@ inline.emoji = function (buffer, item)
 			{ symbols.shorthands[item.name], utils.set_hl(config.hl) }
 		}
 	});
-	---_
 end
 
 --- Render [[#^block_references]].
 ---@param buffer integer
----@param item __inline.block_references
+---@param item markview.parsed.markdown_inline.block_refs
 inline.link_block_ref = function (buffer, item)
-	---+${func, Render Obsidian's block reference links}
-
-	---@type inline.block_references?
+	---@type markview.config.markdown_inline.block_refs?
 	local main_config = spec.get({ "markdown_inline", "block_references" }, { fallback = nil });
 	local range = item.range;
 
@@ -378,7 +352,7 @@ inline.link_block_ref = function (buffer, item)
 		return;
 	end
 
-	---@type config.inline_generic?
+	---@type markview.config.__inline?
 	local config = utils.match(
 		main_config,
 		item.label,
@@ -391,7 +365,6 @@ inline.link_block_ref = function (buffer, item)
 		return;
 	end
 
-	---+${custom, Draw the parts for the embed file links}
 	vim.api.nvim_buf_set_extmark(buffer, inline.ns, range.row_start, range.col_start, {
 		undo_restore = false, invalidate = true,
 		end_col = range.label[2],
@@ -433,7 +406,7 @@ inline.link_block_ref = function (buffer, item)
 		});
 	end
 
-	vim.api.nvim_buf_set_extmark(buffer, inline.ns, range.row_start, vim.islist(range.alias) and range.alias[4] or (range.col_end - 2), {
+	vim.api.nvim_buf_set_extmark(buffer, inline.ns, range.row_start, range.col_end - 2, {
 		undo_restore = false, invalidate = true,
 		end_col = range.col_end,
 		conceal = "",
@@ -446,17 +419,13 @@ inline.link_block_ref = function (buffer, item)
 
 		hl_mode = "combine"
 	});
-	---_
-	---_
 end
 
 --- Render ![[embed_files]].
 ---@param buffer integer
----@param item __inline.embed_files
+---@param item markview.parsed.markdown_inline.embed_files
 inline.link_embed_file = function (buffer, item)
-	---+${func, Render Obsidian's embed file links}
-
-	---@type inline.embed_files?
+	---@type markview.config.markdown_inline.embed_files?
 	local main_config = spec.get({ "markdown_inline", "embed_files" }, { fallback = nil });
 	local range = item.range;
 
@@ -464,7 +433,7 @@ inline.link_embed_file = function (buffer, item)
 		return;
 	end
 
-	---@type config.inline_generic
+	---@type markview.config.__inline
 	local config = utils.match(
 		main_config,
 		item.label,
@@ -473,7 +442,6 @@ inline.link_embed_file = function (buffer, item)
 		}
 	);
 
-	---+${custom, Draw the parts for the embed file links}
 	vim.api.nvim_buf_set_extmark(buffer, inline.ns, range.row_start, range.col_start, {
 		undo_restore = false, invalidate = true,
 		end_col = range.col_start + 2,
@@ -509,17 +477,13 @@ inline.link_embed_file = function (buffer, item)
 
 		hl_mode = "combine"
 	});
-	---_
-	---_
 end
 
 --- Render <email@mail.com>.
 ---@param buffer integer
----@param item __inline.emails
+---@param item markview.parsed.markdown_inline.emails
 inline.link_email = function (buffer, item)
-	---+${func, Render Email links}
-
-	---@type inline.emails?
+	---@type markview.config.markdown_inline.emails?
 	local main_config = spec.get({ "markdown_inline", "emails" }, { fallback = nil });
 	local range = item.range;
 
@@ -527,7 +491,7 @@ inline.link_email = function (buffer, item)
 		return;
 	end
 
-	---@type config.inline_generic
+	---@type markview.config.__inline
 	local config = utils.match(
 		main_config,
 		item.label,
@@ -536,7 +500,6 @@ inline.link_email = function (buffer, item)
 		}
 	);
 
-	---+${custom, Draw the parts for the email}
 	vim.api.nvim_buf_set_extmark(buffer, inline.ns, range.row_start, range.col_start, {
 		undo_restore = false, invalidate = true,
 		end_col = range.col_start + 1,
@@ -572,17 +535,13 @@ inline.link_email = function (buffer, item)
 
 		hl_mode = "combine"
 	});
-	---_
-	---_
 end
 
 --- Render [hyperlink].
 ---@param buffer integer
----@param item __inline.hyperlinks
+---@param item markview.parsed.markdown_inline.hyperlinks
 inline.link_hyperlink = function (buffer, item)
-	---+${func, Render normal links}
-
-	---@type inline.hyperlinks?
+	---@type markview.config.markdown_inline.hyperlinks?
 	local main_config = spec.get({ "markdown_inline", "hyperlinks" }, { fallback = nil });
 	local range = item.range;
 
@@ -590,7 +549,7 @@ inline.link_hyperlink = function (buffer, item)
 		return;
 	end
 
-	---@type config.inline_generic
+	---@type markview.config.__inline
 	local config = utils.match(
 		main_config,
 		item.description,
@@ -602,7 +561,6 @@ inline.link_hyperlink = function (buffer, item)
 	---@type integer[]
 	local r_label = range.label;
 
-	---+${custom, Draw the parts for the shortcut links}
 	vim.api.nvim_buf_set_extmark(buffer, inline.ns, r_label[1], r_label[2] - 1, {
 		undo_restore = false, invalidate = true,
 		end_col = r_label[2],
@@ -640,7 +598,6 @@ inline.link_hyperlink = function (buffer, item)
 
 		hl_mode = "combine"
 	});
-	---_
 
 	if r_label[1] == r_label[3] then
 		return;
@@ -697,16 +654,13 @@ inline.link_hyperlink = function (buffer, item)
 
 		end
 	end
-	---_
 end
 
 --- Render ![image](image.svg).
 ---@param buffer integer
----@param item __inline.images
+---@param item markview.parsed.markdown_inline.images
 inline.link_image = function (buffer, item)
-	---+${func, Render Image links}
-
-	---@type inline.images?
+	---@type markview.config.markdown_inline.images?
 	local main_config = spec.get({ "markdown_inline", "images" }, { fallback = nil });
 	local range = item.range;
 
@@ -714,7 +668,7 @@ inline.link_image = function (buffer, item)
 		return;
 	end
 
-	---@type config.inline_generic
+	---@type markview.config.__inline
 	local config = utils.match(
 		main_config,
 		item.description,
@@ -723,10 +677,9 @@ inline.link_image = function (buffer, item)
 		}
 	);
 
-	---@type string[]
+	---@type integer[]
 	local r_label = range.label;
 
-	---+${custom, Draw the parts for the image links}
 	vim.api.nvim_buf_set_extmark(buffer, inline.ns, r_label[1], r_label[2] - 1, {
 		undo_restore = false, invalidate = true,
 		end_col = r_label[2],
@@ -764,7 +717,6 @@ inline.link_image = function (buffer, item)
 
 		hl_mode = "combine"
 	});
-	---_
 
 	if r_label[1] == r_label[3] then
 		return;
@@ -821,16 +773,13 @@ inline.link_image = function (buffer, item)
 
 		end
 	end
-	---_
 end
 
 --- Render [[internal_links]].
 ---@param buffer integer
----@param item __inline.internal_links
+---@param item markview.parsed.markdown_inline.internal_links
 inline.link_internal = function (buffer, item)
-	---+${func, Render Obsidian's internal links}
-
-	---@type inline.internal_links?
+	---@type markview.config.markdown_inline.internal_links?
 	local main_config = spec.get({ "markdown_inline", "internal_links" }, { fallback = nil });
 	local range = item.range;
 
@@ -838,7 +787,7 @@ inline.link_internal = function (buffer, item)
 		return;
 	end
 
-	---@type config.inline_generic
+	---@type markview.config.__inline
 	local config = utils.match(
 		main_config,
 		item.label,
@@ -847,7 +796,6 @@ inline.link_internal = function (buffer, item)
 		}
 	);
 
-	---+${custom, Draw the parts for the internal links}
 	vim.api.nvim_buf_set_extmark(buffer, inline.ns, range.row_start, range.col_start, {
 		undo_restore = false, invalidate = true,
 		end_col = vim.islist(range.alias) and range.alias[2] or (range.col_start + 2),
@@ -883,17 +831,13 @@ inline.link_internal = function (buffer, item)
 
 		hl_mode = "combine"
 	});
-	---_
-	---_
 end
 
 --- Render [shortcut_link].
 ---@param buffer integer
----@param item __inline.hyperlinks
+---@param item markview.parsed.markdown_inline.hyperlinks
 inline.link_shortcut = function (buffer, item)
-	---+${func, Render Shortcut links}
-
-	---@type inline.hyperlinks?
+	---@type markview.config.markdown_inline.hyperlinks?
 	local main_config = spec.get({ "markdown_inline", "hyperlinks" }, { fallback = nil });
 	local range = item.range;
 
@@ -901,7 +845,7 @@ inline.link_shortcut = function (buffer, item)
 		return;
 	end
 
-	---@type config.inline_generic
+	---@type markview.config.__inline
 	local config = utils.match(
 		main_config,
 		item.label,
@@ -910,7 +854,6 @@ inline.link_shortcut = function (buffer, item)
 		}
 	);
 
-	---+${custom, Draw the parts for the shortcut links}
 	vim.api.nvim_buf_set_extmark(buffer, inline.ns, range.row_start, range.col_start, {
 		undo_restore = false, invalidate = true,
 		end_col = range.col_start + 1,
@@ -947,7 +890,6 @@ inline.link_shortcut = function (buffer, item)
 
 		hl_mode = "combine"
 	});
-	---_
 
 	if range.row_start == range.row_end then
 		return;
@@ -1001,16 +943,13 @@ inline.link_shortcut = function (buffer, item)
 			});
 		end
 	end
-	---_
 end
 
 --- Render <https://uri_autolinks.com>
 ---@param buffer integer
----@param item __inline.uri_autolinks
+---@param item markview.parsed.markdown_inline.uri_autolinks
 inline.link_uri_autolink = function (buffer, item)
-	---+${func, Render URI links}
-
-	---@type inline.uri_autolinks?
+	---@type markview.config.markdown_inline.uri_autolinks?
 	local main_config = spec.get({ "markdown_inline", "uri_autolinks" }, { fallback = nil });
 	local range = item.range;
 
@@ -1018,7 +957,7 @@ inline.link_uri_autolink = function (buffer, item)
 		return;
 	end
 
-	---@type config.inline_generic
+	---@type markview.config.__inline
 	local config = utils.match(
 		main_config,
 		item.label,
@@ -1027,7 +966,6 @@ inline.link_uri_autolink = function (buffer, item)
 		}
 	);
 
-	---+${custom, Draw the parts for the autolinks}
 	vim.api.nvim_buf_set_extmark(buffer, inline.ns, range.row_start, range.col_start, {
 		undo_restore = false, invalidate = true,
 		end_col = range.col_start + 1,
@@ -1064,8 +1002,6 @@ inline.link_uri_autolink = function (buffer, item)
 
 		hl_mode = "combine"
 	});
-	---_
-	---_
 end
 
 --- Renders inline markdown.
