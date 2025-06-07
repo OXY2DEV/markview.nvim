@@ -1,5 +1,7 @@
 # markview.nvim
 
+<img src="https://github.com/OXY2DEV/markview.nvim/blob/images/v25/repo/markdown-catppuccin_mocha.png">
+
 A hackable `markdown`, `latex`, `typst`, `html`(inline) & `yaml` previewer for Neovim.
 
 ## Table of contents

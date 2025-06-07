@@ -430,6 +430,10 @@ List of Vim-mode short-hands where `hybrid mode` will be used. Possible values a
 
 Makes `hybrid mode` show the raw version of the line under the cursor instead of all the lines creating the tree-sitter node under the cursor.
 
+| Normal hybrid mode | Hybrid mode with `ignore_previews` |
+|--------------------|------------------------------------|
+| ![hybrid_mode](https://github.com/OXY2DEV/markview.nvim/blob/images/v25/wiki/hybrid_mode.png) | ![linewise_hybrid_mode](https://github.com/OXY2DEV/markview.nvim/blob/images/v25/wiki/ignore_previews.png) |
+
 >[!TIP]
 > You can modify [edit_range](#edit_range) to change how many lines are shown as raw!
 
