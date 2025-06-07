@@ -2,7 +2,7 @@
 
 Mostly for extending plugin functionalities.
 
-## 📑 States
+## 📑 State
 
 Plugin states are stored in `require("markview").states`.
 
@@ -23,12 +23,12 @@ Plugin states are stored in `require("markview").states`.
 --- Preview window for hybrid mode.
 ---@field splitview_window? integer
 markview.state = {
-	attached_buffers = {},
-	buffer_states = {},
+    attached_buffers = {},
+    buffer_states = {},
 
-	splitview_buffer = nil,
-	splitview_source = nil,
-	splitview_window = nil
+    splitview_buffer = nil,
+    splitview_source = nil,
+    splitview_window = nil
 };
 ```
 

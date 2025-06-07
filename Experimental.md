@@ -43,7 +43,7 @@ experimental = {
 ## date_formats
 
 - type: `string[]`
-  [default value](https://github.com/OXY2DEV/markview.nvim/blob/main/lua/markview/spec.lua#L114-L130)
+  [default](https://github.com/OXY2DEV/markview.nvim/blob/main/lua/markview/spec.lua#L114-L130)
 
 Attributes,
 
@@ -54,7 +54,7 @@ A list of `lua patterns` to detect date strings in YAML.
 ## date_time_formats
 
 - type: `string[]`
-  [default value](https://github.com/OXY2DEV/markview.nvim/blob/main/lua/markview/spec.lua#L132-L135)
+  [default](https://github.com/OXY2DEV/markview.nvim/blob/main/lua/markview/spec.lua#L132-L135)
 
 Attributes,
 
@@ -69,7 +69,7 @@ A list of `lua patterns` to detect date & time strings in YAML.
 
 Attributes,
 
-- `gx`, see [map_gx]().
+- `gx`, see [map_gx](https://github.com/OXY2DEV/markview.nvim/wiki/Previews#map_gx).
 
 Whether to prefer `Neovim` for opening text files.
 
@@ -80,7 +80,7 @@ Whether to prefer `Neovim` for opening text files.
 
 Attributes,
 
-- `gx`, see [map_gx]().
+- `gx`, see [map_gx](https://github.com/OXY2DEV/markview.nvim/wiki/Previews#map_gx).
 
 Command used for opening text files in Neovim(it will used as `<command> + file_name`.
 
@@ -91,7 +91,7 @@ Command used for opening text files in Neovim(it will used as `<command> + file_
 
 Attributes,
 
-- `markdown` preview, see [list_items]().
+- `markdown` preview, see [list_items](https://github.com/OXY2DEV/markview.nvim/wiki/Markdown#list_items).
 
 Maximum number of repeating empty lines a list item can have inside it.
 
@@ -106,7 +106,7 @@ Maximum number of repeating empty lines a list item can have inside it.
 
 Attributes,
 
-- `gx`, see [map_gx]().
+- `gx`, see [map_gx](https://github.com/OXY2DEV/markview.nvim/wiki/Previews#map_gx).
 
 Number of `bytes` to read from a link's file to check if it's a text file.
 

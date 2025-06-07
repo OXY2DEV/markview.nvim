@@ -231,7 +231,7 @@ require("markview").setup({
 > This has been taken from [#283](https://github.com/OXY2DEV/markview.nvim/issues/283)
 
 >[!TIP]
-> This works the same way for `Typst` too!.
+> This works the same way for `Typst` too!
 
 Copy this to your plugin's `config` option.
 

@@ -19,7 +19,7 @@ require("markview").setup({
 >[!WARNING]
 > A lot of items don't match their option names. E.g. `inline_link_hyperlink` & `inline_link_shortcut` are both configured via `hyperlinks`.
 
-The *structure* and *data* of an `item` can be found in their option's wiki section. For example, to see the one for `markdown_block_quote` head over to `Markdown options.md` in the wiki and go to the `block_quotes` section. You will find the definition of item in the **second** drop-down.
+You can find the definitions for various items in `definitions/parsers/`.
 
 >[!TIP]
 > I highly recommend checking out the default renderers in `lua/markview/renderers` first.

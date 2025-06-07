@@ -930,7 +930,7 @@ Self-explanatory.
 
 ## subscripts
 
-- type: `markview.config.latex.subscripts`
+- type: [markview.config.latex.subscripts](https://github.com/OXY2DEV/markview.nvim/blob/99d9a091915b994b378c4a9cc3553b3cbbe4bad5/lua/definitions/renderers/latex.lua#L109-L114)
   [default](https://github.com/OXY2DEV/markview.nvim/blob/a803117f272cc47733b67ebbaf1acb91095da276/lua/markview/spec.lua#L1859-L1863)
 
 Configuration for subscripts(`_` & `_{}`).
@@ -958,9 +958,9 @@ Self-explanatory.
 
 Highlight group for subscript text.
 
-## subscripts
+## superscripts
 
-- type: `markview.config.latex.superscripts`
+- type: [markview.config.latex.superscripts](https://github.com/OXY2DEV/markview.nvim/blob/99d9a091915b994b378c4a9cc3553b3cbbe4bad5/lua/definitions/renderers/latex.lua#L118-L123)
   [default](https://github.com/OXY2DEV/markview.nvim/blob/a803117f272cc47733b67ebbaf1acb91095da276/lua/markview/spec.lua#L1865-L1869)
 
 Configuration for subscripts(`^` & `^{}`). Same as [subscripts](#subscripts).
