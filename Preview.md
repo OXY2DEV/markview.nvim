@@ -177,8 +177,8 @@ Enables hybrid mode in previews.
 
 ## callbacks
 
-- type: `markview.config.preview.callbacks`
-  [default]()
+- type: [markview.config.preview.callbacks](https://github.com/OXY2DEV/markview.nvim/blob/99d9a091915b994b378c4a9cc3553b3cbbe4bad5/lua/definitions/preview.lua#L39-L54)
+  [default](https://github.com/OXY2DEV/markview.nvim/blob/99d9a091915b994b378c4a9cc3553b3cbbe4bad5/lua/markview/spec.lua#L151-L284)
 
 Also see,
 
@@ -380,7 +380,7 @@ Buftypes that should be ignored by this plugin. Buffers whose filetype matches a
 >[!IMPORTANT]
 > This option only has effects if [hybrid_modes](#hybrid_modes) is active!
 
-- type: `markview.config.preview.raw`
+- type: [markview.config.preview.raw](https://github.com/OXY2DEV/markview.nvim/blob/99d9a091915b994b378c4a9cc3553b3cbbe4bad5/lua/definitions/preview.lua#L57-L190)
   default: `{}`
 
 A map of language & preview options defining what should be shown as raw text in `hybrid mode`.

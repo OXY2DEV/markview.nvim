@@ -780,7 +780,7 @@ Self-explanatory.
 > You need a modern font(font that support math symbols) for fonts to appear correctly!
 
 - type: [markview.config.latex.fonts](https://github.com/OXY2DEV/markview.nvim/blob/a803117f272cc47733b67ebbaf1acb91095da276/lua/definitions/renderers/latex.lua#L70-L83)
-  [default]()
+  [default](https://github.com/OXY2DEV/markview.nvim/blob/99d9a091915b994b378c4a9cc3553b3cbbe4bad5/lua/markview/spec.lua#L1826-L1847)
 
 Changes how fonts are shown in LaTeX.
 
@@ -911,7 +911,7 @@ Configuration for `\mathrm{}`. Same as [default](#fonts_default).
 ## inlines
 
 - type: [markview.config.latex.inlines](https://github.com/OXY2DEV/markview.nvim/blob/a803117f272cc47733b67ebbaf1acb91095da276/lua/definitions/renderers/latex.lua#L87-L100)
-  [default]()
+  [default](https://github.com/OXY2DEV/markview.nvim/blob/99d9a091915b994b378c4a9cc3553b3cbbe4bad5/lua/markview/spec.lua#L1849-L1856)
 
 Configuration for inline maths. See [how inline elements are configured]().
 
@@ -967,7 +967,7 @@ Configuration for subscripts(`^` & `^{}`). Same as [subscripts](#subscripts).
 
 ## symbols
 
-- type: `markview.config.latex.symbols`
+- type: [markview.config.latex.symbols](https://github.com/OXY2DEV/markview.nvim/blob/99d9a091915b994b378c4a9cc3553b3cbbe4bad5/lua/definitions/renderers/latex.lua)
   [default](https://github.com/OXY2DEV/markview.nvim/blob/a803117f272cc47733b67ebbaf1acb91095da276/lua/markview/spec.lua#L1871-L1875)
 
 Configuration for subscripts(`^` & `^{}`). Same as [subscripts](#subscripts).

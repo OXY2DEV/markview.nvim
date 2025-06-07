@@ -165,7 +165,7 @@ The plugin comes with a single command, `:Markview`. It can be used trigger any 
 
 ## 📻 Autocmds
 
-> Also see [preview.callbacks]().
+> Also see [preview.callbacks](https://github.com/OXY2DEV/markview.nvim/wiki/Preview#callbacks).
 
 Autocmds will be executed after their corresponding `callback`! Arguments are passed in `event.data`.
 

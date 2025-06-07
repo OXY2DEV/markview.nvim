@@ -290,7 +290,7 @@ Configuration for YAML properties whose value is a boolean. Same as [text](#text
 
 Also see,
 
-- [date_patterns](), for patterns used to detect date from strings.
+- [experimental.date_formats](https://github.com/OXY2DEV/markview.nvim/wiki/Experimental#date_formats), for patterns used to detect date from strings.
 
 Configuration for YAML properties whose value is a date. Same as [text](#text).
 
@@ -300,7 +300,7 @@ Configuration for YAML properties whose value is a date. Same as [text](#text).
 
 Also see,
 
-- [date_patterns](), for patterns used to detect date & time from strings.
+- [experimental.date_time_formats](https://github.com/OXY2DEV/markview.nvim/wiki/Experimental#date_time_formats), for patterns used to detect date & time from strings.
 
 Configuration for YAML properties whose value is a date & time. Same as [text](#text).
 
