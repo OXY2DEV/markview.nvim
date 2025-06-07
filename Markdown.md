@@ -2195,13 +2195,13 @@ Self-explanatory.
 - type: [markview.config.__inline](https://github.com/OXY2DEV/markview.nvim/blob/99d9a091915b994b378c4a9cc3553b3cbbe4bad5/lua/definitions/markview.lua#L70-L94)
   [default](https://github.com/OXY2DEV/markview.nvim/blob/a803117f272cc47733b67ebbaf1acb91095da276/lua/markview/spec.lua#L734-L737)
 
-Default configuration. See [how inline elements are configured]().
+Default configuration. See [how inline elements are configured](https://github.com/OXY2DEV/markview.nvim/wiki/Configuration#-inline-elements).
 
 ### \[string\]
 
 - type: [markview.config.__inline](https://github.com/OXY2DEV/markview.nvim/blob/99d9a091915b994b378c4a9cc3553b3cbbe4bad5/lua/definitions/markview.lua#L70-L94)
 
-Configuration for reference link definitions whose destination matches `string`. See [how inline elements are configured]().
+Configuration for reference link definitions whose destination matches `string`. See [how inline elements are configured](https://github.com/OXY2DEV/markview.nvim/wiki/Configuration#-inline-elements).
 
 >[!NOTE]
 > The structure for reference links is `[label]: <destination>`.

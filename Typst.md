@@ -516,7 +516,7 @@ Highlight group used for [text](#code_block_text).
 - type: [markview.config.typst.code_spans](https://github.com/OXY2DEV/markview.nvim/blob/99d9a091915b994b378c4a9cc3553b3cbbe4bad5/lua/definitions/renderers/typst.lua#L51-L64)
   [default](https://github.com/OXY2DEV/markview.nvim/blob/a803117f272cc47733b67ebbaf1acb91095da276/lua/markview/spec.lua#L1900-L1907)
 
-Changes how code spans look. See [how inline elements are configured]().
+Changes how code spans look. See [how inline elements are configured](https://github.com/OXY2DEV/markview.nvim/wiki/Configuration#-inline-elements).
 
 ## escapes
 
@@ -687,13 +687,13 @@ Self-explanatory.
 - type: [markview.config.__inline](https://github.com/OXY2DEV/markview.nvim/blob/99d9a091915b994b378c4a9cc3553b3cbbe4bad5/lua/definitions/markview.lua#L70-L94)
   [default](https://github.com/OXY2DEV/markview.nvim/blob/a803117f272cc47733b67ebbaf1acb91095da276/lua/markview/spec.lua#L1954-L1959)
 
-Default configuration for labels. See [how inline elements are configured]().
+Default configuration for labels. See [how inline elements are configured](https://github.com/OXY2DEV/markview.nvim/wiki/Configuration#-inline-elements).
 
 <h3 id="labels_string">\[string\]</h3>
 
 - type: [markview.config.__inline](https://github.com/OXY2DEV/markview.nvim/blob/99d9a091915b994b378c4a9cc3553b3cbbe4bad5/lua/definitions/markview.lua#L70-L94)
 
-Configuration for labels whose text matches `string`. See [how inline elements are configured]().
+Configuration for labels whose text matches `string`. See [how inline elements are configured](https://github.com/OXY2DEV/markview.nvim/wiki/Configuration#-inline-elements).
 
 >[!NOTE]
 > The structure for labels is `<<text>>`.
@@ -928,7 +928,7 @@ Highlight group used for the [text](#math_block_text).
 - type: [markview.config.__inline](https://github.com/OXY2DEV/markview.nvim/blob/99d9a091915b994b378c4a9cc3553b3cbbe4bad5/lua/definitions/markview.lua#L70-L94)
   [default](https://github.com/OXY2DEV/markview.nvim/blob/99d9a091915b994b378c4a9cc3553b3cbbe4bad5/lua/markview/spec.lua#L2011-L2018)
 
-Changes how inline maths are shown. See [how inline elements are configured]().
+Changes how inline maths are shown. See [how inline elements are configured](https://github.com/OXY2DEV/markview.nvim/wiki/Configuration#-inline-elements).
 
 ## raw_blocks
 
@@ -1144,13 +1144,13 @@ Self-explanatory.
 - type: [markview.config.__inline](https://github.com/OXY2DEV/markview.nvim/blob/99d9a091915b994b378c4a9cc3553b3cbbe4bad5/lua/definitions/markview.lua#L70-L94)
   [default](https://github.com/OXY2DEV/markview.nvim/blob/99d9a091915b994b378c4a9cc3553b3cbbe4bad5/lua/markview/spec.lua#L2065-L2068)
 
-Default configuration. See [how inline elements are configured]().
+Default configuration. See [how inline elements are configured](https://github.com/OXY2DEV/markview.nvim/wiki/Configuration#-inline-elements).
 
 ### \[string\]
 
 - type: [markview.config.__inline](https://github.com/OXY2DEV/markview.nvim/blob/99d9a091915b994b378c4a9cc3553b3cbbe4bad5/lua/definitions/markview.lua#L70-L94)
 
-Configuration for reference links whose destination matches `string`. See [how inline elements are configured]().
+Configuration for reference links whose destination matches `string`. See [how inline elements are configured](https://github.com/OXY2DEV/markview.nvim/wiki/Configuration#-inline-elements).
 
 >[!NOTE]
 > The structure for reference links is `@<destination>`.
@@ -1286,13 +1286,13 @@ Self-explanatory.
 - type: [markview.config.__inline](https://github.com/OXY2DEV/markview.nvim/blob/99d9a091915b994b378c4a9cc3553b3cbbe4bad5/lua/definitions/markview.lua#L70-L94)
   [default](https://github.com/OXY2DEV/markview.nvim/blob/99d9a091915b994b378c4a9cc3553b3cbbe4bad5/lua/markview/spec.lua#L2092-L2095)
 
-Default configuration. See [how inline elements are configured]().
+Default configuration. See [how inline elements are configured](https://github.com/OXY2DEV/markview.nvim/wiki/Configuration#-inline-elements).
 
 ### \[string\]
 
 - type: [markview.config.__inline](https://github.com/OXY2DEV/markview.nvim/blob/99d9a091915b994b378c4a9cc3553b3cbbe4bad5/lua/definitions/markview.lua#L70-L94)
 
-Configuration for terms whose label matches `string`. See [how inline elements are configured]().
+Configuration for terms whose label matches `string`. See [how inline elements are configured](https://github.com/OXY2DEV/markview.nvim/wiki/Configuration#-inline-elements).
 
 >[!NOTE]
 > The structure for terms is `/ <label>: @<destination>`.
@@ -1497,11 +1497,11 @@ Self-explanatory.
 - type: [markview.config.__inline](https://github.com/OXY2DEV/markview.nvim/blob/99d9a091915b994b378c4a9cc3553b3cbbe4bad5/lua/definitions/markview.lua#L70-L94)
   [default](https://github.com/OXY2DEV/markview.nvim/blob/99d9a091915b994b378c4a9cc3553b3cbbe4bad5/lua/markview/spec.lua#L2101-L2104)
 
-Default configuration for URI autolinks. See [how inline elements are configured]().
+Default configuration for URI autolinks. See [how inline elements are configured](https://github.com/OXY2DEV/markview.nvim/wiki/Configuration#-inline-elements).
 
 <h3 id="url_links_string">\[string\]</h3>
 
 - type: [markview.config.__inline](https://github.com/OXY2DEV/markview.nvim/blob/99d9a091915b994b378c4a9cc3553b3cbbe4bad5/lua/definitions/markview.lua#L70-L94)
 
-Configuration for URL links whose text matches `string`. See [how inline elements are configured]().
+Configuration for URL links whose text matches `string`. See [how inline elements are configured](https://github.com/OXY2DEV/markview.nvim/wiki/Configuration#-inline-elements).
 

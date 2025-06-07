@@ -913,7 +913,7 @@ Configuration for `\mathrm{}`. Same as [default](#fonts_default).
 - type: [markview.config.latex.inlines](https://github.com/OXY2DEV/markview.nvim/blob/a803117f272cc47733b67ebbaf1acb91095da276/lua/definitions/renderers/latex.lua#L87-L100)
   [default](https://github.com/OXY2DEV/markview.nvim/blob/99d9a091915b994b378c4a9cc3553b3cbbe4bad5/lua/markview/spec.lua#L1849-L1856)
 
-Configuration for inline maths. See [how inline elements are configured]().
+Configuration for inline maths. See [how inline elements are configured](https://github.com/OXY2DEV/markview.nvim/wiki/Configuration#-inline-elements).
 
 ## parenthesis
 
