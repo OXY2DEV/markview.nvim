@@ -1,11 +1,12 @@
 # HTML options
 
 >[!TIP]
-> You can find the type definitions in [definitions/html.lua]().
+> You can find the type definitions in [definitions/renderers/html.lua](https://github.com/OXY2DEV/markview.nvim/blob/main/lua/definitions/renderers/html.lua).
 
-Options that change how inline HTML is shown in preview are part of this. Default values can be found [here]().
+Options that change how inline HTML is shown in preview are part of this. Default values can be found [here](https://github.com/OXY2DEV/markview.nvim/blob/99d9a091915b994b378c4a9cc3553b3cbbe4bad5/lua/markview/spec.lua#L1462-L1580).
 
 ```lua
+---@type markview.config.html
 html = {
     enable = true,
 
@@ -136,12 +137,13 @@ Enables preview of inline HTML.
 
 ## container_elements
 
-- type: [markview.config.html.container_elements]()
-  [default]()
+- type: [markview.config.html.container_elements](https://github.com/OXY2DEV/markview.nvim/blob/99d9a091915b994b378c4a9cc3553b3cbbe4bad5/lua/definitions/renderers/html.lua#L19-L33)
+  [default](https://github.com/OXY2DEV/markview.nvim/blob/99d9a091915b994b378c4a9cc3553b3cbbe4bad5/lua/markview/spec.lua#L1523)
 
 Changes how container elements are shown in previews.
 
 ```lua
+---@type markview.config.html.container_elements
 container_elements = {
     enable = true,
 
@@ -206,18 +208,18 @@ container_elements = {
 ### enable
 
 - type: `boolean`
-  [default]()
+  default: `true`
 
 Self-explanatory.
 
 <h3 id="container_string">\[string\]</h3>
 
-- type: [markview.config.html.container_elements.opts]()
-  [default]()
+- type: [markview.config.html.container_elements.opts](https://github.com/OXY2DEV/markview.nvim/blob/99d9a091915b994b378c4a9cc3553b3cbbe4bad5/lua/definitions/renderers/html.lua#L25-L33)
 
 Changes how `<string></string>` will be shown in previews.
 
 ```lua
+---@type markview.config.html.container_elements.opts
 ["^a$"] = {
     closing_tag_offset = nil,
     node_offset = nil,
@@ -239,7 +241,7 @@ Changes how `<string></string>` will be shown in previews.
 
 See also,
 
-- [markview.parsed.range]()
+- [markview.parsed.range](https://github.com/OXY2DEV/markview.nvim/blob/99d9a091915b994b378c4a9cc3553b3cbbe4bad5/lua/definitions/markview.lua#L60-L66)
 
 Modifies the range of the closing tag.
 
@@ -249,7 +251,7 @@ Modifies the range of the closing tag.
 
 See also,
 
-- [markview.parsed.range]()
+- [markview.parsed.range](https://github.com/OXY2DEV/markview.nvim/blob/99d9a091915b994b378c4a9cc3553b3cbbe4bad5/lua/definitions/markview.lua#L60-L66)
 
 Modifies the range of the entire node/element.
 
@@ -259,7 +261,7 @@ Modifies the range of the entire node/element.
 
 See also,
 
-- [markview.parsed.range]()
+- [markview.parsed.range](https://github.com/OXY2DEV/markview.nvim/blob/99d9a091915b994b378c4a9cc3553b3cbbe4bad5/lua/definitions/markview.lua#L60-L66)
 
 Modifies the range of the opening tag.
 
@@ -283,12 +285,13 @@ Configuration for the extmark placed on the closing tag. The range is affected b
 
 ## headings
 
-- type: [markview.config.html.headings]()
-  [default]()
+- type: [markview.config.html.headings](https://github.com/OXY2DEV/markview.nvim/blob/99d9a091915b994b378c4a9cc3553b3cbbe4bad5/lua/definitions/renderers/html.lua#L37-al41)
+  [default](https://github.com/OXY2DEV/markview.nvim/blob/99d9a091915b994b378c4a9cc3553b3cbbe4bad5/lua/markview/spec.lua#L1525-L1547)
 
 Changes how headings are shown in previews.
 
 ```lua
+---@type markview.config.html.headings
 headings = {
     enable = true,
 
@@ -316,50 +319,50 @@ headings = {
 ### enable
 
 - type: `boolean`
-  [default]()
+  default: `true`
 
 Self-explanatory.
 
 #### heading_1
 
-- type: [markview.config.html.headings.opts]()
+- type: `table`
 
 Configuration for the extmark placed on the element.
 
 #### heading_2
 
-- type: [markview.config.html.headings.opts]()
+- type: `table`
 
 Configuration for the extmark placed on the element.
 
 #### heading_3
 
-- type: [markview.config.html.headings.opts]()
+- type: `table`
 
 Configuration for the extmark placed on the element.
 
 #### heading_4
 
-- type: [markview.config.html.headings.opts]()
+- type: `table`
 
 Configuration for the extmark placed on the element.
 
 #### heading_5
 
-- type: [markview.config.html.headings.opts]()
+- type: `table`
 
 Configuration for the extmark placed on the element.
 
 #### heading_6
 
-- type: [markview.config.html.headings.opts]()
+- type: `table`
 
 Configuration for the extmark placed on the element.
 
 ## void_elements
 
-- type: [markview.config.html.void_elements]()
-  [default]()
+- type: [markview.config.html.void_elements](https://github.com/OXY2DEV/markview.nvim/blob/99d9a091915b994b378c4a9cc3553b3cbbe4bad5/lua/definitions/renderers/html.lua#L45-L55)
+  [default](https://github.com/OXY2DEV/markview.nvim/blob/99d9a091915b994b378c4a9cc3553b3cbbe4bad5/lua/markview/spec.lua#L1548-1579)
 
 Changes how void elements are shown in previews.
 
@@ -401,8 +404,7 @@ void_elements = {
 
 <h3 id="void_string">\[string\]</h3>
 
-- type: [markview.config.html.void_elements.opts]()
-  [default]()
+- type: [markview.config.html.void_elements.opts](https://github.com/OXY2DEV/markview.nvim/blob/99d9a091915b994b378c4a9cc3553b3cbbe4bad5/lua/definitions/renderers/html.lua#L51-L55)
 
 Changes how `<string/>` will be shown in previews.
 
@@ -412,7 +414,7 @@ Changes how `<string/>` will be shown in previews.
 
 See also,
 
-- [markview.parsed.range]()
+- [markview.parsed.range](https://github.com/OXY2DEV/markview.nvim/blob/99d9a091915b994b378c4a9cc3553b3cbbe4bad5/lua/definitions/markview.lua#L60-L66)
 
 Modifies the range of the opening tag.
 

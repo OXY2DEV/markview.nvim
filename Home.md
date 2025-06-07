@@ -4,6 +4,8 @@ A hackable `markdown`, `latex`, `typst`, `html`(inline) & `yaml` previewer for N
 
 ## Table of contents
 
+On this page,
+
 - [Commands](#-commands)
 - [Autocmds](#-autocmds)
 - [Highlight groups](#-highlight-groups)
@@ -12,13 +14,24 @@ A hackable `markdown`, `latex`, `typst`, `html`(inline) & `yaml` previewer for N
 
 ------
 
-- [Configuration]()
-    + [Markdown]()
-    + [Markdown inline]()
-    + [LaTeX]()
-    + [Typst]()
+Also read,
 
-- [Developer options]()
+- [Configuration](https://github.com/OXY2DEV/markview.nvim/wiki/Configuration)
+    + [Markdown](https://github.com/OXY2DEV/markview.nvim/wiki/Markdown)
+    + [Markdown inline](https://github.com/OXY2DEV/markview.nvim/wiki/Markdown-inline)
+    + [LaTeX](https://github.com/OXY2DEV/markview.nvim/wiki/LaTeX)
+    + [Typst](https://github.com/OXY2DEV/markview.nvim/wiki/Typst)
+    + [YAML](https://github.com/OXY2DEV/markview.nvim/wiki/YAML)
+
+- [Developer options](https://github.com/OXY2DEV/markview.nvim/wiki/Developer)
+
+------
+
+For the tinkerers,
+
+- [Advanced usage](https://github.com/OXY2DEV/markview.nvim/wiki/Advanced-usage)
+- [Presets](https://github.com/OXY2DEV/markview.nvim/wiki/Presets)
+- [Extras](https://github.com/OXY2DEV/markview.nvim/wiki/Extras)
 
 ## 💡 Commands
 

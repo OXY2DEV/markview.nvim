@@ -1,11 +1,12 @@
 # Markdown inline option
 
 >[!TIP]
-> You can find the type definition in [definition/markdown_inline.lua]().
+> You can find the type definition in [definition/renderers/markdown_inline.lua](https://github.com/OXY2DEV/markview.nvim/blob/99d9a091915b994b378c4a9cc3553b3cbbe4bad5/lua/definitions/renderers/markdown_inline.lua).
 
-Options that change how inline markdown is shown. The default value can be found [here]().
+Options that change how inline markdown is shown. The default value can be found [here](https://github.com/OXY2DEV/markview.nvim/blob/a803117f272cc47733b67ebbaf1acb91095da276/lua/markview/spec.lua#L945-L1461).
 
 ```lua
+---@type markview.config.markdown_inline
 markdown_inline = {
     enable = true,
 
@@ -534,8 +535,8 @@ Shows inline markdown in previews.
 
 ## block_references
 
-- type: [markview.config.markdown_inline.block_refs]()
-  [default]()
+- type: [markview.config.markdown_inline.block_refs](https://github.com/OXY2DEV/markview.nvim/blob/99d9a091915b994b378c4a9cc3553b3cbbe4bad5/lua/definitions/renderers/markdown_inline.lua#L25-L31)
+  [default](https://github.com/OXY2DEV/markview.nvim/blob/a803117f272cc47733b67ebbaf1acb91095da276/lua/markview/spec.lua#L948-L957)
 
 Changes how block references are shown.
 
@@ -561,15 +562,14 @@ Self-explanatory.
 
 <h3 id="block_refs_default">default</h3>
 
-- type: [markview.config.__inline_generic]()
-  [default]()
+- type: [markview.config.__inline](https://github.com/OXY2DEV/markview.nvim/blob/99d9a091915b994b378c4a9cc3553b3cbbe4bad5/lua/definitions/markview.lua#L70-L94)
+  [default](https://github.com/OXY2DEV/markview.nvim/blob/a803117f272cc47733b67ebbaf1acb91095da276/lua/markview/spec.lua#L951-L956)
 
 Default configuration for block references. See [how inline elements are configured]().
 
 <h3 id="block_refs_string">\[string\]</h3>
 
-- type: [markview.config.__inline_generic]()
-  [default]()
+- type: [markview.config.__inline](https://github.com/OXY2DEV/markview.nvim/blob/99d9a091915b994b378c4a9cc3553b3cbbe4bad5/lua/definitions/markview.lua#L70-L94)
 
 Configuration for block references whose text matches `string`. See [how inline elements are configured]().
 
@@ -578,8 +578,8 @@ Configuration for block references whose text matches `string`. See [how inline 
 
 ## checkboxes
 
-- type: [markview.config.markdown_inline.checkboxes]()
-  [default]()
+- type: [markview.config.markdown_inline.checkboxes](https://github.com/OXY2DEV/markview.nvim/blob/99d9a091915b994b378c4a9cc3553b3cbbe4bad5/lua/definitions/renderers/markdown_inline.lua#L35-L49)
+  [default](https://github.com/OXY2DEV/markview.nvim/blob/a803117f272cc47733b67ebbaf1acb91095da276/lua/markview/spec.lua#L959-L986)
 
 Changes how checkboxes are shown.
 
@@ -592,8 +592,7 @@ Self-explanatory.
 
 ### checked
 
-- type: [markview.config.markdown_inline.checkboxes.opts]()
-  [default]()
+- type: [markview.config.markdown_inline.checkboxes.opts](https://github.com/OXY2DEV/markview.nvim/blob/99d9a091915b994b378c4a9cc3553b3cbbe4bad5/lua/definitions/renderers/markdown_inline.lua#L45-L49)
 
 ```lua
 checked = {
@@ -624,22 +623,20 @@ Highlight group used on the list item text.
 
 ### unchecked
 
-- type: [markview.config.markdown_inline.checkboxes.opts]()
-  [default]()
+- type: [markview.config.markdown_inline.checkboxes.opts](https://github.com/OXY2DEV/markview.nvim/blob/99d9a091915b994b378c4a9cc3553b3cbbe4bad5/lua/definitions/renderers/markdown_inline.lua#L45-L49)
 
 Configuration for unchecked checkboxes. Same structure as [checked](#checked).
 
 ### \[string\]
 
-- type: [markview.config.markdown_inline.checkboxes.opts]()
-  [default]()
+- type: [markview.config.markdown_inline.checkboxes.opts](https://github.com/OXY2DEV/markview.nvim/blob/99d9a091915b994b378c4a9cc3553b3cbbe4bad5/lua/definitions/renderers/markdown_inline.lua#L45-L49)
 
 Configuration for `[string]` checkboxes. Same structure as [checked](#checked).
 
 ## emails
 
-- type: [markview.config.markdown_inline.emails]()
-  [default]()
+- type: [markview.config.markdown_inline.emails](https://github.com/OXY2DEV/markview.nvim/blob/99d9a091915b994b378c4a9cc3553b3cbbe4bad5/lua/definitions/renderers/markdown_inline.lua#L53-L59)
+  [default](https://github.com/OXY2DEV/markview.nvim/blob/a803117f272cc47733b67ebbaf1acb91095da276/lua/markview/spec.lua#L988-L1023)
 
 Changes how emails are shown.
 
@@ -691,15 +688,14 @@ Self-explanatory.
 
 <h3 id="emails_default">default</h3>
 
-- type: [markview.config.__inline_generic]()
-  [default]()
+- type: [markview.config.__inline](https://github.com/OXY2DEV/markview.nvim/blob/99d9a091915b994b378c4a9cc3553b3cbbe4bad5/lua/definitions/markview.lua#L70-L94)
+  [default](https://github.com/OXY2DEV/markview.nvim/blob/a803117f272cc47733b67ebbaf1acb91095da276/lua/markview/spec.lua#L991-L994)
 
 Default configuration for emails. See [how inline elements are configured]().
 
 <h3 id="emails_string">\[string\]</h3>
 
-- type: [markview.config.__inline_generic]()
-  [default]()
+- type: [markview.config.__inline](https://github.com/OXY2DEV/markview.nvim/blob/99d9a091915b994b378c4a9cc3553b3cbbe4bad5/lua/definitions/markview.lua#L70-L94)
 
 Configuration for emails whose label matches `string`. See [how inline elements are configured]().
 
@@ -708,8 +704,8 @@ Configuration for emails whose label matches `string`. See [how inline elements 
 
 ## embed_files
 
-- type: [markview.config.markdown_inline.embed_files]()
-  [default]()
+- type: [markview.config.markdown_inline.embed_files](https://github.com/OXY2DEV/markview.nvim/blob/99d9a091915b994b378c4a9cc3553b3cbbe4bad5/lua/definitions/renderers/markdown_inline.lua#L63-L69)
+  [default](https://github.com/OXY2DEV/markview.nvim/blob/a803117f272cc47733b67ebbaf1acb91095da276/lua/markview/spec.lua#L1025-L1032)
 
 Changes how embed file links(from `Obsidian`) are shown.
 
@@ -733,15 +729,14 @@ Self-explanatory.
 
 <h3 id="embed_files_default">default</h3>
 
-- type: [markview.config.__inline_generic]()
-  [default]()
+- type: [markview.config.__inline](https://github.com/OXY2DEV/markview.nvim/blob/99d9a091915b994b378c4a9cc3553b3cbbe4bad5/lua/definitions/markview.lua#L70-L94)
+  [default](https://github.com/OXY2DEV/markview.nvim/blob/a803117f272cc47733b67ebbaf1acb91095da276/lua/markview/spec.lua#L1028-L1031)
 
 Default configuration for embed file links. See [how inline elements are configured]().
 
 <h3 id="embed_files_string">\[string\]</h3>
 
-- type: [markview.config.__inline_generic]()
-  [default]()
+- type: [markview.config.__inline](https://github.com/OXY2DEV/markview.nvim/blob/99d9a091915b994b378c4a9cc3553b3cbbe4bad5/lua/definitions/markview.lua#L70-L94)
 
 Configuration for embed file links whose text matches `string`. See [how inline elements are configured]().
 
@@ -750,8 +745,8 @@ Configuration for embed file links whose text matches `string`. See [how inline 
 
 ## entities
 
-- type: [markview.config.markdown_inline.entities]
-  [default]()
+- type: [markview.config.markdown_inline.entities](https://github.com/OXY2DEV/markview.nvim/blob/99d9a091915b994b378c4a9cc3553b3cbbe4bad5/lua/definitions/renderers/markdown_inline.lua#L81-L86)
+  [default](https://github.com/OXY2DEV/markview.nvim/blob/a803117f272cc47733b67ebbaf1acb91095da276/lua/markview/spec.lua#L1034-L1037)
 
 Changes how HTML entities are shown.
 
@@ -778,8 +773,8 @@ Highlight group for the entities.
 
 ## emoji_shorthands
 
-- type: [markview.config.markdown_inline.emojis]
-  [default]()
+- type: [markview.config.markdown_inline.emojis](https://github.com/OXY2DEV/markview.nvim/blob/99d9a091915b994b378c4a9cc3553b3cbbe4bad5/lua/definitions/renderers/markdown_inline.lua#L73-L77)
+  [default](https://github.com/OXY2DEV/markview.nvim/blob/a803117f272cc47733b67ebbaf1acb91095da276/lua/markview/spec.lua#L1039-L1041)
 
 Changes how Github-styled emoji shorthands are shown.
 
@@ -798,8 +793,7 @@ Self-explanatory.
 
 ## escapes
 
-- type: [markview.config.markdown_inline.escapes]
-  [default]()
+- type: [markview.config.markdown_inline.escapes](https://github.com/OXY2DEV/markview.nvim/blob/99d9a091915b994b378c4a9cc3553b3cbbe4bad5/lua/definitions/renderers/markdown_inline.lua#L90-L91)
 
 Changes how escaped characters are shown.
 
@@ -818,8 +812,8 @@ Self-explanatory.
 
 ## footnotes
 
-- type: [markview.config.markdown_inline.footnotes]()
-  [default]()
+- type: [markview.config.markdown_inline.footnotes](https://github.com/OXY2DEV/markview.nvim/blob/99d9a091915b994b378c4a9cc3553b3cbbe4bad5/lua/definitions/renderers/markdown_inline.lua#L95-L101)
+  [default](https://github.com/OXY2DEV/markview.nvim/blob/a803117f272cc47733b67ebbaf1acb91095da276/lua/markview/spec.lua#L1047-L1061)
 
 Changes how footnotes are shown.
 
@@ -850,15 +844,14 @@ Self-explanatory.
 
 <h3 id="footnotes_default">default</h3>
 
-- type: [markview.config.__inline_generic]()
-  [default]()
+- type: [markview.config.__inline](https://github.com/OXY2DEV/markview.nvim/blob/99d9a091915b994b378c4a9cc3553b3cbbe4bad5/lua/definitions/markview.lua#L70-L94)
+  [default](https://github.com/OXY2DEV/markview.nvim/blob/a803117f272cc47733b67ebbaf1acb91095da276/lua/markview/spec.lua#L1050-L1053)
 
 Default configuration for footnote links. See [how inline elements are configured]().
 
 <h3 id="footnotes_string">\[string\]</h3>
 
-- type: [markview.config.__inline_generic]()
-  [default]()
+- type: [markview.config.__inline](https://github.com/OXY2DEV/markview.nvim/blob/99d9a091915b994b378c4a9cc3553b3cbbe4bad5/lua/definitions/markview.lua#L70-L94)
 
 Configuration for footnote links whose label matches `string`. See [how inline elements are configured]().
 
@@ -867,8 +860,8 @@ Configuration for footnote links whose label matches `string`. See [how inline e
 
 ## highlights
 
-- type: [markview.config.markdown_inline.highlights]()
-  [default]()
+- type: [markview.config.markdown_inline.highlights](https://github.com/OXY2DEV/markview.nvim/blob/99d9a091915b994b378c4a9cc3553b3cbbe4bad5/lua/definitions/renderers/markdown_inline.lua#L105-L111)
+  [default](https://github.com/OXY2DEV/markview.nvim/blob/a803117f272cc47733b67ebbaf1acb91095da276/lua/markview/spec.lua#L1063-L1072)
 
 Changes how highlighted text(from `Obsidian`) are shown.
 
@@ -892,17 +885,16 @@ highlights = {
 
 Self-explanatory.
 
-<h3 id="footnotes_default">default</h3>
+<h3 id="highlights_default">default</h3>
 
-- type: [markview.config.__inline_generic]()
-  [default]()
+- type: [markview.config.__inline](https://github.com/OXY2DEV/markview.nvim/blob/99d9a091915b994b378c4a9cc3553b3cbbe4bad5/lua/definitions/markview.lua#L70-L94)
+  [default](https://github.com/OXY2DEV/markview.nvim/blob/a803117f272cc47733b67ebbaf1acb91095da276/lua/markview/spec.lua#L1066-L1071)
 
 Default configuration for highlighted text. See [how inline elements are configured]().
 
-<h3 id="footnotes_string">\[string\]</h3>
+<h3 id="highlights_string">\[string\]</h3>
 
-- type: [markview.config.__inline_generic]()
-  [default]()
+- type: [markview.config.__inline](https://github.com/OXY2DEV/markview.nvim/blob/99d9a091915b994b378c4a9cc3553b3cbbe4bad5/lua/definitions/markview.lua#L70-L94)
 
 Configuration for highlighted text whose content matches `string`. See [how inline elements are configured]().
 
@@ -911,8 +903,8 @@ Configuration for highlighted text whose content matches `string`. See [how inli
 
 ## hyperlinks
 
-- type: [markview.config.markdown_inline.hyperlinks]()
-  [default]()
+- type: [markview.config.markdown_inline.hyperlinks](https://github.com/OXY2DEV/markview.nvim/blob/99d9a091915b994b378c4a9cc3553b3cbbe4bad5/lua/definitions/renderers/markdown_inline.lua#L115-L121)
+  [default](https://github.com/OXY2DEV/markview.nvim/blob/a803117f272cc47733b67ebbaf1acb91095da276/lua/markview/spec.lua#L1074-L1250)
 
 Changes how hyperlinks are shown.
 
@@ -1105,15 +1097,14 @@ Self-explanatory.
 
 <h3 id="hyperlinks_default">default</h3>
 
-- type: [markview.config.__inline_generic]()
-  [default]()
+- type: [markview.config.__inline](https://github.com/OXY2DEV/markview.nvim/blob/99d9a091915b994b378c4a9cc3553b3cbbe4bad5/lua/definitions/markview.lua#L70-L94)
+  [default](https://github.com/OXY2DEV/markview.nvim/blob/a803117f272cc47733b67ebbaf1acb91095da276/lua/markview/spec.lua#L1077-L1080)
 
 Default configuration for hyperlinks. See [how inline elements are configured]().
 
 <h3 id="hyperlinks_string">\[string\]</h3>
 
-- type: [markview.config.__inline_generic]()
-  [default]()
+- type: [markview.config.__inline](https://github.com/OXY2DEV/markview.nvim/blob/99d9a091915b994b378c4a9cc3553b3cbbe4bad5/lua/definitions/markview.lua#L70-L94)
 
 Configuration for hyperlinks whose destination matches `string`. See [how inline elements are configured]().
 
@@ -1122,8 +1113,8 @@ Configuration for hyperlinks whose destination matches `string`. See [how inline
 
 ## images
 
-- type: [markview.config.markdown_inline.images]()
-  [default]()
+- type: [markview.config.markdown_inline.images](https://github.com/OXY2DEV/markview.nvim/blob/99d9a091915b994b378c4a9cc3553b3cbbe4bad5/lua/definitions/renderers/markdown_inline.lua#L125-L131)
+  [default](https://github.com/OXY2DEV/markview.nvim/blob/a803117f272cc47733b67ebbaf1acb91095da276/lua/markview/spec.lua#L1252-L1265)
 
 Changes how images are shown.
 
@@ -1153,15 +1144,14 @@ Self-explanatory.
 
 <h3 id="images_default">default</h3>
 
-- type: [markview.config.__inline_generic]()
-  [default]()
+- type: [markview.config.__inline](https://github.com/OXY2DEV/markview.nvim/blob/99d9a091915b994b378c4a9cc3553b3cbbe4bad5/lua/definitions/markview.lua#L70-L94)
+  [default](https://github.com/OXY2DEV/markview.nvim/blob/a803117f272cc47733b67ebbaf1acb91095da276/lua/markview/spec.lua#L1255-L1258)
 
 Default configuration for images. See [how inline elements are configured]().
 
 <h3 id="images_string">\[string\]</h3>
 
-- type: [markview.config.__inline_generic]()
-  [default]()
+- type: [markview.config.__inline](https://github.com/OXY2DEV/markview.nvim/blob/99d9a091915b994b378c4a9cc3553b3cbbe4bad5/lua/definitions/markview.lua#L70-L94)
 
 Configuration for images whose destination matches `string`. See [how inline elements are configured]().
 
@@ -1170,8 +1160,8 @@ Configuration for images whose destination matches `string`. See [how inline ele
 
 ## inline_codes
 
-- type: [markview.config.__inline_generic]()
-  [default]()
+- type: [markview.config.__inline](https://github.com/OXY2DEV/markview.nvim/blob/99d9a091915b994b378c4a9cc3553b3cbbe4bad5/lua/definitions/markview.lua#L70-L94)
+  [default](https://github.com/OXY2DEV/markview.nvim/blob/a803117f272cc47733b67ebbaf1acb91095da276/lua/markview/spec.lua#L1267-L1273)
 
 Changes how inline codes are shown.
 
@@ -1189,8 +1179,8 @@ See [how inline elements are configured]().
 
 ## internal_links
 
-- type: [markview.config.markdown_inline.internal_links]()
-  [default]()
+- type: [markview.config.markdown_inline.internal_links](https://github.com/OXY2DEV/markview.nvim/blob/99d9a091915b994b378c4a9cc3553b3cbbe4bad5/lua/definitions/renderers/markdown_inline.lua#L140-L146)
+  [default](https://github.com/OXY2DEV/markview.nvim/blob/a803117f272cc47733b67ebbaf1acb91095da276/lua/markview/spec.lua#L1275-L1282)
 
 Changes how internal links(from `Obsidian`) are shown.
 
@@ -1214,15 +1204,14 @@ Self-explanatory.
 
 <h3 id="internal_links_default">default</h3>
 
-- type: [markview.config.__inline_generic]()
-  [default]()
+- type: [markview.config.__inline](https://github.com/OXY2DEV/markview.nvim/blob/99d9a091915b994b378c4a9cc3553b3cbbe4bad5/lua/definitions/markview.lua#L70-L94)
+  [default](https://github.com/OXY2DEV/markview.nvim/blob/a803117f272cc47733b67ebbaf1acb91095da276/lua/markview/spec.lua#L1278-L1281)
 
 Default configuration for internal links. See [how inline elements are configured]().
 
 <h3 id="internal_links_string">\[string\]</h3>
 
-- type: [markview.config.__inline_generic]()
-  [default]()
+- type: [markview.config.__inline](https://github.com/OXY2DEV/markview.nvim/blob/99d9a091915b994b378c4a9cc3553b3cbbe4bad5/lua/definitions/markview.lua#L70-L94)
 
 Configuration for internal links whose content matches `string`. See [how inline elements are configured]().
 
@@ -1231,8 +1220,8 @@ Configuration for internal links whose content matches `string`. See [how inline
 
 ## uri_autolinks
 
-- type: [markview.config.markdown_inline.hyperlinks]()
-  [default]()
+- type: [markview.config.markdown_inline.uri_autolinks](https://github.com/OXY2DEV/markview.nvim/blob/99d9a091915b994b378c4a9cc3553b3cbbe4bad5/lua/definitions/renderers/markdown_inline.lua#L150-L156)
+  [default](https://github.com/OXY2DEV/markview.nvim/blob/a803117f272cc47733b67ebbaf1acb91095da276/lua/markview/spec.lua#L1284-L1461)
 
 Changes how uri autolinks are shown.
 
@@ -1425,15 +1414,14 @@ Self-explanatory.
 
 <h3 id="uri_autolinks_default">default</h3>
 
-- type: [markview.config.__inline_generic]()
-  [default]()
+- type: [markview.config.__inline](https://github.com/OXY2DEV/markview.nvim/blob/99d9a091915b994b378c4a9cc3553b3cbbe4bad5/lua/definitions/markview.lua#L70-L94)
+  [default](https://github.com/OXY2DEV/markview.nvim/blob/a803117f272cc47733b67ebbaf1acb91095da276/lua/markview/spec.lua#L1287-L1290)
 
 Default configuration for URI autolinks. See [how inline elements are configured]().
 
 <h3 id="uri_autolinks_string">\[string\]</h3>
 
-- type: [markview.config.__inline_generic]()
-  [default]()
+- type: [markview.config.__inline](https://github.com/OXY2DEV/markview.nvim/blob/99d9a091915b994b378c4a9cc3553b3cbbe4bad5/lua/definitions/markview.lua#L70-L94)
 
 Configuration for URI autolinks whose link matches `string`. See [how inline elements are configured]().
 

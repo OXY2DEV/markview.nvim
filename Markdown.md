@@ -1,9 +1,9 @@
 # Markdown options
 
 >[!TIP]
-> You can find the type definition in [definitions/markdown.lua]().
+> You can find the type definition in [definitions/renderers/markdown.lua](https://github.com/OXY2DEV/markview.nvim/blob/99d9a091915b994b378c4a9cc3553b3cbbe4bad5/lua/definitions/renderers/markdown.lua#L244).
 
-Options that change how different elements are shown in the preview. You can find the default value [here]().
+Options that change how different elements are shown in the preview. You can find the default value [here](https://github.com/OXY2DEV/markview.nvim/blob/a803117f272cc47733b67ebbaf1acb91095da276/lua/markview/spec.lua#L311-L944).
 
 ```lua
 ---@type markview.config.markdown
@@ -653,14 +653,15 @@ Enables previewing of markdown.
 
 ## block_quotes
 
-- type: [markview.config.markdown.block_quotes]()
-  [default]()
+- type: [markview.config.markdown.block_quotes](https://github.com/OXY2DEV/markview.nvim/blob/99d9a091915b994b378c4a9cc3553b3cbbe4bad5/lua/definitions/renderers/markdown.lua#L20-L40)
+  [default](https://github.com/OXY2DEV/markview.nvim/blob/a803117f272cc47733b67ebbaf1acb91095da276/lua/markview/spec.lua#L314-L498)
 
 Changes how block quotes look. Each key in the table(other then `enable`, `wrap` & `default`) represents a new callout type.
 
 When matching a callout to it's configuration the key is matched **case insensitively**, meaning `["NOTE"] = {}` in the config will match `>[!NOTE]`, `>[!Note]`, `>[!NoTe]` & any other variations of this text.
 
 ```lua
+---@type markview.config.markdown.block_quotes
 block_quotes = {
     enable = true,
     wrap = true,
@@ -871,12 +872,13 @@ Enables `wrap` support, which causes block quote's border to appear where the te
 
 ### default
 
-- type: [markview.config.markdown.block_quotes.opts]()
-  [default]()
+- type: [markview.config.markdown.block_quotes.opts](https://github.com/OXY2DEV/markview.nvim/blob/99d9a091915b994b378c4a9cc3553b3cbbe4bad5/lua/definitions/renderers/markdown.lua#L30-L40)
+  [default](https://github.com/OXY2DEV/markview.nvim/blob/a803117f272cc47733b67ebbaf1acb91095da276/lua/markview/spec.lua#L318-L321)
 
 Configuration for regular block quotes.
 
 ```lua
+---@type markview.config.markdown.block_quotes.opts
 default = {
     border = nil,
     hl = nil
@@ -899,8 +901,7 @@ Highlight group for the [border](#-border).
 
 ### \[string\]
 
-- type: [markview.config.markdown.block_quotes.opts]()
-  [default]()
+- type: [markview.config.markdown.block_quotes.opts](https://github.com/OXY2DEV/markview.nvim/blob/99d9a091915b994b378c4a9cc3553b3cbbe4bad5/lua/definitions/renderers/markdown.lua#L30-L40)
 
 Configuration for `>[!string]` callout.
 
@@ -977,8 +978,8 @@ Enables Obsidian-style titles in callouts.
 
 ## code_blocks
 
-- type: [markview.config.markdown.code_blocks]()
-  [default]()
+- type: [markview.config.markdown.code_blocks](https://github.com/OXY2DEV/markview.nvim/blob/99d9a091915b994b378c4a9cc3553b3cbbe4bad5/lua/definitions/renderers/markdown.lua#L44-L67)
+  [default](https://github.com/OXY2DEV/markview.nvim/blob/a803117f272cc47733b67ebbaf1acb91095da276/lua/markview/spec.lua#L500-L533)
 
 See also,
 
@@ -1083,12 +1084,13 @@ Character used for the borders/paddings.
 
 ### default
 
-- type: [markview.config.markdown.code_blocks.opts]()
-  [default]()
+- type: [markview.config.markdown.code_blocks.opts](https://github.com/OXY2DEV/markview.nvim/blob/99d9a091915b994b378c4a9cc3553b3cbbe4bad5/lua/definitions/renderers/markdown.lua#L63-L67)
+  [default](https://github.com/OXY2DEV/markview.nvim/blob/a803117f272cc47733b67ebbaf1acb91095da276/lua/markview/spec.lua#L513-L516)
 
 Default configuration for highlighting a line of the code block.
 
 ```lua
+---@type markview.config.markdown.code_blocks.opts
 default = {
     block_hl = "MarkviewCode",
     pad_hl = "MarkviewCode"
@@ -1111,11 +1113,12 @@ Highlight group for the padding around the line.
 
 ### \[string\]
 
-- type: [markview.config.markdown.code_blocks.opts]()
+- type: [markview.config.markdown.code_blocks.opts](https://github.com/OXY2DEV/markview.nvim/blob/99d9a091915b994b378c4a9cc3553b3cbbe4bad5/lua/definitions/renderers/markdown.lua#L63-L67)
 
 Configuration for code blocks whose language is `string`.
 
 ```lua
+---@type markview.config.markdown.code_blocks.opts
 ["string"] = {
     block_hl = nil,
     pad_hl = nil
@@ -1159,11 +1162,13 @@ Enables language icon in the signcolumn.
 
 ## headings
 
-- type: [markview.config.markdown.headings]()
+- type: [markview.config.markdown.headings](https://github.com/OXY2DEV/markview.nvim/blob/99d9a091915b994b378c4a9cc3553b3cbbe4bad5/lua/definitions/renderers/markdown.lua#L71-L133)
+  [default](https://github.com/OXY2DEV/markview.nvim/blob/a803117f272cc47733b67ebbaf1acb91095da276/lua/markview/spec.lua#L535-L592)
 
 Changes how ATX & Setext headings are shown.
 
 ```lua
+---@type markview.config.markdown.headings
 headings = {
     enable = true,
 
@@ -1233,12 +1238,13 @@ Self-explanatory.
 
 ### heading_1
 
-- type: [markview.config.markdown.headings.atx]()
-  [default]()
+- type: [markview.config.markdown.headings.atx](https://github.com/OXY2DEV/markview.nvim/blob/99d9a091915b994b378c4a9cc3553b3cbbe4bad5/lua/definitions/renderers/markdown.lua#L93-L117)
+  [default](https://github.com/OXY2DEV/markview.nvim/blob/a803117f272cc47733b67ebbaf1acb91095da276/lua/markview/spec.lua#L538-L543)
 
 Changes how level 1 ATX headings are shown.
 
 ```lua
+---@type markview.config.markdown.headings.atx
 heading_1 = {
     align = nil,
 
@@ -1402,47 +1408,48 @@ Heading style. Possible values are,
 
 ### heading_2
 
-- type: [markview.config.markdown.headings.atx]()
-  [default]()
+- type: [markview.config.markdown.headings.atx](https://github.com/OXY2DEV/markview.nvim/blob/99d9a091915b994b378c4a9cc3553b3cbbe4bad5/lua/definitions/renderers/markdown.lua#L93-L117)
+  [default](https://github.com/OXY2DEV/markview.nvim/blob/a803117f272cc47733b67ebbaf1acb91095da276/lua/markview/spec.lua#L544-L549)
 
 Changes how level 2 ATX headings are shown. Options are same as [heading_1](#heading_1).
 
 ### heading_3
 
-- type: [markview.config.markdown.headings.atx]()
-  [default]()
+- type: [markview.config.markdown.headings.atx](https://github.com/OXY2DEV/markview.nvim/blob/99d9a091915b994b378c4a9cc3553b3cbbe4bad5/lua/definitions/renderers/markdown.lua#L93-L117)
+  [default](https://github.com/OXY2DEV/markview.nvim/blob/a803117f272cc47733b67ebbaf1acb91095da276/lua/markview/spec.lua#L550-L554)
 
 Changes how level 3 ATX headings are shown. Options are same as [heading_1](#heading_1).
 
 ### heading_4
 
-- type: [markview.config.markdown.headings.atx]()
-  [default]()
+- type: [markview.config.markdown.headings.atx](https://github.com/OXY2DEV/markview.nvim/blob/99d9a091915b994b378c4a9cc3553b3cbbe4bad5/lua/definitions/renderers/markdown.lua#L93-L117)
+  [default](https://github.com/OXY2DEV/markview.nvim/blob/a803117f272cc47733b67ebbaf1acb91095da276/lua/markview/spec.lua#L555-L559)
 
 Changes how level 4 ATX headings are shown. Options are same as [heading_1](#heading_1).
 
 ### heading_5
 
-- type: [markview.config.markdown.headings.atx]()
-  [default]()
+- type: [markview.config.markdown.headings.atx](https://github.com/OXY2DEV/markview.nvim/blob/99d9a091915b994b378c4a9cc3553b3cbbe4bad5/lua/definitions/renderers/markdown.lua#L93-L117)
+  [default](https://github.com/OXY2DEV/markview.nvim/blob/a803117f272cc47733b67ebbaf1acb91095da276/lua/markview/spec.lua#L560-L564)
 
 Changes how level 5 ATX headings are shown. Options are same as [heading_1](#heading_1).
 
 ### heading_6
 
-- type: [markview.config.markdown.headings.atx]()
-  [default]()
+- type: [markview.config.markdown.headings.atx](https://github.com/OXY2DEV/markview.nvim/blob/99d9a091915b994b378c4a9cc3553b3cbbe4bad5/lua/definitions/renderers/markdown.lua#L93-L117)
+  [default](https://github.com/OXY2DEV/markview.nvim/blob/a803117f272cc47733b67ebbaf1acb91095da276/lua/markview/spec.lua#L565-L569)
 
 Changes how level 6 ATX headings are shown. Options are same as [heading_1](#heading_1).
 
 ### setext_1
 
-- type: [markview.config.markdown.headings.setext]()
-  [default]()
+- type: [markview.config.markdown.headings.setext](https://github.com/OXY2DEV/markview.nvim/blob/99d9a091915b994b378c4a9cc3553b3cbbe4bad5/lua/definitions/renderers/markdown.lua#L93-L117)
+  [default](https://github.com/OXY2DEV/markview.nvim/blob/a803117f272cc47733b67ebbaf1acb91095da276/lua/markview/spec.lua#L571-L577)
 
 Changes how level 1 Setext headings are shown.
 
 ```lua
+---@type markview.config.markdown.headings.setext
 setext_1 = {
     border = nil,
     border_hl = nil,
@@ -1499,8 +1506,8 @@ Heading style. Possible values are,
 
 ### setext_2
 
-- type: [markview.config.markdown.headings.setext]()
-  [default]()
+- type: [markview.config.markdown.headings.setext](https://github.com/OXY2DEV/markview.nvim/blob/99d9a091915b994b378c4a9cc3553b3cbbe4bad5/lua/definitions/renderers/markdown.lua#L93-L117)
+  [default](https://github.com/OXY2DEV/markview.nvim/blob/a803117f272cc47733b67ebbaf1acb91095da276/lua/markview/spec.lua#L578-L584)
 
 Changes how level 2 Setext headings are shown. Options are same as [setext_1](#setext_1).
 
@@ -1544,12 +1551,13 @@ Number of characters to add per heading level in [org_indent](#org_indent).
 
 ## horizontal_rules
 
-- type: [markview.config.markdown.horizontal_rules]()
-  [default]()
+- type: [markview.config.markdown.horizontal_rules](https://github.com/OXY2DEV/markview.nvim/blob/99d9a091915b994b378c4a9cc3553b3cbbe4bad5/lua/definitions/renderers/markdown.lua#L137-L168)
+  [default](https://github.com/OXY2DEV/markview.nvim/blob/a803117f272cc47733b67ebbaf1acb91095da276/lua/markview/spec.lua#L594-L660)
 
 Changes how line breaks look.
 
 ```lua
+---@type markview.config.markdown.horizontal_rules
 horizontal_rules = {
     enable = true,
 
@@ -1628,17 +1636,18 @@ Self-explanatory.
 
 ### parts
 
-- type: [markview.config.markdown.hr.parts]()
+- type: [markview.config.markdown.hr.part\[\]](https://github.com/OXY2DEV/markview.nvim/blob/99d9a091915b994b378c4a9cc3553b3cbbe4bad5/lua/definitions/renderers/markdown.lua#L144-L146)
 
 Parts to create the line.
 
 #### text
 
-- type: [markview.config.markdown.hr.text]()
+- type: [markview.config.markdown.hr.text](https://github.com/OXY2DEV/markview.nvim/blob/99d9a091915b994b378c4a9cc3553b3cbbe4bad5/lua/definitions/renderers/markdown.lua#L149-L154)
 
 Shows some text literally.
 
 ```lua
+---@type markview.config.markdown.hr.text
 {
     type = "text",
 
@@ -1661,11 +1670,12 @@ Highlight group for [text](#hr_text).
 
 #### repeating
 
-- type: [markview.config.markdown.hr.repeating]()
+- type: [markview.config.markdown.hr.repeating](https://github.com/OXY2DEV/markview.nvim/blob/99d9a091915b994b378c4a9cc3553b3cbbe4bad5/lua/definitions/renderers/markdown.lua#L157-L168)
 
 Repeats the given text by the given amount.
 
 ```lua
+---@type markview.config.markdown.hr.repeating
 {
     type = "repeating",
 
@@ -1703,12 +1713,13 @@ Highlight group for [text](#hr_rep_text).
 
 ## list_items
 
-- type: [markview.config.markdown.list_items]()
-  [default]()
+- type: [markview.config.markdown.list_items](https://github.com/OXY2DEV/markview.nvim/blob/99d9a091915b994b378c4a9cc3553b3cbbe4bad5/lua/definitions/renderers/markdown.lua#L172-L202)
+  [default](https://github.com/OXY2DEV/markview.nvim/blob/a803117f272cc47733b67ebbaf1acb91095da276/lua/markview/spec.lua#L662-L709)
 
 Changes how list items are shown.
 
 ```lua
+---@type markview.config.markdown.list_items
 list_items = {
     enable = true,
     wrap = true,
@@ -1798,13 +1809,14 @@ Number of spaces to add per indent level of a list item.
 
 ### marker_dot
 
-- type: [markview.config.markdown.list_items.ordered]()
-  [default]()
+- type: [markview.config.markdown.list_items.ordered](https://github.com/OXY2DEV/markview.nvim/blob/99d9a091915b994b378c4a9cc3553b3cbbe4bad5/lua/definitions/renderers/markdown.lua#L198-L202)
+  [default](https://github.com/OXY2DEV/markview.nvim/blob/a803117f272cc47733b67ebbaf1acb91095da276/lua/markview/spec.lua#L700-L703)
 
 Configuration for `N.` list items.
 
 ```lua
-marker_parenthesis = {
+---@type markview.config.markdown.list_items.ordered
+marker_dot = {
     enable = true,
 
     add_padding = true,
@@ -1835,12 +1847,13 @@ Allows hiding the marker of the list item when checkboxes are present.
 
 ### marker_minus
 
-- type: [markview.config.markdown.list_items.unordered]()
-  [default]()
+- type: [markview.config.markdown.list_items.unordered](https://github.com/OXY2DEV/markview.nvim/blob/99d9a091915b994b378c4a9cc3553b3cbbe4bad5/lua/definitions/renderers/markdown.lua#L189-L195)
+  [default](https://github.com/OXY2DEV/markview.nvim/blob/a803117f272cc47733b67ebbaf1acb91095da276/lua/markview/spec.lua#L676-L682)
 
 Configuration for `-` list items.
 
 ```lua
+---@type markview.config.markdown.list_items.unordered
 marker_minus = {
     enable = true,
 
@@ -1889,33 +1902,34 @@ Highlight group for [text](#list_text).
 
 ### marker_parenthesis
 
-- type: [markview.config.markdown.list_items.ordered]()
-  [default]()
+- type: [markview.config.markdown.list_items.ordered](https://github.com/OXY2DEV/markview.nvim/blob/99d9a091915b994b378c4a9cc3553b3cbbe4bad5/lua/definitions/renderers/markdown.lua#L198-L202)
+  [default](https://github.com/OXY2DEV/markview.nvim/blob/a803117f272cc47733b67ebbaf1acb91095da276/lua/markview/spec.lua#L705-L708)
 
 Configuration for `N)` list items. Same as [marker_dot](#marker_dot).
 
 ### marker_plus
 
-- type: [markview.config.markdown.list_items.unordered]()
-  [default]()
+- type: [markview.config.markdown.list_items.unordered](https://github.com/OXY2DEV/markview.nvim/blob/99d9a091915b994b378c4a9cc3553b3cbbe4bad5/lua/definitions/renderers/markdown.lua#L189-L195)
+  [default](https://github.com/OXY2DEV/markview.nvim/blob/a803117f272cc47733b67ebbaf1acb91095da276/lua/markview/spec.lua#L684-L690)
 
 Configuration for `+` list items. Same as [marker_minus](#marker_minus).
 
 ### marker_star
 
-- type: [markview.config.markdown.list_items.unordered]()
-  [default]()
+- type: [markview.config.markdown.list_items.unordered](https://github.com/OXY2DEV/markview.nvim/blob/99d9a091915b994b378c4a9cc3553b3cbbe4bad5/lua/definitions/renderers/markdown.lua#L189-L195)
+  [default](https://github.com/OXY2DEV/markview.nvim/blob/a803117f272cc47733b67ebbaf1acb91095da276/lua/markview/spec.lua#L692-L698)
 
 Configuration for `*` list items. Same as [marker_minus](#marker_minus).
 
 ## metadata_minus
 
-- type: [markview.config.markdown.metadata]()
-  [default]()
+- type: [markview.config.markdown.metadata](https://github.com/OXY2DEV/markview.nvim/blob/99d9a091915b994b378c4a9cc3553b3cbbe4bad5/lua/definitions/renderers/markdown.lua#L206-L217)
+  [default](https://github.com/OXY2DEV/markview.nvim/blob/a803117f272cc47733b67ebbaf1acb91095da276/lua/markview/spec.lua#L711-L719)
 
 Changes how YAML metadata block is shown.
 
 ```lua
+---@type markview.config.markdown.metadata
 metadata_minus = {
     enable = true,
 
@@ -1976,19 +1990,20 @@ Highlight group for the background.
 
 ## metadata_minus
 
-- type: [markview.config.markdown.metadata]()
-  [default]()
+- type: [markview.config.markdown.metadata](https://github.com/OXY2DEV/markview.nvim/blob/99d9a091915b994b378c4a9cc3553b3cbbe4bad5/lua/definitions/renderers/markdown.lua#L206-L217)
+  [default](https://github.com/OXY2DEV/markview.nvim/blob/a803117f272cc47733b67ebbaf1acb91095da276/lua/markview/spec.lua#L721-L729)
 
 Changes how TOML metadata block is shown. Same as [metadata_minus](#metadata_minus).
 
 ## reference_definitions
 
-- type: [markview.config.markdown.ref_def]()
-  [default]()
+- type: [markview.config.markdown.ref_def](https://github.com/OXY2DEV/markview.nvim/blob/99d9a091915b994b378c4a9cc3553b3cbbe4bad5/lua/definitions/renderers/markdown.lua#L221-L227)
+  [default](https://github.com/OXY2DEV/markview.nvim/blob/a803117f272cc47733b67ebbaf1acb91095da276/lua/markview/spec.lua#L731-L907)
 
 Changes how reference definitions are shown.
 
 ```lua
+---@type markview.config.markdown.ref_def
 reference_definitions = {
     enable = true,
 
@@ -2177,15 +2192,14 @@ Self-explanatory.
 
 ### default
 
-- type: [markview.config.__inline_generic]()
-  [default]()
+- type: [markview.config.__inline](https://github.com/OXY2DEV/markview.nvim/blob/99d9a091915b994b378c4a9cc3553b3cbbe4bad5/lua/definitions/markview.lua#L70-L94)
+  [default](https://github.com/OXY2DEV/markview.nvim/blob/a803117f272cc47733b67ebbaf1acb91095da276/lua/markview/spec.lua#L734-L737)
 
 Default configuration. See [how inline elements are configured]().
 
 ### \[string\]
 
-- type: [markview.config.__inline_generic]()
-  [default]()
+- type: [markview.config.__inline](https://github.com/OXY2DEV/markview.nvim/blob/99d9a091915b994b378c4a9cc3553b3cbbe4bad5/lua/definitions/markview.lua#L70-L94)
 
 Configuration for reference link definitions whose destination matches `string`. See [how inline elements are configured]().
 
@@ -2194,12 +2208,13 @@ Configuration for reference link definitions whose destination matches `string`.
 
 ## tables
 
-- type: [markview.config.markdown.tables]()
-  [default]()
+- type: [markview.config.markdown.tables](https://github.com/OXY2DEV/markview.nvim/blob/99d9a091915b994b378c4a9cc3553b3cbbe4bad5/lua/definitions/renderers/markdown.lua#L231-L257)
+  [default](https://github.com/OXY2DEV/markview.nvim/blob/a803117f272cc47733b67ebbaf1acb91095da276/lua/markview/spec.lua#L909-L944)
 
 Changes how tables are shown.
 
 ```lua
+---@type markview.config.markdown.tables
 tables = {
     enable = true,
     strict = false,
@@ -2267,8 +2282,8 @@ Allows rendering [block_decorator](#block_decorator) as virtual lines.
 
 ### parts
 
-- type: [markview.config.markdown.tables.parts]
-  [default]()
+- type: [markview.config.markdown.tables.parts](https://github.com/OXY2DEV/markview.nvim/blob/99d9a091915b994b378c4a9cc3553b3cbbe4bad5/lua/definitions/renderers/markdown.lua#L244-L257)
+  [default](https://github.com/OXY2DEV/markview.nvim/blob/a803117f272cc47733b67ebbaf1acb91095da276/lua/markview/spec.lua#L916-L928)
 
 Parts used to create the preview.
 
@@ -2318,8 +2333,8 @@ List containing 4 parts defining the bottom border. It has the same structure as
 
 ### hl
 
-- type: [markview.config.markdown.tables.parts]
-  [default]()
+- type: [markview.config.markdown.tables.parts](https://github.com/OXY2DEV/markview.nvim/blob/99d9a091915b994b378c4a9cc3553b3cbbe4bad5/lua/definitions/renderers/markdown.lua#L244-L257)
+  [default](https://github.com/OXY2DEV/markview.nvim/blob/a803117f272cc47733b67ebbaf1acb91095da276/lua/markview/spec.lua#L930-L942)
 
 Highlight group for various parts. It has the same structure as [parts](#parts).
 

@@ -1,7 +1,7 @@
 # 🌋 Experimental options
 
 >[!TIP]
-> Type definitions are available in [definitions/experimental.lua]().
+> Type definitions are available in [definitions/experimental.lua](https://github.com/OXY2DEV/markview.nvim/blob/4cb901f928bbb6a4a03b45e526ae9052bde6352f/lua/definitions/experimental.lua).
 
 Options that don't belong in other groups or needs to be tested are added here,
 
@@ -43,7 +43,7 @@ experimental = {
 ## date_formats
 
 - type: `string[]`
-  [default value]()
+  [default value](https://github.com/OXY2DEV/markview.nvim/blob/main/lua/markview/spec.lua#L114-L130)
 
 Attributes,
 
@@ -54,7 +54,7 @@ A list of `lua patterns` to detect date strings in YAML.
 ## date_time_formats
 
 - type: `string[]`
-  [default value]()
+  [default value](https://github.com/OXY2DEV/markview.nvim/blob/main/lua/markview/spec.lua#L132-L135)
 
 Attributes,
 

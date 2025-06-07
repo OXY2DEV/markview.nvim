@@ -1,11 +1,12 @@
 # Typst options
 
 >[!TIP]
-> You can find type definitions in [definitions/typst.lua]().
+> You can find type definitions in [definitions/renderers/typst.lua](https://github.com/OXY2DEV/markview.nvim/blob/99d9a091915b994b378c4a9cc3553b3cbbe4bad5/lua/definitions/renderers/typst.lua).
 
-Options that affect how typst is shown in previews are part of this. You can find the default values [here]().
+Options that affect how typst is shown in previews are part of this. You can find the default values [here](https://github.com/OXY2DEV/markview.nvim/blob/a803117f272cc47733b67ebbaf1acb91095da276/lua/markview/spec.lua#L1881-L2269).
 
 ```lua
+---@type markview.config.typst
 typst = {
     enable = true,
 
@@ -406,12 +407,13 @@ Allows viewing typst in preview.
 
 ## code_blocks
 
-- type: [markview.config.typst.code_blocks]()
-  [default]()
+- type: [markview.config.typst.code_blocks](https://github.com/OXY2DEV/markview.nvim/blob/99d9a091915b994b378c4a9cc3553b3cbbe4bad5/lua/definitions/renderers/typst.lua#L29-L47)
+  [default](https://github.com/OXY2DEV/markview.nvim/blob/a803117f272cc47733b67ebbaf1acb91095da276/lua/markview/spec.lua#L1884-L1898)
 
 Changes how code blocks look.
 
 ```lua
+---@type markview.config.typst.code_blocks
 code_blocks = {
     enable = true,
 
@@ -511,8 +513,8 @@ Highlight group used for [text](#code_block_text).
 
 ## code_spans
 
-- type: [markview.config.typst.code_spans]()
-  [default]()
+- type: [markview.config.typst.code_spans](https://github.com/OXY2DEV/markview.nvim/blob/99d9a091915b994b378c4a9cc3553b3cbbe4bad5/lua/definitions/renderers/typst.lua#L51-L64)
+  [default](https://github.com/OXY2DEV/markview.nvim/blob/a803117f272cc47733b67ebbaf1acb91095da276/lua/markview/spec.lua#L1900-L1907)
 
 Changes how code spans look. See [how inline elements are configured]().
 
@@ -532,7 +534,13 @@ Self-explanatory.
 
 ## headings
 
+- type: [markview.config.typst.headings](https://github.com/OXY2DEV/markview.nvim/blob/99d9a091915b994b378c4a9cc3553b3cbbe4bad5/lua/definitions/renderers/typst.lua#L72-L88)
+  [default](https://github.com/OXY2DEV/markview.nvim/blob/a803117f272cc47733b67ebbaf1acb91095da276/lua/markview/spec.lua#L1913-L1949)
+
+Changes how different headings look like.
+
 ```lua
+---@type markview.config.typst.headings
 headings = {
     enable = true,
     shift_width = 1,
@@ -588,7 +596,7 @@ Number of spaces to add before the heading per level.
 
 ### heading_\[n\]
 
-- type: [markview.config.typst.headings.opts]()
+- type: [markview.config.typst.headings.typst](https://github.com/OXY2DEV/markview.nvim/blob/99d9a091915b994b378c4a9cc3553b3cbbe4bad5/lua/definitions/renderers/typst.lua#L80-L88)
 
 Configuration for level `n` headings.
 
@@ -648,12 +656,13 @@ Heading preview style. Possible values are,
 
 ## labels
 
-- type: [markview.config.typst.labels]()
-  [default]()
+- type: [markview.config.typst.labels](https://github.com/OXY2DEV/markview.nvim/blob/99d9a091915b994b378c4a9cc3553b3cbbe4bad5/lua/definitions/renderers/typst.lua#L92-L98)
+  [default](https://github.com/OXY2DEV/markview.nvim/blob/a803117f272cc47733b67ebbaf1acb91095da276/lua/markview/spec.lua#L1951-L1960)
 
 Changes how labels are shown.
 
 ```lua
+---@type markview.config.typst.labels
 labels = {
     enable = true,
 
@@ -675,15 +684,14 @@ Self-explanatory.
 
 <h3 id="labels_default">default</h3>
 
-- type: [markview.config.__inline_generic]()
-  [default]()
+- type: [markview.config.__inline](https://github.com/OXY2DEV/markview.nvim/blob/99d9a091915b994b378c4a9cc3553b3cbbe4bad5/lua/definitions/markview.lua#L70-L94)
+  [default](https://github.com/OXY2DEV/markview.nvim/blob/a803117f272cc47733b67ebbaf1acb91095da276/lua/markview/spec.lua#L1954-L1959)
 
 Default configuration for labels. See [how inline elements are configured]().
 
 <h3 id="labels_string">\[string\]</h3>
 
-- type: [markview.config.__inline_generic]()
-  [default]()
+- type: [markview.config.__inline](https://github.com/OXY2DEV/markview.nvim/blob/99d9a091915b994b378c4a9cc3553b3cbbe4bad5/lua/definitions/markview.lua#L70-L94)
 
 Configuration for labels whose text matches `string`. See [how inline elements are configured]().
 
@@ -692,12 +700,13 @@ Configuration for labels whose text matches `string`. See [how inline elements a
 
 ## list_items
 
-- type: [markview.config.markdown.list_items]()
-  [default]()
+- type: [markview.config.markdown.list_items](https://github.com/OXY2DEV/markview.nvim/blob/99d9a091915b994b378c4a9cc3553b3cbbe4bad5/lua/definitions/renderers/typst.lua#L102-L121)
+  [default](https://github.com/OXY2DEV/markview.nvim/blob/a803117f272cc47733b67ebbaf1acb91095da276/lua/markview/spec.lua#L1962-L1992)
 
 Changes how list items are shown.
 
 ```lua
+---@type markview.config.markdown.list_items
 list_items = {
     enable = true,
 
@@ -756,17 +765,19 @@ Number of spaces to add per indent level of a list item.
 
 ### marker_dot
 
-- type: [markview.config.markdown.list_items.ordered]()
-  [default]()
+- type: [markview.config.markdown.list_items.typst](https://github.com/OXY2DEV/markview.nvim/blob/99d9a091915b994b378c4a9cc3553b3cbbe4bad5/lua/definitions/renderers/typst.lua#L115-L121)
+  [default](https://github.com/OXY2DEV/markview.nvim/blob/99d9a091915b994b378c4a9cc3553b3cbbe4bad5/lua/markview/spec.lua#L1992-L1997)
 
 Configuration for `N.` list items.
 
 ```lua
-marker_parenthesis = {
+---@type markview.config.markdown.list_items.typst
+marker_dot = {
     enable = true,
-
     add_padding = true,
-    conceal_on_checkboxes = true
+
+    text = "%d.",
+    hl = "MarkviewListItemStar"
 }
 ```
 
@@ -784,19 +795,32 @@ Self-explanatory.
 
 Enables indentation in preview for this type of list items.
 
+<h4 id="ordered_text">text</h4>
+
+- type: `string`
+  default: `"%d."`
+
+Format string used for the preview of list item(should have `%d` in it).
+
+#### hl
+
+- type: `string`
+  default: `"MarkviewListItemMinus"`
+
+Highlight group for [text](#ordered_text).
+
 ### marker_minus
 
-- type: [markview.config.markdown.list_items.unordered]()
-  [default]()
+- type: [markview.config.markdown.list_items.typst](https://github.com/OXY2DEV/markview.nvim/blob/99d9a091915b994b378c4a9cc3553b3cbbe4bad5/lua/definitions/renderers/typst.lua#L115-L121)
+  [default](https://github.com/OXY2DEV/markview.nvim/blob/99d9a091915b994b378c4a9cc3553b3cbbe4bad5/lua/markview/spec.lua#L1978-L1983)
 
 Configuration for `-` list items.
 
 ```lua
+---@type markview.config.markdown.list_items.typst
 marker_minus = {
     enable = true,
-
     add_padding = true,
-    conceal_on_checkboxes = true,
 
     text = "●",
     hl = "MarkviewListItemMinus"
@@ -833,19 +857,20 @@ Highlight group for [text](#list_text).
 
 ### marker_plus
 
-- type: [markview.config.markdown.list_items.unordered]()
-  [default]()
+- type: [markview.config.markdown.list_items.typst](https://github.com/OXY2DEV/markview.nvim/blob/99d9a091915b994b378c4a9cc3553b3cbbe4bad5/lua/definitions/renderers/typst.lua#L115-L121)
+  [default](https://github.com/OXY2DEV/markview.nvim/blob/99d9a091915b994b378c4a9cc3553b3cbbe4bad5/lua/markview/spec.lua#L1985-L1990)
 
 Configuration for `+` list items. Same as [marker_minus](#marker_minus).
 
 ## math_blocks
 
-- type: [markview.config.typst.math_blocks]()
-  [default]()
+- type: [markview.config.typst.math_blocks](https://github.com/OXY2DEV/markview.nvim/blob/99d9a091915b994b378c4a9cc3553b3cbbe4bad5/lua/definitions/renderers/typst.lua#L125-L134)
+  [default](https://github.com/OXY2DEV/markview.nvim/blob/99d9a091915b994b378c4a9cc3553b3cbbe4bad5/lua/markview/spec.lua#L2000-L2009)
 
 Changes how math block are shown.
 
 ```lua
+---@type markview.config.typst.math_blocks
 math_blocks = {
     enable = true,
 
@@ -900,15 +925,15 @@ Highlight group used for the [text](#math_block_text).
 
 ## math_spans
 
-- type: [markview.config.__inline_generic]()
-  [default]()
+- type: [markview.config.__inline](https://github.com/OXY2DEV/markview.nvim/blob/99d9a091915b994b378c4a9cc3553b3cbbe4bad5/lua/definitions/markview.lua#L70-L94)
+  [default](https://github.com/OXY2DEV/markview.nvim/blob/99d9a091915b994b378c4a9cc3553b3cbbe4bad5/lua/markview/spec.lua#L2011-L2018)
 
 Changes how inline maths are shown. See [how inline elements are configured]().
 
 ## raw_blocks
 
-- type: [markview.config.typst.raw_blocks]()
-  [default]()
+- type: [markview.config.typst.raw_blocks](https://github.com/OXY2DEV/markview.nvim/blob/99d9a091915b994b378c4a9cc3553b3cbbe4bad5/lua/definitions/renderers/typst.lua#L142-L164)
+  [default](https://github.com/OXY2DEV/markview.nvim/blob/99d9a091915b994b378c4a9cc3553b3cbbe4bad5/lua/markview/spec.lua#L2020-L2051)
 
 See also,
 
@@ -917,6 +942,7 @@ See also,
 Changes how raw blocks look.
 
 ```lua
+---@type markview.config.typst.raw_blocks
 raw_blocks = {
     enable = true,
 
@@ -1011,12 +1037,13 @@ Character used for the borders/paddings.
 
 ### default
 
-- type: [markview.config.markdown.code_blocks.opts]()
-  [default]()
+- type: [markview.config.typst.code_blocks.opts](https://github.com/OXY2DEV/markview.nvim/blob/99d9a091915b994b378c4a9cc3553b3cbbe4bad5/lua/definitions/renderers/typst.lua#L160-L164)
+  [default](https://github.com/OXY2DEV/markview.nvim/blob/99d9a091915b994b378c4a9cc3553b3cbbe4bad5/lua/markview/spec.lua#L2034-L2037)
 
 Default configuration for highlighting a line of the code block.
 
 ```lua
+---@type markview.config.typst.code_blocks.opts
 default = {
     block_hl = "MarkviewCode",
     pad_hl = "MarkviewCode"
@@ -1039,11 +1066,12 @@ Highlight group for the padding around the line.
 
 ### \[string\]
 
-- type: [markview.config.markdown.code_blocks.opts]()
+- type: [markview.config.markdown.code_blocks.opts](https://github.com/OXY2DEV/markview.nvim/blob/99d9a091915b994b378c4a9cc3553b3cbbe4bad5/lua/definitions/renderers/typst.lua#L160-L164)
 
 Configuration for code blocks whose language is `string`.
 
 ```lua
+---@type markview.config.typst.code_blocks.opts
 ["string"] = {
     block_hl = nil,
     pad_hl = nil
@@ -1087,12 +1115,13 @@ Enables language icon in the signcolumn.
 
 ## reference_links
 
-- type: [markview.config.types.link_ref]()
-  [default]()
+- type: [markview.config.types.link_ref](https://github.com/OXY2DEV/markview.nvim/blob/99d9a091915b994b378c4a9cc3553b3cbbe4bad5/lua/definitions/renderers/typst.lua#L172-L177)
+  [default](https://github.com/OXY2DEV/markview.nvim/blob/99d9a091915b994b378c4a9cc3553b3cbbe4bad5/lua/markview/spec.lua#L2062-L2069)
 
 Changes how reference links are shown.
 
 ```lua
+---@type markview.config.types.link_ref
 reference_links = {
     enable = true,
 
@@ -1112,15 +1141,14 @@ Self-explanatory.
 
 ### default
 
-- type: [markview.config.__inline_generic]()
-  [default]()
+- type: [markview.config.__inline](https://github.com/OXY2DEV/markview.nvim/blob/99d9a091915b994b378c4a9cc3553b3cbbe4bad5/lua/definitions/markview.lua#L70-L94)
+  [default](https://github.com/OXY2DEV/markview.nvim/blob/99d9a091915b994b378c4a9cc3553b3cbbe4bad5/lua/markview/spec.lua#L2065-L2068)
 
 Default configuration. See [how inline elements are configured]().
 
 ### \[string\]
 
-- type: [markview.config.__inline_generic]()
-  [default]()
+- type: [markview.config.__inline](https://github.com/OXY2DEV/markview.nvim/blob/99d9a091915b994b378c4a9cc3553b3cbbe4bad5/lua/definitions/markview.lua#L70-L94)
 
 Configuration for reference links whose destination matches `string`. See [how inline elements are configured]().
 
@@ -1129,12 +1157,13 @@ Configuration for reference links whose destination matches `string`. See [how i
 
 ## subscripts
 
-- type: [markview.config.typst.subscripts]()
-  [default]()
+- type: [markview.config.typst.subscripts](https://github.com/OXY2DEV/markview.nvim/blob/99d9a091915b994b378c4a9cc3553b3cbbe4bad5/lua/definitions/renderers/typst.lua#L181-L189)
+  [default](https://github.com/OXY2DEV/markview.nvim/blob/99d9a091915b994b378c4a9cc3553b3cbbe4bad5/lua/markview/spec.lua#L2071-L2075)
 
 Configuration for subscript texts.
 
 ```lua
+---@type markview.config.typst.subscripts
 subscripts = {
     enable = true,
 
@@ -1178,12 +1207,13 @@ Marker to show after subscript text.
 
 ## superscripts
 
-- type: [markview.config.typst.superscripts]()
-  [default]()
+- type: [markview.config.typst.superscripts](https://github.com/OXY2DEV/markview.nvim/blob/99d9a091915b994b378c4a9cc3553b3cbbe4bad5/lua/definitions/renderers/typst.lua#L193-L201)
+  [default](https://github.com/OXY2DEV/markview.nvim/blob/99d9a091915b994b378c4a9cc3553b3cbbe4bad5/lua/markview/spec.lua#L2077-L2081)
 
 Configuration for superscript texts. Same as [subscripts](#subscripts).
 
 ```lua
+---@type markview.config.typst.superscripts
 superscripts = {
     enable = true,
 
@@ -1195,12 +1225,13 @@ superscripts = {
 
 ## symbols
 
-- type: [markview.config.typst.symbols]()
-  [default]()
+- type: [markview.config.typst.symbols](https://github.com/OXY2DEV/markview.nvim/blob/99d9a091915b994b378c4a9cc3553b3cbbe4bad5/lua/definitions/renderers/typst.lua#L205-L209)
+  [default](https://github.com/OXY2DEV/markview.nvim/blob/99d9a091915b994b378c4a9cc3553b3cbbe4bad5/lua/markview/spec.lua#L2083-L2087)
 
 Configuration for symbols.
 
 ```lua
+---@type markview.config.typst.symbols
 superscripts = {
     enable = true,
 
@@ -1226,12 +1257,13 @@ Highlight group.
 
 ## reference_links
 
-- type: [markview.config.types.link_ref]()
-  [default]()
+- type: [markview.config.types.link_ref](https://github.com/OXY2DEV/markview.nvim/blob/99d9a091915b994b378c4a9cc3553b3cbbe4bad5/lua/definitions/renderers/typst.lua#L220-L231)
+  [default](https://github.com/OXY2DEV/markview.nvim/blob/99d9a091915b994b378c4a9cc3553b3cbbe4bad5/lua/markview/spec.lua#L2089-L2096)
 
 Changes how reference links are shown.
 
 ```lua
+---@type markview.config.types.link_ref
 terms = {
     enable = true,
 
@@ -1251,15 +1283,14 @@ Self-explanatory.
 
 ### default
 
-- type: [markview.config.__inline_generic]()
-  [default]()
+- type: [markview.config.__inline](https://github.com/OXY2DEV/markview.nvim/blob/99d9a091915b994b378c4a9cc3553b3cbbe4bad5/lua/definitions/markview.lua#L70-L94)
+  [default](https://github.com/OXY2DEV/markview.nvim/blob/99d9a091915b994b378c4a9cc3553b3cbbe4bad5/lua/markview/spec.lua#L2092-L2095)
 
 Default configuration. See [how inline elements are configured]().
 
 ### \[string\]
 
-- type: [markview.config.__inline_generic]()
-  [default]()
+- type: [markview.config.__inline](https://github.com/OXY2DEV/markview.nvim/blob/99d9a091915b994b378c4a9cc3553b3cbbe4bad5/lua/definitions/markview.lua#L70-L94)
 
 Configuration for terms whose label matches `string`. See [how inline elements are configured]().
 
@@ -1268,12 +1299,13 @@ Configuration for terms whose label matches `string`. See [how inline elements a
 
 ## url_links
 
-- type: [markview.config.typst.url_links]()
-  [default]()
+- type: [markview.config.typst.url_links](https://github.com/OXY2DEV/markview.nvim/blob/99d9a091915b994b378c4a9cc3553b3cbbe4bad5/lua/definitions/renderers/typst.lua#L235-L241)
+  [default](https://github.com/OXY2DEV/markview.nvim/blob/99d9a091915b994b378c4a9cc3553b3cbbe4bad5/lua/markview/spec.lua#L2098-2275)
 
 Changes how uri autolinks are shown.
 
 ```lua
+---@type markview.config.typst.url_links
 url_links = {
     enable = true,
 
@@ -1462,15 +1494,14 @@ Self-explanatory.
 
 <h3 id="url_links_default">default</h3>
 
-- type: [markview.config.__inline_generic]()
-  [default]()
+- type: [markview.config.__inline](https://github.com/OXY2DEV/markview.nvim/blob/99d9a091915b994b378c4a9cc3553b3cbbe4bad5/lua/definitions/markview.lua#L70-L94)
+  [default](https://github.com/OXY2DEV/markview.nvim/blob/99d9a091915b994b378c4a9cc3553b3cbbe4bad5/lua/markview/spec.lua#L2101-L2104)
 
 Default configuration for URI autolinks. See [how inline elements are configured]().
 
 <h3 id="url_links_string">\[string\]</h3>
 
-- type: [markview.config.__inline_generic]()
-  [default]()
+- type: [markview.config.__inline](https://github.com/OXY2DEV/markview.nvim/blob/99d9a091915b994b378c4a9cc3553b3cbbe4bad5/lua/definitions/markview.lua#L70-L94)
 
 Configuration for URL links whose text matches `string`. See [how inline elements are configured]().
 
