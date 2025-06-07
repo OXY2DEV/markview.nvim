@@ -937,7 +937,7 @@ Changes how inline maths are shown. See [how inline elements are configured](htt
 
 See also,
 
-- [icon_provider](), for disabling icons.
+- [icon_provider](https://github.com/OXY2DEV/markview.nvim/wiki/Preview#icon_provider), for disabling icons.
 
 Changes how raw blocks look.
 
@@ -1012,7 +1012,7 @@ Which side the language name & icon should be shown on.
 Highlight group used for the language name & icon.
 
 >[!TIP]
-> This can be used to overwrite the highlight group set by the [icon_provider]()!
+> This can be used to overwrite the highlight group set by the [icon_provider](https://github.com/OXY2DEV/markview.nvim/wiki/Preview#icon_provider)!
 
 ### min_width
 

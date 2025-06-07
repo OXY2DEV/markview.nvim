@@ -863,9 +863,9 @@ Self-explanatory.
 
 Enables `wrap` support, which causes block quote's border to appear where the text gets wrapped.
 
-|  `wrap = true` | `wrap = false`  |
-|----------------|-----------------|
-| ![wrap_true]() | ![wrap_false]() |
+<!-- |  `wrap = true` | `wrap = false`  | -->
+<!-- |----------------|-----------------| -->
+<!-- | ![wrap_true]() | ![wrap_false]() | -->
 
 >[!CAUTION]
 > Detecting where to show the border is done manually, sometimes it may be incorrect(e.g. after resizing the Terminal).
@@ -983,7 +983,7 @@ Enables Obsidian-style titles in callouts.
 
 See also,
 
-- [icon_provider](), for disabling icons.
+- [icon_provider](https://github.com/OXY2DEV/markview.nvim/wiki/Preview#icon_provider), for disabling icons.
 
 Changes how fenced code blocks look.
 
@@ -1059,7 +1059,7 @@ Which side the language name & icon should be shown on.
 Highlight group used for the language name & icon.
 
 >[!TIP]
-> This can be used to overwrite the highlight group set by the [icon_provider]()!
+> This can be used to overwrite the highlight group set by the [icon_provider](https://github.com/OXY2DEV/markview.nvim/wiki/Preview#icon_provider)!
 
 ### min_width
 
@@ -1784,9 +1784,9 @@ Self-explanatory.
 
 Enables `wrap` support, which causes indentation to appear where the text gets wrapped.
 
-|  `wrap = true` | `wrap = false`  |
-|----------------|-----------------|
-| ![wrap_true]() | ![wrap_false]() |
+<!-- |  `wrap = true` | `wrap = false`  | -->
+<!-- |----------------|-----------------| -->
+<!-- | ![wrap_true]() | ![wrap_false]() | -->
 
 >[!CAUTION]
 > Detecting where to add the indentation is done manually, sometimes it may be incorrect(e.g. after resizing the Terminal).

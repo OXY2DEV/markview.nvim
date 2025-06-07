@@ -1,9 +1,9 @@
 # 💻 Preview options
 
 >[!TIP]
-> Type definitions are available in [definitions/preview.lua]().
+> Type definitions are available in [definitions/preview.lua](https://github.com/OXY2DEV/markview.nvim/blob/99d9a091915b994b378c4a9cc3553b3cbbe4bad5/lua/definitions/preview.lua#L57).
 
-Options that change when & how previews are shown are part of this. Default value can be found [here]().
+Options that change when & how previews are shown are part of this. Default value can be found [here](https://github.com/OXY2DEV/markview.nvim/blob/99d9a091915b994b378c4a9cc3553b3cbbe4bad5/lua/markview/spec.lua#L147-L307).
 
 ```lua
 ---@type markview.config.preview
@@ -182,7 +182,7 @@ Enables hybrid mode in previews.
 
 Also see,
 
-- [Autocmds]()
+- [Autocmds](https://github.com/OXY2DEV/markview.nvim/wiki#-autocmds)
 
 Callbacks are functions that can be run when specific things/events happen. Supported callbacks are,
 
