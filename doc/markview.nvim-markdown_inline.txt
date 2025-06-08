@@ -1,0 +1,1539 @@
+*markview.nvim-markdown_inline.txt*                 💭 Markdown inline option
+
+▌ 💡 Tip
+▌ You can find the type definition in
+▌ `definitions/renderers/markdown_inline.lua`[^1].
+
+Options that change how inline markdown is shown. The default value can be
+found here[^2].
+
+>lua
+    ---@type markview.config.markdown_inline
+    markdown_inline = {
+        enable = true,
+
+        block_references = {
+            enable = true,
+
+            default = {
+                icon = "󰿨 ",
+
+                hl = "MarkviewPalette6Fg",
+                file_hl = "MarkviewPalette0Fg",
+            },
+        },
+
+        checkboxes = {
+            enable = true,
+
+            checked = { text = "󰗠", hl = "MarkviewCheckboxChecked", scope_hl = "MarkviewCheckboxChecked" },
+            unchecked = { text = "󰄰", hl = "MarkviewCheckboxUnchecked", scope_hl = "MarkviewCheckboxUnchecked" },
+
+            ["/"] = { text = "󱎖", hl = "MarkviewCheckboxPending" },
+            [">"] = { text = "", hl = "MarkviewCheckboxCancelled" },
+            ["<"] = { text = "󰃖", hl = "MarkviewCheckboxCancelled" },
+            ["-"] = { text = "󰍶", hl = "MarkviewCheckboxCancelled", scope_hl = "MarkviewCheckboxStriked" },
+
+            ["?"] = { text = "󰋗", hl = "MarkviewCheckboxPending" },
+            ["!"] = { text = "󰀦", hl = "MarkviewCheckboxUnchecked" },
+            ["*"] = { text = "󰓎", hl = "MarkviewCheckboxPending" },
+            ['"'] = { text = "󰸥", hl = "MarkviewCheckboxCancelled" },
+            ["l"] = { text = "󰆋", hl = "MarkviewCheckboxProgress" },
+            ["b"] = { text = "󰃀", hl = "MarkviewCheckboxProgress" },
+            ["i"] = { text = "󰰄", hl = "MarkviewCheckboxChecked" },
+            ["S"] = { text = "", hl = "MarkviewCheckboxChecked" },
+            ["I"] = { text = "󰛨", hl = "MarkviewCheckboxPending" },
+            ["p"] = { text = "", hl = "MarkviewCheckboxChecked" },
+            ["c"] = { text = "", hl = "MarkviewCheckboxUnchecked" },
+            ["f"] = { text = "󱠇", hl = "MarkviewCheckboxUnchecked" },
+            ["k"] = { text = "", hl = "MarkviewCheckboxPending" },
+            ["w"] = { text = "", hl = "MarkviewCheckboxProgress" },
+            ["u"] = { text = "󰔵", hl = "MarkviewCheckboxChecked" },
+            ["d"] = { text = "󰔳", hl = "MarkviewCheckboxUnchecked" },
+        },
+
+        emails = {
+            enable = true,
+
+            default = {
+                icon = " ",
+                hl = "MarkviewEmail"
+            },
+
+            ["%@gmail%.com$"] = {
+                --- user@gmail.com
+
+                icon = "󰊫 ",
+                hl = "MarkviewPalette0Fg"
+            },
+
+            ["%@outlook%.com$"] = {
+                --- user@outlook.com
+
+                icon = "󰴢 ",
+                hl = "MarkviewPalette5Fg"
+            },
+
+            ["%@yahoo%.com$"] = {
+                --- user@yahoo.com
+
+                icon = " ",
+                hl = "MarkviewPalette6Fg"
+            },
+
+            ["%@icloud%.com$"] = {
+                --- user@icloud.com
+
+                icon = "󰀸 ",
+                hl = "MarkviewPalette6Fg"
+            }
+        },
+
+        embed_files = {
+            enable = true,
+
+            default = {
+                icon = "󰠮 ",
+                hl = "MarkviewPalette7Fg"
+            }
+        },
+
+        entities = {
+            enable = true,
+            hl = "Special"
+        },
+
+        emoji_shorthands = {
+            enable = true
+        },
+
+        escapes = {
+            enable = true
+        },
+
+        footnotes = {
+            enable = true,
+
+            default = {
+                icon = "󰯓 ",
+                hl = "MarkviewHyperlink"
+            },
+
+            ["^%d+$"] = {
+                --- Numbered footnotes.
+
+                icon = "󰯓 ",
+                hl = "MarkviewPalette4Fg"
+            }
+        },
+
+        highlights = {
+            enable = true,
+
+            default = {
+                padding_left = " ",
+                padding_right = " ",
+
+                hl = "MarkviewPalette3"
+            }
+        },
+
+        hyperlinks = {
+            enable = true,
+
+            default = {
+                icon = "󰌷 ",
+                hl = "MarkviewHyperlink",
+            },
+
+            ["github%.com/[%a%d%-%_%.]+%/?$"] = {
+                --- github.com/<user>
+
+                icon = " ",
+                hl = "MarkviewPalette0Fg"
+            },
+            ["github%.com/[%a%d%-%_%.]+/[%a%d%-%_%.]+%/?$"] = {
+                --- github.com/<user>/<repo>
+
+                icon = " ",
+                hl = "MarkviewPalette0Fg"
+            },
+            ["github%.com/[%a%d%-%_%.]+/[%a%d%-%_%.]+/tree/[%a%d%-%_%.]+%/?$"] = {
+                --- github.com/<user>/<repo>/tree/<branch>
+
+                icon = " ",
+                hl = "MarkviewPalette0Fg"
+            },
+            ["github%.com/[%a%d%-%_%.]+/[%a%d%-%_%.]+/commits/[%a%d%-%_%.]+%/?$"] = {
+                --- github.com/<user>/<repo>/commits/<branch>
+
+                icon = " ",
+                hl = "MarkviewPalette0Fg"
+            },
+
+            ["github%.com/[%a%d%-%_%.]+/[%a%d%-%_%.]+%/releases$"] = {
+                --- github.com/<user>/<repo>/releases
+
+                icon = " ",
+                hl = "MarkviewPalette0Fg"
+            },
+            ["github%.com/[%a%d%-%_%.]+/[%a%d%-%_%.]+%/tags$"] = {
+                --- github.com/<user>/<repo>/tags
+
+                icon = " ",
+                hl = "MarkviewPalette0Fg"
+            },
+            ["github%.com/[%a%d%-%_%.]+/[%a%d%-%_%.]+%/issues$"] = {
+                --- github.com/<user>/<repo>/issues
+
+                icon = " ",
+                hl = "MarkviewPalette0Fg"
+            },
+            ["github%.com/[%a%d%-%_%.]+/[%a%d%-%_%.]+%/pulls$"] = {
+                --- github.com/<user>/<repo>/pulls
+
+                icon = " ",
+                hl = "MarkviewPalette0Fg"
+            },
+
+            ["github%.com/[%a%d%-%_%.]+/[%a%d%-%_%.]+%/wiki$"] = {
+                --- github.com/<user>/<repo>/wiki
+
+                icon = " ",
+                hl = "MarkviewPalette0Fg"
+            },
+
+            ["developer%.mozilla%.org"] = {
+                priority = -9999,
+
+                icon = "󰖟 ",
+                hl = "MarkviewPalette5Fg"
+            },
+
+            ["w3schools%.com"] = {
+                priority = -9999,
+
+                icon = " ",
+                hl = "MarkviewPalette4Fg"
+            },
+
+            ["stackoverflow%.com"] = {
+                priority = -9999,
+
+                icon = "󰓌 ",
+                hl = "MarkviewPalette2Fg"
+            },
+
+            ["reddit%.com"] = {
+                priority = -9999,
+
+                icon = " ",
+                hl = "MarkviewPalette2Fg"
+            },
+
+            ["github%.com"] = {
+                priority = -9999,
+
+                icon = " ",
+                hl = "MarkviewPalette6Fg"
+            },
+
+            ["gitlab%.com"] = {
+                priority = -9999,
+
+                icon = " ",
+                hl = "MarkviewPalette2Fg"
+            },
+
+            ["dev%.to"] = {
+                priority = -9999,
+
+                icon = "󱁴 ",
+                hl = "MarkviewPalette0Fg"
+            },
+
+            ["codepen%.io"] = {
+                priority = -9999,
+
+                icon = " ",
+                hl = "MarkviewPalette6Fg"
+            },
+
+            ["replit%.com"] = {
+                priority = -9999,
+
+                icon = " ",
+                hl = "MarkviewPalette2Fg"
+            },
+
+            ["jsfiddle%.net"] = {
+                priority = -9999,
+
+                icon = " ",
+                hl = "MarkviewPalette5Fg"
+            },
+
+            ["npmjs%.com"] = {
+                priority = -9999,
+
+                icon = " ",
+                hl = "MarkviewPalette0Fg"
+            },
+
+            ["pypi%.org"] = {
+                priority = -9999,
+
+                icon = "󰆦 ",
+                hl = "MarkviewPalette0Fg"
+            },
+
+            ["mvnrepository%.com"] = {
+                priority = -9999,
+
+                icon = " ",
+                hl = "MarkviewPalette1Fg"
+            },
+
+            ["medium%.com"] = {
+                priority = -9999,
+
+                icon = " ",
+                hl = "MarkviewPalette6Fg"
+            },
+
+            ["linkedin%.com"] = {
+                priority = -9999,
+
+                icon = "󰌻 ",
+                hl = "MarkviewPalette5Fg"
+            },
+
+            ["news%.ycombinator%.com"] = {
+                priority = -9999,
+
+                icon = " ",
+                hl = "MarkviewPalette2Fg"
+            },
+        },
+
+        images = {
+            enable = true,
+
+            default = {
+                icon = "󰥶 ",
+                hl = "MarkviewImage",
+            },
+
+            ["%.svg$"] = { icon = "󰜡 " },
+            ["%.png$"] = { icon = "󰸭 " },
+            ["%.jpg$"] = { icon = "󰈥 " },
+            ["%.gif$"] = { icon = "󰵸 " },
+            ["%.pdf$"] = { icon = " " }
+        },
+
+        inline_codes = {
+            enable = true,
+            hl = "MarkviewInlineCode",
+
+            padding_left = " ",
+            padding_right = " "
+        },
+
+        internal_links = {
+            enable = true,
+
+            default = {
+                icon = " ",
+                hl = "MarkviewPalette7Fg",
+            },
+        },
+
+        uri_autolinks = {
+            enable = true,
+
+            default = {
+                icon = " ",
+                hl = "MarkviewEmail"
+            },
+
+            ["github%.com/[%a%d%-%_%.]+%/?$"] = {
+                --- github.com/<user>
+
+                icon = " ",
+                hl = "MarkviewPalette0Fg"
+            },
+            ["github%.com/[%a%d%-%_%.]+/[%a%d%-%_%.]+%/?$"] = {
+                --- github.com/<user>/<repo>
+
+                icon = " ",
+                hl = "MarkviewPalette0Fg"
+            },
+            ["github%.com/[%a%d%-%_%.]+/[%a%d%-%_%.]+/tree/[%a%d%-%_%.]+%/?$"] = {
+                --- github.com/<user>/<repo>/tree/<branch>
+
+                icon = " ",
+                hl = "MarkviewPalette0Fg"
+            },
+            ["github%.com/[%a%d%-%_%.]+/[%a%d%-%_%.]+/commits/[%a%d%-%_%.]+%/?$"] = {
+                --- github.com/<user>/<repo>/commits/<branch>
+
+                icon = " ",
+                hl = "MarkviewPalette0Fg"
+            },
+
+            ["github%.com/[%a%d%-%_%.]+/[%a%d%-%_%.]+%/releases$"] = {
+                --- github.com/<user>/<repo>/releases
+
+                icon = " ",
+                hl = "MarkviewPalette0Fg"
+            },
+            ["github%.com/[%a%d%-%_%.]+/[%a%d%-%_%.]+%/tags$"] = {
+                --- github.com/<user>/<repo>/tags
+
+                icon = " ",
+                hl = "MarkviewPalette0Fg"
+            },
+            ["github%.com/[%a%d%-%_%.]+/[%a%d%-%_%.]+%/issues$"] = {
+                --- github.com/<user>/<repo>/issues
+
+                icon = " ",
+                hl = "MarkviewPalette0Fg"
+            },
+            ["github%.com/[%a%d%-%_%.]+/[%a%d%-%_%.]+%/pulls$"] = {
+                --- github.com/<user>/<repo>/pulls
+
+                icon = " ",
+                hl = "MarkviewPalette0Fg"
+            },
+
+            ["github%.com/[%a%d%-%_%.]+/[%a%d%-%_%.]+%/wiki$"] = {
+                --- github.com/<user>/<repo>/wiki
+
+                icon = " ",
+                hl = "MarkviewPalette0Fg"
+            },
+
+            ["developer%.mozilla%.org"] = {
+                priority = -9999,
+
+                icon = "󰖟 ",
+                hl = "MarkviewPalette5Fg"
+            },
+
+            ["w3schools%.com"] = {
+                priority = -9999,
+
+                icon = " ",
+                hl = "MarkviewPalette4Fg"
+            },
+
+            ["stackoverflow%.com"] = {
+                priority = -9999,
+
+                icon = "󰓌 ",
+                hl = "MarkviewPalette2Fg"
+            },
+
+            ["reddit%.com"] = {
+                priority = -9999,
+
+                icon = " ",
+                hl = "MarkviewPalette2Fg"
+            },
+
+            ["github%.com"] = {
+                priority = -9999,
+
+                icon = " ",
+                hl = "MarkviewPalette6Fg"
+            },
+
+            ["gitlab%.com"] = {
+                priority = -9999,
+
+                icon = " ",
+                hl = "MarkviewPalette2Fg"
+            },
+
+            ["dev%.to"] = {
+                priority = -9999,
+
+                icon = "󱁴 ",
+                hl = "MarkviewPalette0Fg"
+            },
+
+            ["codepen%.io"] = {
+                priority = -9999,
+
+                icon = " ",
+                hl = "MarkviewPalette6Fg"
+            },
+
+            ["replit%.com"] = {
+                priority = -9999,
+
+                icon = " ",
+                hl = "MarkviewPalette2Fg"
+            },
+
+            ["jsfiddle%.net"] = {
+                priority = -9999,
+
+                icon = " ",
+                hl = "MarkviewPalette5Fg"
+            },
+
+            ["npmjs%.com"] = {
+                priority = -9999,
+
+                icon = " ",
+                hl = "MarkviewPalette0Fg"
+            },
+
+            ["pypi%.org"] = {
+                priority = -9999,
+
+                icon = "󰆦 ",
+                hl = "MarkviewPalette0Fg"
+            },
+
+            ["mvnrepository%.com"] = {
+                priority = -9999,
+
+                icon = " ",
+                hl = "MarkviewPalette1Fg"
+            },
+
+            ["medium%.com"] = {
+                priority = -9999,
+
+                icon = " ",
+                hl = "MarkviewPalette6Fg"
+            },
+
+            ["linkedin%.com"] = {
+                priority = -9999,
+
+                icon = "󰌻 ",
+                hl = "MarkviewPalette5Fg"
+            },
+
+            ["news%.ycombinator%.com"] = {
+                priority = -9999,
+
+                icon = " ",
+                hl = "MarkviewPalette2Fg"
+            },
+        },
+    },
+<
+
+------------------------------------------------------------------------------
+enable
+
+  • type: `boolean`
+    default: `true`
+
+Shows inline markdown in previews.
+
+------------------------------------------------------------------------------
+block_references
+
+  • type: `markview.config.markdown_inline.block_refs`[^3]
+    default[^4]
+
+Changes how block references are shown.
+
+>lua
+    block_references = {
+        enable = true,
+
+        default = {
+            icon = "󰿨 ",
+
+            hl = "MarkviewPalette6Fg",
+            file_hl = "MarkviewPalette0Fg",
+        },
+    },
+<
+
+enable ~
+
+  • type: `boolean`
+    default: `true`
+
+Self-explanatory.
+default
+
+  • type: `markview.config.__inline`[^5]
+    default[^6]
+
+Default configuration for block references. See how inline elements are
+configured[^7].
+[string]
+
+  • type: `markview.config.__inline`[^8]
+
+Configuration for block references whose text matches `string`. See how inline
+elements are configured[^9].
+
+▌ 📜 Note
+
+  The structure for block references is `[[<text>]]` when `text` contains
+  `#^`.
+
+------------------------------------------------------------------------------
+checkboxes
+
+  • type: `markview.config.markdown_inline.checkboxes`[^10]
+    default[^11]
+
+Changes how checkboxes are shown.
+
+enable ~
+
+  • type: `boolean`
+    default: `true`
+
+Self-explanatory.
+
+checked ~
+
+  • type: `markview.config.markdown_inline.checkboxes.opts`[^12]
+
+>lua
+    checked = {
+        text = "󰗠",
+        hl = "MarkviewCheckboxChecked",
+
+        scope_hl = "MarkviewCheckboxChecked"
+    },
+<
+text
+
+  • type: `string`
+
+Text to show as the checkbox in the preview.
+hl
+
+  • type: `string`
+
+Highlight group for `text`.
+scope_hl
+
+  • type: `string`
+
+Highlight group used on the list item text.
+
+unchecked ~
+
+  • type: `markview.config.markdown_inline.checkboxes.opts`[^14]
+
+Configuration for unchecked checkboxes. Same structure as `checked`.
+
+[string] ~
+
+  • type: `markview.config.markdown_inline.checkboxes.opts`[^16]
+
+Configuration for `[string]` checkboxes. Same structure as `checked`.
+
+------------------------------------------------------------------------------
+emails
+
+  • type: `markview.config.markdown_inline.emails`[^18]
+    default[^19]
+
+Changes how emails are shown.
+
+>lua
+    emails = {
+        enable = true,
+
+        default = {
+            icon = " ",
+            hl = "MarkviewEmail"
+        },
+
+        ["%@gmail%.com$"] = {
+            --- user@gmail.com
+
+            icon = "󰊫 ",
+            hl = "MarkviewPalette0Fg"
+        },
+
+        ["%@outlook%.com$"] = {
+            --- user@outlook.com
+
+            icon = "󰴢 ",
+            hl = "MarkviewPalette5Fg"
+        },
+
+        ["%@yahoo%.com$"] = {
+            --- user@yahoo.com
+
+            icon = " ",
+            hl = "MarkviewPalette6Fg"
+        },
+
+        ["%@icloud%.com$"] = {
+            --- user@icloud.com
+
+            icon = "󰀸 ",
+            hl = "MarkviewPalette6Fg"
+        }
+    },
+<
+
+enable ~
+
+  • type: `boolean`
+    default: `true`
+
+Self-explanatory.
+default
+
+  • type: `markview.config.__inline`[^20]
+    default[^21]
+
+Default configuration for emails. See how inline elements are configured[^22].
+[string]
+
+  • type: `markview.config.__inline`[^23]
+
+Configuration for emails whose label matches `string`. See how inline elements
+are configured[^24].
+
+▌ 📜 Note
+
+  The structure for emails is `<<label>>`.
+
+------------------------------------------------------------------------------
+embed_files
+
+  • type: `markview.config.markdown_inline.embed_files`[^25]
+    default[^26]
+
+Changes how embed file links(from `Obsidian`) are shown.
+
+>lua
+    embed_files = {
+        enable = true,
+
+        default = {
+            icon = "󰠮 ",
+            hl = "MarkviewPalette7Fg"
+        }
+    },
+<
+
+enable ~
+
+  • type: `boolean`
+    default: `true`
+
+Self-explanatory.
+default
+
+  • type: `markview.config.__inline`[^27]
+    default[^28]
+
+Default configuration for embed file links. See how inline elements are
+configured[^29].
+[string]
+
+  • type: `markview.config.__inline`[^30]
+
+Configuration for embed file links whose text matches `string`. See how inline
+elements are configured[^31].
+
+▌ 📜 Note
+
+  The structure for emails is `![[<text>]]`.
+
+------------------------------------------------------------------------------
+entities
+
+  • type: `markview.config.markdown_inline.entities`[^32]
+    default[^33]
+
+Changes how HTML entities are shown.
+
+>lua
+    entities = {
+        enable = true,
+        hl = "Special"
+    },
+<
+
+enable ~
+
+  • type: `boolean`
+    default: `true`
+
+Self-explanatory.
+hl
+
+  • type: `string`
+    default: `"Special"`
+
+Highlight group for the entities.
+
+------------------------------------------------------------------------------
+emoji_shorthands
+
+  • type: `markview.config.markdown_inline.emojis`[^34]
+    default[^35]
+
+Changes how Github-styled emoji shorthands are shown.
+
+>lua
+    emoji_shorthands = {
+        enable = true,
+    },
+<
+
+enable ~
+
+  • type: `boolean`
+    default: `true`
+
+Self-explanatory.
+
+------------------------------------------------------------------------------
+escapes
+
+  • type: `markview.config.markdown_inline.escapes`[^36]
+
+Changes how escaped characters are shown.
+
+>lua
+    escapes = {
+        enable = true,
+    },
+<
+
+enable ~
+
+  • type: `boolean`
+    default: `true`
+
+Self-explanatory.
+
+------------------------------------------------------------------------------
+footnotes
+
+  • type: `markview.config.markdown_inline.footnotes`[^37]
+    default[^38]
+
+Changes how footnotes are shown.
+
+>lua
+    footnotes = {
+        enable = true,
+
+        default = {
+            icon = "󰯓 ",
+            hl = "MarkviewHyperlink"
+        },
+
+        ["^%d+$"] = {
+            --- Numbered footnotes.
+
+            icon = "󰯓 ",
+            hl = "MarkviewPalette4Fg"
+        }
+    },
+<
+
+enable ~
+
+  • type: `boolean`
+    default: `true`
+
+Self-explanatory.
+default
+
+  • type: `markview.config.__inline`[^39]
+    default[^40]
+
+Default configuration for footnote links. See how inline elements are
+configured[^41].
+[string]
+
+  • type: `markview.config.__inline`[^42]
+
+Configuration for footnote links whose label matches `string`. See how inline
+elements are configured[^43].
+
+▌ 📜 Note
+
+  The structure for footnotes is `[^<label>]`.
+
+------------------------------------------------------------------------------
+highlights
+
+  • type: `markview.config.markdown_inline.highlights`[^44]
+    default[^45]
+
+Changes how highlighted text(from `Obsidian`) are shown.
+
+>lua
+    highlights = {
+        enable = true,
+
+        default = {
+            padding_left = " ",
+            padding_right = " ",
+
+            hl = "MarkviewPalette3"
+        }
+    },
+<
+
+enable ~
+
+  • type: `boolean`
+    default: `true`
+
+Self-explanatory.
+default
+
+  • type: `markview.config.__inline`[^46]
+    default[^47]
+
+Default configuration for highlighted text. See how inline elements are
+configured[^48].
+[string]
+
+  • type: `markview.config.__inline`[^49]
+
+Configuration for highlighted text whose content matches `string`. See how
+inline elements are configured[^50].
+
+▌ 📜 Note
+
+  The structure for footnotes is `==<content>==`.
+
+------------------------------------------------------------------------------
+hyperlinks
+
+  • type: `markview.config.markdown_inline.hyperlinks`[^51]
+    default[^52]
+
+Changes how hyperlinks are shown.
+
+>lua
+    hyperlinks = {
+        enable = true,
+
+        default = {
+            icon = "󰌷 ",
+            hl = "MarkviewHyperlink",
+        },
+
+        ["github%.com/[%a%d%-%_%.]+%/?$"] = {
+            --- github.com/<user>
+
+            icon = " ",
+            hl = "MarkviewPalette0Fg"
+        },
+        ["github%.com/[%a%d%-%_%.]+/[%a%d%-%_%.]+%/?$"] = {
+            --- github.com/<user>/<repo>
+
+            icon = " ",
+            hl = "MarkviewPalette0Fg"
+        },
+        ["github%.com/[%a%d%-%_%.]+/[%a%d%-%_%.]+/tree/[%a%d%-%_%.]+%/?$"] = {
+            --- github.com/<user>/<repo>/tree/<branch>
+
+            icon = " ",
+            hl = "MarkviewPalette0Fg"
+        },
+        ["github%.com/[%a%d%-%_%.]+/[%a%d%-%_%.]+/commits/[%a%d%-%_%.]+%/?$"] = {
+            --- github.com/<user>/<repo>/commits/<branch>
+
+            icon = " ",
+            hl = "MarkviewPalette0Fg"
+        },
+
+        ["github%.com/[%a%d%-%_%.]+/[%a%d%-%_%.]+%/releases$"] = {
+            --- github.com/<user>/<repo>/releases
+
+            icon = " ",
+            hl = "MarkviewPalette0Fg"
+        },
+        ["github%.com/[%a%d%-%_%.]+/[%a%d%-%_%.]+%/tags$"] = {
+            --- github.com/<user>/<repo>/tags
+
+            icon = " ",
+            hl = "MarkviewPalette0Fg"
+        },
+        ["github%.com/[%a%d%-%_%.]+/[%a%d%-%_%.]+%/issues$"] = {
+            --- github.com/<user>/<repo>/issues
+
+            icon = " ",
+            hl = "MarkviewPalette0Fg"
+        },
+        ["github%.com/[%a%d%-%_%.]+/[%a%d%-%_%.]+%/pulls$"] = {
+            --- github.com/<user>/<repo>/pulls
+
+            icon = " ",
+            hl = "MarkviewPalette0Fg"
+        },
+
+        ["github%.com/[%a%d%-%_%.]+/[%a%d%-%_%.]+%/wiki$"] = {
+            --- github.com/<user>/<repo>/wiki
+
+            icon = " ",
+            hl = "MarkviewPalette0Fg"
+        },
+
+        ["developer%.mozilla%.org"] = {
+            priority = -9999,
+
+            icon = "󰖟 ",
+            hl = "MarkviewPalette5Fg"
+        },
+
+        ["w3schools%.com"] = {
+            priority = -9999,
+
+            icon = " ",
+            hl = "MarkviewPalette4Fg"
+        },
+
+        ["stackoverflow%.com"] = {
+            priority = -9999,
+
+            icon = "󰓌 ",
+            hl = "MarkviewPalette2Fg"
+        },
+
+        ["reddit%.com"] = {
+            priority = -9999,
+
+            icon = " ",
+            hl = "MarkviewPalette2Fg"
+        },
+
+        ["github%.com"] = {
+            priority = -9999,
+
+            icon = " ",
+            hl = "MarkviewPalette6Fg"
+        },
+
+        ["gitlab%.com"] = {
+            priority = -9999,
+
+            icon = " ",
+            hl = "MarkviewPalette2Fg"
+        },
+
+        ["dev%.to"] = {
+            priority = -9999,
+
+            icon = "󱁴 ",
+            hl = "MarkviewPalette0Fg"
+        },
+
+        ["codepen%.io"] = {
+            priority = -9999,
+
+            icon = " ",
+            hl = "MarkviewPalette6Fg"
+        },
+
+        ["replit%.com"] = {
+            priority = -9999,
+
+            icon = " ",
+            hl = "MarkviewPalette2Fg"
+        },
+
+        ["jsfiddle%.net"] = {
+            priority = -9999,
+
+            icon = " ",
+            hl = "MarkviewPalette5Fg"
+        },
+
+        ["npmjs%.com"] = {
+            priority = -9999,
+
+            icon = " ",
+            hl = "MarkviewPalette0Fg"
+        },
+
+        ["pypi%.org"] = {
+            priority = -9999,
+
+            icon = "󰆦 ",
+            hl = "MarkviewPalette0Fg"
+        },
+
+        ["mvnrepository%.com"] = {
+            priority = -9999,
+
+            icon = " ",
+            hl = "MarkviewPalette1Fg"
+        },
+
+        ["medium%.com"] = {
+            priority = -9999,
+
+            icon = " ",
+            hl = "MarkviewPalette6Fg"
+        },
+
+        ["linkedin%.com"] = {
+            priority = -9999,
+
+            icon = "󰌻 ",
+            hl = "MarkviewPalette5Fg"
+        },
+
+        ["news%.ycombinator%.com"] = {
+            priority = -9999,
+
+            icon = " ",
+            hl = "MarkviewPalette2Fg"
+        },
+    },
+<
+
+enable ~
+
+  • type: `boolean`
+    default: `true`
+
+Self-explanatory.
+default
+
+  • type: `markview.config.__inline`[^53]
+    default[^54]
+
+Default configuration for hyperlinks. See how inline elements are
+configured[^55].
+[string]
+
+  • type: `markview.config.__inline`[^56]
+
+Configuration for hyperlinks whose destination matches `string`. See how
+inline elements are configured[^57].
+
+▌ 📜 Note
+▌ The structure for hyperlinks is
+
+  `[<label>](<destination>)`/`[<label>][<destination>]`.
+
+------------------------------------------------------------------------------
+images
+
+  • type: `markview.config.markdown_inline.images`[^58]
+    default[^59]
+
+Changes how images are shown.
+
+>lua
+    images = {
+        enable = true,
+
+        default = {
+            icon = "󰥶 ",
+            hl = "MarkviewImage",
+        },
+
+        ["%.svg$"] = { icon = "󰜡 " },
+        ["%.png$"] = { icon = "󰸭 " },
+        ["%.jpg$"] = { icon = "󰈥 " },
+        ["%.gif$"] = { icon = "󰵸 " },
+        ["%.pdf$"] = { icon = " " }
+    },
+<
+
+enable ~
+
+  • type: `boolean`
+    default: `true`
+
+Self-explanatory.
+default
+
+  • type: `markview.config.__inline`[^60]
+    default[^61]
+
+Default configuration for images. See how inline elements are configured[^62].
+[string]
+
+  • type: `markview.config.__inline`[^63]
+
+Configuration for images whose destination matches `string`. See how inline
+elements are configured[^64].
+
+▌ 📜 Note
+▌ The structure for images is
+
+  `![<label>](<destination>)`/`![<label>][<destination>]`.
+
+------------------------------------------------------------------------------
+inline_codes
+
+  • type: `markview.config.__inline`[^65]
+    default[^66]
+
+Changes how inline codes are shown.
+
+>lua
+    inline_codes = {
+        enable = true,
+        hl = "MarkviewInlineCode",
+
+        padding_left = " ",
+        padding_right = " "
+    },
+<
+
+See how inline elements are configured[^67].
+
+------------------------------------------------------------------------------
+internal_links
+
+  • type: `markview.config.markdown_inline.internal_links`[^68]
+    default[^69]
+
+Changes how internal links(from `Obsidian`) are shown.
+
+>lua
+    internal_links = {
+        enable = true,
+
+        default = {
+            icon = " ",
+            hl = "MarkviewPalette7Fg",
+        },
+    },
+<
+
+enable ~
+
+  • type: `boolean`
+    default: `true`
+
+Self-explanatory.
+default
+
+  • type: `markview.config.__inline`[^70]
+    default[^71]
+
+Default configuration for internal links. See how inline elements are
+configured[^72].
+[string]
+
+  • type: `markview.config.__inline`[^73]
+
+Configuration for internal links whose content matches `string`. See how
+inline elements are configured[^74].
+
+▌ 📜 Note
+
+  The structure for internal links is `[[<content>]]`.
+
+------------------------------------------------------------------------------
+uri_autolinks
+
+  • type: `markview.config.markdown_inline.uri_autolinks`[^75]
+    default[^76]
+
+Changes how uri autolinks are shown.
+
+>lua
+    uri_autolinks = {
+        enable = true,
+
+        default = {
+            icon = "󰌷 ",
+            hl = "MarkviewHyperlink",
+        },
+
+        ["github%.com/[%a%d%-%_%.]+%/?$"] = {
+            --- github.com/<user>
+
+            icon = " ",
+            hl = "MarkviewPalette0Fg"
+        },
+        ["github%.com/[%a%d%-%_%.]+/[%a%d%-%_%.]+%/?$"] = {
+            --- github.com/<user>/<repo>
+
+            icon = " ",
+            hl = "MarkviewPalette0Fg"
+        },
+        ["github%.com/[%a%d%-%_%.]+/[%a%d%-%_%.]+/tree/[%a%d%-%_%.]+%/?$"] = {
+            --- github.com/<user>/<repo>/tree/<branch>
+
+            icon = " ",
+            hl = "MarkviewPalette0Fg"
+        },
+        ["github%.com/[%a%d%-%_%.]+/[%a%d%-%_%.]+/commits/[%a%d%-%_%.]+%/?$"] = {
+            --- github.com/<user>/<repo>/commits/<branch>
+
+            icon = " ",
+            hl = "MarkviewPalette0Fg"
+        },
+
+        ["github%.com/[%a%d%-%_%.]+/[%a%d%-%_%.]+%/releases$"] = {
+            --- github.com/<user>/<repo>/releases
+
+            icon = " ",
+            hl = "MarkviewPalette0Fg"
+        },
+        ["github%.com/[%a%d%-%_%.]+/[%a%d%-%_%.]+%/tags$"] = {
+            --- github.com/<user>/<repo>/tags
+
+            icon = " ",
+            hl = "MarkviewPalette0Fg"
+        },
+        ["github%.com/[%a%d%-%_%.]+/[%a%d%-%_%.]+%/issues$"] = {
+            --- github.com/<user>/<repo>/issues
+
+            icon = " ",
+            hl = "MarkviewPalette0Fg"
+        },
+        ["github%.com/[%a%d%-%_%.]+/[%a%d%-%_%.]+%/pulls$"] = {
+            --- github.com/<user>/<repo>/pulls
+
+            icon = " ",
+            hl = "MarkviewPalette0Fg"
+        },
+
+        ["github%.com/[%a%d%-%_%.]+/[%a%d%-%_%.]+%/wiki$"] = {
+            --- github.com/<user>/<repo>/wiki
+
+            icon = " ",
+            hl = "MarkviewPalette0Fg"
+        },
+
+        ["developer%.mozilla%.org"] = {
+            priority = -9999,
+
+            icon = "󰖟 ",
+            hl = "MarkviewPalette5Fg"
+        },
+
+        ["w3schools%.com"] = {
+            priority = -9999,
+
+            icon = " ",
+            hl = "MarkviewPalette4Fg"
+        },
+
+        ["stackoverflow%.com"] = {
+            priority = -9999,
+
+            icon = "󰓌 ",
+            hl = "MarkviewPalette2Fg"
+        },
+
+        ["reddit%.com"] = {
+            priority = -9999,
+
+            icon = " ",
+            hl = "MarkviewPalette2Fg"
+        },
+
+        ["github%.com"] = {
+            priority = -9999,
+
+            icon = " ",
+            hl = "MarkviewPalette6Fg"
+        },
+
+        ["gitlab%.com"] = {
+            priority = -9999,
+
+            icon = " ",
+            hl = "MarkviewPalette2Fg"
+        },
+
+        ["dev%.to"] = {
+            priority = -9999,
+
+            icon = "󱁴 ",
+            hl = "MarkviewPalette0Fg"
+        },
+
+        ["codepen%.io"] = {
+            priority = -9999,
+
+            icon = " ",
+            hl = "MarkviewPalette6Fg"
+        },
+
+        ["replit%.com"] = {
+            priority = -9999,
+
+            icon = " ",
+            hl = "MarkviewPalette2Fg"
+        },
+
+        ["jsfiddle%.net"] = {
+            priority = -9999,
+
+            icon = " ",
+            hl = "MarkviewPalette5Fg"
+        },
+
+        ["npmjs%.com"] = {
+            priority = -9999,
+
+            icon = " ",
+            hl = "MarkviewPalette0Fg"
+        },
+
+        ["pypi%.org"] = {
+            priority = -9999,
+
+            icon = "󰆦 ",
+            hl = "MarkviewPalette0Fg"
+        },
+
+        ["mvnrepository%.com"] = {
+            priority = -9999,
+
+            icon = " ",
+            hl = "MarkviewPalette1Fg"
+        },
+
+        ["medium%.com"] = {
+            priority = -9999,
+
+            icon = " ",
+            hl = "MarkviewPalette6Fg"
+        },
+
+        ["linkedin%.com"] = {
+            priority = -9999,
+
+            icon = "󰌻 ",
+            hl = "MarkviewPalette5Fg"
+        },
+
+        ["news%.ycombinator%.com"] = {
+            priority = -9999,
+
+            icon = " ",
+            hl = "MarkviewPalette2Fg"
+        },
+    },
+<
+
+enable ~
+
+  • type: `boolean`
+    default: `true`
+
+Self-explanatory.
+default
+
+  • type: `markview.config.__inline`[^77]
+    default[^78]
+
+Default configuration for URI autolinks. See how inline elements are
+configured[^79].
+[string]
+
+  • type: `markview.config.__inline`[^80]
+
+Configuration for URI autolinks whose link matches `string`. See how inline
+elements are configured[^81].
+
+▌ 📜 Note
+
+  The structure for URI autolinks is `<<link>>`.
+
+
+------------------------------------------------------------------------------
+
+Link references ~
+
+  1: https://github.com/OXY2DEV/markview.nvim/blob/99d9a091915b994b378c4a9cc3553b3cbbe4bad5/lua/definitions/renderers/markdown_inline.lua
+  2: https://github.com/OXY2DEV/markview.nvim/blob/a803117f272cc47733b67ebbaf1acb91095da276/lua/markview/spec.lua#L945-L1461
+  3: https://github.com/OXY2DEV/markview.nvim/blob/99d9a091915b994b378c4a9cc3553b3cbbe4bad5/lua/definitions/renderers/markdown_inline.lua#L25-L31
+  4: https://github.com/OXY2DEV/markview.nvim/blob/a803117f272cc47733b67ebbaf1acb91095da276/lua/markview/spec.lua#L948-L957
+  5: https://github.com/OXY2DEV/markview.nvim/blob/99d9a091915b994b378c4a9cc3553b3cbbe4bad5/lua/definitions/markview.lua#L70-L94
+  6: https://github.com/OXY2DEV/markview.nvim/blob/a803117f272cc47733b67ebbaf1acb91095da276/lua/markview/spec.lua#L951-L956
+  7: https://github.com/OXY2DEV/markview.nvim/wiki/Configuration#-inline-elements
+  8: https://github.com/OXY2DEV/markview.nvim/blob/99d9a091915b994b378c4a9cc3553b3cbbe4bad5/lua/definitions/markview.lua#L70-L94
+  9: https://github.com/OXY2DEV/markview.nvim/wiki/Configuration#-inline-elements
+ 10: https://github.com/OXY2DEV/markview.nvim/blob/99d9a091915b994b378c4a9cc3553b3cbbe4bad5/lua/definitions/renderers/markdown_inline.lua#L35-L49
+ 11: https://github.com/OXY2DEV/markview.nvim/blob/a803117f272cc47733b67ebbaf1acb91095da276/lua/markview/spec.lua#L959-L986
+ 12: https://github.com/OXY2DEV/markview.nvim/blob/99d9a091915b994b378c4a9cc3553b3cbbe4bad5/lua/definitions/renderers/markdown_inline.lua#L45-L49
+ 14: https://github.com/OXY2DEV/markview.nvim/blob/99d9a091915b994b378c4a9cc3553b3cbbe4bad5/lua/definitions/renderers/markdown_inline.lua#L45-L49
+ 16: https://github.com/OXY2DEV/markview.nvim/blob/99d9a091915b994b378c4a9cc3553b3cbbe4bad5/lua/definitions/renderers/markdown_inline.lua#L45-L49
+ 18: https://github.com/OXY2DEV/markview.nvim/blob/99d9a091915b994b378c4a9cc3553b3cbbe4bad5/lua/definitions/renderers/markdown_inline.lua#L53-L59
+ 19: https://github.com/OXY2DEV/markview.nvim/blob/a803117f272cc47733b67ebbaf1acb91095da276/lua/markview/spec.lua#L988-L1023
+ 20: https://github.com/OXY2DEV/markview.nvim/blob/99d9a091915b994b378c4a9cc3553b3cbbe4bad5/lua/definitions/markview.lua#L70-L94
+ 21: https://github.com/OXY2DEV/markview.nvim/blob/a803117f272cc47733b67ebbaf1acb91095da276/lua/markview/spec.lua#L991-L994
+ 22: https://github.com/OXY2DEV/markview.nvim/wiki/Configuration#-inline-elements
+ 23: https://github.com/OXY2DEV/markview.nvim/blob/99d9a091915b994b378c4a9cc3553b3cbbe4bad5/lua/definitions/markview.lua#L70-L94
+ 24: https://github.com/OXY2DEV/markview.nvim/wiki/Configuration#-inline-elements
+ 25: https://github.com/OXY2DEV/markview.nvim/blob/99d9a091915b994b378c4a9cc3553b3cbbe4bad5/lua/definitions/renderers/markdown_inline.lua#L63-L69
+ 26: https://github.com/OXY2DEV/markview.nvim/blob/a803117f272cc47733b67ebbaf1acb91095da276/lua/markview/spec.lua#L1025-L1032
+ 27: https://github.com/OXY2DEV/markview.nvim/blob/99d9a091915b994b378c4a9cc3553b3cbbe4bad5/lua/definitions/markview.lua#L70-L94
+ 28: https://github.com/OXY2DEV/markview.nvim/blob/a803117f272cc47733b67ebbaf1acb91095da276/lua/markview/spec.lua#L1028-L1031
+ 29: https://github.com/OXY2DEV/markview.nvim/wiki/Configuration#-inline-elements
+ 30: https://github.com/OXY2DEV/markview.nvim/blob/99d9a091915b994b378c4a9cc3553b3cbbe4bad5/lua/definitions/markview.lua#L70-L94
+ 31: https://github.com/OXY2DEV/markview.nvim/wiki/Configuration#-inline-elements
+ 32: https://github.com/OXY2DEV/markview.nvim/blob/99d9a091915b994b378c4a9cc3553b3cbbe4bad5/lua/definitions/renderers/markdown_inline.lua#L81-L86
+ 33: https://github.com/OXY2DEV/markview.nvim/blob/a803117f272cc47733b67ebbaf1acb91095da276/lua/markview/spec.lua#L1034-L1037
+ 34: https://github.com/OXY2DEV/markview.nvim/blob/99d9a091915b994b378c4a9cc3553b3cbbe4bad5/lua/definitions/renderers/markdown_inline.lua#L73-L77
+ 35: https://github.com/OXY2DEV/markview.nvim/blob/a803117f272cc47733b67ebbaf1acb91095da276/lua/markview/spec.lua#L1039-L1041
+ 36: https://github.com/OXY2DEV/markview.nvim/blob/99d9a091915b994b378c4a9cc3553b3cbbe4bad5/lua/definitions/renderers/markdown_inline.lua#L90-L91
+ 37: https://github.com/OXY2DEV/markview.nvim/blob/99d9a091915b994b378c4a9cc3553b3cbbe4bad5/lua/definitions/renderers/markdown_inline.lua#L95-L101
+ 38: https://github.com/OXY2DEV/markview.nvim/blob/a803117f272cc47733b67ebbaf1acb91095da276/lua/markview/spec.lua#L1047-L1061
+ 39: https://github.com/OXY2DEV/markview.nvim/blob/99d9a091915b994b378c4a9cc3553b3cbbe4bad5/lua/definitions/markview.lua#L70-L94
+ 40: https://github.com/OXY2DEV/markview.nvim/blob/a803117f272cc47733b67ebbaf1acb91095da276/lua/markview/spec.lua#L1050-L1053
+ 41: https://github.com/OXY2DEV/markview.nvim/wiki/Configuration#-inline-elements
+ 42: https://github.com/OXY2DEV/markview.nvim/blob/99d9a091915b994b378c4a9cc3553b3cbbe4bad5/lua/definitions/markview.lua#L70-L94
+ 43: https://github.com/OXY2DEV/markview.nvim/wiki/Configuration#-inline-elements
+ 44: https://github.com/OXY2DEV/markview.nvim/blob/99d9a091915b994b378c4a9cc3553b3cbbe4bad5/lua/definitions/renderers/markdown_inline.lua#L105-L111
+ 45: https://github.com/OXY2DEV/markview.nvim/blob/a803117f272cc47733b67ebbaf1acb91095da276/lua/markview/spec.lua#L1063-L1072
+ 46: https://github.com/OXY2DEV/markview.nvim/blob/99d9a091915b994b378c4a9cc3553b3cbbe4bad5/lua/definitions/markview.lua#L70-L94
+ 47: https://github.com/OXY2DEV/markview.nvim/blob/a803117f272cc47733b67ebbaf1acb91095da276/lua/markview/spec.lua#L1066-L1071
+ 48: https://github.com/OXY2DEV/markview.nvim/wiki/Configuration#-inline-elements
+ 49: https://github.com/OXY2DEV/markview.nvim/blob/99d9a091915b994b378c4a9cc3553b3cbbe4bad5/lua/definitions/markview.lua#L70-L94
+ 50: https://github.com/OXY2DEV/markview.nvim/wiki/Configuration#-inline-elements
+ 51: https://github.com/OXY2DEV/markview.nvim/blob/99d9a091915b994b378c4a9cc3553b3cbbe4bad5/lua/definitions/renderers/markdown_inline.lua#L115-L121
+ 52: https://github.com/OXY2DEV/markview.nvim/blob/a803117f272cc47733b67ebbaf1acb91095da276/lua/markview/spec.lua#L1074-L1250
+ 53: https://github.com/OXY2DEV/markview.nvim/blob/99d9a091915b994b378c4a9cc3553b3cbbe4bad5/lua/definitions/markview.lua#L70-L94
+ 54: https://github.com/OXY2DEV/markview.nvim/blob/a803117f272cc47733b67ebbaf1acb91095da276/lua/markview/spec.lua#L1077-L1080
+ 55: https://github.com/OXY2DEV/markview.nvim/wiki/Configuration#-inline-elements
+ 56: https://github.com/OXY2DEV/markview.nvim/blob/99d9a091915b994b378c4a9cc3553b3cbbe4bad5/lua/definitions/markview.lua#L70-L94
+ 57: https://github.com/OXY2DEV/markview.nvim/wiki/Configuration#-inline-elements
+ 58: https://github.com/OXY2DEV/markview.nvim/blob/99d9a091915b994b378c4a9cc3553b3cbbe4bad5/lua/definitions/renderers/markdown_inline.lua#L125-L131
+ 59: https://github.com/OXY2DEV/markview.nvim/blob/a803117f272cc47733b67ebbaf1acb91095da276/lua/markview/spec.lua#L1252-L1265
+ 60: https://github.com/OXY2DEV/markview.nvim/blob/99d9a091915b994b378c4a9cc3553b3cbbe4bad5/lua/definitions/markview.lua#L70-L94
+ 61: https://github.com/OXY2DEV/markview.nvim/blob/a803117f272cc47733b67ebbaf1acb91095da276/lua/markview/spec.lua#L1255-L1258
+ 62: https://github.com/OXY2DEV/markview.nvim/wiki/Configuration#-inline-elements
+ 63: https://github.com/OXY2DEV/markview.nvim/blob/99d9a091915b994b378c4a9cc3553b3cbbe4bad5/lua/definitions/markview.lua#L70-L94
+ 64: https://github.com/OXY2DEV/markview.nvim/wiki/Configuration#-inline-elements
+ 65: https://github.com/OXY2DEV/markview.nvim/blob/99d9a091915b994b378c4a9cc3553b3cbbe4bad5/lua/definitions/markview.lua#L70-L94
+ 66: https://github.com/OXY2DEV/markview.nvim/blob/a803117f272cc47733b67ebbaf1acb91095da276/lua/markview/spec.lua#L1267-L1273
+ 67: https://github.com/OXY2DEV/markview.nvim/wiki/Configuration#-inline-elements
+ 68: https://github.com/OXY2DEV/markview.nvim/blob/99d9a091915b994b378c4a9cc3553b3cbbe4bad5/lua/definitions/renderers/markdown_inline.lua#L140-L146
+ 69: https://github.com/OXY2DEV/markview.nvim/blob/a803117f272cc47733b67ebbaf1acb91095da276/lua/markview/spec.lua#L1275-L1282
+ 70: https://github.com/OXY2DEV/markview.nvim/blob/99d9a091915b994b378c4a9cc3553b3cbbe4bad5/lua/definitions/markview.lua#L70-L94
+ 71: https://github.com/OXY2DEV/markview.nvim/blob/a803117f272cc47733b67ebbaf1acb91095da276/lua/markview/spec.lua#L1278-L1281
+ 72: https://github.com/OXY2DEV/markview.nvim/wiki/Configuration#-inline-elements
+ 73: https://github.com/OXY2DEV/markview.nvim/blob/99d9a091915b994b378c4a9cc3553b3cbbe4bad5/lua/definitions/markview.lua#L70-L94
+ 74: https://github.com/OXY2DEV/markview.nvim/wiki/Configuration#-inline-elements
+ 75: https://github.com/OXY2DEV/markview.nvim/blob/99d9a091915b994b378c4a9cc3553b3cbbe4bad5/lua/definitions/renderers/markdown_inline.lua#L150-L156
+ 76: https://github.com/OXY2DEV/markview.nvim/blob/a803117f272cc47733b67ebbaf1acb91095da276/lua/markview/spec.lua#L1284-L1461
+ 77: https://github.com/OXY2DEV/markview.nvim/blob/99d9a091915b994b378c4a9cc3553b3cbbe4bad5/lua/definitions/markview.lua#L70-L94
+ 78: https://github.com/OXY2DEV/markview.nvim/blob/a803117f272cc47733b67ebbaf1acb91095da276/lua/markview/spec.lua#L1287-L1290
+ 79: https://github.com/OXY2DEV/markview.nvim/wiki/Configuration#-inline-elements
+ 80: https://github.com/OXY2DEV/markview.nvim/blob/99d9a091915b994b378c4a9cc3553b3cbbe4bad5/lua/definitions/markview.lua#L70-L94
+ 81: https://github.com/OXY2DEV/markview.nvim/wiki/Configuration#-inline-elements
+
+
+vim:ft=help:tw=78:ts=4:

@@ -1,0 +1,1055 @@
+*markview.nvim-latex.txt*                                     🧮 LaTeX Options
+
+▌ 💡 Tip
+▌ You can find the type definitions in `definitions/latex.lua`[^1].
+
+Options that change how  is shown in previews are part of this. You can find
+the default values here[^2].
+
+>lua
+    ---@type markview.config.latex
+    latex = {
+        enable = true,
+
+        blocks = {
+            enable = true,
+
+            hl = "MarkviewCode",
+            pad_char = " ",
+            pad_amount = 3,
+
+            text = "  LaTeX ",
+            text_hl = "MarkviewCodeInfo"
+        },
+
+        commands = {
+            enable = true,
+
+            ["boxed"] = {
+                condition = function (item)
+                    return #item.args == 1;
+                end,
+                on_command = {
+                    conceal = ""
+                },
+
+                on_args = {
+                    {
+                        on_before = function (item)
+                            return {
+                                end_col = item.range[2] + 1,
+                                conceal = "",
+
+                                virt_text_pos = "inline",
+                                virt_text = {
+                                    { " ", "MarkviewPalette4Fg" },
+                                    { "[", "@punctuation.bracket.latex" }
+                                },
+
+                                hl_mode = "combine"
+                            }
+                        end,
+
+                        after_offset = function (range)
+                            return { range[1], range[2], range[3], range[4] - 1 };
+                        end,
+                        on_after = function (item)
+                            return {
+                                end_col = item.range[4],
+                                conceal = "",
+
+                                virt_text_pos = "inline",
+                                virt_text = {
+                                    { "]", "@punctuation.bracket" }
+                                },
+
+                                hl_mode = "combine"
+                            }
+                        end
+                    }
+                }
+            },
+            ["frac"] = {
+                condition = function (item)
+                    return #item.args == 2;
+                end,
+                on_command = {
+                    conceal = ""
+                },
+
+                on_args = {
+                    {
+                        on_before = function (item)
+                            return {
+                                end_col = item.range[2] + 1,
+                                conceal = "",
+
+                                virt_text_pos = "inline",
+                                virt_text = {
+                                    { "(", "@punctuation.bracket" }
+                                },
+
+                                hl_mode = "combine"
+                            }
+                        end,
+
+                        after_offset = function (range)
+                            return { range[1], range[2], range[3], range[4] - 1 };
+                        end,
+                        on_after = function (item)
+                            return {
+                                end_col = item.range[4],
+                                conceal = "",
+
+                                virt_text_pos = "inline",
+                                virt_text = {
+                                    { ")", "@punctuation.bracket" },
+                                    { " ÷ ", "@keyword.function" }
+                                },
+
+                                hl_mode = "combine"
+                            }
+                        end
+                    },
+                    {
+                        on_before = function (item)
+                            return {
+                                end_col = item.range[2] + 1,
+                                conceal = "",
+
+                                virt_text_pos = "inline",
+                                virt_text = {
+                                    { "(", "@punctuation.bracket" }
+                                },
+
+                                hl_mode = "combine"
+                            }
+                        end,
+
+                        after_offset = function (range)
+                            return { range[1], range[2], range[3], range[4] - 1 };
+                        end,
+                        on_after = function (item)
+                            return {
+                                end_col = item.range[4],
+                                conceal = "",
+
+                                virt_text_pos = "inline",
+                                virt_text = {
+                                    { ")", "@punctuation.bracket" },
+                                },
+
+                                hl_mode = "combine"
+                            }
+                        end
+                    },
+                }
+            },
+
+            ["vec"] = {
+                condition = function (item)
+                    return #item.args == 1;
+                end,
+                on_command = {
+                    conceal = ""
+                },
+
+                on_args = {
+                    {
+                        on_before = function (item)
+                            return {
+                                end_col = item.range[2] + 1,
+                                conceal = "",
+
+                                virt_text_pos = "inline",
+                                virt_text = {
+                                    { "󱈥 ", "MarkviewPalette2Fg" },
+                                    { "(", "@punctuation.bracket.latex" }
+                                },
+
+                                hl_mode = "combine"
+                            }
+                        end,
+
+                        after_offset = function (range)
+                            return { range[1], range[2], range[3], range[4] - 1 };
+                        end,
+                        on_after = function (item)
+                            return {
+                                end_col = item.range[4],
+                                conceal = "",
+
+                                virt_text_pos = "inline",
+                                virt_text = {
+                                    { ")", "@punctuation.bracket" }
+                                },
+
+                                hl_mode = "combine"
+                            }
+                        end
+                    }
+                }
+            },
+
+            ["sin"] = operator("sin"),
+            ["cos"] = operator("cos"),
+            ["tan"] = operator("tan"),
+
+            ["sinh"] = operator("sinh"),
+            ["cosh"] = operator("cosh"),
+            ["tanh"] = operator("tanh"),
+
+            ["csc"] = operator("csc"),
+            ["sec"] = operator("sec"),
+            ["cot"] = operator("cot"),
+
+            ["csch"] = operator("csch"),
+            ["sech"] = operator("sech"),
+            ["coth"] = operator("coth"),
+
+            ["arcsin"] = operator("arcsin"),
+            ["arccos"] = operator("arccos"),
+            ["arctan"] = operator("arctan"),
+
+            ["arg"] = operator("arg"),
+            ["deg"] = operator("deg"),
+            ["det"] = operator("det"),
+            ["dim"] = operator("dim"),
+            ["exp"] = operator("exp"),
+            ["gcd"] = operator("gcd"),
+            ["hom"] = operator("hom"),
+            ["inf"] = operator("inf"),
+            ["ker"] = operator("ker"),
+            ["lg"] = operator("lg"),
+
+            ["lim"] = operator("lim"),
+            ["liminf"] = operator("lim inf", "inline", 7),
+            ["limsup"] = operator("lim sup", "inline", 7),
+
+            ["ln"] = operator("ln"),
+            ["log"] = operator("log"),
+            ["min"] = operator("min"),
+            ["max"] = operator("max"),
+            ["Pr"] = operator("Pr"),
+            ["sup"] = operator("sup"),
+            ["sqrt"] = function ()
+                local symbols = require("markview.symbols");
+                return operator(symbols.entries.sqrt, "inline", 5);
+            end,
+            ["lvert"] = function ()
+                local symbols = require("markview.symbols");
+                return operator(symbols.entries.vert, "inline", 6);
+            end,
+            ["lVert"] = function ()
+                local symbols = require("markview.symbols");
+                return operator(symbols.entries.Vert, "inline", 6);
+            end,
+        },
+
+        escapes = {
+            enable = true
+        },
+
+        fonts = {
+            enable = true,
+
+            default = {
+                enable = true,
+                hl = "MarkviewSpecial"
+            },
+
+            mathbf = { enable = true },
+            mathbfit = { enable = true },
+            mathcal = { enable = true },
+            mathbfscr = { enable = true },
+            mathfrak = { enable = true },
+            mathbb = { enable = true },
+            mathbffrak = { enable = true },
+            mathsf = { enable = true },
+            mathsfbf = { enable = true },
+            mathsfit = { enable = true },
+            mathsfbfit = { enable = true },
+            mathtt = { enable = true },
+            mathrm = { enable = true },
+        },
+
+        inlines = {
+            enable = true,
+
+            padding_left = " ",
+            padding_right = " ",
+
+            hl = "MarkviewInlineCode"
+        },
+
+        parenthesis = {
+            enable = true,
+        },
+
+        subscripts = {
+            enable = true,
+
+            hl = "MarkviewSubscript"
+        },
+
+        superscripts = {
+            enable = true,
+
+            hl = "MarkviewSuperscript"
+        },
+
+        symbols = {
+            enable = true,
+
+            hl = "MarkviewComment"
+        },
+
+        texts = {
+            enable = true
+        },
+    },
+<
+
+------------------------------------------------------------------------------
+enable
+
+  • type: `boolean`
+    default: `true`
+
+Enables LaTeX previewing.
+
+------------------------------------------------------------------------------
+blocks
+
+  • type: `markview.config.latex.blocks`[^3]
+    default[^4]
+
+Changes how LaTeX blocks are shown.
+
+>lua
+    ---@type markview.config.latex.blocks
+    blocks = {
+        enable = true,
+
+        hl = "MarkviewCode",
+
+        pad_amount = 3,
+        pad_char = " ",
+
+        text = "  LaTeX ",
+        text_hl = "MarkviewCodeInfo"
+    },
+<
+
+enable ~
+
+  • type: `boolean`
+    default: `true`
+
+Self-explanatory.
+
+hl ~
+
+  • type: `string`
+    default: `"MarkviewCode"`
+
+Highlight group used as the background.
+
+pad_amount ~
+
+  • type: `integer`
+    default: `3`
+
+Number of `pad_char` to add before each line.
+
+pad_char ~
+
+  • type: `string`
+    default: `" "`
+
+Character used as padding the lines.
+
+text ~
+
+  • type: `string`
+    default: `"  LaTeX "`
+
+Text to show on the top right side of the block.
+
+text_hl ~
+
+  • type: `string`
+    default: `"  LaTeX "`
+
+Highlight group for `text`.
+
+------------------------------------------------------------------------------
+commands
+
+  • type: `markview.config.latex.commands`[^7]
+    default[^8]
+
+Changes how LaTeX commands are shown.
+
+▌ 🧩 Important
+▌ `operator()` can be found here[^9].
+
+>lua
+    ---@type markview.config.latex.commands
+    commands = {
+        enable = true,
+
+        ["boxed"] = {
+            condition = function (item)
+                return #item.args == 1;
+            end,
+            on_command = {
+                conceal = ""
+            },
+
+            on_args = {
+                {
+                    on_before = function (item)
+                        return {
+                            end_col = item.range[2] + 1,
+                            conceal = "",
+
+                            virt_text_pos = "inline",
+                            virt_text = {
+                                { " ", "MarkviewPalette4Fg" },
+                                { "[", "@punctuation.bracket.latex" }
+                            },
+
+                            hl_mode = "combine"
+                        }
+                    end,
+
+                    after_offset = function (range)
+                        return { range[1], range[2], range[3], range[4] - 1 };
+                    end,
+                    on_after = function (item)
+                        return {
+                            end_col = item.range[4],
+                            conceal = "",
+
+                            virt_text_pos = "inline",
+                            virt_text = {
+                                { "]", "@punctuation.bracket" }
+                            },
+
+                            hl_mode = "combine"
+                        }
+                    end
+                }
+            }
+        },
+        ["frac"] = {
+            condition = function (item)
+                return #item.args == 2;
+            end,
+            on_command = {
+                conceal = ""
+            },
+
+            on_args = {
+                {
+                    on_before = function (item)
+                        return {
+                            end_col = item.range[2] + 1,
+                            conceal = "",
+
+                            virt_text_pos = "inline",
+                            virt_text = {
+                                { "(", "@punctuation.bracket" }
+                            },
+
+                            hl_mode = "combine"
+                        }
+                    end,
+
+                    after_offset = function (range)
+                        return { range[1], range[2], range[3], range[4] - 1 };
+                    end,
+                    on_after = function (item)
+                        return {
+                            end_col = item.range[4],
+                            conceal = "",
+
+                            virt_text_pos = "inline",
+                            virt_text = {
+                                { ")", "@punctuation.bracket" },
+                                { " ÷ ", "@keyword.function" }
+                            },
+
+                            hl_mode = "combine"
+                        }
+                    end
+                },
+                {
+                    on_before = function (item)
+                        return {
+                            end_col = item.range[2] + 1,
+                            conceal = "",
+
+                            virt_text_pos = "inline",
+                            virt_text = {
+                                { "(", "@punctuation.bracket" }
+                            },
+
+                            hl_mode = "combine"
+                        }
+                    end,
+
+                    after_offset = function (range)
+                        return { range[1], range[2], range[3], range[4] - 1 };
+                    end,
+                    on_after = function (item)
+                        return {
+                            end_col = item.range[4],
+                            conceal = "",
+
+                            virt_text_pos = "inline",
+                            virt_text = {
+                                { ")", "@punctuation.bracket" },
+                            },
+
+                            hl_mode = "combine"
+                        }
+                    end
+                },
+            }
+        },
+
+        ["vec"] = {
+            condition = function (item)
+                return #item.args == 1;
+            end,
+            on_command = {
+                conceal = ""
+            },
+
+            on_args = {
+                {
+                    on_before = function (item)
+                        return {
+                            end_col = item.range[2] + 1,
+                            conceal = "",
+
+                            virt_text_pos = "inline",
+                            virt_text = {
+                                { "󱈥 ", "MarkviewPalette2Fg" },
+                                { "(", "@punctuation.bracket.latex" }
+                            },
+
+                            hl_mode = "combine"
+                        }
+                    end,
+
+                    after_offset = function (range)
+                        return { range[1], range[2], range[3], range[4] - 1 };
+                    end,
+                    on_after = function (item)
+                        return {
+                            end_col = item.range[4],
+                            conceal = "",
+
+                            virt_text_pos = "inline",
+                            virt_text = {
+                                { ")", "@punctuation.bracket" }
+                            },
+
+                            hl_mode = "combine"
+                        }
+                    end
+                }
+            }
+        },
+
+        ["sin"] = operator("sin"),
+        ["cos"] = operator("cos"),
+        ["tan"] = operator("tan"),
+
+        ["sinh"] = operator("sinh"),
+        ["cosh"] = operator("cosh"),
+        ["tanh"] = operator("tanh"),
+
+        ["csc"] = operator("csc"),
+        ["sec"] = operator("sec"),
+        ["cot"] = operator("cot"),
+
+        ["csch"] = operator("csch"),
+        ["sech"] = operator("sech"),
+        ["coth"] = operator("coth"),
+
+        ["arcsin"] = operator("arcsin"),
+        ["arccos"] = operator("arccos"),
+        ["arctan"] = operator("arctan"),
+
+        ["arg"] = operator("arg"),
+        ["deg"] = operator("deg"),
+        ["det"] = operator("det"),
+        ["dim"] = operator("dim"),
+        ["exp"] = operator("exp"),
+        ["gcd"] = operator("gcd"),
+        ["hom"] = operator("hom"),
+        ["inf"] = operator("inf"),
+        ["ker"] = operator("ker"),
+        ["lg"] = operator("lg"),
+
+        ["lim"] = operator("lim"),
+        ["liminf"] = operator("lim inf", "inline", 7),
+        ["limsup"] = operator("lim sup", "inline", 7),
+
+        ["ln"] = operator("ln"),
+        ["log"] = operator("log"),
+        ["min"] = operator("min"),
+        ["max"] = operator("max"),
+        ["Pr"] = operator("Pr"),
+        ["sup"] = operator("sup"),
+        ["sqrt"] = function ()
+            local symbols = require("markview.symbols");
+            return operator(symbols.entries.sqrt, "inline", 5);
+        end,
+        ["lvert"] = function ()
+            local symbols = require("markview.symbols");
+            return operator(symbols.entries.vert, "inline", 6);
+        end,
+        ["lVert"] = function ()
+            local symbols = require("markview.symbols");
+            return operator(symbols.entries.Vert, "inline", 6);
+        end,
+    },
+<
+
+enable ~
+
+  • type: `boolean`
+    default: `true`
+
+Self-explanatory.
+
+[string] ~
+
+  • type: `markview.config.latex.commands.opts`[^10]
+
+Configuration for `\string{...}`.
+
+>lua
+    ---@type markview.config.latex.commands.opts
+    ["string"] = {
+        condition = function () return true; end,
+
+        command_offset = function (range)
+            return range;
+        end,
+        on_command = {},
+        on_arge = {},
+    },
+<
+
+CONDITION
+
+  • type: `fun(item: markview.parsed.latex.commands): boolean`
+
+See also,
+
+  • markview.parsed.latex.commands[^11]
+
+Additional condition(s) for this command(e.g. specific number of arguments).
+
+COMMAND_OFFSET
+
+  • type: `fun(range: integer[]): integer[]`
+
+See also,
+
+  • markview.parsed.range[^12]
+
+Modifies the range of this command.
+
+ON_COMMAND
+
+  • type: `table`
+
+Configuration for the extmark added to the command text. See `{opts}` in
+`:h nvim_buf_set_extmark()`.
+
+ON_ARGS
+
+  • type: `table[]`
+
+Configuration for the extmark added to the each argument. See `{opts}` in
+`:h nvim_buf_set_extmark()`.
+
+>lua
+    ---@type markview.config.latex.commands.arg_opts[]
+    on_args = {
+        {
+            after_offset = function (range)
+                return { range[1], range[2], range[3], range[4] - 1 };
+            end,
+            before_offset = nil,
+            content_offset = nil,
+
+            condition = nil,
+
+            on_after = function (item)
+                return {
+                    end_col = item.range[4],
+                    conceal = "",
+
+                    virt_text_pos = "inline",
+                    virt_text = {
+                        { ")", "@punctuation.bracket" }
+                    },
+
+                    hl_mode = "combine"
+                }
+            end,
+            on_before = function (item)
+                return {
+                    end_col = item.range[2] + 1,
+                    conceal = "",
+
+                    virt_text_pos = "inline",
+                    virt_text = {
+                        { "󱈥 ", "MarkviewPalette2Fg" },
+                        { "(", "@punctuation.bracket.latex" }
+                    },
+
+                    hl_mode = "combine"
+                }
+            end,
+            on_content = nil,
+        }
+    }
+<
+
+AFTER_OFFSET
+
+  • type: `fun(range: markview.parsed.range): markview.parsed.range`
+
+Changes the range of `}` of an argument.
+
+BEFORE_OFFSET
+
+  • type: `fun(range: markview.parsed.range): markview.parsed.range`
+
+Changes the range of `{` of an argument.
+
+CONTENT_OFFSET
+
+  • type: `fun(range: markview.parsed.range): markview.parsed.range`
+
+Changes the range of the text between `{}` of an argument.
+
+CONDITION
+
+  • type: `fun(markview.parsed.latex.commands.arg): boolean`
+
+Unused.
+
+ON_AFTER
+
+  • type: `table`
+
+Configuration for the extmark added to `}`(range is affected by
+`after_offset`. See `{opts}` in `:h nvim_buf_set_extmark()`.
+
+ON_BEFORE
+
+  • type: `table`
+
+Configuration for the extmark added to `{`(range is affected by
+`before_offset`. See `{opts}` in `:h nvim_buf_set_extmark()`.
+
+ON_CONTENT
+
+  • type: `table`
+
+Configuration for the extmark added to the text of the argument(range is
+affected by `content_offset`. See `{opts}` in `:h nvim_buf_set_extmark()`.
+
+------------------------------------------------------------------------------
+escapes
+
+  • type: `{ enable: boolean }`
+
+Removes `\` from escaped characters in previews
+
+enable ~
+
+  • type: `boolean`
+    default: `true`
+
+Self-explanatory.
+
+------------------------------------------------------------------------------
+fonts
+
+▌ 📜 Note
+▌ You need a modern font(font that support math symbols) for fonts to appear
+▌ correctly!
+
+  • type: `markview.config.latex.fonts`[^16]
+    default[^17]
+
+Changes how fonts are shown in LaTeX.
+
+>lua
+    ---@type markview.config.latex.fonts
+    fonts = {
+        enable = true,
+
+        default = {
+            enable = true,
+            hl = "MarkviewSpecial"
+        },
+
+        mathbf = { enable = true },
+        mathbfit = { enable = true },
+        mathcal = { enable = true },
+        mathbfscr = { enable = true },
+        mathfrak = { enable = true },
+        mathbb = { enable = true },
+        mathbffrak = { enable = true },
+        mathsf = { enable = true },
+        mathsfbf = { enable = true },
+        mathsfit = { enable = true },
+        mathsfbfit = { enable = true },
+        mathtt = { enable = true },
+        mathrm = { enable = true },
+    },
+<
+default
+
+  • type: `{ enable: boolean, hl?: string }`
+
+Default configuration for fonts.
+
+ENABLE
+
+  • type: `boolean`
+    default: `true`
+
+Self-explanatory.
+
+HL
+
+  • type: `string`
+    default: `"MarkviewSpecial"`
+
+Highlight group for this font.
+
+mathbf ~
+
+  • type: `{ enable: boolean, hl?: string }`
+
+Configuration for `\mathbf{}`. Same as `default`.
+
+mathbfit ~
+
+  • type: `{ enable: boolean, hl?: string }`
+
+Configuration for `\mathbfit{}`. Same as `default`.
+
+mathcal ~
+
+  • type: `{ enable: boolean, hl?: string }`
+
+Configuration for `\mathcal{}`. Same as `default`.
+
+mathbfscr ~
+
+  • type: `{ enable: boolean, hl?: string }`
+
+Configuration for `\mathbfscr{}`. Same as `default`.
+
+mathfrak ~
+
+  • type: `{ enable: boolean, hl?: string }`
+
+Configuration for `\mathfrak{}`. Same as `default`.
+
+mathbb ~
+
+  • type: `{ enable: boolean, hl?: string }`
+
+Configuration for `\mathbb{}`. Same as `default`.
+
+mathbffrak ~
+
+  • type: `{ enable: boolean, hl?: string }`
+
+Configuration for `\mathbffrak{}`. Same as `default`.
+
+mathsf ~
+
+  • type: `{ enable: boolean, hl?: string }`
+
+Configuration for `\mathsf{}`. Same as `default`.
+
+mathsfbf ~
+
+  • type: `{ enable: boolean, hl?: string }`
+
+Configuration for `\mathsfbf{}`. Same as `default`.
+
+mathsfit ~
+
+  • type: `{ enable: boolean, hl?: string }`
+
+Configuration for `\mathsfit{}`. Same as `default`.
+
+mathsfbfit ~
+
+  • type: `{ enable: boolean, hl?: string }`
+
+Configuration for `\mathsfbfit{}`. Same as `default`.
+
+mathtt ~
+
+  • type: `{ enable: boolean, hl?: string }`
+
+Configuration for `\mathtt{}`. Same as `default`.
+
+mathrm ~
+
+  • type: `{ enable: boolean, hl?: string }`
+
+Configuration for `\mathrm{}`. Same as `default`.
+
+------------------------------------------------------------------------------
+inlines
+
+  • type: `{ enable: boolean, hl?: string }`
+    default[^32]
+
+Configuration for inline maths. See how inline elements are configured[^33].
+
+------------------------------------------------------------------------------
+parenthesis
+
+  • type: `{ enable: boolean }`
+
+Hides `{}`.
+
+enable ~
+
+  • type: `boolean`
+    default: `true`
+
+Self-explanatory.
+
+------------------------------------------------------------------------------
+subscripts
+
+  • type: `markview.config.latex.subscripts`[^34]
+    default[^35]
+
+Configuration for subscripts(`_` & `_{}`).
+
+>lua
+    ---@type markview.config.latex.subscripts
+    subscripts = {
+        enable = true,
+
+        hl = "MarkviewSubscript"
+    },
+<
+
+enable ~
+
+  • type: `boolean`
+    default: `true`
+
+Self-explanatory.
+
+hl ~
+
+  • type: `string`
+    default: `"MarkviewSubscript"`
+
+Highlight group for subscript text.
+
+------------------------------------------------------------------------------
+superscripts
+
+  • type: `markview.config.latex.superscripts`[^36]
+    default[^37]
+
+Configuration for subscripts(`^` & `^{}`). Same as `subscripts`.
+
+------------------------------------------------------------------------------
+symbols
+
+  • type: `markview.config.latex.symbols`[^39]
+    default[^40]
+
+Configuratiom for math symbols.
+
+>lua
+    ---@type markview.config.latex.symbols
+    symbols = {
+        enable = true,
+
+        hl = "MarkviewComment"
+    },
+<
+
+enable ~
+
+  • type: `boolean`
+    default: `true`
+
+Self-explanatory.
+
+hl ~
+
+  • type: `string`
+    default: `"MarkviewComment"`
+
+Highlight group for symbols.
+
+------------------------------------------------------------------------------
+text
+
+  • type: `{ enable: boolean }`
+
+Hides command from `\text{}`.
+
+enable ~
+
+  • type: `boolean`
+    default: `true`
+
+Self-explanatory.
+
+------------------------------------------------------------------------------
+
+Link references ~
+
+  1: https://github.com/OXY2DEV/markview.nvim/blob/a803117f272cc47733b67ebbaf1acb91095da276/lua/definitions/renderers/latex.lua
+  2: https://github.com/OXY2DEV/markview.nvim/blob/a803117f272cc47733b67ebbaf1acb91095da276/lua/markview/spec.lua#L1581-L1880
+  3: https://github.com/OXY2DEV/markview.nvim/blob/a803117f272cc47733b67ebbaf1acb91095da276/lua/definitions/renderers/latex.lua#L21-L31
+  4: https://github.com/OXY2DEV/markview.nvim/blob/a803117f272cc47733b67ebbaf1acb91095da276/lua/markview/spec.lua#L1584-L1593
+  7: https://github.com/OXY2DEV/markview.nvim/blob/a803117f272cc47733b67ebbaf1acb91095da276/lua/definitions/renderers/latex.lua#L35-L58
+  8: https://github.com/OXY2DEV/markview.nvim/blob/a803117f272cc47733b67ebbaf1acb91095da276/lua/markview/spec.lua#L1595-L1817
+  9: https://github.com/OXY2DEV/markview.nvim/blob/a803117f272cc47733b67ebbaf1acb91095da276/lua/markview/spec.lua#L10-L72
+ 10: https://github.com/OXY2DEV/markview.nvim/blob/a803117f272cc47733b67ebbaf1acb91095da276/lua/definitions/renderers/latex.lua#L42-L48
+ 11: https://github.com/OXY2DEV/markview.nvim/blob/a803117f272cc47733b67ebbaf1acb91095da276/lua/definitions/parsers/latex.lua#L14-L23
+ 12: https://github.com/OXY2DEV/markview.nvim/blob/a803117f272cc47733b67ebbaf1acb91095da276/lua/definitions/markview.lua#L61-L66
+ 16: https://github.com/OXY2DEV/markview.nvim/blob/a803117f272cc47733b67ebbaf1acb91095da276/lua/definitions/renderers/latex.lua#L70-L83
+ 17: https://github.com/OXY2DEV/markview.nvim/blob/99d9a091915b994b378c4a9cc3553b3cbbe4bad5/lua/markview/spec.lua#L1826-L1847
+ 31: https://github.com/OXY2DEV/markview.nvim/blob/a803117f272cc47733b67ebbaf1acb91095da276/lua/definitions/renderers/latex.lua#L87-L100
+ 32: https://github.com/OXY2DEV/markview.nvim/blob/99d9a091915b994b378c4a9cc3553b3cbbe4bad5/lua/markview/spec.lua#L1849-L1856
+ 33: https://github.com/OXY2DEV/markview.nvim/wiki/Configuration#-inline-elements
+ 34: https://github.com/OXY2DEV/markview.nvim/blob/99d9a091915b994b378c4a9cc3553b3cbbe4bad5/lua/definitions/renderers/latex.lua#L109-L114
+ 35: https://github.com/OXY2DEV/markview.nvim/blob/a803117f272cc47733b67ebbaf1acb91095da276/lua/markview/spec.lua#L1859-L1863
+ 36: https://github.com/OXY2DEV/markview.nvim/blob/99d9a091915b994b378c4a9cc3553b3cbbe4bad5/lua/definitions/renderers/latex.lua#L118-L123
+ 37: https://github.com/OXY2DEV/markview.nvim/blob/a803117f272cc47733b67ebbaf1acb91095da276/lua/markview/spec.lua#L1865-L1869
+ 39: https://github.com/OXY2DEV/markview.nvim/blob/99d9a091915b994b378c4a9cc3553b3cbbe4bad5/lua/definitions/renderers/latex.lua
+ 40: https://github.com/OXY2DEV/markview.nvim/blob/a803117f272cc47733b67ebbaf1acb91095da276/lua/markview/spec.lua#L1871-L1875
+
+
+vim:ft=help:tw=78:ts=4:

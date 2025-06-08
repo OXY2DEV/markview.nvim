@@ -1,0 +1,365 @@
+*markview.nvim-yaml.txt*                                       🔩 YAML options
+
+▌ 💡 Tip
+▌ You can find the type definitions in `definitions/renderers/yaml.lua`[^1].
+
+Options that change how YAML blocks are shown are part of this. See default
+values in here[^2].
+
+>lua
+    ---@type markview.config.yaml
+    yaml = {
+        enable = true,
+
+        properties = {
+            enable = true,
+
+            data_types = {
+                ["text"] = {
+                    text = "󰗊 ", hl = "MarkviewIcon4"
+                },
+                ["list"] = {
+                    text = "󰝖 ", hl = "MarkviewIcon5"
+                },
+                ["number"] = {
+                    text = " ", hl = "MarkviewIcon6"
+                },
+                ["checkbox"] = {
+                    ---@diagnostic disable
+                    text = function (_, item)
+                        return item.value == "true" and "󰄲 " or "󰄱 "
+                    end,
+                    ---@diagnostic enable
+                    hl = "MarkviewIcon6"
+                },
+                ["date"] = {
+                    text = "󰃭 ", hl = "MarkviewIcon2"
+                },
+                ["date_&_time"] = {
+                    text = "󰥔 ", hl = "MarkviewIcon3"
+                }
+            },
+
+            default = {
+                use_types = true,
+
+                border_top = nil,
+                border_middle = nil,
+                border_bottom = nil,
+
+                border_hl = nil,
+            },
+
+            ["^tags$"] = {
+                use_types = false,
+
+                text = "󰓹 ",
+                hl = "MarkviewIcon0"
+            },
+            ["^aliases$"] = {
+                match_string = "^aliases$",
+                use_types = false,
+
+                text = "󱞫 ",
+                hl = "MarkviewIcon2"
+            },
+            ["^cssclasses$"] = {
+                match_string = "^cssclasses$",
+                use_types = false,
+
+                text = " ",
+                hl = "MarkviewIcon3"
+            },
+
+
+            ["^publish$"] = {
+                match_string = "^publish$",
+                use_types = false,
+
+                text = "󰅧 ",
+                hl = "MarkviewIcon5"
+            },
+            ["^permalink$"] = {
+                match_string = "^permalink$",
+                use_types = false,
+
+                text = " ",
+                hl = "MarkviewIcon2"
+            },
+            ["^description$"] = {
+                match_string = "^description$",
+                use_types = false,
+
+                text = "󰋼 ",
+                hl = "MarkviewIcon0"
+            },
+            ["^image$"] = {
+                match_string = "^image$",
+                use_types = false,
+
+                text = "󰋫 ",
+                hl = "MarkviewIcon4"
+            },
+            ["^cover$"] = {
+                match_string = "^cover$",
+                use_types = false,
+
+                text = "󰹉 ",
+                hl = "MarkviewIcon2"
+            }
+        }
+    }
+<
+
+------------------------------------------------------------------------------
+enable
+
+  • type: `boolean`
+    default: `true`
+
+Allows previewing YAML.
+
+------------------------------------------------------------------------------
+properties
+
+  • type: `markview.config.yaml.properties`[^3]
+    default[^4]
+
+Changes how YAML properties are shown.
+
+>lua
+    ---@type markview.config.yaml.properties
+    properties = {
+        enable = true,
+
+        data_types = {
+            ["text"] = {
+                text = " 󰗊 ", hl = "MarkviewIcon4"
+            },
+            ["list"] = {
+                text = " 󰝖 ", hl = "MarkviewIcon5"
+            },
+            ["number"] = {
+                text = "  ", hl = "MarkviewIcon6"
+            },
+            ["checkbox"] = {
+                ---@diagnostic disable
+                text = function (_, item)
+                    return item.value == "true" and " 󰄲 " or " 󰄱 "
+                end,
+                ---@diagnostic enable
+                hl = "MarkviewIcon6"
+            },
+            ["date"] = {
+                text = " 󰃭 ", hl = "MarkviewIcon2"
+            },
+            ["date_&_time"] = {
+                text = " 󰥔 ", hl = "MarkviewIcon3"
+            }
+        },
+
+        default = {
+            use_types = true,
+
+            border_top = " │ ",
+            border_middle = " │ ",
+            border_bottom = " ╰╸",
+
+            border_hl = "MarkviewComment"
+        },
+
+        ["^tags$"] = {
+            match_string = "^tags$",
+            use_types = false,
+
+            text = " 󰓹 ",
+            hl = nil
+        },
+        ["^aliases$"] = {
+            match_string = "^aliases$",
+            use_types = false,
+
+            text = " 󱞫 ",
+            hl = nil
+        },
+        ["^cssclasses$"] = {
+            match_string = "^cssclasses$",
+            use_types = false,
+
+            text = "  ",
+            hl = nil
+        },
+
+
+        ["^publish$"] = {
+            match_string = "^publish$",
+            use_types = false,
+
+            text = "  ",
+            hl = nil
+        },
+        ["^permalink$"] = {
+            match_string = "^permalink$",
+            use_types = false,
+
+            text = "  ",
+            hl = nil
+        },
+        ["^description$"] = {
+            match_string = "^description$",
+            use_types = false,
+
+            text = " 󰋼 ",
+            hl = nil
+        },
+        ["^image$"] = {
+            match_string = "^image$",
+            use_types = false,
+
+            text = " 󰋫 ",
+            hl = nil
+        },
+        ["^cover$"] = {
+            match_string = "^cover$",
+            use_types = false,
+
+            text = " 󰹉 ",
+            hl = nil
+        }
+    },
+<
+
+enable ~
+
+  • type: `boolean`
+    default: `true`
+
+Self-explanatory.
+
+data_types ~
+
+  • type: `{ `[string]: markview.config.yaml.properties.opts }
+    default[^5]
+
+Configuration for various data types.
+
+TEXT
+
+  • type: `markview.config.yaml.properties.opts`[^6]
+
+Configuration for YAML properties whose value is a text.
+
+>lua
+    ---@type markview.config.yaml.properties.opts
+    ["text"] = {
+        text = "󰗊 ",
+        hl = "MarkviewIcon4"
+    },
+<
+
+    text ~
+
+  • type: `string | fun(bufnr: integer, item: markview.parsed.yaml.properties): string`
+
+Text shown before the property name(like an icon).
+
+    hl ~
+
+  • type: `string | fun(bufnr: integer, item: markview.parsed.yaml.properties): string`
+
+Highlight group for `text`.
+
+LIST
+
+  • type: `markview.config.yaml.properties.opts`[^8]
+
+Configuration for YAML properties whose value is a list. Same as `text`.
+
+NUMBER
+
+  • type: `markview.config.yaml.properties.opts`[^10]
+
+Configuration for YAML properties whose value is a number. Same as `text`.
+
+CHECKBOX
+
+  • type: `markview.config.yaml.properties.opts`[^12]
+
+Configuration for YAML properties whose value is a boolean. Same as `text`.
+
+DATE
+
+  • type: `markview.config.yaml.properties.opts`[^14]
+
+Also see,
+
+  • `experimental.date_formats`[^15], for patterns used to detect date from
+    strings.
+
+Configuration for YAML properties whose value is a date. Same as `text`.
+
+DATE__TIME
+
+  • type: `markview.config.yaml.properties.opts`[^17]
+
+Also see,
+
+  • `experimental.date_time_formats`[^18], for patterns used to detect date &
+    time from strings.
+
+Configuration for YAML properties whose value is a date & time. Same as
+`text`.
+
+default ~
+
+  • type: `markview.config.yaml.properties.opts`[^20]
+    default[^21]
+
+Default configuration for YAML properties.
+
+USE_TYPES
+
+  • type: `boolean`
+    default: `true`
+
+Whether to use the data types configuration. See `data_types`.
+text
+
+  • type: `string | fun(bufnr: integer, item: markview.parsed.yaml.properties): string`
+
+Text shown before the property name(like an icon).
+
+HL
+
+  • type: `string | fun(bufnr: integer, item: markview.parsed.yaml.properties): string`
+
+Highlight group for `text`.
+
+[string] ~
+
+  • type: `markview.config.yaml.properties.opts`[^24]
+
+Configuration for YAML properties that match `string`. Same as `default`.
+
+------------------------------------------------------------------------------
+
+Link references ~
+
+  1: https://github.com/OXY2DEV/markview.nvim/blob/99d9a091915b994b378c4a9cc3553b3cbbe4bad5/lua/definitions/renderers/yaml.lua
+  2: https://github.com/OXY2DEV/markview.nvim/blob/99d9a091915b994b378c4a9cc3553b3cbbe4bad5/lua/markview/spec.lua#L2276-L2376
+  3: https://github.com/OXY2DEV/markview.nvim/blob/99d9a091915b994b378c4a9cc3553b3cbbe4bad5/lua/definitions/renderers/yaml.lua#L12-L39
+  4: https://github.com/OXY2DEV/markview.nvim/blob/99d9a091915b994b378c4a9cc3553b3cbbe4bad5/lua/markview/spec.lua#L2279-L2375
+  5: https://github.com/OXY2DEV/markview.nvim/blob/99d9a091915b994b378c4a9cc3553b3cbbe4bad5/lua/markview/spec.lua#L2282-L2306
+  6: https://github.com/OXY2DEV/markview.nvim/blob/99d9a091915b994b378c4a9cc3553b3cbbe4bad5/lua/definitions/renderers/yaml.lua#L23-L39
+  8: https://github.com/OXY2DEV/markview.nvim/blob/99d9a091915b994b378c4a9cc3553b3cbbe4bad5/lua/definitions/renderers/yaml.lua#L23-L39
+ 10: https://github.com/OXY2DEV/markview.nvim/blob/99d9a091915b994b378c4a9cc3553b3cbbe4bad5/lua/definitions/renderers/yaml.lua#L23-L39
+ 12: https://github.com/OXY2DEV/markview.nvim/blob/99d9a091915b994b378c4a9cc3553b3cbbe4bad5/lua/definitions/renderers/yaml.lua#L23-L39
+ 14: https://github.com/OXY2DEV/markview.nvim/blob/99d9a091915b994b378c4a9cc3553b3cbbe4bad5/lua/definitions/renderers/yaml.lua#L23-L39
+ 15: https://github.com/OXY2DEV/markview.nvim/wiki/Experimental#date_formats
+ 17: https://github.com/OXY2DEV/markview.nvim/blob/99d9a091915b994b378c4a9cc3553b3cbbe4bad5/lua/definitions/renderers/yaml.lua#L23-L39
+ 18: https://github.com/OXY2DEV/markview.nvim/wiki/Experimental#date_time_formats
+ 20: https://github.com/OXY2DEV/markview.nvim/blob/99d9a091915b994b378c4a9cc3553b3cbbe4bad5/lua/definitions/renderers/yaml.lua#L23-L39
+ 21: https://github.com/OXY2DEV/markview.nvim/blob/99d9a091915b994b378c4a9cc3553b3cbbe4bad5/lua/markview/spec.lua#L2308-L2316
+ 24: https://github.com/OXY2DEV/markview.nvim/blob/99d9a091915b994b378c4a9cc3553b3cbbe4bad5/lua/definitions/renderers/yaml.lua#L23-L39
+
+vim:ft=help:tw=78:ts=4:

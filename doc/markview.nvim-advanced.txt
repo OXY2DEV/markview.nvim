@@ -1,11 +1,11 @@
-*markview.nvim-advanced*                      Advanced usage guide for markview
+*markview.nvim-advanced.txt*                                 🔥 Advanced usage
 
 ------------------------------------------------------------------------------
-📂 Header folding                      *markview.nvim-advanced.header_folding*
+📂 Header folding
 
-    1. Create a new file `~/.config/nvim/queries/markdown/folds.scm`.
+  1. Create a new file ~/.config/nvim/queries/markdown/folds.scm.
+  2. Add these lines to that file,
 
-    2. Add these lines to that file,
 >query
     ; Folds a section of the document
     ; that starts with a heading.
@@ -17,12 +17,14 @@
     ; lines at the end of the section
     ; from being folded.
 <
-    3. To enable folding using tree-sitter only for markdown, you can
-       use `ftplugin/`.
-       You can do either of these 2 things.
 
-       ▋ If you don't need anything fancy, you can add this to
-       ▋ `~/.config/nvim/ftplugin/markdown.lua`,
+  3. To enable folding using tree-sitter only for markdown, you can use
+     `ftplugin/`.
+     You can do either of these 2 things.
+
+▌ If you don’t need anything fancy, you can add this to
+▌ ~/.config/nvim/ftplugin/markdown.lua,
+
 >lua
     --- Removes the ••• part.
     vim.o.fillchars = "fold: ";
@@ -33,8 +35,9 @@
     --- Disables fold text.
     vim.o.foldtext = "";
 <
-        ▋ If you prefer using a custom `foldtext` then you can use this
-        ▋ instead.
+
+▌ If you prefer using a custom `foldtext` then you can use this instead.
+
 >lua
     ---@type integer Current buffer.
     local buffer = vim.api.nvim_get_current_buf();
@@ -168,100 +171,118 @@
 
     vim.o.foldtext = "v:lua.heading_foldtext()"
 <
+
 ------------------------------------------------------------------------------
 🎨 Single highlight group for all links
-									   *markview.nvim-advanced.single_link_hl*
 
-▋ This has been taken from
-▋ https://github.com/OXY2DEV/markview.nvim/issues/265
+▌ This has been taken from #265[^1]
 
-Copy this to your plugin's `config` option.
+Copy this to your plugin’s `config` option.
+
 >lua
-	---@param group string New highlight group.
-	---@return { [string]: { hl: string } } New configuration.
-	local function generic_hl(group)
-		return {
-			["github%.com/[%a%d%-%_%.]+%/?$"] = {
-				hl = group
-			},
-			["github%.com/[%a%d%-%_%.]+/[%a%d%-%_%.]+%/?$"] = {
-				hl = group
-			},
-			["github%.com/[%a%d%-%_%.]+/[%a%d%-%_%.]+/tree/[%a%d%-%_%.]+%/?$"] = {
-				hl = group
-			},
-			["github%.com/[%a%d%-%_%.]+/[%a%d%-%_%.]+/commits/[%a%d%-%_%.]+%/?$"] = {
-				hl = group
-			},
-			["github%.com/[%a%d%-%_%.]+/[%a%d%-%_%.]+%/releases$"] = {
-				hl = group
-			},
-			["github%.com/[%a%d%-%_%.]+/[%a%d%-%_%.]+%/tags$"] = {
-				hl = group
-			},
-			["github%.com/[%a%d%-%_%.]+/[%a%d%-%_%.]+%/issues$"] = {
-				hl = group
-			},
-			["github%.com/[%a%d%-%_%.]+/[%a%d%-%_%.]+%/pulls$"] = {
-				hl = group
-			},
-			["github%.com/[%a%d%-%_%.]+/[%a%d%-%_%.]+%/wiki$"] = {
-				hl = group
-			}
-		};
-	end
+    ---@param group string New highlight group.
+    ---@return { [string]: { hl: string } } New configuration.
+    local function generic_hl(group)
+        return {
+            ["github%.com/[%a%d%-%_%.]+%/?$"] = {
+                hl = group
+            },
+            ["github%.com/[%a%d%-%_%.]+/[%a%d%-%_%.]+%/?$"] = {
+                hl = group
+            },
+            ["github%.com/[%a%d%-%_%.]+/[%a%d%-%_%.]+/tree/[%a%d%-%_%.]+%/?$"] = {
+                hl = group
+            },
+            ["github%.com/[%a%d%-%_%.]+/[%a%d%-%_%.]+/commits/[%a%d%-%_%.]+%/?$"] = {
+                hl = group
+            },
+            ["github%.com/[%a%d%-%_%.]+/[%a%d%-%_%.]+%/releases$"] = {
+                hl = group
+            },
+            ["github%.com/[%a%d%-%_%.]+/[%a%d%-%_%.]+%/tags$"] = {
+                hl = group
+            },
+            ["github%.com/[%a%d%-%_%.]+/[%a%d%-%_%.]+%/issues$"] = {
+                hl = group
+            },
+            ["github%.com/[%a%d%-%_%.]+/[%a%d%-%_%.]+%/pulls$"] = {
+                hl = group
+            },
+            ["github%.com/[%a%d%-%_%.]+/[%a%d%-%_%.]+%/wiki$"] = {
+                hl = group
+            }
+        };
+    end
 
-	require("markview").setup({
-		markdown = {
-		   reference_definitions = generic_hl("MarkviewPalette4Fg")
-		},
-		markdown_inline = {
-			hyperlinks = generic_hl("MarkviewHyperlink"),
-			uri_autolinks = generic_hl("MarkviewEmail"),
-		},
+    require("markview").setup({
+        markdown = {
+           reference_definitions = generic_hl("MarkviewPalette4Fg")
+        },
+        markdown_inline = {
+            hyperlinks = generic_hl("MarkviewHyperlink"),
+            uri_autolinks = generic_hl("MarkviewEmail"),
+        },
 
-		typst = {
-			url_links = generic_hl("MarkviewEmail")
-		}
-	});
+        typst = {
+            url_links = generic_hl("MarkviewEmail")
+        }
+    });
 <
 
 ------------------------------------------------------------------------------
-📐 Disabling indentation of top level list items
-							  *markview.nvim-advanced.top_list_indent_disable*
+📐 Reducing indentation level of list items
 
-▋ This has been taken from 
-▋ https://github.com/OXY2DEV/markview.nvim/issues/283
+▌ This has been taken from #283[^2]
 
-▋ 💡 Tip:
-▋ This works the same way for `Typst` too!.
+▌ 💡 Tip
+▌ This works the same way for `Typst` too!
 
-Copy this to your plugin's `config` option.
+Copy this to your plugin’s `config` option.
 
 >lua
-	require("markview").setup({
-		markdown = {
-			list_items = {
-				shift_width = function (buffer, item)
-					--- Reduces the `indent` by 1 level.
-					---
-					---         indent                      1
-					--- ------------------------- = 1 ÷ --------- = new_indent
-					--- indent * (1 / new_indent)       new_indent
-					---
-					local parent_indnet = math.max(1, item.indent - vim.bo[buffer].shiftwidth);
+    require("markview").setup({
+        markdown = {
+            list_items = {
+                shift_width = function (buffer, item)
+                    --- Reduces the `indent` by 1 level.
+                    ---
+                    ---         indent                      1
+                    --- ------------------------- = 1 ÷ --------- = new_indent
+                    --- indent * (1 / new_indent)       new_indent
+                    ---
+                    local parent_indnet = math.max(1, item.indent - vim.bo[buffer].shiftwidth);
 
-					return (item.indent) * (1 / (parent_indnet * 2));
-				end,
-				marker_minus = {
-					add_padding = function (_, item)
-						return item.indent > 1;
-					end
-				}
-			}
-		}
-	});
+                    return (item.indent) * (1 / (parent_indnet * 2));
+                end,
+                marker_minus = {
+                    add_padding = function (_, item)
+                        return item.indent > 1;
+                    end
+                }
+            }
+        }
+    });
 <
 
 ------------------------------------------------------------------------------
-vim:ft=help:tw=78:
+✨ No nerd font
+
+▌ 💡 Tip
+
+Copy this to your `config` option,
+
+>lua
+    local presets = require("markview.presets");
+    require("markview").setup(presets.no_nerd_fonts);
+<
+
+
+------------------------------------------------------------------------------
+
+Link references ~
+
+ 1: https://github.com/OXY2DEV/markview.nvim/issues/265
+ 2: https://github.com/OXY2DEV/markview.nvim/issues/283
+ 3: https://github.com/OXY2DEV/markview.nvim/issues/350
+
+vim:ft=help:tw=78:ts=4:

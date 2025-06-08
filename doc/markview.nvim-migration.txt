@@ -1,0 +1,291 @@
+*markview.nvim-migration.txt*                              🚀 Migration guides
+
+------------------------------------------------------------------------------
+v24.x → v25.x
+
+>diff
+    {
+    -   __inside_code_block = false
+
+    -   buf_ignore = {},
+    -   debounce = 50,
+    -   filetypes = {},
+    -   hybrid_modes = {},
+    -   ignore_nodes = {},
+    -   initial_state = true,
+    -   max_file_length = 1000,
+    -   modes = {},
+    -   render_distance = 500,
+    -   split_conf = {},
+    +   preview = {
+    +       enable = true,
+    +       buf_ignore = {},
+    +       debounce = nil,
+    +       icon_provider = "internal",
+    +       filetypes = {},
+    +       hybrid_modes = {},
+    +       ignore_previews = {},
+    +       max_buf_lines = 1000,
+    +       modes = {},
+    +       render_distance = { 200, 200 },
+    +       splitview_winopts = {}
+    +   },
+
+    -   block_quotes = {
+    -      callbacks = {}
+    -   },
+    -   code_blocks = {
+    -      icons = "internal",
+    -       language_names = {}
+    -   },
+    -   headings = {},
+    -   horizontal_rules = {},
+    -   list_items = {},
+    -   tables = {
+    -       col_min_width = 10
+    -   },
+    +   markdown = {
+    +       block_quotes = {
+    +           ["^NOTE$"] = {},
+    +       },
+    +       code_blocks = {},
+    +       headings = {},
+    +       horizontal_rules = {},
+    +       list_items = {},
+    +       tables = {}
+    +   },
+
+    -   injections = {},
+
+    -   checkboxes = {
+    -       custom = {}
+    -   },
+    -   links = {
+    -       hyperlinks = {
+    -           __emoji_link_compatability = false,
+    -           icon = "", hl = nil,
+
+    -           custom = {}
+    -       },
+    -       images = {
+    -           __emoji_link_compatability = false,
+    -           icon = "", hl = nil,
+
+    -           custom = {}
+    -       },
+    -       emails = {
+    -           __emoji_link_compatability = false,
+    -           icon = "", hl = nil,
+
+    -           custom = {}
+    -       },
+    -       internal_links = {
+    -           __emoji_link_compatability = false,
+    -           icon = "", hl = nil,
+
+    -           custom = {}
+    -       }
+    -   },
+    -   footnotes = {
+    -       use_unicode = true
+    -   },
+    -   inline_codes = {},
+    +   markdown_inline = {
+    +       checkboxes = {
+    +           ["-"] = {}
+    +       },
+    +       hyperlinks = {
+    +           ["^neovim%.org"] = {}
+    +       },
+    +       images = {
+    +           ["%.svg"] = {}
+    +       },
+    +       emails = {
+    +           ["gmail"] = {}
+    +       },
+    +       internal_links = {
+    +           ["^neovim"] = {}
+    +       },
+    +       inline_codes = {},
+    +       footnotes = {},
+    +   },
+
+    -   html = {
+    -       tags = {},
+    -       entities = {}
+    -   },
+    +   html = {
+    +       container_elements = {},
+    +       headings = {},
+    +       void_elements = {},
+    +   },
+
+        latex = {
+    -       brackets = {},
+    +       parenthesis = {},
+
+    -       block = {},
+    +       blocks = {},
+
+    -       inline = {},
+    +       inlines = {},
+
+    -       operators = {
+    -           custom = {}
+    -       },
+    +       commands = {
+    +           ["sin"] = {}
+    +       },
+
+            symbols = {
+    -           overwrite = (),
+    -           groups = {}
+            },
+
+    -       subscript = {},
+    +       subscripts = {},
+
+    -       superscript = {},
+    +       superscripts = {},
+        }
+    }
+<
+
+▌ 📜 Note
+▌ Some of these have backwards compatibility, but not all of them.
+
+`v25` introduces the following breaking changes,
+
+  • `buf_ignore` has been moved inside of `preview`.
+
+  • `callbacks` has been moved inside of `preview`.
+
+  • `debounce` has been moved inside of `preview`.
+
+  • `filetypes` has been moved inside of `preview`.
+
+  • `hybrid_modes` has been moved inside of `prwview`.
+
+  • `ignore_nodes` has been deprecated. Use `preview → ignore_previews`
+    instead.
+
+  • `initial_state` has been deprecated. Use `preview → enable` instead.
+
+  • `max_file_length` has been deprecated. Use `preview → max_buf_lines`
+    instead.
+
+  • `modes` has been moved inside of `preview`.
+
+  • `render_distance` has been moved inside of `preview`
+
+    • `render_distance` options type has changed(`integer).
+
+  • `split_conf` has been deprecated. Use `preview → splitview_winopts`
+    instead.
+
+  • `injections` has been deprecated. Use `queries/langauge/*.scm` instead.
+
+  • `block_quotes` has been moved inside of `markdown`.
+
+    • `callouts` has been deprecated. The `match_string` is used as the key
+    for defining a new callout.
+
+  • `code_blocks` has been moved inside of `markdown`.
+
+    • `minimal` style is deprecated in favor of `block`.
+    • `icone` has been deprecated. Use `preview → icon_provider` instead.
+    • `language_names` has been deprecated.
+
+  • `headings` has been moved inside of `markdown`.
+
+  • `horizontal_rules` has been moved inside of `markdown`.
+
+  • `list_items` has been moved inside of `markdown`.
+
+  • `tables` has been moved inside of `markdown`.
+
+    • `col_min_width` has been removed to reduce code complexity of the
+    renderer.
+
+  • `inline_codes` has been moved inside of `markdown_inline`.
+
+  • `checkboxes` has been moved inside of `markdown_inline`.
+
+    • `custom` has been deprecated. The `match_string` is used as the key for
+    defining new checkbox states.
+
+  • `links` has been deprecated.
+
+    • `hyperlinks` has been moved inside of `markdown_inline`.
+
+    • `icon`, `hl` has been deprecated. Use `default → icon`, `default → hl`
+    instead.
+
+    • `custom` has been deprecated. The `match_string` is used as the key
+    for defining new checkbox states.
+
+    • `images` has been moved inside of `markdown_inline`.
+
+    • `icon`, `hl` has been deprecated. Use `default → icon`, `default → hl`
+    instead.
+
+    • `custom` has been deprecated. The `match_string` is used as the key
+    for defining new checkbox states.
+
+    • `emails` has been moved inside of `markdown_inline`.
+
+    • `icon`, `hl` has been deprecated. Use `default → icon`, `default → hl`
+    instead.
+
+    • `custom` has been deprecated. The `match_string` is used as the key
+    for defining new checkbox states.
+
+    • `internal_links` has been moved inside of `markdown_inline`.
+
+    • `icon`, `hl` has been deprecated. Use `default → icon`, `default → hl`
+    instead.
+
+    • `custom` has been deprecated. The `match_string` is used as the key
+    for defining new checkbox states.
+
+  • `footnotes` has been moved inside of `markdown_inline`.
+
+    • `use_unicode` has been deprecated as it reduces readability.
+
+  • `html → tags` has been deprecated.
+
+    Use `html → container_elements` for container elements(e.g. `<u></u>`).
+    Use `html → headings` for headings(e.g. `<h1></h1>`).
+    Use `html → void_elements` for void elements(e.g. `<hr>`).
+
+  • `html → entities` has been deprecated. Use `markdown_inline → entities`
+    instead.
+
+  • `latex → brackets` has been renamed to `latex → parenthesis`.
+
+  • `latex → block` has been renamed to `latex → blocks`.
+
+  • `latex → inline` has been renamed to `latex → inlines`.
+
+  • `latex → operators` has been deprecated. Use `latex → commands` instead.
+
+    • `custom` has been deprecated. The `match_string` is used as the key for
+    defining new commands.
+
+  • `latex → symbols`,
+
+    • `overwrite` has been deprecated due to lack of use cases.
+    • `groups` has been deprecated due to not being practical.
+
+  • `latex → subscript` has been renamed to `latex → subscripts`.
+
+  • `latex → superscript` has been renamed to `latex → superscripts`.
+
+------------------------------------------------------------------------------
+
+Also available in vimdoc, `:h markview.nvim-migration`
+
+------------------------------------------------------------------------------
+
+
+vim:ft=help:tw=78:ts=4:
