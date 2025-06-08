@@ -1,7 +1,7 @@
-# LaTeX Options
+# 🧮 LaTeX Options
 
 >[!TIP]
-> You can find the type definitions in [definitions/latex.lua](https://github.com/OXY2DEV/markview.nvim/blob/a803117f272cc47733b67ebbaf1acb91095da276/lua/definitions/renderers/latex.lua).
+> You can find the type definitions in [definitions/renderers/latex.lua](https://github.com/OXY2DEV/markview.nvim/blob/a803117f272cc47733b67ebbaf1acb91095da276/lua/definitions/renderers/latex.lua).
 
 Options that change how $LaTeX$ is shown in previews are part of this. You can find the default values [here](https://github.com/OXY2DEV/markview.nvim/blob/a803117f272cc47733b67ebbaf1acb91095da276/lua/markview/spec.lua#L1581-L1880).
 
@@ -970,7 +970,7 @@ Configuration for subscripts(`^` & `^{}`). Same as [subscripts](#subscripts).
 - type: [markview.config.latex.symbols](https://github.com/OXY2DEV/markview.nvim/blob/99d9a091915b994b378c4a9cc3553b3cbbe4bad5/lua/definitions/renderers/latex.lua)
   [default](https://github.com/OXY2DEV/markview.nvim/blob/a803117f272cc47733b67ebbaf1acb91095da276/lua/markview/spec.lua#L1871-L1875)
 
-Configuration for subscripts(`^` & `^{}`). Same as [subscripts](#subscripts).
+Configuration for math symbols.
 
 ```lua
 ---@type markview.config.latex.symbols

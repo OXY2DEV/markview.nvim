@@ -1,4 +1,4 @@
-# HTML options
+# 📦 HTML options
 
 >[!TIP]
 > You can find the type definitions in [definitions/renderers/html.lua](https://github.com/OXY2DEV/markview.nvim/blob/main/lua/definitions/renderers/html.lua).
@@ -408,7 +408,7 @@ void_elements = {
 
 Changes how `<string/>` will be shown in previews.
 
-<h4 id="void_opening">opening_tag_offset</h4>
+<h4 id="void_node">node_offset</h4>
 
 - type: `fun(range: integer[]): integer[]`
 
@@ -416,11 +416,11 @@ See also,
 
 - [markview.parsed.range](https://github.com/OXY2DEV/markview.nvim/blob/99d9a091915b994b378c4a9cc3553b3cbbe4bad5/lua/definitions/markview.lua#L60-L66)
 
-Modifies the range of the opening tag.
+Modifies the range of the tag.
 
 #### on_node
 
 - type: `table`
 
-Configuration for the extmark placed on the node/element. The range is affected by [void_opening](#void_opening).
+Configuration for the extmark placed on the node/element. The range is affected by [node_offset](#void_node).
 

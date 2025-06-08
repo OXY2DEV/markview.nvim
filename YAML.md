@@ -1,4 +1,4 @@
-# YAML options
+# 🔩 YAML options
 
 >[!TIP]
 > You can find the type definitions in [definitions/renderers/yaml.lua](https://github.com/OXY2DEV/markview.nvim/blob/99d9a091915b994b378c4a9cc3553b3cbbe4bad5/lua/definitions/renderers/yaml.lua).

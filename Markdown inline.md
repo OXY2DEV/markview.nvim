@@ -1,7 +1,7 @@
-# Markdown inline option
+# 💭 Markdown inline option
 
 >[!TIP]
-> You can find the type definition in [definition/renderers/markdown_inline.lua](https://github.com/OXY2DEV/markview.nvim/blob/99d9a091915b994b378c4a9cc3553b3cbbe4bad5/lua/definitions/renderers/markdown_inline.lua).
+> You can find the type definition in [definitions/renderers/markdown_inline.lua](https://github.com/OXY2DEV/markview.nvim/blob/99d9a091915b994b378c4a9cc3553b3cbbe4bad5/lua/definitions/renderers/markdown_inline.lua).
 
 Options that change how inline markdown is shown. The default value can be found [here](https://github.com/OXY2DEV/markview.nvim/blob/a803117f272cc47733b67ebbaf1acb91095da276/lua/markview/spec.lua#L945-L1461).
 

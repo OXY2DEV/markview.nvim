@@ -1,4 +1,4 @@
-# Markdown options
+# 📝 Markdown options
 
 >[!TIP]
 > You can find the type definition in [definitions/renderers/markdown.lua](https://github.com/OXY2DEV/markview.nvim/blob/99d9a091915b994b378c4a9cc3553b3cbbe4bad5/lua/definitions/renderers/markdown.lua#L244).
@@ -965,7 +965,7 @@ Text shown instead of `>[!...]`.
 
 - type: `string`
 
-Highlight group for [icon](#preview).
+Highlight group for [preview](#preview).
 
 #### title
 
@@ -1988,7 +1988,7 @@ Highlight group for the borders. Used by [border_top](#border_top) & [border_bot
 
 Highlight group for the background.
 
-## metadata_minus
+## metadata_plus
 
 - type: [markview.config.markdown.metadata](https://github.com/OXY2DEV/markview.nvim/blob/99d9a091915b994b378c4a9cc3553b3cbbe4bad5/lua/definitions/renderers/markdown.lua#L206-L217)
   [default](https://github.com/OXY2DEV/markview.nvim/blob/a803117f272cc47733b67ebbaf1acb91095da276/lua/markview/spec.lua#L721-L729)

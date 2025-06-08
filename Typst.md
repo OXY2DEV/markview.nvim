@@ -1,4 +1,4 @@
-# Typst options
+# 💻 Typst options
 
 >[!TIP]
 > You can find type definitions in [definitions/renderers/typst.lua](https://github.com/OXY2DEV/markview.nvim/blob/99d9a091915b994b378c4a9cc3553b3cbbe4bad5/lua/definitions/renderers/typst.lua).
