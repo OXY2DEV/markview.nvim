@@ -106,7 +106,7 @@ yaml = {
             text = "󰹉 ",
             hl = "MarkviewIcon2"
         }
-}
+    }
 }
 ```
 
