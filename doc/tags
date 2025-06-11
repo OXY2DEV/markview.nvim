@@ -2,6 +2,8 @@
 maeviww.nvim-renderers	markview.nvim-renderers.txt	/*maeviww.nvim-renderers*
 markviee.nvim-presets.txt	markview.nvim-presets.txt	/*markviee.nvim-presets.txt*
 markview.nvim-advanced.txt	markview.nvim-advanced.txt	/*markview.nvim-advanced.txt*
+markview.nvim-autocmds	markview.nvim.txt	/*markview.nvim-autocmds*
+markview.nvim-commands	markview.nvim.txt	/*markview.nvim-commands*
 markview.nvim-config.txt	markview.nvim-config.txt	/*markview.nvim-config.txt*
 markview.nvim-dev	markview.nvim-dev.txt	/*markview.nvim-dev*
 markview.nvim-experimental	markview.nvim-experimental.txt	/*markview.nvim-experimental*
@@ -9,6 +11,7 @@ markview.nvim-extra	markview.nvim-extra.txt	/*markview.nvim-extra*
 markview.nvim-extra.checkboxes	markview.nvim-extra.txt	/*markview.nvim-extra.checkboxes*
 markview.nvim-extras.editor	markview.nvim-extra.txt	/*markview.nvim-extras.editor*
 markview.nvim-extras.headings	markview.nvim-extra.txt	/*markview.nvim-extras.headings*
+markview.nvim-hl	markview.nvim.txt	/*markview.nvim-hl*
 markview.nvim-html.txt	markview.nvim-html.txt	/*markview.nvim-html.txt*
 markview.nvim-latex.txt	markview.nvim-latex.txt	/*markview.nvim-latex.txt*
 markview.nvim-markdown_inline.txt	markview.nvim-markdown_inline.txt	/*markview.nvim-markdown_inline.txt*
