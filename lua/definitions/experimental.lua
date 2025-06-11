@@ -12,3 +12,5 @@
 ---@field list_empty_line_tolerance integer Maximum number of empty lines that can stay between text of a list item.
 ---
 ---@field read_chunk_size integer Number of `bytes` to check before opening a link. Used for detecting when to open files inside Neovim.
+---
+---@field linewise_ignore_org_indent? boolean Prevents indentation of sections from being cleared in `linewise_hybrid_mode`.

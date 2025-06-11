@@ -3724,8 +3724,43 @@ end
 ---@param buffer integer
 ---@param from integer?
 ---@param to integer?
-markdown.clear = function (buffer, from, to)
-	vim.api.nvim_buf_clear_namespace(buffer, markdown.ns, from or 0, to or -1);
+---@param hybrid_mode boolean
+markdown.clear = function (buffer, from, to, hybrid_mode)
+	---@type boolean
+	local experimental = require("markview.spec").get({ "experimental", "linewise_ignore_org_indent" }, { fallback = false });
+
+	if not experimental or not hybrid_mode then
+		vim.api.nvim_buf_clear_namespace(buffer, markdown.ns, from or 0, to or -1);
+		return;
+	end
+
+	--- Extmarks in this range.
+	local exts = vim.api.nvim_buf_get_extmarks(buffer, markdown.ns, { from or 0, 0 }, { to and (to - 1) or -1, -1 }, { type = "virt_text" });
+
+	for _, ext in ipairs(exts) do
+		local _ext = vim.api.nvim_buf_get_extmark_by_id(buffer, markdown.ns, ext[1], { details = true });
+
+		local col = _ext[2];
+		local detail = _ext[3];
+
+		if detail then
+			local pos = detail.virt_text_pos;
+			local virt_text = detail.virt_text;
+
+			local conceal = detail.conceal;
+
+			if
+				col == 0 and virt_text and ( not conceal and pos == "inline" ) and -- Check if it's a space/border type extmark.
+				#virt_text == 1 and string.match(virt_text[1][1], "^%s+$") -- Check if it's an org indent border.
+			then
+				goto ignore;
+			end
+		end
+
+		vim.api.nvim_buf_del_extmark(buffer, markdown.ns, ext[1]);
+
+		::ignore::
+	end
 end
 
 return markdown;

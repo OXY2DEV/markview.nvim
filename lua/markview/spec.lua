@@ -140,6 +140,9 @@ spec.default = {
 		list_empty_line_tolerance = 3,
 
 		read_chunk_size = 1024,
+
+
+		linewise_ignore_org_indent = false
 	};
 
 	highlight_groups = {},

@@ -475,7 +475,8 @@ end
 ---@param buffer integer
 ---@param from? integer
 ---@param to? integer
-renderer.clear = function (buffer, from, to)
+---@param hybrid_mode? boolean
+renderer.clear = function (buffer, from, to, hybrid_mode)
 	---|fS
 
 	local _renderers = {
@@ -502,7 +503,7 @@ renderer.clear = function (buffer, from, to)
 
 	for _, lang in ipairs(langs) do
 		if _renderers[lang] then
-			_renderers[lang].clear(buffer, from, to);
+			_renderers[lang].clear(buffer, from, to, hybrid_mode);
 		end
 	end
 

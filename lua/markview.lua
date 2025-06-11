@@ -322,7 +322,8 @@ markview.render = function (buffer, state, config)
 
 				renderer.clear(buffer,
 					math.max(0, cursor[1] - edit_range[1]),
-					math.min(cursor[1] + 1 + edit_range[2], line_count)
+					math.min(cursor[1] + 1 + edit_range[2], line_count),
+					true
 				);
 			end
 		else
