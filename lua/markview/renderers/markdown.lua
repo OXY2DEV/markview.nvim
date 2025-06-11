@@ -1015,9 +1015,9 @@ markdown.atx_heading = function (buffer, item)
 		});
 	elseif config.style == "label" then
 		local space = "";
+		local win = vim.fn.win_findbuf(buffer)[1];
 
-		if config.align then
-			local win = vim.fn.win_findbuf(buffer)[1];
+		if win and config.align then
 			local res = markdown.output(item.text[1], buffer):gsub("^#+%s", "");
 
 			local wid = vim.fn.strdisplaywidth(table.concat({
@@ -1237,7 +1237,7 @@ markdown.block_quote = function (buffer, item)
 	--- TODO: Feat
 	local win = utils.buf_getwin(buffer);
 
-	if main_config.wrap == true and vim.wo[win].wrap == true then
+	if win and main_config.wrap == true and vim.wo[win].wrap == true then
 		--- When `wrap` is enabled, run post-processing effects.
 		table.insert(markdown.cache, item);
 	end
@@ -1661,7 +1661,7 @@ markdown.code_block = function (buffer, item)
 		end
 	end
 
-	if config.style == "simple" or ( vim.o.wrap == true or vim.wo[win].wrap == true ) then
+	if not win or config.style == "simple" or ( vim.o.wrap == true or vim.wo[win].wrap == true ) then
 		render_simple();
 	elseif config.style == "block" then
 		render_block()
@@ -1971,7 +1971,7 @@ markdown.list_item = function (buffer, item)
 
 	--- BUG, Post-processing effects become inaccurate when
 	--- list items are inside block quotes.
-	if main_config.wrap == true and vim.wo[win].wrap == true then
+	if win and main_config.wrap == true and vim.wo[win].wrap == true then
 		--- When `wrap` is enabled, run post-processing effects.
 		table.insert(markdown.cache, item);
 	end
@@ -2154,7 +2154,7 @@ markdown.section = function (buffer, item)
 
 	local win = utils.buf_getwin(buffer);
 
-	if main_config.org_indent_wrap == true and vim.wo[win].wrap == true then
+	if win and main_config.org_indent_wrap == true and vim.wo[win].wrap == true then
 		--- When `wrap` is enabled, run post-processing effects.
 		table.insert(markdown.cache, item);
 	end

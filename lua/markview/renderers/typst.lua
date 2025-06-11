@@ -1065,7 +1065,7 @@ typst.raw_block = function (buffer, item)
 		});
 	end
 
-	if config.style == "simple" or ( vim.o.wrap == true or vim.wo[win].wrap == true ) then
+	if not win or config.style == "simple" or ( vim.o.wrap == true or vim.wo[win].wrap == true ) then
 		render_simple();
 	elseif config.style == "block" then
 		render_block()
