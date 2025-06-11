@@ -1,7 +1,7 @@
 # 🌋 Experimental options
 
 >[!TIP]
-> Type definitions are available in [definitions/experimental.lua](https://github.com/OXY2DEV/markview.nvim/blob/4cb901f928bbb6a4a03b45e526ae9052bde6352f/lua/definitions/experimental.lua).
+> Type definitions are available in [definitions/experimental.lua](https://github.com/OXY2DEV/markview.nvim/blob/c00870e544f81a0eecd89c1144cdf77458cf1f97/lua/definitions/experimental.lua).
 
 Options that don't belong in other groups or needs to be tested are added here,
 
@@ -37,6 +37,8 @@ experimental = {
     list_empty_line_tolerance = 3,
 
     read_chunk_size = 1024,
+
+    linewise_ignore_org_indent = false,
 }
 ```
 
@@ -112,4 +114,15 @@ Number of `bytes` to read from a link's file to check if it's a text file.
 
 >[!NOTE]
 > This has no effect if [prefer_nvim](#-prefer_nvim) is set to `false`.
+
+## linewise_ignore_org_indent
+
+- type: `boolean`
+  default: `false`
+
+Attributes,
+
+- `org_indent`, see [org_indent](https://github.com/OXY2DEV/markview.nvim/wiki/Markdown#org_indent).
+
+Prevents indentations added by `org_indent` from being removed when using `linewise_hybrid_mode`.
 
