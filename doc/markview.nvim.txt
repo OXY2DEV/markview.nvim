@@ -27,17 +27,20 @@ Also read,
     • Markdown inline, `markview.nvim-markdown_inline.txt`.
     • LaTeX, `markview.nvim-latex.txt`.
     • Typst, `markview.nvim-typst.txt`.
-    • YAML, `markview.nvim-yaml.txt`.]
+    • YAML, `markview.nvim-yaml.txt`.
 
-  • Developer options, `markview.nvim-dev.txt`.]
+  • Developer options, `markview.nvim-dev.txt`.
 
 ------------------------------------------------------------------------------
 
 For the tinkerers,
 
-  • Advanced usage, `markview.nvim-advanced.txt`.]
-  • Presets, `markview.nvim-presets.txt`.]
-  • Extra, `markview.nvim-extra.txt`.]
+  • Experimental otions, `markview.nvim-experimental`.
+  • Preview otions, `markview.nvim-preview`.
+
+  • Advanced usage, `markview.nvim-advanced.txt`.
+  • Presets, `markview.nvim-presets.txt`.
+  • Extra, `markview.nvim-extra.txt`.
 
 ------------------------------------------------------------------------------
 💡 Commands                                           *markview.nvim-commands*
@@ -50,25 +53,27 @@ any of the following sub-commands,
 <
 
   • `Toggle` Toggles the preview on all attached buffers! Buffers that have
-    their
-    previews disabled will have it enabled and the ones that have it enabled
-    will
-    be disabled.
+    their previews disabled will have it enabled and the ones that have it
+    enabled will be disabled.
+
   • `Enable` Enables preview on all attached buffers.
+
   • `Disable` Disables preview on all attached buffers.
-    `toggle<bufnr>` Toggles the plugin on the given buffer(current buffer if
-    not
+
+  • `toggle<bufnr>` Toggles the plugin on the given buffer(current buffer if
+    not provided).
+
+  • `enable<bufnr>` Enables preview on the given buffer(current buffer if not
     provided).
-    `enable<bufnr>` Enables preview on the given buffer(current buffer if not
-    provided).
-    `Disable<bufnr>` Disables preview on the given buffer(current buffer if
-    not
-    provided).
+
+  • `Disable<bufnr>` Disables preview on the given buffer(current buffer if
+    not provided).
 
 ------------------------------------------------------------------------------
 
   • `Start` Starts the plugin. Any visited/opened buffers will have the plugin
     attached to them.
+
   • `Stop` Stops the plugin. The plugin won’t attach to any new buffers.
 
 ▌ If you run `:Markview Stop`, open a buffer, run `:Markview Start`
@@ -84,13 +89,18 @@ any of the following sub-commands,
 ------------------------------------------------------------------------------
 
   • `HybridToggle` Toggles hybrid mode globally.
+
   • `HybridEnable` Enables hybrid mode globally.
+
   • `HybridDisable` Disables hybrid mode globally.
-    `hybridToggle<bufnr>` Toggles hybrid mode of the given buffer(current
+
+  • `hybridToggle<bufnr>` Toggles hybrid mode of the given buffer(current
     buffer if not provided).
-    `hybridEnable<bufnr>` Enables hybrid mode of the given buffer(current
+
+  • `hybridEnable<bufnr>` Enables hybrid mode of the given buffer(current
     buffer if not provided).
-    `hybridDisable<bufnr>` Disables hybrid mode of the given buffer(current
+
+  • `hybridDisable<bufnr>` Disables hybrid mode of the given buffer(current
     buffer if not provided).
 
 ▌ These commands won’t do anything if `preview.hybrid_modes` aren’t
@@ -99,17 +109,22 @@ any of the following sub-commands,
 ------------------------------------------------------------------------------
 
   • `linewiseToggle` Toggles `linewise hybrid mode`.
+
   • `linewiseEnable` Enables `linewise hybrid mode`.
+
   • `linewiseDisable` Disables `linewise hybrid mode`.
 
 ▌ These work `globally`! And require `preview.hybrid_modes` to be set!
 
 ------------------------------------------------------------------------------
 
-    `splitOpen<bufnr>` Opens the given buffer’s(current buffer if not
+  • `splitOpen<bufnr>` Opens the given buffer’s(current buffer if not
     provided) preview in a split window.
+
   • `splitClose` Closes any open split-view window.
+
   • `splitToggle` Toggles `splitview`.
+
   • `splitRedraw` Redraws the splitview window.
 
 ▌ Only 1 splitview window will be open!
@@ -117,10 +132,13 @@ any of the following sub-commands,
 ------------------------------------------------------------------------------
 
   • `Render` Updates the preview of all enabled buffers.
+
   • `Clear` Clears the preview of all enabled buffers.
-    `render<bufnr>` Renders preview in the given buffer(current buffer if not
+
+  • `render<bufnr>` Renders preview in the given buffer(current buffer if not
     provided).
-    `clear<bufnr>` Clears the preview of given buffer(current buffer if not
+
+  • `clear<bufnr>` Clears the preview of given buffer(current buffer if not
     provided).
 
 ▌ These commands can be used to fix visual glitches in the preview!
@@ -131,6 +149,7 @@ any of the following sub-commands,
 ------------------------------------------------------------------------------
 
   • `traceShow` Shows the plugin’s internal messages in a window.
+
   • `traceExport` Exports the plugin’s trace into a text file(`trace.txt`).
 
 ------------------------------------------------------------------------------
@@ -164,7 +183,6 @@ passed in `event.data`.
     • `buffer`, the buffer being detached from.
     • `windows`, the windows attached to `buffer`.
 
-
 ------------------------------------------------------------------------------
 
   • MarkviewEnable Called when preview is enabled for a buffer.
@@ -180,7 +198,6 @@ passed in `event.data`.
 
     • `buffer`, the buffer that’s preview is disabled.
     • `windows`, the windows attached to `buffer`.
-
 
 ------------------------------------------------------------------------------
 

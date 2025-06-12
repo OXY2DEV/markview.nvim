@@ -21,6 +21,9 @@ Table of Contents
 
 Also read,
 
+  • Experimental otions, `markview.nvim-experimental`.
+  • Preview otions, `markview.nvim-preview`.
+
   • Markdown, `:h markview.nvim-markdown`.
   • Markdown inline, `:h markview.nvim-markdown_inline`.
   • LaTeX, `:h markview.nvim-latex`.
@@ -51,6 +54,8 @@ The configuration table has the following structure,
 
             prefer_nvim = nil,
             read_chunk_size = nil,
+
+            linewise_ignore_org_indent = false,
         },
         preview = {
             enable = nil,
