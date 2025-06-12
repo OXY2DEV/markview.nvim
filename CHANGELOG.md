@@ -1,5 +1,28 @@
 # Changelog
 
+## [25.9.0](https://github.com/OXY2DEV/markview.nvim/compare/v25.8.0...v25.9.0) (2025-06-11)
+
+
+### Features
+
+* Added supppet for using custom config in `render()` calls ([4956124](https://github.com/OXY2DEV/markview.nvim/commit/4956124ff15026437f1170d861fdbd1bdb1ae479)), closes [#353](https://github.com/OXY2DEV/markview.nvim/issues/353)
+* **experimental:** Added option to prevent `org_ondent`'s from being hidden ([c00870e](https://github.com/OXY2DEV/markview.nvim/commit/c00870e544f81a0eecd89c1144cdf77458cf1f97)), closes [#360](https://github.com/OXY2DEV/markview.nvim/issues/360)
+
+
+### Bug Fixes
+
+* **entities:** Fixed an issuw with the checker function returning `nil` ([ffa848c](https://github.com/OXY2DEV/markview.nvim/commit/ffa848c6ca2f5097ef2bfb55733dae80add8552e))
+* Fixed an issue with attaching to buffers that get deleted quickly ([5e9c1fc](https://github.com/OXY2DEV/markview.nvim/commit/5e9c1fca74eb0244beed625da813bb90293a0e40)), closes [#356](https://github.com/OXY2DEV/markview.nvim/issues/356)
+* **markdown:** Fixed a bug with callouts not inheriting option values from `default` ([c0f67d4](https://github.com/OXY2DEV/markview.nvim/commit/c0f67d4283ffdb2fada4e0782d3906bcdeb94732))
+* **markdown:** Fixed a bug with list item indent size type mismatch ([5cec366](https://github.com/OXY2DEV/markview.nvim/commit/5cec366a44b10b3ae507fb63d640d97d3aa08ac5))
+* **renderer_markdown:** apply `scope_hl` when concealing is disabled ([cbb5223](https://github.com/OXY2DEV/markview.nvim/commit/cbb52237a22b98eb85e7de6a6e1fbb44d812310a))
+* **renderer_markdown:** apply `scope_hl` when concealing is disabled ([29608fc](https://github.com/OXY2DEV/markview.nvim/commit/29608fc5cdf8558e29c4149691384280f429dcd4))
+* **renderers:** Removed the need for a visible window in renderers ([a225dcb](https://github.com/OXY2DEV/markview.nvim/commit/a225dcb37acb569d37b6b62f5a568ce6a194ebd7))
+* **sepc:** Added missing deprecation alert ([a803117](https://github.com/OXY2DEV/markview.nvim/commit/a803117f272cc47733b67ebbaf1acb91095da276))
+* **typst:** Fixed a bug with list item indent size type mismatch ([2371e09](https://github.com/OXY2DEV/markview.nvim/commit/2371e096f9062c9598a1da10d0c7cf33e014e717))
+* **utils:** Added support for `main` branch of nvim-treesitter ([16e4786](https://github.com/OXY2DEV/markview.nvim/commit/16e478603813e8913847a6f43f00d222445deae9)), closes [#357](https://github.com/OXY2DEV/markview.nvim/issues/357)
+* **utils:** calling `buf_getwin` with 0 no longer returns `{}` ([bd7bd8f](https://github.com/OXY2DEV/markview.nvim/commit/bd7bd8f88b9b325fea3bd63db7b2f6cd7cfe513b))
+
 ## [25.8.0](https://github.com/OXY2DEV/markview.nvim/compare/v25.7.0...v25.8.0) (2025-05-27)
 
 
