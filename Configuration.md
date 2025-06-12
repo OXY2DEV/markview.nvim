@@ -19,6 +19,9 @@ Configuration can be done by calling `require("markview").setup()` with the conf
 
 Also read,
 
+- [Experimental options](https://github.com/OXY2DEV/markview.nvim/wiki/Experimental)
+- [Preview options](https://github.com/OXY2DEV/markview.nvim/wiki/Preview)
+
 - [Markdown](https://github.com/OXY2DEV/markview.nvim/wiki/Markdown)
 - [Markdown inline](https://github.com/OXY2DEV/markview.nvim/wiki/Markdown-inline)
 - [LaTeX](https://github.com/OXY2DEV/markview.nvim/wiki/LaTeX)
@@ -47,6 +50,8 @@ The configuration table has the following structure,
 
         prefer_nvim = nil,
         read_chunk_size = nil,
+
+        linewise_ignore_org_indent = false,
     },
     preview = {
         enable = nil,

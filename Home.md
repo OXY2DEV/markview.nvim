@@ -25,11 +25,14 @@ Also read,
     + [Typst](https://github.com/OXY2DEV/markview.nvim/wiki/Typst)
     + [YAML](https://github.com/OXY2DEV/markview.nvim/wiki/YAML)
 
-- [Developer options](https://github.com/OXY2DEV/markview.nvim/wiki/Developer)
+- [Developer options](https://github.com/OXY2DEV/markview.nvim/wiki/Developer-documentation)
 
 ------
 
 For the tinkerers,
+
+- [Experimental options](https://github.com/OXY2DEV/markview.nvim/wiki/Experimental)
+- [Preview options](https://github.com/OXY2DEV/markview.nvim/wiki/Preview)
 
 - [Advanced usage](https://github.com/OXY2DEV/markview.nvim/wiki/Advanced-usage)
 - [Presets](https://github.com/OXY2DEV/markview.nvim/wiki/Presets)
