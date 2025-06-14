@@ -718,10 +718,6 @@ Currently emitted autocmds are,
   + `preview_window`, integer
     The window where the `preview_buffer` is being shown.
 
-Additional command(s),
-
-- `MarkOpen`, Opens the link under cursor, falls back to **vim.ui.open()**.
-
 ## 🎨 Highlight groups
 
 `markview.nvim` creates a number of *primary highlight groups* that are used by most of the decorations.
