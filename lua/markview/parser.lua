@@ -167,6 +167,29 @@ parser.init = function (buffer, from, to, cache)
 	---|fE
 end
 
+---@param str string
+---@return integer
+---@return integer
+---@return integer
+parser.string = function (str)
+	local root_parser = vim.treesitter.get_string_parser(str, "markdown_inline", {});
+	root_parser:parse(true);
+
+	if not root_parser then
+		return 0, 0, vim.fn.strdisplaywidth(str);
+	end
+
+	---@type integer, integer, integer
+	local a, b, c;
+
+	root_parser:for_each_tree(function (TSTree, language_tree)
+		language_tree:parse(true);
+		a, b, c = require("markview.parsers.__markdown_inline").parse(str, TSTree);
+	end);
+
+	return a, b, c;
+end
+
 -- Chore: This is for backwards compatibility.
 parser.parse = parser.init;
 

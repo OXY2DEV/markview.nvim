@@ -960,7 +960,7 @@ If you have time and want to make this project better, consider helping me fix a
 
 - [ ] Add support for more filetypes in the internal icon provider.
 - [ ] Optimization of `require("markview.renderers.markdown").output()`.
-- [ ] Optimization of the table renderer.
+- [X] Optimization of the table renderer.
 - [ ] Stricter logic to reduce preview redraws.
 - [X] Make `splitview` update as little content as possible.
 - [X] Make the help files/wiki more beginner friendly.
