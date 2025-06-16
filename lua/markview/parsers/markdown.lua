@@ -433,7 +433,7 @@ local function lpeg_processor(line)
 	local init_cell = vim.lpeg.P(pipe^-1 * cont * pipe)
 	local end_cell = vim.lpeg.P(cont * pipe^-1)
 
-	local ROW = vim.lpeg.Ct( init_cell * end_cell ^ 1 );
+	local ROW = vim.lpeg.Ct( init_cell * end_cell ^ 0 );
 
 	local RESULT = ROW:match(line);
 	local _o = {};
