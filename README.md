@@ -720,143 +720,119 @@ Currently emitted autocmds are,
 
 ## 🎨 Highlight groups
 
-`markview.nvim` creates a number of *primary highlight groups* that are used by most of the decorations.
-
->[!IMPORTANT]
-> These groups are all **generated** during runtime and as such their colors may look different.
-
-If you want to create your own *dynamic* highlight groups or modify existing ones, see the [custom highlight groups](placeholder) section.
-
->[!IMPORTANT]
-> The process of checking for heading highlight groups is a bit complicated.
-> For example, `markdownH1` actually checks `@markup.heading.1.markdown`, `@markup.heading` & `markdownH1`
-> For the sake of simplicity & saving space in the table the first 2 are omitted below.
-
-
-| Highlight group      | Generated from                           | Default                     |
-|----------------------|------------------------------------------|-----------------------------|
-| MarkviewPalette0     | Normal(bg) + Comment(fg)                 | fg: `#9399b2` bg: `#35374a` |
-| MarkviewPalette0Fg   | Comment(fg)                              | fg: `#9399b2`               |
-| MarkviewPalette0Bg   | Normal(bg) + Comment(fg)                 | bg: `#35374a`               |
-| MarkviewPalette0Sign | Normal(bg) + Comment(fg), LineNr(bg)     | fg: `#9399b2`               |
-| ———————————————————— | ———————————————————————————————————————— | ——————————————————————————— |
-| MarkviewPalette1     | Normal(bg) + markdownH1(fg)              | fg: `#f38ba8` bg: `#4d3649` |
-| MarkviewPalette1Fg   | markdownH1(fg)                           | fg: `#f38ba8`               |
-| MarkviewPalette1Bg   | Normal(bg) + markdownH1(fg)              | bg: `#4d3649`               |
-| MarkviewPalette1Sign | Normal(bg) + markdownH1(fg), LineNr(bg)  | fg: `#f38ba8`               |
-| ———————————————————— | ———————————————————————————————————————— | ——————————————————————————— |
-| MarkviewPalette2     | Normal(bg) + markdownH2(fg)              | fg: `#f9b387` bg: `#4d3d43` |
-| MarkviewPalette2Fg   | markdownH2(fg)                           | fg: `#f9b387`               |
-| MarkviewPalette2Bg   | Normal(bg) + markdownH2(fg)              | bg: `#4d3d43`               |
-| MarkviewPalette2Sign | Normal(bg) + markdownH2(fg), LineNr(bg)  | fg: `#f9b387`               |
-| ———————————————————— | ———————————————————————————————————————— | ——————————————————————————— |
-| MarkviewPalette3     | Normal(bg) + markdownH3(fg)              | fg: `#f9e2af` bg: `#4c474b` |
-| MarkviewPalette3Fg   | markdownH3(fg)                           | fg: `#f9e2af`               |
-| MarkviewPalette3Bg   | Normal(bg) + markdownH3(fg)              | bg: `#4c474b`               |
-| MarkviewPalette3Sign | Normal(bg) + markdownH3(fg), LineNr(bg)  | fg: `#f9e2af`               |
-| ———————————————————— | ———————————————————————————————————————— | ——————————————————————————— |
-| MarkviewPalette4     | Normal(bg) + markdownH4(fg)              | fg: `#a6e3a1` bg: `#3c4948` |
-| MarkviewPalette4Fg   | markdownH4(fg)                           | fg: `#a6e3a1`               |
-| MarkviewPalette4Bg   | Normal(bg) + markdownH4(fg)              | bg: `#3c4948`               |
-| MarkviewPalette4Sign | Normal(bg) + markdownH4(fg), LineNr(bg)  | fg: `#a6e3a1`               |
-| ———————————————————— | ———————————————————————————————————————— | ——————————————————————————— |
-| MarkviewPalette5     | Normal(bg) + markdownH5(fg)              | fg: `#74c7ec` bg: `#314358` |
-| MarkviewPalette5Fg   | markdownH5(fg)                           | fg: `#74c7ec`               |
-| MarkviewPalette5Bg   | Normal(bg) + markdownH5(fg)              | bg: `#314358`               |
-| MarkviewPalette5Sign | Normal(bg) + markdownH5(fg), LineNr(bg)  | fg: `#74c7ec`               |
-| ———————————————————— | ———————————————————————————————————————— | ——————————————————————————— |
-| MarkviewPalette6     | Normal(bg) + markdownH6(fg)              | fg: `#b4befe` bg: `#3c405b` |
-| MarkviewPalette6Fg   | markdownH6(fg)                           | fg: `#b4befe`               |
-| MarkviewPalette6Bg   | Normal(bg) + markdownH6(fg)              | bg: `#3c405b`               |
-| MarkviewPalette6Sign | Normal(bg) + markdownH6(fg), LineNr(bg)  | fg: `#b4befe`               |
-| ———————————————————— | ———————————————————————————————————————— | ——————————————————————————— |
-| MarkviewPalette7     | Normal(bg) + @conditional(fg)            | fg: `#cba6f7` bg: `#403b5a` |
-| MarkviewPalette7Fg   | @conditional(fg)                         | fg: `#cba6f7`               |
-| MarkviewPalette7Bg   | Normal(bg) + @conditional(fg)            | bg: `#403b5a`               |
-| MarkviewPalette7Sign | Normal(bg) + @conditional(fg), LineNr(bg)| fg: `#cba6f7`               |
-
-
-> The source highlight group's values are turned into `Lab` color-space and then mixed to reduce unwanted results.
-
-These groups are then used as links by other groups responsible for various preview elements,
+You can find more details on highlight groups [here](https://github.com/OXY2DEV/markview.nvim/wiki/Home#-highlight-groups). The following highlight groups are created by the plugin,
 
 >[!NOTE]
-> These groups exist for the sake of *backwards compatibility* and *ease of use*.
->
-> You will see something like `fg: Normal`, it means the *fg* of Normal was used as the *fg* of that group.
+> The value of these groups are updated when changing the colorscheme!
 
+- `MarkviewPalette0`, has a background & foreground.
+- `MarkviewPalette0Fg`, only the foreground
+- `MarkviewPalette0Bg`, only the background.
+- `MarkviewPalette0Sign`, background of the sign column(`LineNr`) & foreground.
 
-| Highlight group           | value                                      |
-|---------------------------|--------------------------------------------|
-| MarkviewBlockQuoteDefault | link: `MarkviewPalette0Fg`                 |
-| MarkviewBlockQuoteError   | link: `MarkviewPalette1Fg`                 |
-| MarkviewBlockQuoteNote    | link: `MarkviewPalette5Fg`                 |
-| MarkviewBlockQuoteOk      | link: `MarkviewPalette4Fg`                 |
-| MarkviewBlockQuoteSpecial | link: `MarkviewPalette3Fg`                 |
-| MarkviewBlockQuoteWarn    | link: `MarkviewPalette2Fg`                 |
-| ————————————————————————— | —————————————————————————————————————————— |
-| MarkviewCheckboxCancelled | link: `MarkviewPalette0Fg`                 |
-| MarkviewCheckboxChecked   | link: `MarkviewPalette4Fg`                 |
-| MarkviewCheckboxPending   | link: `MarkviewPalette2Fg`                 |
-| MarkviewCheckboxProgress  | link: `MarkviewPalette6Fg`                 |
-| MarkviewCheckboxUnchecked | link: `MarkviewPalette1Fg`                 |
-| MarkviewCheckboxStriked   | link\*: `MarkviewPalette0Fg`               |
-| ————————————————————————— | —————————————————————————————————————————— |
-| MarkviewCode              | bg\*\*: `normal` ± 5%(L)                   |
-| MarkviewCodeInfo          | bg\*\*: `normal` ± 5%(L), fg: `comment`    |
-| MarkviewCodeFg            | fg\*\*: `normal` ± 5%(L)                   |
-| MarkviewInlineCode        | fg\*\*: `normal` ± 10%(L)                  |
-| ————————————————————————— | —————————————————————————————————————————— |
-| MarkviewIcon0             | link\*\*\*: `MarkviewPalette0Fg`           |
-| MarkviewIcon1             | link\*\*\*: `MarkviewPalette1Fg`           |
-| MarkviewIcon2             | link\*\*\*: `MarkviewPalette5Fg`           |
-| MarkviewIcon3             | link\*\*\*: `MarkviewPalette4Fg`           |
-| MarkviewIcon4             | link\*\*\*: `MarkviewPalette3Fg`           |
-| MarkviewIcon5             | link\*\*\*: `MarkviewPalette2Fg`           |
-| ————————————————————————— | —————————————————————————————————————————— |
-| MarkviewGradient0         | fg: `Normal`                               |
-| MarkviewGradient1         | fg\*\*\*\*: `lerp(Normal, Title, 1/9)`     |
-| MarkviewGradient2         | fg\*\*\*\*: `lerp(Normal, Title, 2/9)`     |
-| MarkviewGradient3         | fg\*\*\*\*: `lerp(Normal, Title, 3/9)`     |
-| MarkviewGradient4         | fg\*\*\*\*: `lerp(Normal, Title, 4/9)`     |
-| MarkviewGradient5         | fg\*\*\*\*: `lerp(Normal, Title, 5/9)`     |
-| MarkviewGradient6         | fg\*\*\*\*: `lerp(Normal, Title, 6/9)`     |
-| MarkviewGradient7         | fg\*\*\*\*: `lerp(Normal, Title, 7/9)`     |
-| MarkviewGradient8         | fg\*\*\*\*: `lerp(Normal, Title, 8/9)`     |
-| MarkviewGradient9         | fg: `Title`                                |
-| ————————————————————————— | —————————————————————————————————————————— |
-| MarkviewHeading1          | link: `MarkviewPalette1`                   |
-| MarkviewHeading2          | link: `MarkviewPalette2`                   |
-| MarkviewHeading3          | link: `MarkviewPalette3`                   |
-| MarkviewHeading4          | link: `MarkviewPalette4`                   |
-| MarkviewHeading5          | link: `MarkviewPalette5`                   |
-| MarkviewHeading6          | link: `MarkviewPalette6`                   |
-| ————————————————————————— | —————————————————————————————————————————— |
-| MarkviewEmail             | link: `@markup.link.url.markdown_inline`   |
-| MarkviewHyperlink         | link: `@markup.link.label.markdown_inline` |
-| MarkviewImage             | link: `@markup.link.label.markdown_inline` |
-| ————————————————————————— | —————————————————————————————————————————— |
-| MarkviewSubscript         | link: `MarkviewPalette3Fg`                 |
-| MarkviewSuperscript       | link: `MarkviewPalette6Fg`                 |
-| ————————————————————————— | —————————————————————————————————————————— |
-| MarkviewListItemMinus     | link: `MarkviewPalette2Fg`                 |
-| MarkviewListItemPlus      | link: `MarkviewPalette4Fg`                 |
-| MarkviewListItemStar      | link: `MarkviewPalette6Fg`                 |
-| ————————————————————————— | —————————————————————————————————————————— |
-| MarkviewTableHeader       | link: `@markup.heading.markdown`           |
-| MarkviewTableBorder       | link: `MarkviewPalette5Fg`                 |
-| MarkviewTableAlignCenter  | link: `MarkviewPalette5Fg`                 |
-| MarkviewTableAlignLeft    | link: `MarkviewPalette5Fg`                 |
-| MarkviewTableAlignRight   | link: `MarkviewPalette5Fg`                 |
+- `MarkviewPalette1`
+- `MarkviewPalette1Fg`
+- `MarkviewPalette1Bg`
+- `MarkviewPalette1Sign`
 
+- `MarkviewPalette2`
+- `MarkviewPalette2Fg`
+- `MarkviewPalette2Bg`
+- `MarkviewPalette2Sign`
 
-> \* = Only the foreground color is used. Strikeout is added.
-> 
-> \*\* = The color is converted to HSL and it's luminosity(L) is increased/decreased by the specified amount.
-> 
-> \*\*\* = The background color of `MarkviewCode` is added to the groups.
-> 
-> \*\*\*\* = Linearly interpolated value between 2 highlight groups `fg`.
+- `MarkviewPalette3`
+- `MarkviewPalette3Fg`
+- `MarkviewPalette3Bg`
+- `MarkviewPalette3Sign`
+
+- `MarkviewPalette4`
+- `MarkviewPalette4Fg`
+- `MarkviewPalette4Bg`
+- `MarkviewPalette4Sign`
+
+- `MarkviewPalette5`
+- `MarkviewPalette5Fg`
+- `MarkviewPalette5Bg`
+- `MarkviewPalette5Sign`
+
+- `MarkviewPalette6`
+- `MarkviewPalette6Fg`
+- `MarkviewPalette6Bg`
+- `MarkviewPalette6Sign`
+
+- `MarkviewCode`.
+- `MarkviewCodeInfo`.
+- `MarkviewCodeFg`.
+- `MarkviewInlineCode`.
+
+>[!NOTE]
+> These groups are meant to create a gradient!
+
+- `MarkviewGradient0`
+- `MarkviewGradient1`
+- `MarkviewGradient2`
+- `MarkviewGradient3`
+- `MarkviewGradient4`
+- `MarkviewGradient5`
+- `MarkviewGradient6`
+- `MarkviewGradient7`
+- `MarkviewGradient8`
+- `MarkviewGradient9`
+
+------
+
+- `MarkviewBlockQuoteDefault`, links to `MarkviewPalette0Fg`.
+- `MarkviewBlockQuoteError`, links to `MarkviewPalette1Fg`.
+- `MarkviewBlockQuoteNote`, links to `MarkviewPalette5Fg`.
+- `MarkviewBlockQuoteOk`, links to `MarkviewPalette4Fg`.
+- `MarkviewBlockQuoteSpecial`, links to `MarkviewPalette3Fg`.
+- `MarkviewBlockQuoteWarn`, links to `MarkviewPalette2Fg`.
+
+- `MarkviewCheckboxCancelled`, links to `MarkviewPalette0Fg`.
+- `MarkviewCheckboxChecked`, links to `MarkviewPalette4Fg`.
+- `MarkviewCheckboxPending`, links to `MarkviewPalette2Fg`.
+- `MarkviewCheckboxProgress`, links to `MarkviewPalette6Fg`.
+- `MarkviewCheckboxUnchecked`, links to `MarkviewPalette1Fg`.
+- `MarkviewCheckboxStriked`, links to `MarkviewPalette0Fg`[^1].
+
+- `MarkviewIcon0`, links to `MarkviewPalette0Fg`[^2].
+- `MarkviewIcon1`, links to `MarkviewPalette1Fg`[^2].
+- `MarkviewIcon2`, links to `MarkviewPalette2Fg`[^2].
+- `MarkviewIcon3`, links to `MarkviewPalette3Fg`[^2].
+- `MarkviewIcon4`, links to `MarkviewPalette4Fg`[^2].
+- `MarkviewIcon5`, links to `MarkviewPalette5Fg`[^2].
+- `MarkviewIcon6`, links to `MarkviewPalette6Fg`[^2].
+
+- `MarkviewHeading1`, links to `MarkviewPalette1`.
+- `MarkviewHeading2`, links to `MarkviewPalette2`.
+- `MarkviewHeading3`, links to `MarkviewPalette3`.
+- `MarkviewHeading4`, links to `MarkviewPalette4`.
+- `MarkviewHeading5`, links to `MarkviewPalette5`.
+- `MarkviewHeading6`, links to `MarkviewPalette6`.
+
+- `MarkviewHeading1Sign`, links to `MarkviewPalette1Sign`.
+- `MarkviewHeading2Sign`, links to `MarkviewPalette2Sign`.
+- `MarkviewHeading3Sign`, links to `MarkviewPalette3Sign`.
+- `MarkviewHeading4Sign`, links to `MarkviewPalette4Sign`.
+- `MarkviewHeading5Sign`, links to `MarkviewPalette5Sign`.
+- `MarkviewHeading6Sign`, links to `MarkviewPalette6Sign`.
+
+- `MarkviewHyperlink`, links to `@markup.link.label.markdown_inline`.
+- `MarkviewImage`, links to `@markup.link.label.markdown_inline`.
+- `MarkviewEmail`, links to `@markup.link.url.markdown_inline`.
+
+- `MarkviewSubscript`, links to `MarkviewPalette3Fg`.
+- `MarkviewSuperscript`, links to `MarkviewPalette6Fg`.
+
+- `MarkviewListItemMinus`, links to `MarkviewPalette2Fg`.
+- `MarkviewListItemPlus`, links to `MarkviewPalette4Fg`.
+- `MarkviewListItemStar`, links to `MarkviewPalette6Fg`.
+
+- `MarkviewTableHeader`, links to `@markup.heading.markdown`.
+- `MarkviewTableBorder`, links to `MarkviewPalette5Fg`.
+- `MarkviewTableAlignLeft`, links to `@markup.heading.markdown`.
+- `MarkviewTableAlignCenter`, links to `@markup.heading.markdown`.
+- `MarkviewTableAlignRight`, links to `@markup.heading.markdown`.
 
 ## 🌟 Presets
 
@@ -986,6 +962,11 @@ If you have time and want to make this project better, consider helping me fix a
 - [ ] Optimization of `require("markview.renderers.markdown").output()`.
 - [ ] Optimization of the table renderer.
 - [ ] Stricter logic to reduce preview redraws.
-- [ ] Make `splitview` update as little content as possible.
-- [ ] Make the help files/wiki more beginner friendly.
+- [X] Make `splitview` update as little content as possible.
+- [X] Make the help files/wiki more beginner friendly.
+
+------
+
+[^1]: The value of the linked group is used **literally**. So, manually changing the link group wouldn't work for this.
+[^2]: The value of `MarkviewCode` is used for the background. So, changing either of the linked group wouldn't affect these.
 
