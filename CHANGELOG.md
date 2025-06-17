@@ -1,5 +1,12 @@
 # Changelog
 
+## [25.9.1](https://github.com/OXY2DEV/markview.nvim/compare/v25.9.0...v25.9.1) (2025-06-17)
+
+
+### Bug Fixes
+
+* **parser_markdown:** Fixed an issue with markdown parser not recognizing single column tables ([fbfcd8e](https://github.com/OXY2DEV/markview.nvim/commit/fbfcd8ed6e3a1323a326cf3384cf110c57eab87f))
+
 ## [25.9.0](https://github.com/OXY2DEV/markview.nvim/compare/v25.8.0...v25.9.0) (2025-06-11)
 
 
