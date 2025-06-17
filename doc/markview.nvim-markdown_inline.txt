@@ -1,4 +1,4 @@
-*markview.nvim-markdown_inline.txt*                 💭 Markdown inline option
+*markview.nvim-markdown_inline.txt*                  💭 Markdown inline option
 
 ▌ 💡 Tip
 ▌ You can find the type definition in

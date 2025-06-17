@@ -1,4 +1,4 @@
-*markview.nvim-typst.txt*                                  💻 Typst options
+*markview.nvim-typst.txt*                                     💻 Typst options
 
 ▌ 💡 Tip
 ▌ You can find type definitions in `definitions/renderers/typst.lua`[^1].
