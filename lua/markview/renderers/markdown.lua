@@ -42,10 +42,118 @@ markdown.cache = {};
 --- > Use only when there are no alternatives.
 ---@param str string
 ---@return string
----@return integer
 markdown.output = function (str)
-	local D, _, W = require("markview.parser").string(str);
-	return string.rep("X", W), D;
+	--- Checks if syntax exists in {str}.
+	---@return boolean
+	local function has_syntax ()
+		if str:match("`(.-)`") then
+			return true;
+		elseif str:match("\\([%\\%*%_%{%}%[%]%(%)%#%+%-%.%!%%<%>$])") then
+			return true;
+		elseif str:match("([%*]+)(.-)([%*]+)") then
+			return true;
+		elseif str:match("%~%~(.-)%~%~") then
+			return true;
+		elseif str:match("%&([%d%a%#]+);") then
+			return true;
+		elseif str:match(":([%a%d%_%+%-]+):") then
+			return true;
+		elseif str:match("%=%=(.-)%=%=") then
+			return true;
+		elseif str:match("%!%[%[([^%]]+)%]%]") then
+			return true;
+		elseif str:match("%[%[%#%^([^%]]+)%]%]") then
+			return true;
+		elseif str:match("%[%[([^%]]+)%]%]") then
+			return true;
+		elseif str:match("%!%[([^%]]*)%]([%(%[])([^%)]*)([%)%]])") then
+			return true;
+		elseif str:match("%!%[([^%]]*)%]") then
+			return true;
+		elseif str:match("%[([^%]]*)%]([%(%[])([^%)]*)([%)%]])") then
+			return true;
+		elseif str:match("%[([^%]]+)%]") then
+			return true;
+		elseif str:match("%<([^%s%@]-)@(%S+)%>") then
+			return true;
+		elseif str:match("%<(%S+)%>") then
+			return true;
+		end
+
+		return false;
+	end
+
+	--- If no syntax items are found and no highlight exits
+	if string.match(str, "^[%w%s%*%~\\%`]*$") then
+		---@type markview.config.__inline?
+		local code_config = spec.get({ "markdown_inline", "inline_codes" }, { fallback = nil, eval_args = { str, {} } });
+		local _str = str:gsub("\\%`", " ");
+
+		for inline_code in _str:gmatch("`(.-)`") do
+			if code_config then
+				_str = _str:gsub(concat({
+					"`",
+					inline_code,
+					"`"
+				}), concat({
+					code_config.corner_left or "",
+					code_config.padding_left or "",
+					code_config.icon or "",
+					inline_code,
+					code_config.padding_right or "",
+					code_config.corner_right or "",
+				}));
+			else
+				_str = _str:gsub(concat({
+					"`",
+					inline_code,
+					"`"
+				}), inline_code);
+			end
+		end
+
+		for str_b, content, str_a in _str:gmatch("([*]+)(.-)([*]+)") do
+			if content == "" then
+				goto continue;
+			elseif #str_b ~= #str_a then
+				local min = math.min(#str_b, #str_a);
+				str_b = str_b:sub(0, min);
+				str_a = str_a:sub(0, min);
+			end
+
+			str_b = utils.escape_string(str_b);
+			content = utils.escape_string(content);
+			str_a = utils.escape_string(str_a);
+
+			_str = _str:gsub(str_b .. content .. str_a, string.rep("X", vim.fn.strdisplaywidth(content)))
+
+			::continue::
+		end
+
+		for striked in _str:gmatch("%~%~(.-)%~%~") do
+			_str = _str:gsub(concat({
+				"~~",
+				striked,
+				"~~"
+			}), concat({
+				string.rep("X", vim.fn.strdisplaywidth(striked))
+			}));
+		end
+
+		for escaped in _str:gmatch("\\([%\\%*%_%{%}%[%]%(%)%#%+%-%.%!%%<%>$])") do
+			_str = _str:gsub(concat({
+				"\\",
+				escaped
+			}), " ");
+		end
+
+		return _str;
+	elseif has_syntax() == false then
+		return str;
+	end
+
+	local _, _, W = require("markview.parser").string(str);
+	return string.rep("X", W);
 end
 
 --- Applies text transformation based on the **filetype**.
