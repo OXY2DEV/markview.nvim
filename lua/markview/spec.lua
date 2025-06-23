@@ -111,6 +111,9 @@ end
 ---@type markview.config
 spec.default = {
 	experimental = {
+		check_rtp = true,
+		check_rtp_message = true,
+
 		date_formats = {
 			"^%d%d%d%d%-%d%d%-%d%d$",      --- YYYY-MM-DD
 			"^%d%d%-%d%d%-%d%d%d%d$",      --- DD-MM-YYYY, MM-DD-YYYY

@@ -1,6 +1,78 @@
 ---@type integer Autocmd group ID.
 local augroup = vim.api.nvim_create_augroup("markview", { clear = true });
 
+--- Checks errors in `runtime path`;
+local function rtp_check ()
+	---|fS
+
+	local spec = require("markview.spec");
+
+	local check_rtp = spec.get({ "experimental", "check_rtp" }, { fallback = true });
+	local check_rtp_msg = spec.get({ "experimental", "check_rtp_message" }, { fallback = true });
+
+	if check_rtp == false then
+		return;
+	elseif not debug or not vim.opt then
+		return;
+	end
+
+	---@type string[] Runtime paths.
+	local rtps = vim.opt.runtimepath:get();
+	local ts_path, markview_path
+	local ts_index, markview_index
+
+	for r, path in ipairs(rtps) do
+		if ts_path and markview_path then
+			break;
+		elseif string.match(path, "nvim%-treesitter$") then
+			ts_path = path;
+			ts_index = r;
+		elseif string.match(path, "markview%.nvim$") then
+			markview_path = path;
+			markview_index = r;
+		end
+	end
+
+	if not ts_path or not markview_path then
+		return;
+	elseif ts_index < markview_index then
+		rtps[ts_index] = markview_path;
+		rtps[markview_index] = ts_path;
+
+		vim.o.runtimepath = table.concat(rtps, ",");
+		_G.__mkv_has_rtp_error = true;
+
+		if not check_rtp_msg then
+			return;
+		end
+
+		vim.api.nvim_echo({
+			{ "  markview.nvim ", "DiagnosticVirtualTextInfo" },
+			{ ": ", "@comment" },
+			{ " nvim-treesitter ", "DiagnosticVirtualTextWarn" },
+			{ " is being loaded before ", "@comment" },
+			{ " markview.nvim ", "DiagnosticVirtualTextHint" },
+			{ ".", "@comment" },
+			{ "\n" },
+			{ "\n" },
+			{ "This can cause syntax highlighting issues!", "ErrorMsg" },
+			{ "\n" },
+			{ "Your ", "@comment" },
+			{ " runtime path ", "DiagnosticVirtualTextHint" },
+			{ " has been modified to fix load order.", "@comment" },
+			{ "\n" },
+			{ "\n" },
+			{ "You can disable this by setting ", "@comment" },
+			{ " experimental.check_rtp = false ", "DiagnosticVirtualTextHint" },
+			{ " or set ", "@comment" },
+			{ " experimental.check_rtp_message = false ", "DiagnosticVirtualTextHint" },
+			{ " to only hide this mesaage.", "@comment" },
+		}, true, { verbose = true });
+	end
+
+	---|fE
+end
+
 local function register_blink_source ()
 	---|fS
 
@@ -194,6 +266,7 @@ set_ts_directive();
 vim.api.nvim_create_autocmd("VimEnter", {
 	group = augroup,
 	callback = function ()
+		rtp_check();
 		require("markview.highlights").setup();
 	end
 });
