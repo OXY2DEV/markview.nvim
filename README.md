@@ -341,11 +341,21 @@ Plug "OXY2DEV/markview.nvim"
 ### 💤 Lazy.nvim
 
 >[!WARNING]
-> Do *not* lazy load this plugin as it is already lazy-loaded.
->
-> Lazy-loading will cause **more time** for the previews to load when starting Neovim.
+> Do *not* lazy load this plugin as it is already lazy-loaded. Lazy-loading may cause **more time** for the previews to load when starting Neovim!
 
 The plugin should be loaded *after* your colorscheme to ensure the correct highlight groups are used.
+
+>[!IMPORTANT]
+> In case you are experiencing **syntax issues**(e.g. code block markers being hidden), You can use this to load `markview.nvim` first by adding it as a dependency of `nvim-treesitter`,
+>
+> ```lua
+> {
+>     "nvim-treesitter/nvim-treesitter",
+>     dependencies = { "OXY2DEV/markview.nvim" },
+>
+>     -- ... All other options.
+> },
+> ```
 
 ```lua
 -- For `plugins/markview.lua` users.

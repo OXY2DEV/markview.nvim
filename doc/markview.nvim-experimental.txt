@@ -44,6 +44,28 @@ here,
 <
 
 ------------------------------------------------------------------------------
+check_rtp
+
+  • type: `boolean`
+    default: `true`
+
+Checks the `runtimepath` to see if `nvim-treesitter` is getting loaded before
+`markview.nvim`. If it's being loaded `markview.nvim` will be added before
+`nvim-treesitter` and an error message will be shown.
+
+▌ 🧩 Important
+▌ This assumes the directory/folder name matches the plugin name!
+
+------------------------------------------------------------------------------
+check_rtp_message
+
+  • type: `boolean`
+    default: `true`
+
+Whether to show the error message when `nvim-treesitter` gets loaded before
+`markview.nvim`.
+
+------------------------------------------------------------------------------
 date_formats
 
   • type: `string[]`

@@ -212,8 +212,7 @@ Almost all the inline elements are configured the same way,
 enable ~
 
 ▌ 🧩 Important
-
-  This option is only available if it’s in `markview.<language>.<option>`!
+▌ This option is only available if it’s in `markview.<language>.<option>`!
 
   • type: `boolean`
 
