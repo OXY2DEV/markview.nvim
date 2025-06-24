@@ -8,6 +8,9 @@ Options that don't belong in other groups or needs to be tested are added here,
 ```lua
 ---@type markview.config.experimental
 experimental = {
+    check_rtp = true,
+    check_rtp_message = true,
+
     date_formats = {
         "^%d%d%d%d%-%d%d%-%d%d$",      --- YYYY-MM-DD
         "^%d%d%-%d%d%-%d%d%d%d$",      --- DD-MM-YYYY, MM-DD-YYYY
@@ -41,6 +44,23 @@ experimental = {
     linewise_ignore_org_indent = false,
 }
 ```
+
+## check_rtp
+
+- type: `boolean`
+  default: `true`
+
+Checks the `runtimepath` to see if `nvim-treesitter` is getting loaded before `markview.nvim`. If it's being loaded `markview.nvim` will be added before `nvim-treesitter` and an error message will be shown.
+
+>[!IMPORTANT]
+> This assumes the directory/folder name matches the plugin name!
+
+## check_rtp_message
+
+- type: `boolean`
+  default: `true`
+
+Whether to show the error message when `nvim-treesitter` gets loaded before `markview.nvim`.
 
 ## date_formats
 
