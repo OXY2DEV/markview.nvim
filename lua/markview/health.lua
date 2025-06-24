@@ -466,6 +466,28 @@ health.check = function ()
 
 	------------------------------------------------------------------------------------------ 
 
+	vim.health.start("📂 Runtime path:")
+
+	if _G.__mkv_has_rtp_error == true then
+		vim.health.error(
+			"Runtime: `nvim-treesitter` is loaded before `markview.nvim`! It is recommened to change their load order!"
+		);
+
+		vim.health.info(
+			"NOTE: This can lead to incorrect `tree-sitter` query files being loaded, syntax highlighting may look odd!"
+		);
+	else
+		vim.health.ok(
+			"Runtime: `nvim-treesitter` isn't loaded before `markview.nvim`."
+		);
+
+		vim.health.info(
+			"NOTE: If you have changed the directory name of `nvim-treesitter` or `markview.nvim`, the result will be inaccurate!"
+		);
+	end
+
+	------------------------------------------------------------------------------------------ 
+
 	vim.health.start("💡 Parsers:")
 
 	if pcall(require, "nvim-treesitter") then
