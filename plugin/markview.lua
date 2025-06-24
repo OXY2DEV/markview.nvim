@@ -2,7 +2,7 @@
 local augroup = vim.api.nvim_create_augroup("markview", { clear = true });
 
 --- Checks errors in `runtime path`;
-local function rtp_check ()
+local function check_rtp ()
 	---|fS
 
 	local spec = require("markview.spec");
@@ -266,7 +266,7 @@ set_ts_directive();
 vim.api.nvim_create_autocmd("VimEnter", {
 	group = augroup,
 	callback = function ()
-		rtp_check();
+		check_rtp();
 		require("markview.highlights").setup();
 	end
 });
@@ -787,7 +787,10 @@ vim.api.nvim_create_autocmd({
 
  ------------------------------------------------------------------------------------------
 
----@type mkv.cmd_completion
+---@class markview.cmd_completions
+---
+---@field default fun(str: string): string[]
+---@field [string] fun(args: string[], cmd: string): string[]
 local get_complete_items = {
 	---|fS
 
