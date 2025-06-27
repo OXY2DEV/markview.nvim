@@ -484,22 +484,37 @@ spec.default = {
 			["NOTE"] = {
 				hl = "MarkviewBlockQuoteNote",
 				preview = "󰋽 Note",
+
+				title = true,
+				icon = "󰋽",
 			},
 			["TIP"] = {
 				hl = "MarkviewBlockQuoteOk",
 				preview = " Tip",
+
+				title = true,
+				icon = "",
 			},
 			["IMPORTANT"] = {
 				hl = "MarkviewBlockQuoteSpecial",
 				preview = " Important",
+
+				title = true,
+				icon = "",
 			},
 			["WARNING"] = {
 				hl = "MarkviewBlockQuoteWarn",
 				preview = " Warning",
+
+				title = true,
+				icon = "",
 			},
 			["CAUTION"] = {
 				hl = "MarkviewBlockQuoteError",
 				preview = "󰳦 Caution",
+
+				title = true,
+				icon = "󰳦",
 			}
 		},
 
