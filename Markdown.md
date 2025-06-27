@@ -177,22 +177,37 @@ markdown = {
         ["NOTE"] = {
             hl = "MarkviewBlockQuoteNote",
             preview = "󰋽 Note",
+
+            title = true,
+            icon = "󰋽",
         },
         ["TIP"] = {
             hl = "MarkviewBlockQuoteOk",
             preview = " Tip",
+
+            title = true,
+            icon = "",
         },
         ["IMPORTANT"] = {
             hl = "MarkviewBlockQuoteSpecial",
             preview = " Important",
+
+            title = true,
+            icon = "",
         },
         ["WARNING"] = {
             hl = "MarkviewBlockQuoteWarn",
             preview = " Warning",
+
+            title = true,
+            icon = "",
         },
         ["CAUTION"] = {
             hl = "MarkviewBlockQuoteError",
             preview = "󰳦 Caution",
+
+            title = true,
+            icon = "󰳦",
         }
     },
 
@@ -654,7 +669,7 @@ Enables previewing of markdown.
 ## block_quotes
 
 - type: [markview.config.markdown.block_quotes](https://github.com/OXY2DEV/markview.nvim/blob/99d9a091915b994b378c4a9cc3553b3cbbe4bad5/lua/definitions/renderers/markdown.lua#L20-L40)
-  [default](https://github.com/OXY2DEV/markview.nvim/blob/a803117f272cc47733b67ebbaf1acb91095da276/lua/markview/spec.lua#L314-L498)
+  [default](https://github.com/OXY2DEV/markview.nvim/blob/05521a4d5fd791694aae0c4f590154af8fdd67e4/lua/markview/spec.lua#L320-L519)
 
 Changes how block quotes look. Each key in the table(other then `enable`, `wrap` & `default`) represents a new callout type.
 
@@ -829,22 +844,37 @@ block_quotes = {
     ["NOTE"] = {
         hl = "MarkviewBlockQuoteNote",
         preview = "󰋽 Note",
+
+        title = true,
+        icon = "󰋽",
     },
     ["TIP"] = {
         hl = "MarkviewBlockQuoteOk",
         preview = " Tip",
+
+        title = true,
+        icon = "",
     },
     ["IMPORTANT"] = {
         hl = "MarkviewBlockQuoteSpecial",
         preview = " Important",
+
+        title = true,
+        icon = "",
     },
     ["WARNING"] = {
         hl = "MarkviewBlockQuoteWarn",
         preview = " Warning",
+
+        title = true,
+        icon = "",
     },
     ["CAUTION"] = {
         hl = "MarkviewBlockQuoteError",
         preview = "󰳦 Caution",
+
+        title = true,
+        icon = "󰳦",
     }
 }
 ```
