@@ -1148,7 +1148,7 @@ markdown.block_quote = function (buffer, item)
 				virt_text_pos = "inline",
 				virt_text = {
 					{ " " },
-					{ config.icon, utils.set_hl(config.icon_hl or config.hl) }
+					{ config.icon or "", utils.set_hl(config.icon_hl or config.hl) }
 				},
 
 				hl_mode = "combine",
