@@ -7,10 +7,10 @@ local function check_rtp ()
 
 	local spec = require("markview.spec");
 
-	local check_rtp = spec.get({ "experimental", "check_rtp" }, { fallback = true });
+	local _check_rtp = spec.get({ "experimental", "check_rtp" }, { fallback = true });
 	local check_rtp_msg = spec.get({ "experimental", "check_rtp_message" }, { fallback = true });
 
-	if check_rtp == false then
+	if _check_rtp == false then
 		return;
 	elseif not debug or not vim.opt then
 		return;
