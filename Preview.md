@@ -186,6 +186,9 @@ Also see,
 
 Callbacks are functions that can be run when specific things/events happen. Supported callbacks are,
 
+<details>
+    <summary>Show callbacks</summary>
+
 ### on_attach
 
 - type: `function`
@@ -332,6 +335,8 @@ Parameters,
 
 Called after running `splitClose`.
 
+</details>
+
 ## map_gx
 
 >[!CAUTION]
@@ -368,12 +373,35 @@ Icon provider to use in various parts of the plugin(e.g. `code blocks`).
 
 Filetypes that should show previews. The plugin will attach to any buffers matching any of these filetypes.
 
+You can add support for extra filetypes like so,
+
+```lua
+require("markview").setup({
+    preview = {
+        filetypes = { "some_custom_filetype", "markdown", "quarto", "rmd", "typst" },
+    },
+});
+```
+
 ## ignore_buftypes
 
 - type: `string[]`
   default: `{ "nofile" }`
 
 Buftypes that should be ignored by this plugin. Buffers whose filetype matches any of these will not be attached to(even if the filetype matches [filetypes](#filetypes)).
+
+You can enable `markview.nvim` for `nofile` buffers like so,
+
+>[!IMPORTANT]
+> This might not always work for some buffers(e.g. LSP hover) as they may disable `autocmds` from firing or use hidden windows.
+
+```lua
+require("markview").setup({
+    preview = {
+        ignore_buftypes = {},
+    },
+});
+```
 
 ## raw_previews
 
@@ -386,20 +414,28 @@ Buftypes that should be ignored by this plugin. Buffers whose filetype matches a
 A map of language & preview options defining what should be shown as raw text in `hybrid mode`.
 
 ```lua
-raw_previews = {
-	-- This will cause only table's to show
-    -- up as raw markdown in hybrid mode.
-	markdown = { "tables" },
+require("markview").setup({
+    preview = {
+        raw_previews = {
+            -- This will cause only table's to show
+            -- up as raw markdown in hybrid mode.
+            markdown = { "tables" },
 
-	-- An empty list means everything will show
-    -- up as raw.
-    markdown_inline = {},
-    html = {},
-    latex = {},
-    typst = {},
-    yaml = {},
-}
+            -- An empty list means everything will show
+            -- up as raw.
+            markdown_inline = {},
+            html = {},
+            latex = {},
+            typst = {},
+            yaml = {},
+        }
+    }
+});
 ```
+
+| Normal hybrid mode | Hybrid mode with `raw_previews` |
+|--------------------|------------------------------------|
+| ![hybrid_mode](https://github.com/OXY2DEV/markview.nvim/blob/images/v25/wiki/hybrid_mode.png) | ![linewise_hybrid_mode](https://github.com/OXY2DEV/markview.nvim/blob/images/v25/wiki/ignore_previews.png) |
 
 ## modes
 
@@ -416,12 +452,33 @@ List of Vim-mode short-hands where preview will be shown. Possible values are,
 + `no`, Normal-operation mode
 + `c`, Command mode
 
+You enable the plugin for `visual mode` like so,
+
+```lua
+require("markview").setup({
+    preview = {
+        modes = { "v", "n", "no", "c" },
+    },
+});
+```
+
 ## hybrid_modes
 
 - type: `string[]`
   default: `{}`
 
 List of Vim-mode short-hands where `hybrid mode` will be used. Possible values are the same as [modes](#modes).
+
+To have rendering enabled while in `insert mode` you can use this,
+
+```lua
+require("markview").setup({
+    preview = {
+        modes = { "i", "n", "no", "c" },
+        hybrid_modes = { "i" },
+    },
+});
+```
 
 ## linewise_hybrid_mode
 
@@ -430,9 +487,18 @@ List of Vim-mode short-hands where `hybrid mode` will be used. Possible values a
 
 Makes `hybrid mode` show the raw version of the line under the cursor instead of all the lines creating the tree-sitter node under the cursor.
 
-| Normal hybrid mode | Hybrid mode with `ignore_previews` |
-|--------------------|------------------------------------|
-| ![hybrid_mode](https://github.com/OXY2DEV/markview.nvim/blob/images/v25/wiki/hybrid_mode.png) | ![linewise_hybrid_mode](https://github.com/OXY2DEV/markview.nvim/blob/images/v25/wiki/ignore_previews.png) |
+To only show the current line as raw markdown when using previews in `insert mode` you can use this,
+
+```lua
+require("markview").setup({
+    preview = {
+        modes = { "i", "n", "no", "c" },
+        hybrid_modes = { "i" },
+
+        linewise_hybrid_mode = true,
+    },
+});
+```
 
 >[!TIP]
 > You can modify [edit_range](#edit_range) to change how many lines are shown as raw!
