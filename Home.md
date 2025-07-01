@@ -8,9 +8,9 @@ A hackable `markdown`, `latex`, `typst`, `html`(inline) & `yaml` previewer for N
 
 On this page,
 
-- [Commands](#-commands)
-- [Autocmds](#-autocmds)
-- [Highlight groups](#-highlight-groups)
+- [💡 Commands](#-commands)
+- [📻 Autocmds](#-autocmds)
+- [🎨 Highlight groups](#-highlight-groups)
     + [Main groups](#main-groups)
     + [Secondary groups](#secondary-groups)
 
@@ -18,12 +18,15 @@ On this page,
 
 Also read,
 
-- [Configuration](https://github.com/OXY2DEV/markview.nvim/wiki/Configuration)
-    + [Markdown](https://github.com/OXY2DEV/markview.nvim/wiki/Markdown)
-    + [Markdown inline](https://github.com/OXY2DEV/markview.nvim/wiki/Markdown-inline)
-    + [LaTeX](https://github.com/OXY2DEV/markview.nvim/wiki/LaTeX)
-    + [Typst](https://github.com/OXY2DEV/markview.nvim/wiki/Typst)
-    + [YAML](https://github.com/OXY2DEV/markview.nvim/wiki/YAML)
+- [🔩 Configuration](https://github.com/OXY2DEV/markview.nvim/wiki/Configuration)
+    + [🌋 Experimental options](https://github.com/OXY2DEV/markview.nvim/wiki/Experimental)
+    + [💻 Preview options](https://github.com/OXY2DEV/markview.nvim/wiki/Preview)
+
+    + [📝 Markdown](https://github.com/OXY2DEV/markview.nvim/wiki/Markdown)
+    + [💭 Markdown inline](https://github.com/OXY2DEV/markview.nvim/wiki/Markdown-inline)
+    + [🧮 LaTeX](https://github.com/OXY2DEV/markview.nvim/wiki/LaTeX)
+    + [💻 Typst](https://github.com/OXY2DEV/markview.nvim/wiki/Typst)
+    + [🔩 YAML](https://github.com/OXY2DEV/markview.nvim/wiki/YAML)
 
 - [Developer options](https://github.com/OXY2DEV/markview.nvim/wiki/Developer-documentation)
 
@@ -31,12 +34,9 @@ Also read,
 
 For the tinkerers,
 
-- [Experimental options](https://github.com/OXY2DEV/markview.nvim/wiki/Experimental)
-- [Preview options](https://github.com/OXY2DEV/markview.nvim/wiki/Preview)
-
-- [Advanced usage](https://github.com/OXY2DEV/markview.nvim/wiki/Advanced-usage)
-- [Presets](https://github.com/OXY2DEV/markview.nvim/wiki/Presets)
-- [Extras](https://github.com/OXY2DEV/markview.nvim/wiki/Extras)
+- [🔥 Advanced usage](https://github.com/OXY2DEV/markview.nvim/wiki/Advanced-usage)
+- [🧩 Presets](https://github.com/OXY2DEV/markview.nvim/wiki/Presets)
+- [🧩 Extras](https://github.com/OXY2DEV/markview.nvim/wiki/Extras)
 
 ## 💡 Commands
 
