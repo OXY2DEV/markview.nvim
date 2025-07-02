@@ -467,6 +467,9 @@ require("markview").setup({
 - type: `string[]`
   default: `{}`
 
+>[!IMPORTANT]
+> The mode must also be present in [preview.modes](#modes).
+
 List of Vim-mode short-hands where `hybrid mode` will be used. Possible values are the same as [modes](#modes).
 
 To have rendering enabled while in `insert mode` you can use this,
