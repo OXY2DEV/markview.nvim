@@ -357,6 +357,8 @@ The plugin should be loaded *after* your colorscheme to ensure the correct highl
 >     -- ... All other options.
 > },
 > ```
+>
+> [Reference](https://github.com/OXY2DEV/markview.nvim/issues/365#issuecomment-3028249737).
 
 ```lua
 -- For `plugins/markview.lua` users.
