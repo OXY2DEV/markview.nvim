@@ -461,6 +461,9 @@ hybrid_modes
   • type: `string[]`
     default: `{}`
 
+▌ 🧩 Important
+▌ The mode must also be present in `modes`.
+
 List of Vim-mode short-hands where `hybrid mode` will be used. Possible values
 are the same as `modes`.
 
