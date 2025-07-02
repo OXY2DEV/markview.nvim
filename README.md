@@ -328,7 +328,7 @@ Fonts,
 >[!IMPORTANT]
 > This plugin makes use of `tree-sitter` queries! So, it must be loaded **before** `nvim-treesitter`.
 >
-> You can solve this issue by loading this plugin **before** `nvim-treesitter`(add `dependencies = { "OXY2DEV/markview.nvim" }` to your config for nvim-treesitter in `lazy.nvim`). You may also need to disable lazy-loading(if you use it heavily).
+> You can solve this issue by loading this plugin as a dependency of `nvim-treesitter`(add `dependencies = { "OXY2DEV/markview.nvim" }` to your config for nvim-treesitter in `lazy.nvim`) and disable lazy-loading for **both** of the plugins.
 
 ### 🧩 Vim-plug
 
@@ -352,6 +352,7 @@ The plugin should be loaded *after* your colorscheme to ensure the correct highl
 > {
 >     "nvim-treesitter/nvim-treesitter",
 >     dependencies = { "OXY2DEV/markview.nvim" },
+>     lazy = false,
 >
 >     -- ... All other options.
 > },
@@ -362,6 +363,9 @@ The plugin should be loaded *after* your colorscheme to ensure the correct highl
 return {
     "OXY2DEV/markview.nvim",
     lazy = false,
+
+   -- For `nvim-treesitter` users.
+    priority = 49,
 
     -- For blink.cmp's completion
     -- source
@@ -376,6 +380,9 @@ return {
 {
     "OXY2DEV/markview.nvim",
     lazy = false,
+
+   -- For `nvim-treesitter` users.
+    priority = 49,
 
     -- For blink.cmp's completion
     -- source
