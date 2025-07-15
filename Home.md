@@ -28,7 +28,7 @@ Also read,
     + [💻 Typst](https://github.com/OXY2DEV/markview.nvim/wiki/Typst)
     + [🔩 YAML](https://github.com/OXY2DEV/markview.nvim/wiki/YAML)
 
-- [Developer options](https://github.com/OXY2DEV/markview.nvim/wiki/Developer-documentation)
+- [Developer stuff](https://github.com/OXY2DEV/markview.nvim/wiki/Developer-documentation)
 
 ------
 
