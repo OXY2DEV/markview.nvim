@@ -29,7 +29,7 @@ Also read,
     • Typst, `markview.nvim-typst.txt`.
     • YAML, `markview.nvim-yaml.txt`.
 
-  • Developer options, `markview.nvim-dev.txt`.
+  • Developer docuemntation, `markview.nvim-dev.txt`.
 
 ------------------------------------------------------------------------------
 
