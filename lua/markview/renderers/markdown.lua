@@ -91,7 +91,7 @@ markdown.output = function (str, buffer)
 			return true;
 		elseif str:match("([%*]+)(.-)([%*]+)") then
 			return true;
-		elseif str:match("%~%~(.-)%~%~") then
+		elseif str:match("%~%~(.-)%~%~") or str:match("%~(.-)%~") then
 			return true;
 		elseif str:match("%&([%d%a%#]+);") then
 			return true;
@@ -245,6 +245,24 @@ markdown.output = function (str, buffer)
 				"~~",
 				striked,
 				"~~"
+			}),
+			concat({
+				striked
+			}),
+			1
+		);
+	end
+
+	-- NOTE: Do this after checking `~~text~~` to prevent
+	-- mismatches.
+	--
+	-- See #378
+	for striked in str:gmatch("%~(.-)%~") do
+		str = str:gsub(
+			concat({
+				"~",
+				striked,
+				"~"
 			}),
 			concat({
 				striked
@@ -905,6 +923,20 @@ markdown.get_visual_text = {
 				"~~",
 				striked,
 				"~~"
+			}), concat({
+				string.rep("X", vim.fn.strdisplaywidth(striked))
+			}));
+		end
+
+		-- NOTE: Do this after checking `~~text~~` to prevent
+		-- mismatches.
+		--
+		-- See #378
+		for striked in str:gmatch("%~(.-)%~") do
+			str = str:gsub(concat({
+				"~",
+				striked,
+				"~"
 			}), concat({
 				string.rep("X", vim.fn.strdisplaywidth(striked))
 			}));
