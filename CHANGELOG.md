@@ -1,5 +1,20 @@
 # Changelog
 
+## [25.10.0](https://github.com/OXY2DEV/markview.nvim/compare/v25.9.0...v25.10.0) (2025-08-04)
+
+
+### Features
+
+* **core:** Added fixes for RTP issues with `nvim-treesitter` ([a456da1](https://github.com/OXY2DEV/markview.nvim/commit/a456da1f1fd2bd9be522457ceab1974109306a2b)), closes [#363](https://github.com/OXY2DEV/markview.nvim/issues/363)
+* **core:** ts compat ([a4d10e7](https://github.com/OXY2DEV/markview.nvim/commit/a4d10e7ddb07d35fefaf9c5f4b48413b3ad28113))
+
+
+### Bug Fixes
+
+* **parser_markdown:** Fixed an issue with markdown parser not recognizing single column tables ([fbfcd8e](https://github.com/OXY2DEV/markview.nvim/commit/fbfcd8ed6e3a1323a326cf3384cf110c57eab87f))
+* **renderer_markdown:** Added `~text~` support ([5bdb206](https://github.com/OXY2DEV/markview.nvim/commit/5bdb20619e42836a5e9087ff392b0dbcc95ed3f9)), closes [#378](https://github.com/OXY2DEV/markview.nvim/issues/378)
+* **renderer_markdown:** Fixed a bug where calloits with no icon's would fail to render ([48180da](https://github.com/OXY2DEV/markview.nvim/commit/48180dae71e52965a7605809548c94e3bec61180)), closes [#367](https://github.com/OXY2DEV/markview.nvim/issues/367)
+
 ## [25.9.0](https://github.com/OXY2DEV/markview.nvim/compare/v25.8.0...v25.9.0) (2025-06-11)
 
 
