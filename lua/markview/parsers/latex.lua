@@ -310,7 +310,7 @@ latex.subscript = function (_, TSNode, text, range)
 		"\\beta",
 		"\\gamma",
 		"\\rho",
-		"\\epsilon",
+		"\\phi",
 		"\\chi"
 	}
 

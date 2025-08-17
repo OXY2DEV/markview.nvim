@@ -2096,7 +2096,10 @@ symbols.subscripts = {
 	["beta"] = "ᵦ",
 	["gamma"] = "ᵧ",
 	["rho"] = "ᵨ",
-	["epsilon"] = "ᵩ",
+	-- See OZU2DEV/markview#379
+	-- No subscript `epsilon` character.
+	-- ["epsilon"] = "ₑ",
+	["phi"] = "ᵩ",
 	["chi"] = "ᵪ",
 };
 
