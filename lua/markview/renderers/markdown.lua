@@ -3271,35 +3271,6 @@ end
  -----------------------------------------------------------------------------------------
 
 
---- Places where the list items were wrapped.
----@type { [integer]: integer[] }
-markdown.__list_wraps = {};
-
-local get_extmark = function (buffer, lnum, col)
-	local extmarks = vim.api.nvim_buf_get_extmarks(buffer, markdown.ns, { lnum, col }, { lnum, col + 1 }, {
-		details = true,
-		type = "virt_text"
-	});
-
-	return extmarks[1];
-end
-
-local register_wrap = function (lnum, col)
-	if vim.islist(markdown.__list_wraps[lnum]) == false then
-		markdown.__list_wraps[lnum] = {};
-	end
-
-	table.insert(markdown.__list_wraps[lnum], col);
-end
-
-local has_wrap = function (lnum, col)
-	if vim.islist(markdown.__list_wraps[lnum]) == false then
-		return false;
-	else
-		return vim.list_contains(markdown.__list_wraps[lnum], col);
-	end
-end
-
 --- Renders wrapped block quotes, callouts & alerts.
 ---@param buffer integer
 ---@param item markview.parsed.markdown.block_quotes
@@ -3381,7 +3352,6 @@ markdown.__list_item = function (buffer, item)
 
 	---@type markview.config.markdown.list_items.ordered | markview.config.markdown.list_items.unordered
 	local config;
-
 
 	local shift_width = type(main_config.shift_width) == "number" and main_config.shift_width or 1;
 	local indent_size = type(main_config.indent_size) == "number" and main_config.indent_size or 1;
@@ -3550,8 +3520,6 @@ end
 ---@param buffer integer
 ---@param content table
 markdown.post_render = function (buffer, content)
-	markdown.__list_wraps = {};
-
 	local custom = spec.get({ "renderers" }, { fallback = {} });
 
 	for _, item in ipairs(content or {}) do
