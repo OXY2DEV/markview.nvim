@@ -27,11 +27,11 @@
 
 Core features,
 
-+ Supports HTML, LaTeX, Markdown, Typst & YAML.
++ Supports previewing <code>HTML</code>, $LaTeX$, `Markdown`, `Typst` & `YAML`.
 + Highly customisable! Everything is done via the *configuration table* to ensure maximum customisability.
 + Hybrid editing mode! Allows editing & *previewing* files at the same time.
 + Split view! Allows previewing files on a separate window that updates in real-time!
-+ Partial *text wrap* support(only for markdown at the moment).
++ Previews are compatible with `'wrap'`(only for `markdown` at the moment).
 + Dynamic config that allows **any** option to be a function.
 + Dynamic `highlight groups` that automatically updates with the colorscheme.
 
@@ -240,12 +240,12 @@ Hybrid mode features,
 
 
 + *Node-based* edit range.
-  Clears the current nodes range of lines. Useful when editing lists, block quotes, code blocks, tables etc.
+  Clears a range of lines covered by the (named)`TSNode` under the cursor. Useful when editing lists, block quotes, code blocks, tables etc.
 
 + *Range-based* edit range.
   Clears the selected number of lines above & below the cursor.
 
-+ Supports multiple cursors to.
++ Works even when a `buffer` is being viewed by multiple `window`s.
 
 Internal Icon provider features,
 
