@@ -3326,11 +3326,11 @@ markdown.__block_quote = function (buffer, item)
 		return;
 	end
 
-	local config;
+	---@type markview.config.markdown.block_quotes.opts
+	local config = spec.get({ "default" }, { source = main_config, eval_args = { buffer, item } });
 
 	if item.callout then
-		---@type markview.config.markdown.block_quotes.opts
-		config = spec.get(
+		config = vim.tbl_extend("force", config, spec.get(
 			{ string.lower(item.callout) },
 			{ source = main_config, eval_args = { buffer, item } }
 		) or spec.get(
@@ -3339,10 +3339,7 @@ markdown.__block_quote = function (buffer, item)
 		) or spec.get(
 			{ item.callout },
 			{ source = main_config, eval_args = { buffer, item } }
-		);
-	else
-		---@type markview.config.markdown.block_quotes.opts
-		config = spec.get({ "default" }, { source = main_config, eval_args = { buffer, item } });
+		));
 	end
 
 	local win = utils.buf_getwin(buffer);
