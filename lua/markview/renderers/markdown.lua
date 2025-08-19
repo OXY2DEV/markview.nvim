@@ -3342,84 +3342,25 @@ markdown.__block_quote = function (buffer, item)
 		));
 	end
 
-	local win = utils.buf_getwin(buffer);
-
-	local width = vim.api.nvim_win_get_width(win);
-	local textoff = vim.fn.getwininfo(win)[1].textoff;
-	local winx = vim.api.nvim_win_get_position(win)[2];
-
 	for l = range.row_start, range.row_end - 1, 1  do
 		local l_index = (l - range.row_start) + 1;
 
 		local line = item.text[l_index];
-		local start = false;
 
-		if vim.fn.strdisplaywidth(line) <= width - textoff then
-			-- Lines that are too short should be skipped.
-			goto skip_line;
-		end
+		require("markview.wrap").wrap_indent(buffer, {
+			line = line,
+			row = l,
+			indent = {
+				{ string.rep(" ", item.__nested and 0 or range.col_start) },
+				{
+					tbl_clamp(config.border, l_index),
+					utils.set_hl(tbl_clamp(config.border_hl, l_index) or config.hl)
+				},
+				{ " " }
+			},
 
-		for c = 1, vim.fn.strdisplaywidth(line) do
-			--- `l` should be 1-indexed.
-			---@type integer
-			local x = vim.fn.screenpos(win, l + 1, c).col - (winx + textoff);
-
-			if x == 1 then
-				if start == false then
-					start = true;
-					goto continue;
-				end
-
-				local extmark = get_extmark(buffer, l, c - 1);
-				register_wrap(l, c - 1);
-
-				if extmark ~= nil then
-					local id = extmark[1];
-					local virt_text = extmark[4].virt_text;
-
-					vim.api.nvim_buf_set_extmark(buffer, markdown.ns, l, c - 1, {
-						id = id,
-
-						undo_restore = false, invalidate = true,
-						right_gravity = false,
-
-						virt_text_pos = "inline",
-						---@diagnostic disable-next-line
-						virt_text = vim.list_extend(virt_text, {
-							{ string.rep(" ", item.__nested and 0 or range.col_start) },
-							{
-								tbl_clamp(config.border, l_index),
-								utils.set_hl(tbl_clamp(config.border_hl, l_index) or config.hl)
-							},
-							{ " " }
-						}),
-
-						hl_mode = "combine",
-					});
-				else
-					vim.api.nvim_buf_set_extmark(buffer, markdown.ns, l, c - 1, {
-						undo_restore = false, invalidate = true,
-						right_gravity = false,
-
-						virt_text_pos = "inline",
-						virt_text = {
-							{ string.rep(" ", item.__nested and 0 or range.col_start) },
-							{
-								tbl_clamp(config.border, l_index),
-								utils.set_hl(tbl_clamp(config.border_hl, l_index) or config.hl)
-							},
-							{ " " }
-						},
-
-						hl_mode = "combine",
-					});
-				end
-			end
-
-		    ::continue::
-		end
-
-		::skip_line::
+			ns = markdown.ns
+		});
 	end
 end
 
