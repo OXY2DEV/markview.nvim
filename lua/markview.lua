@@ -792,6 +792,24 @@ markview.actions = {
 		});
 		health.__child_indent_in();
 
+		---|fS 
+
+		--[[
+			fix(markdown): Restore `breakindent` before clearing.
+
+			We need to *restore* the original value of `breakindent`
+			to respect user preference(we need to check if a cached
+			value exists first).
+		]]
+
+		local win = vim.fn.win_findbuf(buffer)[1];
+
+		if vim.bo[buffer].ft == "markdown" and win and vim.w[win].__mkv_cached_breakindet then
+			vim.wo[win].breakindent = vim.w[win].__mkv_cached_breakindet;
+		end
+
+		---|fE
+
 		markview.state.buffer_states[buffer].enable = false;
 		markview.clear(buffer);
 
@@ -862,6 +880,25 @@ markview.actions = {
 			health.__child_indent_de();
 			return;
 		end
+
+		---|fS 
+
+		--[[
+			fix(markdown): Disable `breakindent` before rendering.
+
+			This is to prevent `text wrap support` from being broken due
+			to `breakindent` changing where wrapped text is shown.
+		]]
+
+		local win = vim.fn.win_findbuf(buffer)[1];
+
+		if vim.bo[buffer].ft == "markdown" and win then
+			-- warning: `breakindent` must be set before rendering!
+			vim.w[win].__mkv_cached_breakindet = vim.wo[win].breakindent;
+			vim.wo[win].breakindent = false;
+		end
+
+		---|fE
 
 		markview.render(buffer);
 
