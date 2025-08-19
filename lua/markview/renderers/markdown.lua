@@ -3460,73 +3460,18 @@ markdown.__list_item = function (buffer, item)
 		pad_width = pad_width + vim.fn.strdisplaywidth(item.marker) + 1;
 	end
 
-	local win = utils.buf_getwin(buffer);
-
-	local width = vim.api.nvim_win_get_width(win);
-	local textoff = vim.fn.getwininfo(win)[1].textoff;
-	local winx = vim.api.nvim_win_get_position(win)[2];
-
 	for _, l in ipairs(item.candidates) do
 		local line = item.text[l + 1];
-		local start = false;
 
-		if vim.fn.strdisplaywidth(line) <= width - textoff then
-			-- Lines that are too short should be skipped.
-			goto skip_line;
-		end
+		require("markview.wrap").wrap_indent(buffer, {
+			line = line,
+			row = range.row_start + l,
+			indent = {
+				{ string.rep(" ", pad_width) }
+			},
 
-		for c = 1, vim.fn.strdisplaywidth(line) do
-			--- `l` should be 1-indexed.
-			---@type integer
-			local x = vim.fn.screenpos(win, range.row_start + l + 1, c).col - (winx + textoff);
-
-			if x == 1 then
-				if start == false then
-					start = true;
-					goto continue;
-				end
-
-				local extmark = get_extmark(buffer, range.row_start + l, c - 1);
-				local has_space = has_wrap(range.row_start + l, c - 1);
-				-- register_wrap(range.row_start + l, c - 1);
-
-				if extmark ~= nil then
-					local id = extmark[1];
-					local virt_text = extmark[4].virt_text;
-
-					vim.api.nvim_buf_set_extmark(buffer, markdown.ns, range.row_start + l, c - 1, {
-						id = id,
-
-						undo_restore = false, invalidate = true,
-						right_gravity = false,
-
-						virt_text_pos = "inline",
-						---@diagnostic disable-next-line
-						virt_text = vim.list_extend(virt_text, {
-							{ string.rep(" ", has_space and pad_width - 1 or pad_width) }
-						}),
-
-						hl_mode = "combine",
-					});
-				else
-					vim.api.nvim_buf_set_extmark(buffer, markdown.ns, range.row_start + l, c - 1, {
-						undo_restore = false, invalidate = true,
-						right_gravity = false,
-
-						virt_text_pos = "inline",
-						virt_text = {
-							{ string.rep(" ", math.max(0, has_space and pad_width - 1 or pad_width)) }
-						},
-
-						hl_mode = "combine",
-					});
-				end
-			end
-
-		    ::continue::
-		end
-
-		::skip_line::
+			ns = markdown.ns
+		});
 	end
 end
 
