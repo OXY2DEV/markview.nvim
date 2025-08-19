@@ -1,5 +1,18 @@
 # Changelog
 
+## [25.11.0](https://github.com/OXY2DEV/markview.nvim/compare/v25.10.0...v25.11.0) (2025-08-19)
+
+
+### Features
+
+* **renderer_latex:** Added some supplementary symbols for `subscript` & `superscript` ([6e06451](https://github.com/OXY2DEV/markview.nvim/commit/6e06451f4952de0fb8d1454943405c51854121f8)), closes [#379](https://github.com/OXY2DEV/markview.nvim/issues/379)
+
+
+### Bug Fixes
+
+* **parser_latex:** Added new symbols to the parser ([2f071fd](https://github.com/OXY2DEV/markview.nvim/commit/2f071fd428b2cabd3271b45f5b046db43b60c1da))
+* **renderer_latex:** Removed incorrect `epsilon` symbol for `subscript` ([ea7e9d6](https://github.com/OXY2DEV/markview.nvim/commit/ea7e9d6e8107d9226426fc9a34cce0413c22e8c2)), closes [#379](https://github.com/OXY2DEV/markview.nvim/issues/379)
+
 ## [25.10.0](https://github.com/OXY2DEV/markview.nvim/compare/v25.9.0...v25.10.0) (2025-08-04)
 
 
