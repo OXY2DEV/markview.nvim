@@ -313,6 +313,26 @@ vim.api.nvim_set_keymap("n", "bb", "", {
 });
 ```
 
+## ⏱️ Heading numbers
+
+In recent versions(`>=v25.11.0`), you are able to use `%d` in [icon](https://github.com/OXY2DEV/markview.nvim/wiki/Markdown#atx_icon) to show `heading level`.
+
+![demo]()
+
+Example `config`,
+
+```lua
+require("markview").setup({
+    markdown = {
+        headings = {
+            heading_1 = { icon_hl = "@markup.link", icon = "[%d] "},
+            heading_2 = { icon_hl = "@markup.link", icon = "[%d.%d] "},
+            heading_3 = { icon_hl = "@markup.link", icon = "[%d.%d.%d] "}
+        }
+    }
+});
+```
+
 ------
 
 Also available in vimdoc, `:h markview.nvim-advanced`
