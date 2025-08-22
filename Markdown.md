@@ -1364,6 +1364,11 @@ This will be used by [corner_left_hl](#corner_left_hl), [corner_right_hl](#corne
 
 Text used for icon(added after [padding_left](#padding_left) when [style](atx_style) is `label`).
 
+>[!TIP]
+> You can `%d` in the string to show the heading number. You can also specify the depth of level using multiple `%d`s.
+>
+> For example: `%d` for top headings `%d.%d` for sub-headings. See an example [here]().
+
 <h4 id="atx_icon_hl">icon_hl</h4>
 
 >[!IMPORTANT]
