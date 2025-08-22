@@ -1039,6 +1039,7 @@ markdown.atx_heading = function (buffer, item)
 	local shift_width = spec.get({ "shift_width" }, { source = main_config, fallback = 1, eval_args = { buffer, item } });
 
 	local range = item.range;
+	local icon = string.format(config.icon or "", unpack(item.levels or {}));
 
 	if config.style == "simple" then
 		vim.api.nvim_buf_set_extmark(buffer, markdown.ns, range.row_start, range.col_start, {
@@ -1056,7 +1057,7 @@ markdown.atx_heading = function (buffer, item)
 				config.corner_left or "",
 				config.padding_left or "",
 
-				config.icon or "",
+				icon,
 				res,
 
 				config.padding_right or "",
@@ -1090,7 +1091,7 @@ markdown.atx_heading = function (buffer, item)
 				{ config.corner_left or "", utils.set_hl(config.corner_left_hl or config.hl) },
 				{ config.padding_left or "", utils.set_hl(config.padding_left_hl or config.hl) },
 
-				{ config.icon or "", utils.set_hl(config.icon_hl or config.hl) },
+				{ icon, utils.set_hl(config.icon_hl or config.hl) },
 			}
 		});
 
@@ -1120,7 +1121,7 @@ markdown.atx_heading = function (buffer, item)
 			virt_text_pos = "inline",
 			virt_text = {
 				{ string.rep(" ", #item.marker * shift_width) },
-				{ config.icon or "", utils.set_hl(config.icon_hl or config.hl) },
+				{ icon, utils.set_hl(config.icon_hl or config.hl) },
 			},
 			line_hl_group = utils.set_hl(config.hl),
 
