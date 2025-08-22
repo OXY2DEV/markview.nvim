@@ -317,7 +317,7 @@ vim.api.nvim_set_keymap("n", "bb", "", {
 
 In recent versions(`>=v25.11.0`), you are able to use `%d` in [icon](https://github.com/OXY2DEV/markview.nvim/wiki/Markdown#atx_icon) to show `heading level`.
 
-![demo]()
+![demo](https://github.com/OXY2DEV/markview.nvim/blob/images/v25/wiki/advanced-heading_levels.png)
 
 Example `config`,
 
