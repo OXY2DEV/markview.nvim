@@ -1367,7 +1367,7 @@ Text used for icon(added after [padding_left](#padding_left) when [style](atx_st
 >[!TIP]
 > You can `%d` in the string to show the heading number. You can also specify the depth of level using multiple `%d`s.
 >
-> For example: `%d` for top headings `%d.%d` for sub-headings. See an example [here]().
+> For example: `%d` for top headings `%d.%d` for sub-headings. See an example [here](https://github.com/OXY2DEV/markview.nvim/wiki/Advanced-usage#%EF%B8%8F-heading-numbers).
 
 <h4 id="atx_icon_hl">icon_hl</h4>
 
