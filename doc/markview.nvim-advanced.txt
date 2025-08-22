@@ -321,6 +321,28 @@ Copy this to your `config` option,
 <
 
 ------------------------------------------------------------------------------
+⏱️ Heading numbers
+
+In recent versions(`>=v25.11.0`), you are able to use `%d` in icon[^5] to
+show `heading level`.
+
+demo[_1]
+
+Example `config`,
+
+>lua
+	require("markview").setup({
+		markdown = {
+			headings = {
+				heading_1 = { icon_hl = "@markup.link", icon = "[%d] "},
+				heading_2 = { icon_hl = "@markup.link", icon = "[%d.%d] "},
+				heading_3 = { icon_hl = "@markup.link", icon = "[%d.%d.%d] "}
+			}
+		}
+	});
+<
+
+------------------------------------------------------------------------------
 
 Link references ~
 
@@ -328,5 +350,10 @@ Link references ~
  2: https://github.com/OXY2DEV/markview.nvim/issues/283
  3: https://github.com/OXY2DEV/markview.nvim/issues/350
  4: https://github.com/OXY2DEV/markview.nvim/issues/371
+ 5: https://github.com/OXY2DEV/markview.nvim/wiki/Markdown#atx_icon
+
+Images ~
+
+ 1: https://github.com/OXY2DEV/markview.nvim/blob/images/v25/wiki/advanced-heading_levels.png
 
 vim:ft=help:tw=78:ts=4:
