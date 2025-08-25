@@ -110,7 +110,7 @@ inline.email = function (_, _, text, range)
 
 	inline.insert({
 		class = "inline_link_email",
-		label = text[1]:sub(range.col_start + 2, range.col_end - 1),
+		label = text[1]:sub(2, #text[1] - 1),
 
 		text = text,
 		range = range
@@ -185,7 +185,7 @@ inline.escaped = function (_, _, text, range)
 	inline.insert({
 		class = "inline_escaped",
 
-		text = text[1]:sub(range.col_start + 1, range.col_end - 1),
+		text = text[1]:sub(1, 3),
 		range = range
 	});
 end
@@ -500,7 +500,7 @@ inline.uri_autolink = function (_, TSNode, text, range)
 		node = TSNode,
 
 		text = text,
-		label = text[1]:sub(range.col_start + 1, range.col_end - 1),
+		label = text[1]:sub(2, #text[1] - 1),
 
 		range = range
 	});
@@ -589,16 +589,8 @@ inline.parse = function (buffer, TSTree, from, to)
 			goto continue;
 		end
 
-		--- Doesn't end with a newline. Add it.
-		if not capture_text:match("\n$") then
-			capture_text = capture_text .. "\n";
-		end
-
-		local lines = {};
-
-		for line in capture_text:gmatch("(.-)\n") do
-			table.insert(lines, line);
-		end
+		---@type string[]
+		local lines = vim.split(capture_text, "\n", {});
 
 		---@type boolean, string
 		local success, error = pcall(
