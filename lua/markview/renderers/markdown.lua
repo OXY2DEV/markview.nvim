@@ -1039,7 +1039,19 @@ markdown.atx_heading = function (buffer, item)
 	local shift_width = spec.get({ "shift_width" }, { source = main_config, fallback = 1, eval_args = { buffer, item } });
 
 	local range = item.range;
-	local icon = string.format(config.icon or "", unpack(item.levels or {}));
+	local got_icon, icon = pcall(
+		string.format,
+
+		config.icon or "",
+		unpack(item.levels or {})
+	);
+
+	-- In case there is a problem with the `format string` in `config.icon`
+	-- we should show an error instead.
+	if got_icon == false then
+		icon = "[INVALID_FORMAT_STRING]: `" .. tostring(config.icon) .. "` ";
+		config.icon_hl = "@comment";
+	end
 
 	if config.style == "simple" then
 		vim.api.nvim_buf_set_extmark(buffer, markdown.ns, range.row_start, range.col_start, {

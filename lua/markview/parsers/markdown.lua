@@ -104,11 +104,30 @@ markdown.atx_heading = function (buffer, TSNode, text, range)
 
 	---|fE
 
+	---@type string The `#` before the heading.
+	local markers = vim.treesitter.get_node_text(marker, buffer):gsub("%s", "");
+
+	--[[
+		In case the heading has no parent add 0 until all levels have
+		a value.
+
+		For example,
+
+		```md
+		##  Heading 2
+
+		### heading 3
+		```
+	]]
+	while #levels < #markers do
+		table.insert(levels, 1, 0);
+	end
+
 	markdown.insert({
 		class = "markdown_atx_heading",
 		levels = levels,
 
-		marker = vim.treesitter.get_node_text(marker, buffer):gsub("%s", ""),
+		marker = markers,
 		text = text,
 
 		range = range
