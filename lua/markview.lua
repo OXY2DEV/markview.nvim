@@ -1098,14 +1098,28 @@ markview.actions = {
 			return;
 		end
 
-		markview.actions.__exec_callback("on_enable", buffer, vim.fn.win_findbuf(buffer));
-		vim.api.nvim_exec_autocmds("User", {
-			pattern = "MarkviewEnable",
-			data = {
-				buffer = buffer,
-				windows = vim.fn.win_findbuf(buffer)
-			}
-		});
+		--[[
+			NOTE(@OXY2DEV): Only trigger `on_enable` on valid buffers!
+
+			For a buffer to be considered *valid*,
+				1. `markview.nvim`'s preview must be **enabled**.
+				2. `markview.nvim` should be attached to `buffer`.
+				3. Previews must be **enabled** for `buffer`.
+		]]
+		if
+			markview.state.enable == true and
+			vim.list_contains(markview.state.attached_buffers, buffer) and
+			markview.state.buffer_states[buffer].enable == true
+		then
+			markview.actions.__exec_callback("on_enable", buffer, vim.fn.win_findbuf(buffer));
+			vim.api.nvim_exec_autocmds("User", {
+				pattern = "MarkviewEnable",
+				data = {
+					buffer = buffer,
+					windows = vim.fn.win_findbuf(buffer)
+				}
+			});
+		end
 
 		--- Don't forget to render the preview if possible.
 		if markview.state.buffer_states[buffer].enable == true then
