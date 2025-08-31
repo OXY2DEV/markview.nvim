@@ -2176,7 +2176,7 @@ markdown.section = function (buffer, item)
 
 			virt_text_pos = "inline",
 			virt_text = {
-				{ string.rep(shift_char, math.max(0, shift_width * (item.level - 1))) }
+				{ string.rep(shift_char, math.max(0, shift_width)) }
 			},
 
 			right_gravity = false,
