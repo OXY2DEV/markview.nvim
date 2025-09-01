@@ -792,6 +792,24 @@ markview.actions = {
 		});
 		health.__child_indent_in();
 
+		---|fS 
+
+		--[[
+			fix(markdown): Restore `breakindent` before clearing.
+
+			We need to *restore* the original value of `breakindent`
+			to respect user preference(we need to check if a cached
+			value exists first).
+		]]
+
+		local win = vim.fn.win_findbuf(buffer)[1];
+
+		if vim.bo[buffer].ft == "markdown" and win and vim.w[win].__mkv_cached_breakindet then
+			vim.wo[win].breakindent = vim.w[win].__mkv_cached_breakindet;
+		end
+
+		---|fE
+
 		markview.state.buffer_states[buffer].enable = false;
 		markview.clear(buffer);
 
@@ -862,6 +880,25 @@ markview.actions = {
 			health.__child_indent_de();
 			return;
 		end
+
+		---|fS 
+
+		--[[
+			fix(markdown): Disable `breakindent` before rendering.
+
+			This is to prevent `text wrap support` from being broken due
+			to `breakindent` changing where wrapped text is shown.
+		]]
+
+		local win = vim.fn.win_findbuf(buffer)[1];
+
+		if vim.bo[buffer].ft == "markdown" and win then
+			-- warning: `breakindent` must be set before rendering!
+			vim.w[win].__mkv_cached_breakindet = vim.wo[win].breakindent;
+			vim.wo[win].breakindent = false;
+		end
+
+		---|fE
 
 		markview.render(buffer);
 
@@ -1061,14 +1098,28 @@ markview.actions = {
 			return;
 		end
 
-		markview.actions.__exec_callback("on_enable", buffer, vim.fn.win_findbuf(buffer));
-		vim.api.nvim_exec_autocmds("User", {
-			pattern = "MarkviewEnable",
-			data = {
-				buffer = buffer,
-				windows = vim.fn.win_findbuf(buffer)
-			}
-		});
+		--[[
+			NOTE(@OXY2DEV): Only trigger `on_enable` on valid buffers!
+
+			For a buffer to be considered *valid*,
+				1. `markview.nvim`'s preview must be **enabled**.
+				2. `markview.nvim` should be attached to `buffer`.
+				3. Previews must be **enabled** for `buffer`.
+		]]
+		if
+			markview.state.enable == true and
+			vim.list_contains(markview.state.attached_buffers, buffer) and
+			markview.state.buffer_states[buffer].enable == true
+		then
+			markview.actions.__exec_callback("on_enable", buffer, vim.fn.win_findbuf(buffer));
+			vim.api.nvim_exec_autocmds("User", {
+				pattern = "MarkviewEnable",
+				data = {
+					buffer = buffer,
+					windows = vim.fn.win_findbuf(buffer)
+				}
+			});
+		end
 
 		--- Don't forget to render the preview if possible.
 		if markview.state.buffer_states[buffer].enable == true then

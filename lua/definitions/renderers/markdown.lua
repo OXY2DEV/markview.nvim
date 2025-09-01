@@ -102,7 +102,7 @@
 ---
 ---@field hl? string Base Highlight group.
 ---
----@field icon? string Icon.
+---@field icon? string Text to use for the icon(use `%d` to add heading number).
 ---@field icon_hl? string Highlight group for icon.
 ---
 ---@field padding_left? string Left padding.

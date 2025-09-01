@@ -310,8 +310,18 @@ latex.subscript = function (_, TSNode, text, range)
 		"\\beta",
 		"\\gamma",
 		"\\rho",
+		"\\phi",
+		"\\chi",
+
+		-- See OZU2DEV/markview#379
 		"\\epsilon",
-		"\\chi"
+		"\\omicron",
+		"\\alpha",
+		"\\eta",
+		"\\nu",
+		"\\rho",
+		"\\upsilon",
+		"\\sigma",
 	}
 
 	for _, line in ipairs(text) do
@@ -361,7 +371,15 @@ latex.superscript = function (_, TSNode, text, range)
 		"\\iota",
 		"\\Phi",
 		"\\varphi",
-		"\\chi"
+		"\\chi",
+
+		-- See OZU2DEV/markview#379
+		"\\omicron",
+		"\\eta",
+		"\\nu",
+		"\\rho",
+		"\\upsilon",
+		"\\sigma",
 	}
 
 	for _, line in ipairs(text) do

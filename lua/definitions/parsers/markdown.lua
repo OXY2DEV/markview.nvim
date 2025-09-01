@@ -56,6 +56,7 @@
 ---@class markview.parsed.markdown.atx
 ---
 ---@field class "markdown_atx_heading"
+---@field levels integer[] Heading depth level.
 ---
 ---@field marker "#" | "##" | "###" | "####" | "#####" | "######" Heading marker.
 ---

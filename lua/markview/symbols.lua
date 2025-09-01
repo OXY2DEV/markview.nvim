@@ -2017,6 +2017,14 @@ symbols.superscripts = {
 	["Phi"] = "ᶲ",
 	["varphi"] = "ᵠ",
 	["chi"] = "ᵡ",
+
+	-- See OZU2DEV/markview#379
+	["omicron"] = "ᵒ",
+	["eta"] = "ⁿ",
+	["nu"] = "ᵛ",
+	["rho"] = "ᵖ",
+	["upsilon"] = "ᵘ",
+	["sigma"] = "ᴱ",
 };
 
 --- Subscript symbol map.
@@ -2096,8 +2104,20 @@ symbols.subscripts = {
 	["beta"] = "ᵦ",
 	["gamma"] = "ᵧ",
 	["rho"] = "ᵨ",
-	["epsilon"] = "ᵩ",
+	-- See OZU2DEV/markview#379
+	-- No subscript `epsilon` character.
+	-- Use replacement symbol `e` instead
+	["epsilon"] = "ₑ",
+	["phi"] = "ᵩ",
 	["chi"] = "ᵪ",
+
+	-- See OZU2DEV/markview#379
+	["omicron"] = "ₒ",
+	["alpha"] = "ₐ",
+	["eta"] = "ₙ",
+	["nu"] = "ᵥ",
+	["upsilon"] = "ᵤ",
+	["sigma"] = "ᴇ",
 };
 
 --- Dingbit symbols(\ding{val}).

@@ -301,6 +301,27 @@ vim.api.nvim_create_autocmd("ModeChanged", {
 		local buffer = event.buf;
 		local mode = vim.api.nvim_get_mode().mode;
 
+		---@param do_render boolean
+		local function set_breakindent (do_render)
+			if vim.bo[buffer].ft ~= "markdown" then
+				return;
+			end
+
+			local win = vim.fn.win_findbuf(buffer)[1];
+
+			if not win then
+				-- We don't need to set `breakindent` if the
+				-- buffer isn't being viewed by any window.
+				return;
+			elseif do_render then
+				-- warning: `breakindent` must be set before rendering!
+				vim.w[win].__mkv_cached_breakindet = vim.wo[win].breakindent;
+				vim.wo[win].breakindent = false;
+			elseif vim.w[win].__mkv_cached_breakindet then
+				vim.wo[win].breakindent = vim.w[win].__mkv_cached_breakindet;
+			end
+		end
+
 		---@type string[] List of modes where preview is shown.
 		local preview_modes = spec.get({ "preview", "modes" }, { fallback = {}, ignore_enable = true });
 		---@type string[] List of modes where preview is shown.
@@ -314,6 +335,7 @@ vim.api.nvim_create_autocmd("ModeChanged", {
 			return;
 		elseif markview.actions.__is_enabled(buffer) == false then
 			--- Markview disabled on this buffer.
+			set_breakindent(false);
 			markview.clear(buffer);
 			return;
 		elseif buffer == markview.state.splitview_source then
@@ -334,6 +356,7 @@ vim.api.nvim_create_autocmd("ModeChanged", {
 				goto callback;
 			else
 				vim.defer_fn(function ()
+					set_breakindent(true);
 					markview.render(buffer);
 				end, 0);
 			end
@@ -347,6 +370,7 @@ vim.api.nvim_create_autocmd("ModeChanged", {
 			--- Preview
 			if vim.list_contains(hybrid_modes, old_mode) then
 				vim.defer_fn(function ()
+					set_breakindent(true);
 					markview.render(buffer);
 				end, 0);
 			elseif vim.list_contains(preview_modes, old_mode) then
@@ -356,6 +380,7 @@ vim.api.nvim_create_autocmd("ModeChanged", {
 				--- changed.
 				goto callback;
 			else
+				set_breakindent(true);
 				markview.render(buffer);
 			end
 		else
@@ -373,6 +398,7 @@ vim.api.nvim_create_autocmd("ModeChanged", {
 				--- have occurred.
 				goto callback;
 			else
+				set_breakindent(false);
 				markview.clear(buffer);
 			end
 		end

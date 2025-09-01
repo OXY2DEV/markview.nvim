@@ -1374,6 +1374,13 @@ ICON
 
 Text used for icon(added after `padding_left` when `style` is `label`).
 
+▌ 💡 Tip
+▌ You can `%d` in the string to show the heading number. You can also specify
+▌ the depth of level using multiple `%d`s.
+▌
+▌ For example: `%d` for top headings `%d.%d` for sub-headings. See an example
+▌ https://github.com/OXY2DEV/markview.nvim/wiki/Advanced-usage#-heading-numbers
+
 ICON_HL
 
 ▌ 🧩 Important

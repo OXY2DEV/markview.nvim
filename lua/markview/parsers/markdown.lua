@@ -47,10 +47,87 @@ markdown.atx_heading = function (buffer, TSNode, text, range)
 		range.col_start = range.col_start + text[1]:match("^%s+"):len();
 	end
 
+	---|fS "chunk: Calculate heading depth"
+
+	---@type integer[] Heading depth levels(like 1.1.2).
+	local levels = {};
+
+	---@type TSNode?
+	local parent_section = TSNode:parent():parent();
+	---@type TSNode?
+	local current_section = TSNode:parent();
+
+	--[[
+		NOTE(@OXY2DEV): Heading level retriever.
+
+		Each `atx_heading` creates a `section` in the document.
+		By checking the depth of a `section` & it's sibling `section`s
+		we cab determine the level of a heading.
+
+		Level format: 1.1.1.1
+		They are calculated like so,
+
+		```md
+		# 1
+		## 1.1
+		### 1.1.1
+
+		# 2
+		# 2.1
+		```
+
+		For each level of depth, we iterate over the children of the
+		**parent** section and count how many `section2`s we have passed.
+
+		We keep doing this recursively until we reach the top of the `TSTree`.
+		As we are traversing the tree in reverse(bottom to top) we add the level
+		to the start of the `levels` list.
+
+		TODO(@OXY2DEV): Check if we can optimize this further.
+	]]
+	while parent_section and current_section do
+		---@type integer Number of sections passed.
+		local passed = 1;
+
+		for direct_child in parent_section:iter_children() do
+			if direct_child:equal(current_section) then
+				table.insert(levels, 1, passed);
+				break;
+			elseif direct_child:type() == "section" then
+				passed = passed + 1;
+			end
+		end
+
+		parent_section = parent_section:parent();
+		current_section = current_section:parent();
+	end
+
+	---|fE
+
+	---@type string The `#` before the heading.
+	local markers = vim.treesitter.get_node_text(marker, buffer):gsub("%s", "");
+
+	--[[
+		In case the heading has no parent add 0 until all levels have
+		a value.
+
+		For example,
+
+		```md
+		##  Heading 2
+
+		### heading 3
+		```
+	]]
+	while #levels < #markers do
+		table.insert(levels, 1, 0);
+	end
+
 	markdown.insert({
 		class = "markdown_atx_heading",
+		levels = levels,
 
-		marker = vim.treesitter.get_node_text(marker, buffer):gsub("%s", ""),
+		marker = markers,
 		text = text,
 
 		range = range

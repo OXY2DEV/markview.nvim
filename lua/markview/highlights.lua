@@ -1582,7 +1582,7 @@ highlights.dynamic = {
 	["TableHeader"] = function ()
 		return {
 			default = true,
-			link = "@markup.heading.markdown"
+			link = "@markup.heading"
 		};
 	end,
 
@@ -1596,21 +1596,21 @@ highlights.dynamic = {
 	["TableAlignLeft"] = function ()
 		return {
 			default = true,
-			link = "@markup.heading.markdown"
+			link = "@markup.heading"
 		}
 	end,
 
 	["TableAlignCenter"] = function ()
 		return {
 			default = true,
-			link = "@markup.heading.markdown"
+			link = "@markup.heading"
 		}
 	end,
 
 	["TableAlignRight"] = function ()
 		return {
 			default = true,
-			link = "@markup.heading.markdown"
+			link = "@markup.heading"
 		}
 	end,
 };
