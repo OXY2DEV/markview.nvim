@@ -1,5 +1,23 @@
 # Changelog
 
+## [25.11.0](https://github.com/OXY2DEV/markview.nvim/compare/v25.10.0...v25.11.0) (2025-09-01)
+
+
+### Features
+
+* **parser_markdown:** Added heading level to parsed data ([b342ee9](https://github.com/OXY2DEV/markview.nvim/commit/b342ee9f2058a800636ab15cf0ecc09ce0b4d1d2)), closes [#384](https://github.com/OXY2DEV/markview.nvim/issues/384)
+* **renderer_latex:** Added some supplementary symbols for `subscript` & `superscript` ([6e06451](https://github.com/OXY2DEV/markview.nvim/commit/6e06451f4952de0fb8d1454943405c51854121f8)), closes [#379](https://github.com/OXY2DEV/markview.nvim/issues/379)
+
+
+### Bug Fixes
+
+* **core:** Check buffee validity before running callbacks after closing `splitView` ([4e5f93e](https://github.com/OXY2DEV/markview.nvim/commit/4e5f93e054b1c3dce026731dfcea1e44b0941137)), closes [#388](https://github.com/OXY2DEV/markview.nvim/issues/388)
+* **parsee_markdown:** Fixed a bug with how text was extracted from elements ([6d63416](https://github.com/OXY2DEV/markview.nvim/commit/6d63416c86ed1be16ad66a042ae7d2b15c53152e)), closes [#387](https://github.com/OXY2DEV/markview.nvim/issues/387)
+* **parser_latex:** Added new symbols to the parser ([2f071fd](https://github.com/OXY2DEV/markview.nvim/commit/2f071fd428b2cabd3271b45f5b046db43b60c1da))
+* **parser_markdown:** Fixed a bug with missing indent level ([3feaed6](https://github.com/OXY2DEV/markview.nvim/commit/3feaed690e5be223108a7f9727e3f962832e9c3b)), closes [#384](https://github.com/OXY2DEV/markview.nvim/issues/384)
+* **renderer_latex:** Removed incorrect `epsilon` symbol for `subscript` ([ea7e9d6](https://github.com/OXY2DEV/markview.nvim/commit/ea7e9d6e8107d9226426fc9a34cce0413c22e8c2)), closes [#379](https://github.com/OXY2DEV/markview.nvim/issues/379)
+* **renderer_markdown:** Fixed an issue with `org_indent` not handling indention correctly ([#389](https://github.com/OXY2DEV/markview.nvim/issues/389)) ([e6b0f5a](https://github.com/OXY2DEV/markview.nvim/commit/e6b0f5aee8105adab6077509c46459812db4cffa))
+
 ## [25.10.0](https://github.com/OXY2DEV/markview.nvim/compare/v25.9.0...v25.10.0) (2025-08-04)
 
 
