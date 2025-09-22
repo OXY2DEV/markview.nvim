@@ -37,21 +37,25 @@ wrap.wrap_indent = function (buffer, opts)
 	local win_width = vim.api.nvim_win_get_width(win);
 	local textoff = vim.fn.getwininfo(win)[1].textoff;
 	local W = win_width - textoff;
+	local dsp_w = vim.fn.strdisplaywidth(opts.line or "");
 
-	if vim.fn.strdisplaywidth(opts.line or "") < W then
+	if dsp_w < W then
 		return;
 	end
 
 	local win_x = vim.api.nvim_win_get_position(win)[2];
 	local passed_start = false;
+	local offset = win_x + textoff;
 
-	for c = 1, vim.fn.strdisplaywidth(opts.line or "") do
+	for c = 1, dsp_w do
 		--- `l` should be 1-indexed.
 		---@type integer
-		local x = vim.fn.screenpos(win, opts.row + 1, c).col - (win_x + textoff);
+		local x = vim.fn.screenpos(win, opts.row + 1, c).col - offset;
 
-		if x ~= 1 then
+		if x == 0 then
 			goto continue;
+		if x ~= 1 then
+			goto be_done;
 		elseif passed_start == false then
 			passed_start = true;
 			goto continue;
@@ -59,36 +63,27 @@ wrap.wrap_indent = function (buffer, opts)
 
 		local extmark = wrap.get_extmark(buffer, opts.ns, opts.row, c - 1);
 
+		local extmark_opts = {
+			undo_restore = false, invalidate = true,
+			right_gravity = false,
+
+			virt_text_pos = "inline",
+			virt_text = opts.indent or {},
+
+			hl_mode = "combine",
+		};
+
 		if extmark ~= nil then
-			local id = extmark[1];
-			local virt_text = extmark[4].virt_text;
-
-			vim.api.nvim_buf_set_extmark(buffer, opts.ns, opts.row, c - 1, {
-				id = id,
-
-				undo_restore = false, invalidate = true,
-				right_gravity = false,
-
-				virt_text_pos = "inline",
-				---@diagnostic disable-next-line: param-type-mismatch
-				virt_text = vim.list_extend(virt_text, opts.indent or {}),
-
-				hl_mode = "combine",
-			});
-		else
-			vim.api.nvim_buf_set_extmark(buffer, opts.ns, opts.row, c - 1, {
-				undo_restore = false, invalidate = true,
-				right_gravity = false,
-
-				virt_text_pos = "inline",
-				virt_text = opts.indent or {},
-
-				hl_mode = "combine",
-			});
+			extmark_opts.id = extmark[1];
+			extmark_opts.virt_text = vim.list_extend(extmark_opts.virt_text, extmark[4].virt_text);
 		end
+
+		vim.api.nvim_buf_set_extmark(buffer, opts.ns, opts.row, c - 1, extmark_opts);
 
 		::continue::
 	end
+
+	::be_done::
 
 	---|fE
 end
