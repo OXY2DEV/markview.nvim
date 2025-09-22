@@ -55,7 +55,7 @@ wrap.wrap_indent = function (buffer, opts)
 		if x == 0 then
 			goto continue;
 		if x ~= 1 then
-			goto be_done;
+			return;
 		elseif passed_start == false then
 			passed_start = true;
 			goto continue;
@@ -82,8 +82,6 @@ wrap.wrap_indent = function (buffer, opts)
 
 		::continue::
 	end
-
-	::be_done::
 
 	---|fE
 end
