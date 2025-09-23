@@ -282,6 +282,22 @@ markview.render = function (buffer, state, config)
 
 	state = state or markview.state.buffer_states[buffer];
 
+	if not state then
+		if vim.api.nvim_buf_is_valid(buffer) == false then
+			---@type boolean Should preview be enabled on the buffer?
+			local enable = spec.get({ "preview", "enable" }, { fallback = true, ignore_enable = true });
+			---@type boolean Should hybrid mode be enabled on the buffer?
+			local hm_enable = spec.get({ "preview", "enable_hybrid_mode" }, { fallback = true, ignore_enable = true });
+
+			state = {
+				enable = enable,
+				hybrid_mode = hm_enable
+			};
+		else
+			return;
+		end
+	end
+
 	local function hybrid_mode()
 		if type(state) == "table" and state.hybrid_mode == false then
 			return false;
