@@ -1,5 +1,12 @@
 # Changelog
 
+## [25.11.1](https://github.com/OXY2DEV/markview.nvim/compare/v25.11.0...v25.11.1) (2025-09-23)
+
+
+### Bug Fixes
+
+* **core:** Fixed issues with non-existing buffer missing state value ([82c21e3](https://github.com/OXY2DEV/markview.nvim/commit/82c21e3b3f982ae76107a787fb28383d76fffeab)), closes [#394](https://github.com/OXY2DEV/markview.nvim/issues/394)
+
 ## [25.11.0](https://github.com/OXY2DEV/markview.nvim/compare/v25.10.0...v25.11.0) (2025-09-01)
 
 
