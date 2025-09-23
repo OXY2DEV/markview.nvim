@@ -54,7 +54,7 @@ wrap.wrap_indent = function (buffer, opts)
 
 	local win_x = vim.api.nvim_win_get_position(win)[2];
 	local offset = win_x + textoff;
-	local start_idx_off = 0;
+	local start_idx_off = 1;
 	local num_indents = math.floor(dsp_w / W);
 
 	local start_disp_row = vim.fn.screenpos(win, opts.row + 1, 0).row;
@@ -64,7 +64,7 @@ wrap.wrap_indent = function (buffer, opts)
 	for line_to_indent = 0, num_indents do
 		-- vim.notify("ok we're looking at line " .. line_to_indent .. " for opts.row " .. opts.row);
 
-		if start_idx_off > 0 then
+		if start_idx_off > 1 then
 			start_idx_off = start_idx_off + win_width;
 		end
 
@@ -123,7 +123,7 @@ wrap.wrap_indent = function (buffer, opts)
 
 			if extmark ~= nil then
 				extmark_opts.id = extmark[1];
-				-- extmark_opts.virt_text = vim.list_extend(extmark_opts.virt_text, extmark[4].virt_text);
+				extmark_opts.virt_text = vim.list_extend(extmark_opts.virt_text, extmark[4].virt_text);
 			end
 
 			-- vim.notify("setting extmark...");
