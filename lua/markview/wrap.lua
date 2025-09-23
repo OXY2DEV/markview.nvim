@@ -54,6 +54,8 @@ wrap.wrap_indent = function (buffer, opts)
 
 		if x == 0 then
 			goto continue;
+		end
+
 		if x ~= 1 then
 			return;
 		elseif passed_start == false then
