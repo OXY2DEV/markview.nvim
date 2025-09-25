@@ -117,7 +117,7 @@ function source:get_completions(ctx, callback)
 				},
 
 				documentation = {
-					kind = "plaintext",
+					kind = "markdown",
 					value = string.format(
 						"```\n%s %s \n%s Block quote description.\n```",
 
@@ -193,7 +193,7 @@ function source:get_completions(ctx, callback)
 				},
 
 				documentation = {
-					kind = "plaintext",
+					kind = "markdown",
 					value = string.format(
 						"```\n  ◇ List item,\n  %s Checkbox with\n    some text.\n```",
 
