@@ -34,6 +34,7 @@ wrap.wrap_indent = function (buffer, opts)
 
 	local win = utils.buf_getwin(buffer);
 
+	-- first, we want to determine exactly how much visual space the entire indent will take up
 	local full_indent_text = "";
 	for _, txt_and_hi in ipairs(opts.indent) do
 		full_indent_text = full_indent_text .. txt_and_hi[1];
@@ -42,6 +43,7 @@ wrap.wrap_indent = function (buffer, opts)
 
 	local win_width = vim.api.nvim_win_get_width(win);
 	local textoff = vim.fn.getwininfo(win)[1].textoff;
+	-- `W` is the max number of characters each line is allowed to be
 	local W = win_width - (textoff + indent_len);
 	local dsp_w = vim.fn.strdisplaywidth(opts.line or "");
 
@@ -51,23 +53,36 @@ wrap.wrap_indent = function (buffer, opts)
 
 	local win_x = vim.api.nvim_win_get_position(win)[2];
 	local offset = win_x + textoff;
-	local start_idx_off = 1;
+
+	-- `char_inspect_idx` is an index to pass into `screenpos` to determine where the character that we're
+	-- currently inspecting visually sits in the neovim grid
+	local char_inspect_idx = 1;
+
+	-- `num_indents` is the number of visual lines that this process will end up with.
 	local num_indents = math.floor(dsp_w / W);
 
+	-- determine where, on the neovim grid, the {very first character we're inspecting} lies.
 	local start_disp_row = vim.fn.screenpos(win, opts.row + 1, 1).row;
 
+	-- now go through each line and add the indent on the front of it
 	for line_to_indent = 0, num_indents do
-		if start_idx_off > 1 then
-			start_idx_off = start_idx_off + win_width;
+		-- if we're not on the very first line, add a whole line's worth (without the indent 'cause it may not be
+		-- considered as applied yet) to go, roughly, to the next line.
+		if line_to_indent > 0 then
+			char_inspect_idx = char_inspect_idx + (win_width - textoff);
 		end
 
 		local passed_start = false;
 
 		while true do
-			local pos = vim.fn.screenpos(win, opts.row + 1, start_idx_off);
+			-- get the position of the character we're inspecting
+			local pos = vim.fn.screenpos(win, opts.row + 1, char_inspect_idx);
 
 			local x = pos.col - offset;
 
+			-- this block only functions to move `char_inspect_idx` slightly forwards or backwards to find
+			-- the very beginning of the line, so if we've already found the start and moved passed it, we
+			-- don't need to do any of this determining
 			if not passed_start then
 				-- if we get here, then we've ran offscreen, like not the whole line can fit or something.
 				-- Just bail.
@@ -80,14 +95,14 @@ wrap.wrap_indent = function (buffer, opts)
 				-- go to the next character 'cause we're probably right by the beginning of the row,
 				-- but just barely on the row above it
 				if start_disp_row + line_to_indent > pos.row then
-					start_idx_off = start_idx_off + 1;
+					char_inspect_idx = char_inspect_idx + 1;
 					goto continue;
 				end
 
 				-- if we are on a character *past* the first one, but we haven't already marked *passed_start*,
 				-- then we gotta jump back by a bit more than we think
 				if x > 1 then
-					start_idx_off = start_idx_off - (pos.col + 1);
+					char_inspect_idx = char_inspect_idx - (pos.col + 1);
 					goto continue;
 				end
 			end
@@ -97,13 +112,14 @@ wrap.wrap_indent = function (buffer, opts)
 			elseif not passed_start then
 				passed_start = true;
 
+				-- only on the first line do we ignore the very first character, and instead only add the extmarks after it
 				if line_to_indent == 0 then
-					start_idx_off = start_idx_off + 1;
+					char_inspect_idx = char_inspect_idx + 1;
 					goto continue;
 				end
 			end
 
-			local extmark = wrap.get_extmark(buffer, opts.ns, opts.row, start_idx_off - 1);
+			local extmark = wrap.get_extmark(buffer, opts.ns, opts.row, char_inspect_idx - 1);
 
 			local extmark_opts = {
 				undo_restore = false, invalidate = true,
@@ -120,8 +136,10 @@ wrap.wrap_indent = function (buffer, opts)
 				extmark_opts.virt_text = vim.list_extend(extmark_opts.virt_text, extmark[4].virt_text);
 			end
 
-			vim.api.nvim_buf_set_extmark(buffer, opts.ns, opts.row, start_idx_off - 1, extmark_opts);
-			start_idx_off = start_idx_off + 1;
+			vim.api.nvim_buf_set_extmark(buffer, opts.ns, opts.row, char_inspect_idx - 1, extmark_opts);
+
+			-- then just increment to the next character at the end of all this
+			char_inspect_idx = char_inspect_idx + 1;
 
 			::continue::
 		end
