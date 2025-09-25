@@ -1436,10 +1436,6 @@ markview.commands = {
 ---@param config table?
 markview.setup = function (config)
 	spec.setup(config);
-
-	local highlights = require("markview.highlights");
-	highlights.setup(spec.get({ "highlight_groups" }, { fallback = {} }));
-
 	markview.commands.Render();
 end
 

@@ -360,7 +360,7 @@ highlights.xyz_to_rgb = function (color)
 			_ch = (1.055 * (_ch^(1 / 2.4))) - 0.055;
 		end
 
-		RGB[c] = utils.clamp(_ch * 255, 0, 255);
+		RGB[c] = clamp(_ch * 255, 0, 255);
 	end
 
 	return RGB;
