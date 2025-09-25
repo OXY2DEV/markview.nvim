@@ -20,7 +20,9 @@ markview.state = {
 
 	splitview_buffer = nil,
 	splitview_source = nil,
-	splitview_window = nil
+	splitview_window = nil,
+
+	modified_queries = false,
 };
 
 -------------------------------------------------------------------------------------------
@@ -787,6 +789,7 @@ markview.actions = {
 
 	["disable"] = function (buffer)
 		---|fS
+
 		---@type integer
 		buffer = buffer or vim.api.nvim_get_current_buf();
 
@@ -807,6 +810,8 @@ markview.actions = {
 			message = string.format("Disabled: %d", buffer)
 		});
 		health.__child_indent_in();
+
+		markview.actions.reset_query(buffer);
 
 		---|fS 
 
@@ -883,6 +888,7 @@ markview.actions = {
 			message = string.format("Enabled: %d", buffer)
 		});
 		health.__child_indent_in();
+		markview.actions.set_query(buffer);
 
 		markview.state.buffer_states[buffer].enable = true;
 
@@ -1142,6 +1148,57 @@ markview.actions = {
 			markview.render(buffer);
 		end
 		---|fE
+	end,
+
+	["set_query"] = function (buffer)
+		local default_path = vim.treesitter.query.get_files("markdown", "highlights")[1];
+
+		if not default_path then
+			return;
+		elseif markview.state.modified_queries then
+			return;
+		end
+
+		local default = table.concat(
+			vim.fn.readfile(default_path),
+			"\n"
+		);
+		vim.g.__markdown_default_hl_query = default;
+
+		local capture_1 = table.concat({
+			"%(fenced_code_block",
+			"%s*%(fenced_code_block_delimiter%) @markup.raw.block",
+			'%s*%(#set! conceal ""%)',
+			'%s*%(#set! conceal_lines ""%)%)',
+		}, "");
+
+		local capture_2 = table.concat({
+			"%(fenced_code_block",
+			'%s*%(info_string',
+			'%s*%(language%) @label',
+			'%s*%(#set! conceal ""%)',
+			'%s*%(#set! conceal_lines ""%)%)%)',
+		}, "");
+
+		local updated = string.gsub(default, capture_1, ""):gsub(capture_2, "");
+		vim.treesitter.query.set("markdown", "highlights", updated);
+
+		markview.state.modified_queries = true;
+
+		vim.treesitter.stop(buffer);
+		vim.treesitter.start(buffer)
+	end,
+
+	["reset_query"] = function (buffer)
+		if not vim.g.__markdown_default_hl_query then
+			return;
+		end
+
+		vim.treesitter.query.set("markdown", "highlights", vim.g.__markdown_default_hl_query);
+		markview.state.modified_queries = false;
+
+		vim.treesitter.stop(buffer);
+		vim.treesitter.start(buffer)
 	end
 
 	---|fE
