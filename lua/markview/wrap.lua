@@ -74,7 +74,7 @@ wrap.wrap_indent = function (buffer, opts)
 
 		local passed_start = false;
 
-		while true do
+		for i = 0, W do
 			-- get the position of the character we're inspecting
 			local pos = vim.fn.screenpos(win, opts.row + 1, char_inspect_idx);
 
