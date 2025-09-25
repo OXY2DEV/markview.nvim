@@ -109,32 +109,13 @@ local function register_cmp_source ()
 	---|fE
 end
 
-vim.api.nvim_create_autocmd("FileType", {
-	callback = function(event)
-		-- `nvim-cmp`'s get_config() depends
-		-- on the current buffer to get filetype
-		-- related configs.
-		---@type string[]
-		local filetypes = require("markview.spec").get({ "preview", "filetypes" }, {
-			fallback = {},
-			ignore_enable = true
-		});
-
-		if vim.list_contains(filetypes, event.match) then
-			register_blink_source();
-			register_cmp_source();
-
-			-- This will make the autocmd only
-			-- fire once.
-			return true;
-		end
-	end
-});
-
 vim.api.nvim_create_autocmd("VimEnter", {
 	group = augroup,
 	callback = function ()
 		require("markview.highlights").setup();
+
+		register_blink_source();
+		register_cmp_source();
 	end
 });
 
