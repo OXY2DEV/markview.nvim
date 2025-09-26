@@ -1196,6 +1196,7 @@ markdown.block_quote = function (buffer, item)
 					{ config.icon or "", utils.set_hl(config.icon_hl or config.hl) }
 				},
 
+				right_gravity = true,
 				hl_mode = "combine",
 			});
 
@@ -1211,13 +1212,13 @@ markdown.block_quote = function (buffer, item)
 				end_col = range.callout_end,
 				conceal = "",
 				undo_restore = false, invalidate = true,
-			right_gravity = false,
 				virt_text_pos = "inline",
 				virt_text = {
 					{ " " },
 					{ config.preview, utils.set_hl(config.preview_hl or config.hl) }
 				},
 
+				right_gravity = true,
 				hl_mode = "combine",
 			});
 		end
@@ -1232,7 +1233,7 @@ markdown.block_quote = function (buffer, item)
 		if line:match("^%>") then
 			vim.api.nvim_buf_set_extmark(buffer, markdown.ns, l, range.col_start, {
 				undo_restore = false, invalidate = true,
-				right_gravity = false,
+				right_gravity = true,
 
 				end_col = range.col_start + math.min(1, line_len),
 				conceal = "",
@@ -1250,7 +1251,7 @@ markdown.block_quote = function (buffer, item)
 		else
 			vim.api.nvim_buf_set_extmark(buffer, markdown.ns, l, range.col_start, {
 				undo_restore = false, invalidate = true,
-				right_gravity = false,
+				right_gravity = true,
 
 				virt_text_pos = "inline",
 				virt_text = {
