@@ -86,6 +86,7 @@
 ---@class markview.parsed.markdown.list_items
 ---
 ---@field class "markdown_list_item"
+---@field __nested boolean Is the node nested?
 ---
 ---@field candidates integer[] List of line numbers(0-indexed) from start that should be indented.
 ---

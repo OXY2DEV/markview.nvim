@@ -315,8 +315,9 @@ end
 
 --- List item parser.
 ---@param buffer integer
+---@param TSNode table
 ---@param range markview.parsed.range
-markdown.list_item = function (buffer, _, _, range)
+markdown.list_item = function (buffer, TSNode, _, range)
 	---@type string[]
 	local text = vim.api.nvim_buf_get_lines(buffer, range.row_start, range.row_end, false);
 
@@ -415,8 +416,21 @@ markdown.list_item = function (buffer, _, _, range)
 		end
 	end
 
+	local parent = TSNode:parent();
+	local nested = false;
+
+	while parent do
+		if parent:type() == "list_item" then
+			nested = true;
+			break;
+		end
+
+		parent = parent:parent();
+	end
+
 	markdown.insert({
 		class = "markdown_list_item",
+		__nested = nested,
 
 		candidates = candidates,
 		marker = marker:gsub("%s", ""),
