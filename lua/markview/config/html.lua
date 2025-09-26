@@ -5,7 +5,7 @@ return {
 		enable = true,
 
 		["^a$"] = {
-			on_opening_tag = { conceal = "", virt_text_pos = "inline", virt_text = { { "", "MarkviewHyperlink" } } },
+			on_opening_tag = { conceal = "", virt_text_pos = "inline", virt_text = { { " ", "MarkviewHyperlink" } } },
 			on_node = { hl_group = "MarkviewHyperlink" },
 			on_closing_tag = { conceal = "" },
 		},
