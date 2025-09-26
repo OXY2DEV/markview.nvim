@@ -200,5 +200,15 @@
 ---@field level integer
 ---
 ---@field text string[]
----@field range markview.parsed.range
+---@field range markview.parsed.markdown.sections.range
+
+
+---@class markview.parsed.markdown.sections.range
+---
+---@field row_start integer
+---@field row_end integer
+---@field col_start integer
+---@field col_end integer
+---
+---@field org_end integer Line where `Org indent` should end.
 

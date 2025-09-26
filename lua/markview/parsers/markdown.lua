@@ -469,10 +469,24 @@ end
 ---@param buffer integer
 ---@param TSNode table
 ---@param text string[]
----@param range markview.parsed.markdown.reference_definitions.range
+---@param range markview.parsed.markdown.sections.range
 markdown.section = function (buffer, TSNode, text, range)
 	local heading = TSNode:child(0);
 	local heading_text = vim.treesitter.get_node_text(heading, buffer);
+
+	---@type TSNode?
+	local next_sibling = heading:next_sibling();
+	local org_end = range.row_end;
+
+	while next_sibling do
+		if next_sibling and next_sibling:type() == "section" then
+			org_end = -1 + next_sibling:range();
+		end
+
+		next_sibling = next_sibling:next_sibling();
+	end
+
+	range.org_end = org_end;
 
 	table.insert(markdown.content, {
 		class = "markdown_section",
