@@ -319,10 +319,6 @@ markdown.link_ref = function (buffer, TSNode, text, range)
 		text = text,
 		range = range
 	});
-
-	if label and desc then
-		inline.cache.link_ref[label] = desc;
-	end
 end
 
 --- List item parser.
