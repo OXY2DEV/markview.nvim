@@ -5,90 +5,131 @@
 ---@field ns integer Namespace for `extmarks`.
 ---@field row integer Row of line(**0-indexed**).
 
+---@alias markview.wrap.data.value [ string, string? ][]
+
+---@class markview.wrap.data
+---
+---@field [integer] [ string, string? ][]
+
 ------------------------------------------------------------------------------
 
---[[ Text wrapping for `markview.nvim`. ]]
+--[[
+Text soft-wrapping support for `markview.nvim`.
+
+Usage,
+
+```lua
+vim.o.wrap = true;
+```
+
+>[!NOTE]
+> Make sure not to *disable* wrapping for Nodes!
+]]
 local wrap = {};
 local utils = require("markview.utils");
 
---[[ Gets extmark for `[ lnum, col ]`. ]]
+---@type table<integer, markview.wrap.data>
+wrap.cache = {};
+
+--[[ Registers `indent` to be used for `range` in `buffer`. ]]
 ---@param buffer integer
----@param ns integer
----@param lnum integer
----@param col integer
----@return vim.api.keyset.get_extmark_item
-wrap.get_extmark = function (buffer, ns, lnum, col)
-	local extmarks = vim.api.nvim_buf_get_extmarks(buffer, ns, { lnum, col }, { lnum, col + 1 }, {
-		details = true,
-		type = "virt_text"
+---@param range { row: integer }
+---@param indent markview.wrap.data.value
+wrap.wrap_indent = function (buffer, range, indent)
+	---|fS
+
+	if not wrap.cache[buffer] then
+		wrap.cache[buffer] = {};
+	end
+
+	local row = range.row;
+
+	if not wrap.cache[buffer][row] then
+		wrap.cache[buffer][row] = {};
+	end
+
+	---@type integer? Window to use for 
+	local win = utils.buf_getwin(buffer);
+
+	if not win then
+		return;
+	end
+
+	local height = vim.api.nvim_win_text_height(win, {
+		start_row = range.row,
+		end_row = range.row
 	});
 
-	return extmarks[1];
+	if height.all == 1 then
+		return;
+	end
+
+	wrap.cache[buffer][row] = vim.list_extend(wrap.cache[buffer][row], indent);
+
+	---|fE
 end
 
 --[[ Provides `wrapped indentation` to some text. ]]
 ---@param buffer integer
----@param opts markview.wrap.opts
-wrap.wrap_indent = function (buffer, opts)
+wrap.render = function (buffer, ns)
 	---|fS
 
+	---@type integer? Window to use for 
 	local win = utils.buf_getwin(buffer);
 
-	local win_width = vim.api.nvim_win_get_width(win);
-	local textoff = vim.fn.getwininfo(win)[1].textoff;
-	local W = win_width - textoff;
-
-	if vim.fn.strdisplaywidth(opts.line or "") < W then
+	if not win then
 		return;
 	end
 
-	local win_x = vim.api.nvim_win_get_position(win)[2];
-	local passed_start = false;
+	local function render_line (row, indent)
+		local textoff = vim.fn.getwininfo(win)[1].textoff;
 
-	for c = 1, vim.fn.strdisplaywidth(opts.line or "") do
-		--- `l` should be 1-indexed.
-		---@type integer
-		local x = vim.fn.screenpos(win, opts.row + 1, c).col - (win_x + textoff);
+		local win_x = vim.api.nvim_win_get_position(win)[2];
 
-		if x ~= 1 then
-			goto continue;
-		elseif passed_start == false then
-			passed_start = true;
-			goto continue;
+		local text = vim.api.nvim_buf_get_lines(buffer, row, row + 1, false)[1];
+		local chars = vim.fn.split(text, "\\zs");
+
+		local c = 0;
+		local before_start = true;
+
+		local last_screencol = math.huge;
+
+		for _, char in ipairs(chars) do
+			c = c + #char;
+
+			local x = vim.fn.screenpos(win, row + 1, c).col - (win_x + textoff);
+
+			if x < last_screencol and before_start == true then
+				before_start = false;
+			elseif  x < last_screencol then
+				local indent_opts = {
+					undo_restore = false, invalidate = true,
+					right_gravity = false,
+
+					virt_text_pos = "inline",
+					hl_mode = "combine",
+
+					virt_text = indent;
+				};
+
+				vim.api.nvim_buf_set_extmark(
+					buffer,
+					ns,
+					row,
+					c - 1,
+					indent_opts
+				);
+			end
+
+			last_screencol = x;
 		end
-
-		local extmark = wrap.get_extmark(buffer, opts.ns, opts.row, c - 1);
-
-		if extmark ~= nil then
-			local id = extmark[1];
-			local virt_text = extmark[4].virt_text;
-
-			vim.api.nvim_buf_set_extmark(buffer, opts.ns, opts.row, c - 1, {
-				id = id,
-
-				undo_restore = false, invalidate = true,
-				right_gravity = false,
-
-				virt_text_pos = "inline",
-				---@diagnostic disable-next-line: param-type-mismatch
-				virt_text = vim.list_extend(virt_text, opts.indent or {}),
-
-				hl_mode = "combine",
-			});
-		else
-			vim.api.nvim_buf_set_extmark(buffer, opts.ns, opts.row, c - 1, {
-				undo_restore = false, invalidate = true,
-				right_gravity = false,
-
-				virt_text_pos = "inline",
-				virt_text = opts.indent or {},
-
-				hl_mode = "combine",
-			});
-		end
-
-		::continue::
 	end
+
+	for row, indent in pairs(wrap.cache[buffer] or {}) do
+		render_line(row, indent);
+	end
+
+	wrap.cache[buffer] = {};
 
 	---|fE
 end
