@@ -181,9 +181,21 @@ markdown.block_quote = function (buffer, TSNode, lines, range)
 		range.title_end = range.col_start + title_end;
 	end
 
+	local nested = false;
+	local parent = TSNode:parent();
+
+	while parent do
+		if parent:type() == "block_quote" then
+			nested = true;
+			break;
+		end
+
+		parent = parent:parent();
+	end
+
 	markdown.insert({
 		class = "markdown_block_quote",
-		__nested = TSNode:parent() ~= nil,
+		__nested = nested,
 
 		callout = callout,
 		title = title,
