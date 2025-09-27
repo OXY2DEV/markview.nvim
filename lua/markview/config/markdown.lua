@@ -536,7 +536,7 @@ return {
 		["gitlab%.com"] = {
 			priority = -9999,
 
-			icon = " ",
+			icon = "󰮠 ",
 			hl = "MarkviewPalette2Fg"
 		},
 
