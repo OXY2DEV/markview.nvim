@@ -1196,6 +1196,7 @@ markdown.block_quote = function (buffer, item)
 					{ config.icon or "", utils.set_hl(config.icon_hl or config.hl) }
 				},
 
+				right_gravity = true,
 				hl_mode = "combine",
 			});
 
@@ -1211,13 +1212,13 @@ markdown.block_quote = function (buffer, item)
 				end_col = range.callout_end,
 				conceal = "",
 				undo_restore = false, invalidate = true,
-			right_gravity = false,
 				virt_text_pos = "inline",
 				virt_text = {
 					{ " " },
 					{ config.preview, utils.set_hl(config.preview_hl or config.hl) }
 				},
 
+				right_gravity = true,
 				hl_mode = "combine",
 			});
 		end
@@ -1232,7 +1233,7 @@ markdown.block_quote = function (buffer, item)
 		if line:match("^%>") then
 			vim.api.nvim_buf_set_extmark(buffer, markdown.ns, l, range.col_start, {
 				undo_restore = false, invalidate = true,
-				right_gravity = false,
+				right_gravity = true,
 
 				end_col = range.col_start + math.min(1, line_len),
 				conceal = "",
@@ -1250,7 +1251,7 @@ markdown.block_quote = function (buffer, item)
 		else
 			vim.api.nvim_buf_set_extmark(buffer, markdown.ns, l, range.col_start, {
 				undo_restore = false, invalidate = true,
-				right_gravity = false,
+				right_gravity = true,
 
 				virt_text_pos = "inline",
 				virt_text = {
@@ -2170,13 +2171,21 @@ markdown.section = function (buffer, item)
 
 	local range = item.range;
 
-	for l = range.row_start + 1, range.row_end - 1 do
+	for l = range.row_start + 1, (range.org_end or range.row_end) - 1 do
 		vim.api.nvim_buf_set_extmark(buffer, markdown.ns, l, 0, {
 			undo_restore = false, invalidate = true,
 
 			virt_text_pos = "inline",
 			virt_text = {
-				{ string.rep(shift_char, math.max(0, shift_width)) }
+				{
+					string.rep(
+						shift_char,
+						math.max(
+							0,
+							shift_width * item.level
+						)
+					)
+				}
 			},
 
 			right_gravity = false,
@@ -3329,21 +3338,13 @@ markdown.__block_quote = function (buffer, item)
 	for l = range.row_start, range.row_end - 1, 1  do
 		local l_index = (l - range.row_start) + 1;
 
-		local line = item.text[l_index];
-
-		require("markview.wrap").wrap_indent(buffer, {
-			line = line,
-			row = l,
-			indent = {
-				{ string.rep(" ", item.__nested and 0 or range.col_start) },
-				{
-					tbl_clamp(config.border, l_index),
-					utils.set_hl(tbl_clamp(config.border_hl, l_index) or config.hl)
-				},
-				{ " " }
+		require("markview.wrap").wrap_indent(buffer, { row = l }, {
+			{ string.rep(" ", item.__nested and 0 or range.col_start) },
+			{
+				tbl_clamp(config.border, l_index),
+				utils.set_hl(tbl_clamp(config.border_hl, l_index) or config.hl)
 			},
-
-			ns = markdown.ns
+			{ " " }
 		});
 	end
 end
@@ -3438,22 +3439,26 @@ markdown.__list_item = function (buffer, item)
 	local pad_width = (math.floor(item.indent / indent_size) + 1) * shift_width;
 
 	if config.conceal_on_checkboxes == true and checkbox and checkbox.text then
-		pad_width = pad_width + vim.fn.strdisplaywidth(checkbox.text);
+		pad_width = pad_width + vim.fn.strdisplaywidth(checkbox.text) + 1;
 	else
 		pad_width = pad_width + vim.fn.strdisplaywidth(item.marker) + 1;
 	end
 
+	---@type integer Number of spaces to add to `odd-spaced` list items.
+	local extra = 0;
+
+	if config.conceal_on_checkboxes == true and checkbox and checkbox.text then
+		extra = indent_size + 1 - vim.fn.strdisplaywidth(checkbox.text);
+	else
+		extra = indent_size + 1 - vim.fn.strdisplaywidth(item.marker);
+	end
+
 	for _, l in ipairs(item.candidates) do
-		local line = item.text[l + 1];
-
 		require("markview.wrap").wrap_indent(buffer, {
-			line = line,
-			row = range.row_start + l,
-			indent = {
-				{ string.rep(" ", pad_width) }
-			},
-
-			ns = markdown.ns
+			row = range.row_start + l
+		}, {
+			{ string.rep(" ", (item.__nested or item.indent % indent_size == 0) and 0 or extra) },
+			{ string.rep(" ", range.col_start + pad_width) }
 		});
 	end
 end
@@ -3474,20 +3479,20 @@ markdown.__section = function (buffer, item)
 	end
 
 	local shift_width = main_config.org_shift_width or main_config.shift_width or 0;
-	local shift_char = main_config.org_shift_char or " ";
+	local shift_char = tostring(item.level) or main_config.org_shift_char or " ";
 
-	for l = range.row_start, range.row_end, 1  do
-		local l_index = (l - range.row_start) + 1;
-		local line = item.text[l_index];
-
+	for l = range.row_start, (range.org_end or range.row_end) - 1, 1 do
 		require("markview.wrap").wrap_indent(buffer, {
-			line = line,
-			row = l,
-			indent = {
-				{ string.rep(shift_char, math.max(0, shift_width * (item.level - 1))) }
-			},
-
-			ns = markdown.ns
+			row = l
+		}, {
+			{
+				string.rep(" " or shift_char,
+					math.max(
+						0,
+						shift_width * item.level
+					)
+				)
+			}
 		});
 	end
 end
@@ -3556,6 +3561,8 @@ markdown.post_render = function (buffer, content)
 			});
 		end
 	end
+
+	require("markview.wrap").render(buffer, markdown.ns);
 end
 
 

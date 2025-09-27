@@ -11,6 +11,8 @@
 ---@field splitview_source? integer Source buffer for hybrid mode.
 ---@field splitview_buffer? integer Preview buffer for hybrid mode.
 ---@field splitview_window? integer Preview window for hybrid mode.
+---
+---@field modified_queries boolean Has the `markdown` been modified?
 
 
 --- Configuration options for `markview.nvim`.
