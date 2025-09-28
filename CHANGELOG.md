@@ -1,5 +1,43 @@
 # Changelog
 
+## [26.0.0](https://github.com/OXY2DEV/markview.nvim/compare/v25.11.0...v26.0.0) (2025-09-28)
+
+
+### ⚠ BREAKING CHANGES
+
+* **wrap:** Removed relaince on `screenpos` for wrap support
+* **wrap:** Reworked how `wrap` support is implamented
+* Calling `setup()` no longer re-apply highlights
+* **config:** Separated config into multiple files
+* Removed dependency for custom query files
+
+### refacto
+
+* **wrap:** Removed relaince on `screenpos` for wrap support ([01825b0](https://github.com/OXY2DEV/markview.nvim/commit/01825b0e3c1ed5fb40fcaf0d9ada42b0a8404f58))
+
+
+### Features
+
+* **parser_markdown:** Parsed list items now have nesting data ([24f5b38](https://github.com/OXY2DEV/markview.nvim/commit/24f5b3867947b49dbd41ec8d251119c268450d3f))
+* **parser_markdown:** Parsed sections now have indentation ranges ([92c6168](https://github.com/OXY2DEV/markview.nvim/commit/92c6168c36796892f3952ebf1408fa706ab8f949))
+
+
+### Bug Fixes
+
+* **config:** Fixed an issue with `<a></a>` tags icon being cut off ([fd4bc72](https://github.com/OXY2DEV/markview.nvim/commit/fd4bc723276b2008c6f68758fae0dedabbec267c))
+* **core:** Fixed issues with non-existing buffer missing state value ([82c21e3](https://github.com/OXY2DEV/markview.nvim/commit/82c21e3b3f982ae76107a787fb28383d76fffeab)), closes [#394](https://github.com/OXY2DEV/markview.nvim/issues/394)
+* **parser_markdown:** Added missing proeprty for block quotes ([1ec84d4](https://github.com/OXY2DEV/markview.nvim/commit/1ec84d43e76e770aa37899ce1788646d6b3f620a))
+* **parser_markdown:** Fixes indentation of trailing lines in list items ([3df4aea](https://github.com/OXY2DEV/markview.nvim/commit/3df4aea6a8ecdf6451a44325c8cf0d397e869a40)), closes [#399](https://github.com/OXY2DEV/markview.nvim/issues/399)
+* **renderer_markdown:** Block quote borders now have correct `right_gravity` ([1276282](https://github.com/OXY2DEV/markview.nvim/commit/1276282cd01ed822be4603348fdb58227b8b3b87))
+
+
+### Code Refactoring
+
+* Calling `setup()` no longer re-apply highlights ([b895174](https://github.com/OXY2DEV/markview.nvim/commit/b895174117b00ce993242f0d0123c2b9f04abb6a))
+* **config:** Separated config into multiple files ([b7aeff1](https://github.com/OXY2DEV/markview.nvim/commit/b7aeff113d16cb74067b7ba425a694ef3e3996d6))
+* Removed dependency for custom query files ([b8cec24](https://github.com/OXY2DEV/markview.nvim/commit/b8cec240cd76d4d4c743b874b16222082c92970f)), closes [#332](https://github.com/OXY2DEV/markview.nvim/issues/332)
+* **wrap:** Reworked how `wrap` support is implamented ([b5f90fe](https://github.com/OXY2DEV/markview.nvim/commit/b5f90fe92974d16a1d07e4617e7a74e21b4ed32d)), closes [#393](https://github.com/OXY2DEV/markview.nvim/issues/393)
+
 ## [25.11.0](https://github.com/OXY2DEV/markview.nvim/compare/v25.10.0...v25.11.0) (2025-09-01)
 
 
