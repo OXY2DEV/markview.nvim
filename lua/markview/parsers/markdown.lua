@@ -433,11 +433,15 @@ markdown.list_item = function (buffer, TSNode, _, range)
 		See #399 for more details.
 	]]
 	if string.match(text[#text], "^%s*$") then
-		for c = #text, 1, -1 do
-			if string.match(text[c], "%S") then
+		for c = #candidates, 1, -1 do
+			local item = candidates[c] + 1;
+			local line = text[item];
+
+			if string.match(line, "%S") then
 				break;
 			end
 
+			-- vim.print(item)
 			table.remove(candidates);
 		end
 	end
