@@ -424,6 +424,24 @@ markdown.list_item = function (buffer, TSNode, _, range)
 		end
 	end
 
+	--[[
+		If the last line has no **non-whitespace character**,
+		we will remove the empty line candidates from the end of the `TSNode` range.
+
+		NOTE: This is done to prevent indenting empty lines at the end of a list.
+
+		See #399 for more details.
+	]]
+	if string.match(text[#text], "^%s*$") then
+		for c = #text, 1, -1 do
+			if string.match(text[c], "%S") then
+				break;
+			end
+
+			table.remove(candidates);
+		end
+	end
+
 	local parent = TSNode:parent();
 	local nested = false;
 
