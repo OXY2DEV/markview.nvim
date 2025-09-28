@@ -38,73 +38,122 @@ function source:complete(params, callback)
 	local before = params.context.cursor_before_line or "";
 	local after = params.context.cursor_after_line or "";
 
-	local comp = {};
+	---@type lsp.CompletionItem[] Completion items.
+	local output = {};
 
-	if before:match("^[ %>]+%s*%[%!%a*$") then
-		---+${func, Callout completion}
+	local function comelete_block_quote ()
+		---|fS
+
 		local items = spec.get({ "markdown", "block_quotes" }, { fallback = {} });
 
-		for key, item in pairs(items) do
-			if vim.list_contains({ "enable", "wrap", "default" }, key) == false then
-				local label = "[!" .. key;
-				local desc = {
-					string.format("▌ %s",
-						item.preview or ""
-					),
-					"▌ Block quote description."
-				};
+		---@type string[] Sorted list of `callouts`.
+		local keys = vim.tbl_keys(items);
+		table.sort(keys);
 
-				if after ~= "]" then
-					label = label .. "]";
-				end
-
-				local result = label;
-				label = label .. " » " .. (item.preview or "");
-
-				table.insert(comp, {
-					label = label,
-					word = result,
-
-					detail = table.concat(desc, "\n")
-				});
+		for _, key in pairs(keys) do
+			if key == "enable" or key == "wrap" or key == "default" then
+				goto continue;
 			end
+
+			---@type markview.config.markdown.block_quotes.opts
+			local value = items[key] or {};
+
+			table.insert(output, {
+				label = string.format(
+					"[!%s] -> %s",
+
+					key,
+					value.preview or items.default.preview
+				),
+				kind = require("cmp.types.lsp").CompletionItemKind.Text,
+
+				word = key .. (string.match(after, "^%S*%]") and "" or "]"),
+
+				filterText = key,
+				sortText = key,
+
+				documentation = {
+					kind = "markdown",
+					value = string.format(
+						"```\n%s %s \n%s Block quote description.\n```",
+
+						value.border or items.default.border,
+						value.preview or items.default.preview,
+						value.border or items.default.border
+					);
+				}
+			});
+
+			::continue::
 		end
-		---_
-	elseif before:match("^[ %>]*[%-%+%*] %[$") then
-		---+${func, Checkbox state completion}
+
+		---|fE
+	end
+
+	local function comelete_checkbox ()
+		---|fS
+
 		local items = spec.get({ "markdown_inline", "checkboxes" }, { fallback = {} });
 
-		for key, item in pairs(items) do
-			if vim.list_contains({ "enable", "checked", "unchecked" }, key) == false then
-				local label = "[" .. key;
-				local desc = {
-					"◇ List item,",
-					string.format("  %s Checkbox with",
-						item.text or ""
-					),
-					"    some text."
-				};
+		---@type string[] Sorted list of `callouts`.
+		local keys = vim.tbl_keys(items);
+		table.sort(keys);
 
-				if after ~= "]" then
-					label = label .. "] ";
-				end
-
-				local result = label;
-				label = label .. " » " .. (item.text or "");
-
-				table.insert(comp, {
-					label = label,
-					word = result,
-
-					detail = table.concat(desc, "\n")
-				});
+		for _, key in pairs(keys) do
+			if key == "enable" then
+				goto continue;
 			end
+
+			---@type markview.config.markdown_inline.checkboxes.opts
+			local value = items[key] or {};
+
+			local text = key;
+
+			if key == "checked" then
+				text = "X";
+			elseif key == "unchecked" then
+				text = " ";
+			end
+
+			table.insert(output, {
+				label = string.format(
+					"[%s] -> %s %s",
+
+					text,
+					value.text or items.default.text,
+					key
+				),
+				kind = require("cmp.types.lsp").CompletionItemKind.Text,
+
+				word = key .. (string.match(after, "^.?%]") and "" or "]"),
+
+				filterText = key,
+				sortText = key,
+
+				documentation = {
+					kind = "markdown",
+					value = string.format(
+						"```\n  ◇ List item,\n  %s Checkbox with\n    some text.\n```",
+
+						value.text or items.default.text
+					);
+				}
+			});
+
+			::continue::
 		end
-		---_
+
+		---|fE
+	end
+
+	if before:match("^[ %>]+%s*%[%!%a*$") then
+		comelete_block_quote()
+	elseif before:match("^[ %>]*[%-%+%*] %[$") then
+		comelete_checkbox();
 	end
 
     -- callback must /always/ be called.
-	return callback(comp)
+	return callback(output)
 end
 
 return source

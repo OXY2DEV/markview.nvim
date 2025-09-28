@@ -1,78 +1,6 @@
 ---@type integer Autocmd group ID.
 local augroup = vim.api.nvim_create_augroup("markview", { clear = true });
 
---- Checks errors in `runtime path`;
-local function check_rtp ()
-	---|fS
-
-	local spec = require("markview.spec");
-
-	local _check_rtp = spec.get({ "experimental", "check_rtp" }, { fallback = true });
-	local check_rtp_msg = spec.get({ "experimental", "check_rtp_message" }, { fallback = true });
-
-	if _check_rtp == false then
-		return;
-	elseif not debug or not vim.opt then
-		return;
-	end
-
-	---@type string[] Runtime paths.
-	local rtps = vim.opt.runtimepath:get();
-	local ts_path, markview_path
-	local ts_index, markview_index
-
-	for r, path in ipairs(rtps) do
-		if ts_path and markview_path then
-			break;
-		elseif string.match(path, "nvim%-treesitter$") then
-			ts_path = path;
-			ts_index = r;
-		elseif string.match(path, "markview%.nvim$") then
-			markview_path = path;
-			markview_index = r;
-		end
-	end
-
-	if not ts_path or not markview_path then
-		return;
-	elseif ts_index < markview_index then
-		rtps[ts_index] = markview_path;
-		rtps[markview_index] = ts_path;
-
-		vim.o.runtimepath = table.concat(rtps, ",");
-		_G.__mkv_has_rtp_error = true;
-
-		if not check_rtp_msg then
-			return;
-		end
-
-		vim.api.nvim_echo({
-			{ "  markview.nvim ", "DiagnosticVirtualTextInfo" },
-			{ ": ", "@comment" },
-			{ " nvim-treesitter ", "DiagnosticVirtualTextWarn" },
-			{ " is being loaded before ", "@comment" },
-			{ " markview.nvim ", "DiagnosticVirtualTextHint" },
-			{ ".", "@comment" },
-			{ "\n" },
-			{ "\n" },
-			{ "This can cause syntax highlighting issues!", "ErrorMsg" },
-			{ "\n" },
-			{ "Your ", "@comment" },
-			{ " runtime path ", "DiagnosticVirtualTextHint" },
-			{ " has been modified to fix load order.", "@comment" },
-			{ "\n" },
-			{ "\n" },
-			{ "You can disable this by setting ", "@comment" },
-			{ " experimental.check_rtp = false ", "DiagnosticVirtualTextHint" },
-			{ " or set ", "@comment" },
-			{ " experimental.check_rtp_message = false ", "DiagnosticVirtualTextHint" },
-			{ " to only hide this mesaage.", "@comment" },
-		}, true, { verbose = true });
-	end
-
-	---|fE
-end
-
 local function register_blink_source ()
 	---|fS
 
@@ -181,96 +109,15 @@ local function register_cmp_source ()
 	---|fE
 end
 
-local function set_ts_directive ()
-	---|fS
-
-	local available_directives = vim.treesitter.query.list_directives();
-
-	if vim.list_contains(available_directives, "conceal-patch!") then
-		return;
-	end
-
-	--- FIX, Patch for the broken (fenced_code_block) concealment.
-	--- Doesn't hide leading spaces before ```.
-	vim.treesitter.query.add_directive("conceal-patch!", function (match, _, bufnr, predicate, metadata)
-		local id = predicate[2];
-		local node = match[id];
-
-		---@diagnostic disable-next-line: undefined-field
-		local r_s, c_s, r_e, c_e = node:range();
-		local line = vim.api.nvim_buf_get_lines(bufnr --[[ @as integer ]], r_s, r_s + 1, true)[1];
-
-		if not line then
-			return;
-		elseif not metadata[id] then
-		---@diagnostic disable-next-line: missing-fields
-			metadata[id] = { range = {} };
-		end
-
-		line = line:sub(c_s + 1, #line);
-
-		if not line:match("^(%s*)%S") then
-			--- Line is probably empty.
-			return;
-		end
-
-		local spaces = line:match("^(%s*)%S"):len();
-
-		metadata[id].range[1] = r_s;
-		metadata[id].range[2] = c_s + spaces;
-		metadata[id].range[3] = r_e;
-		metadata[id].range[4] = c_e;
-
-		metadata[id].conceal = "";
-	end, {});
-
-	require("markview.health").notify("trace", {
-		level = 5,
-		message = {
-			{ "Added tree-sitter directive ", "Special" },
-			{ " conceal-patch! ", "DiagnosticVirtualTextInfo" }
-		}
-	});
-
-	---|fE
-end
-
--- `nvim-cmp`'s get_config() depends
--- on the current buffer to get filetype
--- related configs.
----@type string[]
-local filetypes = require("markview.spec").get({ "preview", "filetypes" }, {
-	fallback = {},
-	ignore_enable = true
-});
-
-vim.api.nvim_create_autocmd("FileType", {
-	pattern = filetypes,
-	callback = function()
-		register_blink_source();
-		register_cmp_source();
-
-		-- This will make the autocmd only
-		-- fire once.
-		return true;
-	end
-});
-
-
--- BUG, Certain plugin(s) will try to call
--- the directives before `VimEnter`.
---
--- Do not lazy load the directive.
-set_ts_directive();
-
 vim.api.nvim_create_autocmd("VimEnter", {
 	group = augroup,
 	callback = function ()
-		check_rtp();
 		require("markview.highlights").setup();
+
+		register_blink_source();
+		register_cmp_source();
 	end
 });
-
 
 -- Updates the highlight groups.
 vim.api.nvim_create_autocmd("ColorScheme", {
@@ -625,8 +472,7 @@ vim.api.nvim_create_autocmd({
 				return false;
 			end
 
-			local utils = require("markview.utils");
-			local win = utils.buf_getwin(buffer);
+			local win = vim.fn.win_findbuf(buffer)[1];
 
 			if type(win) ~= "number" or markview.win_is_safe(win) == false then
 				--- Window isn't safe.
@@ -1230,12 +1076,11 @@ vim.api.nvim_create_user_command("Markview", function (cmd)
 			elseif arg == "true" or arg == "false" then
 				table.insert(fargs, arg == "true");
 			else
-				--- BUG, is this used by any functions?
+				-- BUG: is this used by any functions?
 				-- table.insert(fargs, arg);
 			end
 		end
 
-		---@diagnostic disable-next-line
 		pcall(fun, unpack(fargs));
 	end
 
@@ -1245,7 +1090,7 @@ vim.api.nvim_create_user_command("Markview", function (cmd)
 	if #args == 0 then
 		markview.commands.Toggle();
 	elseif type(markview.commands[args[1]]) == "function" then
-		--- FIXME, Change this if `vim.list_slice` becomes deprecated.
+		-- FIXME: Change this if `vim.list_slice` becomes deprecated.
 		exec(markview.commands[args[1]], vim.list_slice(args, 2))
 	end
 

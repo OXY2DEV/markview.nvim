@@ -86,6 +86,7 @@
 ---@class markview.parsed.markdown.list_items
 ---
 ---@field class "markdown_list_item"
+---@field __nested boolean Is the node nested?
 ---
 ---@field candidates integer[] List of line numbers(0-indexed) from start that should be indented.
 ---
@@ -199,5 +200,15 @@
 ---@field level integer
 ---
 ---@field text string[]
----@field range markview.parsed.range
+---@field range markview.parsed.markdown.sections.range
+
+
+---@class markview.parsed.markdown.sections.range
+---
+---@field row_start integer
+---@field row_end integer
+---@field col_start integer
+---@field col_end integer
+---
+---@field org_end integer Line where `Org indent` should end.
 

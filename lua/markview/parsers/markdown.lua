@@ -181,9 +181,21 @@ markdown.block_quote = function (buffer, TSNode, lines, range)
 		range.title_end = range.col_start + title_end;
 	end
 
+	local nested = false;
+	local parent = TSNode:parent();
+
+	while parent do
+		if parent:type() == "block_quote" then
+			nested = true;
+			break;
+		end
+
+		parent = parent:parent();
+	end
+
 	markdown.insert({
 		class = "markdown_block_quote",
-		__nested = TSNode:parent() ~= nil,
+		__nested = nested,
 
 		callout = callout,
 		title = title,
@@ -307,16 +319,13 @@ markdown.link_ref = function (buffer, TSNode, text, range)
 		text = text,
 		range = range
 	});
-
-	if label and desc then
-		inline.cache.link_ref[label] = desc;
-	end
 end
 
 --- List item parser.
 ---@param buffer integer
+---@param TSNode table
 ---@param range markview.parsed.range
-markdown.list_item = function (buffer, _, _, range)
+markdown.list_item = function (buffer, TSNode, _, range)
 	---@type string[]
 	local text = vim.api.nvim_buf_get_lines(buffer, range.row_start, range.row_end, false);
 
@@ -415,8 +424,39 @@ markdown.list_item = function (buffer, _, _, range)
 		end
 	end
 
+	--[[
+		If the last line has no **non-whitespace character**,
+		we will remove the empty line candidates from the end of the `TSNode` range.
+
+		NOTE: This is done to prevent indenting empty lines at the end of a list.
+
+		See #399 for more details.
+	]]
+	if string.match(text[#text], "^%s*$") then
+		for c = #text, 1, -1 do
+			if string.match(text[c], "%S") then
+				break;
+			end
+
+			table.remove(candidates);
+		end
+	end
+
+	local parent = TSNode:parent();
+	local nested = false;
+
+	while parent do
+		if parent:type() == "list_item" then
+			nested = true;
+			break;
+		end
+
+		parent = parent:parent();
+	end
+
 	markdown.insert({
 		class = "markdown_list_item",
+		__nested = nested,
 
 		candidates = candidates,
 		marker = marker:gsub("%s", ""),
@@ -455,10 +495,24 @@ end
 ---@param buffer integer
 ---@param TSNode table
 ---@param text string[]
----@param range markview.parsed.markdown.reference_definitions.range
+---@param range markview.parsed.markdown.sections.range
 markdown.section = function (buffer, TSNode, text, range)
 	local heading = TSNode:child(0);
 	local heading_text = vim.treesitter.get_node_text(heading, buffer);
+
+	---@type TSNode?
+	local next_sibling = heading:next_sibling();
+	local org_end = range.row_end;
+
+	while next_sibling do
+		if next_sibling and next_sibling:type() == "section" then
+			org_end = -1 + next_sibling:range();
+		end
+
+		next_sibling = next_sibling:next_sibling();
+	end
+
+	range.org_end = org_end;
 
 	table.insert(markdown.content, {
 		class = "markdown_section",
