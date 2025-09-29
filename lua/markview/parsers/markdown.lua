@@ -250,12 +250,29 @@ markdown.code_block = function (buffer, TSNode, _, range)
 			range.language = { lang_node:range() };
 		end
 
-		info_string = vim.treesitter.get_node_text(info_node, buffer);
+		info_string = string.gsub(
+			vim.treesitter.get_node_text(info_node, buffer),
+			"^^%s+",
+			""
+		);
 		range.info_string = { info_node:range() };
 	end
 
-	local start_delim = TSNode:child(0);
-	local end_delim   = TSNode:child(TSNode:child_count() - 1);
+	---@type TSNode, TSNode?
+	local start_delim, end_delim;
+
+	for child in TSNode:iter_children() do
+		if child:type() == "fenced_code_block_delimiter" then
+			if not start_delim then
+				start_delim = child;
+				range.start_delim = { child:range() };
+			else
+				end_delim = child;
+				range.end_delim = { child:range() };
+				break;
+			end
+		end
+	end
 
 	markdown.insert({
 		class = "markdown_code_block",

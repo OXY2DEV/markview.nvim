@@ -43,6 +43,9 @@
 
 ---@class markview.parsed.markdown.code_blocks.range
 ---
+---@field start_delim integer[] Range of the **start** delimiter.
+---@field end_delim? integer[] Range of the **end** delimiter.
+---
 ---@field row_start integer
 ---@field row_end integer
 ---@field col_start integer

@@ -1322,15 +1322,10 @@ markdown.code_block = function (buffer, item)
 	---@return integer
 	local function lang_conceal_to ()
 		if item.info_string == nil then
-			return range.col_start + #delims[1];
-		elseif item.info_string:match("^%{[^%}]+%}%s?") then
-			--- Info string: {lang}
-			local _to = item.info_string:match("^%{[^%}]+%}%s?"):len();
-			return info_range[2] + _to;
+			return range.start_delim[4];
 		else
-			--- Info string: ```lang`
-			local _to = item.info_string:match("^%S+%s?"):len();
-			return info_range[2] + _to;
+			local _to = item.info_string:match("^%S+%s*"):len();
+			return range.start_delim[4] + _to;
 		end
 	end
 
@@ -1353,12 +1348,15 @@ markdown.code_block = function (buffer, item)
 		return line_conf;
 	end
 
-	--- Renders simple style code blocks.
+	--[[ *Basic* rendering of `code blocks`. ]]
 	local function render_simple()
+		---|fS
+
+		local conceal_from = range.start_delim[2] + #string.match(item.delimiters[1], "^%s*");
 		local conceal_to = lang_conceal_to();
 
 		if config.label_direction == nil or config.label_direction == "left" then
-			vim.api.nvim_buf_set_extmark(buffer, markdown.ns, range.row_start, range.col_start, {
+			vim.api.nvim_buf_set_extmark(buffer, markdown.ns, range.row_start, conceal_from, {
 				undo_restore = false, invalidate = true,
 
 				end_col = conceal_to,
@@ -1373,7 +1371,7 @@ markdown.code_block = function (buffer, item)
 				line_hl_group = utils.set_hl(config.border_hl)
 			});
 		else
-			vim.api.nvim_buf_set_extmark(buffer, markdown.ns, range.row_start, range.col_start, {
+			vim.api.nvim_buf_set_extmark(buffer, markdown.ns, range.row_start, conceal_from, {
 				undo_restore = false, invalidate = true,
 
 				end_col = conceal_to,
@@ -1394,7 +1392,7 @@ markdown.code_block = function (buffer, item)
 				undo_restore = false, invalidate = true,
 
 				end_row = info_range[3],
-				end_col = #item.text[1],
+				end_col = info_range[4],
 
 				hl_group = utils.set_hl(config.info_hl or config.border_hl)
 			});
@@ -1420,16 +1418,22 @@ markdown.code_block = function (buffer, item)
 
 			line_hl_group = utils.set_hl(config.border_hl)
 		});
+
+		---|fE
 	end
 
 	--- Renders block style code blocks.
 	local function render_block ()
+		---|fS "chunk: Calculate various widths"
+
 		local pad_amount = config.pad_amount or 0;
 		local block_width = config.min_width or 60;
 
+		local pad_char = config.pad_char or " ";
+
+		---@type integer[] Visual width of lines.
 		local line_widths = {};
 
-		--- Get maximum length of the lines within the code block
 		for l, line in ipairs(item.text) do
 			local final = markdown.get_visual_text:init(decorations.name, line);
 
@@ -1443,166 +1447,125 @@ markdown.code_block = function (buffer, item)
 		end
 
 		local label_width = utils.virt_len({ label });
+		---|fE
+
+		local delim_conceal_from = range.start_delim[2] + #string.match(item.delimiters[1], "^%s*");
 		local conceal_to = lang_conceal_to();
 
-		--- Render top
-		if config.label_direction == nil or config.label_direction == "left" then
-			local avail_top  = block_width - (label_width + 2);
+		---|fS "chunk: Top border"
 
-			vim.api.nvim_buf_set_extmark(buffer, markdown.ns, range.row_start, range.col_start, {
-				undo_restore = false, invalidate = true,
+		local visible_info = string.sub(item.text[1], (conceal_to + 1) - range.col_start);
+		local left_padding = visible_info ~= "" and 1 or pad_amount;
 
-				end_col = conceal_to,
-				conceal = "",
+		local pad_width = vim.fn.strdisplaywidth(
+			string.rep(pad_char, left_padding)
+		);
 
-				sign_text = config.sign == true and decorations.sign or nil,
-				sign_hl_group = utils.set_hl(config.sign_hl or decorations.sign_hl),
+		-- Hide the leading `backticks`s.
+		vim.api.nvim_buf_set_extmark(buffer, markdown.ns, range.row_start, delim_conceal_from, {
+			undo_restore = false, invalidate = true,
 
-				virt_text_pos = "inline",
-				virt_text = { label }
-			});
+			end_col = conceal_to,
+			conceal = ""
+		});
 
-			if not item.info_string then
-				vim.api.nvim_buf_set_extmark(buffer, markdown.ns, range.row_start, range.col_start + #delims[1], {
-					undo_restore = false, invalidate = true,
-
-					virt_text_pos = "inline",
-					virt_text = {
-						{
-							string.rep(config.pad_char or " ", math.max(0, block_width - label_width)),
-							utils.set_hl(config.border_hl)
-						}
-					}
-				});
-				goto no_info;
-			end
-
-			local relative_y = conceal_to - info_range[2];
-			local info_width = #item.info_string - relative_y;
-
-			vim.api.nvim_buf_set_extmark(buffer, markdown.ns, info_range[1], info_range[2], {
-				undo_restore = false, invalidate = true,
-
-				end_row = info_range[3],
-				end_col = range.col_start + #item.text[1],
-
-				hl_group = utils.set_hl(config.info_hl or config.border_hl)
-			});
-
-			if info_width >= avail_top then
-				--- Exceeds.
-				vim.api.nvim_buf_set_extmark(buffer, markdown.ns, range.row_start, conceal_to + avail_top, {
-					undo_restore = false, invalidate = true,
-
-					end_col = info_range[4],
-					conceal = "",
-
-					virt_text_pos = "inline",
-					virt_text = {
-						{ "…", utils.set_hl(config.info_hl or config.border_hl) },
-						{ " ", utils.set_hl(config.border_hl) }
-					}
-				});
-			else
-				local spaces = math.max(0, avail_top - info_width + 2);
-
-				vim.api.nvim_buf_set_extmark(buffer, markdown.ns, range.row_start, range.col_start + #item.text[1], {
-					undo_restore = false, invalidate = true,
-
-					virt_text_pos = "inline",
-					virt_text = {
-						{
-							string.rep(config.pad_char or " ", spaces),
-							utils.set_hl(config.border_hl)
-						}
-					}
-				});
-			end
-
-			::no_info::
-		else
-			local avail_top  = math.max(block_width - (label_width + 3));
-
-			vim.api.nvim_buf_set_extmark(buffer, markdown.ns, range.row_start, range.col_start, {
-				undo_restore = false, invalidate = true,
-
-				end_col = conceal_to,
-				conceal = "",
-
-				sign_text = config.sign == true and decorations.sign or nil,
-				sign_hl_group = utils.set_hl(config.sign_hl or decorations.sign_hl),
-
+		if config.label_direction == "right" then
+			vim.api.nvim_buf_set_extmark(buffer, markdown.ns, range.row_start, delim_conceal_from, {
 				virt_text_pos = "inline",
 				virt_text = {
 					{
-						" ",
+						string.rep(" " or pad_char, left_padding),
 						utils.set_hl(config.border_hl)
 					}
 				}
 			});
-
-			if not item.info_string then
-				vim.api.nvim_buf_set_extmark(buffer, markdown.ns, range.row_start, range.col_start + #delims[1], {
-					undo_restore = false, invalidate = true,
-
-					virt_text_pos = "inline",
-					virt_text = {
-						{
-							string.rep(config.pad_char or " ", avail_top + 2),
-							utils.set_hl(config.border_hl)
-						},
-						label
+		else
+			vim.api.nvim_buf_set_extmark(buffer, markdown.ns, range.row_start, range.col_start + #item.text[1], {
+				virt_text_pos = "inline",
+				virt_text = {
+					{
+						string.rep(" " or pad_char, left_padding),
+						utils.set_hl(config.border_hl)
 					}
-				});
-				goto no_info;
-			end
-
-			local relative_y = conceal_to - info_range[2];
-			local info_width = #item.info_string - relative_y;
-
-			vim.api.nvim_buf_set_extmark(buffer, markdown.ns, info_range[1], info_range[2], {
-				undo_restore = false, invalidate = true,
-
-				end_row = info_range[3],
-				end_col = range.col_start + #item.text[1],
-
-				hl_group = utils.set_hl(config.info_hl or config.border_hl)
+				}
 			});
+		end
 
-			if info_width >= avail_top then
-				--- Exceeds.
-				vim.api.nvim_buf_set_extmark(buffer, markdown.ns, range.row_start, conceal_to + avail_top, {
-					undo_restore = false, invalidate = true,
+		---|fS "chunk: Prettify info"
 
-					end_col = info_range[4],
-					conceal = "",
+		if visible_info then
+			local visible_size = vim.fn.strdisplaywidth(visible_info);
 
-					virt_text_pos = "inline",
-					virt_text = {
-						{ "…", utils.set_hl(config.info_hl or config.border_hl) },
-						{ " ", utils.set_hl(config.border_hl) },
-						label
-					}
+			if (pad_amount + visible_size + label_width) >= block_width then
+				-- Calculating where to wrap from,
+				-- 1. Start of the of the block = End of delimiter(`conceal_to`) - Start of the block(`range.col_start`).
+				-- 2. Space for the info string = Width of block(`block_width`) - Width of label(`label_width`) - Width of padding(`pad_width`).
+				local conceal_from = (conceal_to - range.col_start) + (block_width - (label_width + pad_width));
+
+				vim.api.nvim_buf_set_extmark(buffer, markdown.ns, range.row_start, conceal_from, {
+					end_col = #item.text[1],
+					conceal = ""
 				});
 			else
-				local spaces = math.max(0, avail_top - info_width + 2);
+				-- Calculating the amount of spacing to add,
+				-- 1. Used space = Visible text width(`visible_size`) + label width(`label_width`) + padding size(`pad_width`).
+				-- 2. Total block width - Used space
+				local spacing = block_width - (visible_size + label_width + pad_width);
 
 				vim.api.nvim_buf_set_extmark(buffer, markdown.ns, range.row_start, range.col_start + #item.text[1], {
-					undo_restore = false, invalidate = true,
-
 					virt_text_pos = "inline",
 					virt_text = {
 						{
-							string.rep(config.pad_char or " ", spaces),
+							string.rep(pad_char, spacing),
 							utils.set_hl(config.border_hl)
 						},
-						label
 					}
 				});
 			end
 
-			::no_info::
+			vim.api.nvim_buf_set_extmark(buffer, markdown.ns, range.row_start, conceal_to, {
+				end_col = range.col_start + #item.text[1],
+				hl_group = utils.set_hl(config.info_hl),
+				hl_mode = "combine"
+			});
+		else
+			-- Calculating the amount of spacing to add,
+			-- 1. Used space = label width(`label_width`) + padding size(`pad_width`).
+			-- 2. Total block width - Used space
+			local spacing = block_width - (label_width + pad_width);
+
+			vim.api.nvim_buf_set_extmark(buffer, markdown.ns, range.row_start, range.col_start + #item.text[1], {
+				virt_text_pos = "inline",
+				virt_text = {
+					{
+						string.rep(pad_char, spacing),
+						utils.set_hl(config.border_hl)
+					},
+				}
+			});
 		end
+
+		---|fE
+
+		---|fS "chunk: Place label"
+
+		local top_border = {
+		};
+
+		if config.label_direction == "right" then
+			top_border.col_start = range.start_delim[2] + #item.text[1];
+		else
+			top_border.col_start = range.start_delim[4];
+		end
+
+		vim.api.nvim_buf_set_extmark(buffer, markdown.ns, range.row_start, top_border.col_start, {
+			virt_text_pos = "inline",
+			virt_text = { label }
+		});
+
+		---|fE
+
+		---|fE
 
 		--- Line padding
 		for l, width in ipairs(line_widths) do
@@ -1674,14 +1637,16 @@ markdown.code_block = function (buffer, item)
 		end
 
 		--- Render bottom
-		if item.text[#item.text] ~= "" then
-			vim.api.nvim_buf_set_extmark(buffer, markdown.ns, range.row_end - 1, (range.col_start + #item.text[#item.text]) - #delims[2], {
+		if item.delimiters[2] then
+			local delim_conceal_from = range.end_delim[2] + #string.match(item.delimiters[2], "^%s*");
+
+			vim.api.nvim_buf_set_extmark(buffer, markdown.ns, range.row_end - 1, delim_conceal_from, {
 				undo_restore = false, invalidate = true,
 				end_col = range.col_start + #item.text[#item.text],
 				conceal = ""
 			});
 
-			vim.api.nvim_buf_set_extmark(buffer, markdown.ns, range.row_end - 1, range.col_start + #item.text[#item.text], {
+			vim.api.nvim_buf_set_extmark(buffer, markdown.ns, range.row_end - 1, delim_conceal_from, {
 				undo_restore = false, invalidate = true,
 
 				virt_text_pos = "inline",

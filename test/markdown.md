@@ -96,7 +96,7 @@ console.log("Hello world!");
 vim.print("Hello world!");
 ```
 
-```md
+```markdown
 Hello *world!*
 ```
 
