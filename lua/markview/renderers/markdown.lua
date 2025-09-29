@@ -1638,15 +1638,15 @@ markdown.code_block = function (buffer, item)
 
 		--- Render bottom
 		if item.delimiters[2] then
-			local delim_conceal_from = range.end_delim[2] + #string.match(item.delimiters[2], "^%s*");
+			local end_delim_conceal_from = range.end_delim[2] + #string.match(item.delimiters[2], "^%s*");
 
-			vim.api.nvim_buf_set_extmark(buffer, markdown.ns, range.row_end - 1, delim_conceal_from, {
+			vim.api.nvim_buf_set_extmark(buffer, markdown.ns, range.row_end - 1, end_delim_conceal_from, {
 				undo_restore = false, invalidate = true,
 				end_col = range.col_start + #item.text[#item.text],
 				conceal = ""
 			});
 
-			vim.api.nvim_buf_set_extmark(buffer, markdown.ns, range.row_end - 1, delim_conceal_from, {
+			vim.api.nvim_buf_set_extmark(buffer, markdown.ns, range.row_end - 1, end_delim_conceal_from, {
 				undo_restore = false, invalidate = true,
 
 				virt_text_pos = "inline",
