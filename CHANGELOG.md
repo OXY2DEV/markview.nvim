@@ -1,5 +1,13 @@
 # Changelog
 
+## [26.0.1](https://github.com/OXY2DEV/markview.nvim/compare/v26.0.0...v26.0.1) (2025-09-30)
+
+
+### Bug Fixes
+
+* **parser_markdown:** Fixed an error with trailing wrap cleanup code ([7bdec07](https://github.com/OXY2DEV/markview.nvim/commit/7bdec07cb9a14b34edaee9776d92658b8773f4fa))
+* **renderer_markdown:** Fixed a bug where trailing code block delimiters don't get hidden ([f8f4470](https://github.com/OXY2DEV/markview.nvim/commit/f8f44709af021ba24a50674bb9a66adbab26f98f))
+
 ## [26.0.0](https://github.com/OXY2DEV/markview.nvim/compare/v25.11.0...v26.0.0) (2025-09-28)
 
 
