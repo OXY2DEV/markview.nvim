@@ -82,6 +82,7 @@ Then we use `virt_text_win_col` to place it at the start of that *wrapped* line.
 ---@param row integer
 ---@param ns integer
 ---@param indent [ string, string? ][]
+---@deprecated
 wrap.huristic_wrap = function (buffer, win, row, ns, indent)
 	---|fS
 
@@ -140,6 +141,49 @@ wrap.huristic_wrap = function (buffer, win, row, ns, indent)
 	---|fE
 end
 
+--[[
+Based on the answer from @zeertzjq in neovim/neovim#35964.
+]]
+---@param buffer integer
+---@param win integer
+---@param row integer
+---@param ns integer
+---@param indent [ string, string? ][]
+wrap.fine_wrap = function (buffer, win, row, ns, indent)
+	---|fS
+
+	local wininfo = vim.fn.getwininfo(win)[1];
+	local win_width = wininfo.width - wininfo.textoff;
+	local end_vcol = vim.fn.virtcol({row + 1, "$"}) - 1;
+
+	if end_vcol <= win_width then
+		return;
+	end
+
+	for vcol = win_width + 1, vim.fn.virtcol({ row + 1, "$" }) - 1, win_width do
+		local wrapcol = vim.fn.virtcol2col(0, row + 1, vcol);
+
+		local indent_opts = {
+			undo_restore = false, invalidate = true,
+			right_gravity = true,
+
+			virt_text_pos = "inline",
+
+			virt_text = indent;
+		};
+
+		vim.api.nvim_buf_set_extmark(
+			buffer,
+			ns,
+			row,
+			wrapcol - 1,
+			indent_opts
+		);
+	end
+
+	---|fE
+end
+
 --[[ Provides `wrapped indentation` to some text. ]]
 ---@param buffer integer
 wrap.render = function (buffer, ns)
@@ -153,7 +197,7 @@ wrap.render = function (buffer, ns)
 	end
 
 	local function render_line (row, indent)
-		wrap.huristic_wrap(buffer, win, row, ns, indent);
+		wrap.fine_wrap(buffer, win, row, ns, indent);
 	end
 
 	for row, indent in pairs(wrap.cache[buffer] or {}) do
