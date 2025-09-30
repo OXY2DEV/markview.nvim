@@ -338,19 +338,19 @@ require("markview").setup({
 ---@param item markview.parsed.markdown.atx
 ---@return string
 local function get_icon (_, item)
-	if not item or not item.levels then
-		return "";
-	end
+    if not item or not item.levels then
+        return "";
+    end
 
-	local output = "◈ ";
+    local output = "◈ ";
 
-	for l, level in ipairs(item.levels) do
-		if level ~= 0 then
-			output = output .. level .. (l ~= #item.levels and "." or "");
-		end
-	end
+    for l, level in ipairs(item.levels) do
+        if level ~= 0 then
+            output = output .. level .. (l ~= #item.levels and "." or "");
+        end
+    end
 
-	return output .. " ";
+    return output .. " ";
 end
 
 require("markview").setup({
