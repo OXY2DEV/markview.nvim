@@ -488,7 +488,40 @@ presets.headings = {
 			hl = "MarkviewHeading6",
 		}
 		---_
-	}
+	},
+
+	numbered = {
+		heading_1 = {
+			icon = function (_, item)
+				return table.concat(item.levels, ".") .. " ";
+			end
+		},
+		heading_2 = {
+			icon = function (_, item)
+				return table.concat(item.levels, ".") .. " ";
+			end
+		},
+		heading_3 = {
+			icon = function (_, item)
+				return table.concat(item.levels, ".") .. " ";
+			end
+		},
+		heading_4 = {
+			icon = function (_, item)
+				return table.concat(item.levels, ".") .. " ";
+			end
+		},
+		heading_5 = {
+			icon = function (_, item)
+				return table.concat(item.levels, ".") .. " ";
+			end
+		},
+		heading_6 = {
+			icon = function (_, item)
+				return table.concat(item.levels, ".") .. " ";
+			end
+		},
+	},
 };
 
 presets.horizontal_rules = {
