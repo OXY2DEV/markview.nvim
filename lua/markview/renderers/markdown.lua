@@ -1231,14 +1231,20 @@ markdown.block_quote = function (buffer, item)
 		local line_len = #line;
 
 		if line:match("^%>") then
+			--[[
+				NOTE: Using `conceal` with `virt_text_pos = "inline"` results in issues with text wrapping.
+
+				This happens because we are doubling the border size by using `conceal`.
+
+				TODO: This may need to be reviewed later.
+			]]
 			vim.api.nvim_buf_set_extmark(buffer, markdown.ns, l, range.col_start, {
 				undo_restore = false, invalidate = true,
 				right_gravity = true,
 
 				end_col = range.col_start + math.min(1, line_len),
-				conceal = "",
 
-				virt_text_pos = "inline",
+				virt_text_pos = "overlay",
 				virt_text = {
 					{
 						tbl_clamp(config.border, l_index),
