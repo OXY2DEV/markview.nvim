@@ -332,6 +332,14 @@ require("markview").setup({
     }
 });
 
+-- **Preset** usage ------------------------------------------------------
+
+local presets = require("markview.presets").headings;
+
+require("markview").setup({
+    markdown = { headings = presets.numbered }
+});
+
 -- **Advanced** usage ----------------------------------------------------
 
 --- Gets icon from a parsed heading item.
