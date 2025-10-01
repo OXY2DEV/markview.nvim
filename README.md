@@ -322,11 +322,6 @@ Fonts,
 
 ## 📐 Installation
 
->[!IMPORTANT]
-> This plugin makes use of `tree-sitter` queries! So, it must be loaded **before** `nvim-treesitter`.
->
-> You can solve this issue by loading this plugin as a dependency of `nvim-treesitter`(add `dependencies = { "OXY2DEV/markview.nvim" }` to your config for nvim-treesitter in `lazy.nvim`) and disable lazy-loading for **both** of the plugins.
-
 ### 🧩 Vim-plug
 
 Add this to your plugin list.
@@ -357,9 +352,6 @@ return {
     "OXY2DEV/markview.nvim",
     lazy = false,
 
-   -- For `nvim-treesitter` users.
-    priority = 49,
-
     -- For blink.cmp's completion
     -- source
     -- dependencies = {
@@ -373,9 +365,6 @@ return {
 {
     "OXY2DEV/markview.nvim",
     lazy = false,
-
-   -- For `nvim-treesitter` users.
-    priority = 49,
 
     -- For blink.cmp's completion
     -- source
