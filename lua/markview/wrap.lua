@@ -197,7 +197,11 @@ wrap.render = function (buffer, ns)
 	end
 
 	local function render_line (row, indent)
-		wrap.fine_wrap(buffer, win, row, ns, indent);
+		-- NOTE: The `functions` used inside `fine_wrap` are **window-dependent**.
+		-- This means we need to call them inside `win`. Otherwise it will run it on whatever window that is currently focused.
+		vim.api.nvim_win_call(win, function ()
+			wrap.fine_wrap(buffer, win, row, ns, indent);
+		end);
 	end
 
 	for row, indent in pairs(wrap.cache[buffer] or {}) do
