@@ -345,20 +345,14 @@ Plug "OXY2DEV/markview.nvim"
 
 The plugin should be loaded *after* your colorscheme to ensure the correct highlight groups are used.
 
->[!IMPORTANT]
-> In case you are experiencing **syntax issues**(e.g. code block markers being hidden), You can use this to load `markview.nvim` first by adding it as a dependency of `nvim-treesitter`,
+>[!NOTE]
+> If you are forced to lazy load this plugin for whatever reason. You have to add this to your `config` to have the highlights/colors,
 >
 > ```lua
-> {
->     "nvim-treesitter/nvim-treesitter",
->     dependencies = { "OXY2DEV/markview.nvim" },
->     lazy = false,
->
->     -- ... All other options.
-> },
+> config = function ()
+>    require("markview.highlights").setup();
+> end
 > ```
->
-> [Reference](https://github.com/OXY2DEV/markview.nvim/issues/365#issuecomment-3028249737).
 
 ```lua
 -- For `plugins/markview.lua` users.
