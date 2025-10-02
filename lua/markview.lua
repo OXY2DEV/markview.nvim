@@ -687,6 +687,7 @@ markview.actions = {
 		});
 
 		if enable == true then
+			markview.actions.set_query(buffer);
 			markview.actions.__exec_callback("on_enable", buffer, vim.fn.win_findbuf(buffer))
 
 			--- Execute the enable/disable one too.
@@ -723,6 +724,7 @@ markview.actions = {
 				});
 			end
 		else
+			markview.actions.reset_query(buffer);
 			markview.actions.__exec_callback("on_disable", buffer, vim.fn.win_findbuf(buffer))
 			markview.clear(buffer);
 

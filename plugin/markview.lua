@@ -109,9 +109,12 @@ local function register_cmp_source ()
 	---|fE
 end
 
+local passed_vimenter = false;
+
 vim.api.nvim_create_autocmd("VimEnter", {
 	group = augroup,
 	callback = function ()
+		passed_vimenter = true;
 		require("markview.highlights").setup();
 
 		register_blink_source();
@@ -1125,3 +1128,70 @@ end, {
 
 	---|fE
 });
+
+------------------------------------------------------------------------------
+
+if not vim.g.markview_lazy_loaded then
+	-- NOTE: Exit early if the variable is not set.
+	-- This is to prevent affecting `non-lazy-loaders`.
+	-- As the `timer` causes slight load time increase in **Termux**.
+	return;
+end
+
+--[[ In case the user **lazy-loads**, we call the *necessary* functions. ]]
+vim.uv.new_timer():start(vim.g.markview_max_startup_delay or 500, 0, vim.schedule_wrap(function ()
+	if passed_vimenter then
+		-- Do nothing if `Neovim` has passed **VimEnter**.
+		return;
+	end
+
+	local highlights = require("markview.highlights")
+	highlights.create(highlights.groups);
+
+	register_blink_source();
+	register_cmp_source();
+
+	local markview = require("markview");
+	local spec = require("markview.spec");
+
+	--[[
+		NOTE: Attempt to attach to `current` buffer.
+
+		This is normally done by the `BufEnter` autocmd. Lazy-loading skips that.
+	]]
+
+	---@type integer
+	local buffer = vim.api.nvim_get_current_buf();
+
+	if vim.api.nvim_buf_is_valid(buffer) == false then
+		--- If the buffer got deleted before we
+		--- get here, we ignore it.
+		--- See #356
+		return;
+	elseif markview.state.enable == false then
+		--- New buffers shouldn't be registered.
+		return;
+	elseif markview.actions.__is_attached(buffer) == true then
+		--- Already attached to this buffer!
+		return;
+	end
+
+	---@type string, string
+	local bt, ft = vim.bo[buffer].buftype, vim.bo[buffer].filetype;
+	local attach_ft = spec.get({ "preview", "filetypes" }, { fallback = {}, ignore_enable = true });
+	local ignore_bt = spec.get({ "preview", "ignore_buftypes" }, { fallback = {}, ignore_enable = true });
+
+	local condition = spec.get({ "preview", "condition" }, { eval_args = { buffer } });
+
+	if vim.list_contains(ignore_bt, bt) == true then
+		--- Ignored buffer type.
+		return;
+	elseif vim.list_contains(attach_ft, ft) == false then
+		--- Ignored file type.
+		return;
+	elseif condition == false then
+		return;
+	end
+
+	markview.actions.attach(buffer);
+end));

@@ -341,8 +341,13 @@ The plugin should be loaded *after* your colorscheme to ensure the correct highl
 > If you are forced to lazy load this plugin for whatever reason. You have to add this to your `config` to have the highlights/colors,
 >
 > ```lua
-> config = function ()
->    require("markview.highlights").setup();
+> init = function ()
+>    vim.g.markview_lazy_loaded = true;
+>
+>    -- TIP: Optional, change how long `markview` defers the `VimEnter` pass checkup.
+>    -- You normally **don't** need to change this.
+>    -- You can change this value if you have other *heavy* stuff load alongside `markview`.
+>    -- vim.g.markview_max_startup_delay = 500;
 > end
 > ```
 
