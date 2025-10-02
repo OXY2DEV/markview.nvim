@@ -79,6 +79,8 @@ author: "OXY2DEV"
 
 ; Code block
 
+    Some text.
+    Even more text!
 
 ```c Info string
 printf("Hello world!")

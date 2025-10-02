@@ -289,6 +289,34 @@ markdown.code_block = function (buffer, TSNode, _, range)
 	});
 end
 
+---@param buffer integer
+---@param range markview.parsed.markdown.indented_code_blocks.range
+markdown.indented_code_block = function (buffer, _, _, range)
+	-- Use buffer lines instead.
+	---@type string[]
+	local text = vim.api.nvim_buf_get_lines(buffer, range.row_start, range.row_end, false);
+
+	-- Modify the text so that only the text
+	-- inside the node's range is visible.
+	for l, line in ipairs(text) do
+		text[l] = line:sub(range.col_start + 1);
+	end
+
+	while #text > 1 and string.match(text[#text], "^[%>%s]*$") do
+		table.remove(text);
+		range.row_end = range.row_end - 1;
+	end
+
+	range.space_end = range.col_start + #string.match(text[1], "^%s*");
+
+	markdown.insert({
+		class = "markdown_indented_code_block",
+
+		text = text,
+		range = range
+	});
+end
+
 --- Horizontal rule parser.
 ---@param text string[]
 ---@param range markview.parsed.range
@@ -828,6 +856,7 @@ markdown.parse = function (buffer, TSTree, from, to)
 			] @markdown.checkbox)
 
 		((fenced_code_block) @markdown.code_block)
+		((indented_code_block) @markdown.indented_code_block)
 
 		((thematic_break) @markdown.hr)
 

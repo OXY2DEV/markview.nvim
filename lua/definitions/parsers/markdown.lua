@@ -56,6 +56,25 @@
 
 ------------------------------------------------------------------------------
 
+---@class markview.parsed.markdown.indented_code_blocks
+---
+---@field class "markdown_indented_code_block"
+---
+---@field text string[]
+---@field range markview.parsed.markdown.indented_code_blocks.range
+
+
+---@class markview.parsed.markdown.indented_code_blocks.range
+---
+---@field row_start integer
+---@field row_end integer
+---@field col_start integer
+---@field col_end integer
+---
+---@field space_end integer Column where leading *whitespaces* end.
+
+------------------------------------------------------------------------------
+
 ---@class markview.parsed.markdown.atx
 ---
 ---@field class "markdown_atx_heading"
