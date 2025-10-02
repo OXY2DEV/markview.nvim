@@ -48,7 +48,8 @@ Currently supported syntax items are,
     + `markdown_atx_heading`
     + `markdown_block_quote`
     + `markdown_checkbox`(for `[x]`, `[X]`, `[ ]`)
-    + `markdown_code_block`
+    + `markdown_code_block`(for **fenced** code blocks)
+    + `markdown_indented_code_block`(for **indented** code block)
     + `markdown_hr`(horizontal rule)
     + `markdown_link_ref_definition`
     + `markdown_list_item`
