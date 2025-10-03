@@ -1131,13 +1131,6 @@ end, {
 
 ------------------------------------------------------------------------------
 
-if not vim.g.markview_lazy_loaded then
-	-- NOTE: Exit early if the variable is not set.
-	-- This is to prevent affecting `non-lazy-loaders`.
-	-- As the `timer` causes slight load time increase in **Termux**.
-	return;
-end
-
 --[[ In case the user **lazy-loads**, we call the *necessary* functions. ]]
 vim.uv.new_timer():start(vim.g.markview_max_startup_delay or 500, 0, vim.schedule_wrap(function ()
 	if passed_vimenter then
