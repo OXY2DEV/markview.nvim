@@ -136,11 +136,15 @@ end
 
 --- Setext heading parser.
 ---@param buffer integer
----@param TSNode table
+---@param TSNode TSNode
 ---@param text string[]
 ---@param range markview.parsed.range
 markdown.setext_heading = function (buffer, TSNode, text, range)
 	local marker = TSNode:named_child(1);
+
+	if not marker then
+		return;
+	end
 
 	markdown.insert({
 		class = "markdown_setext_heading",
@@ -150,6 +154,37 @@ markdown.setext_heading = function (buffer, TSNode, text, range)
 
 		range = range
 	});
+
+	local row_end = range.row_start;
+	local sibling = TSNode:next_sibling();
+
+	while sibling do
+		if vim.list_contains({ "setext_heading", "atx_heading" }, sibling:type()) then
+			break;
+		end
+
+		_, _, row_end, _ = sibling:range();
+		sibling = sibling:next_sibling();
+	end
+
+	local marker_text = vim.treesitter.get_node_text(marker, buffer, {});
+
+	if range.row_start ~= row_end then
+		table.insert(markdown.content, {
+			class = "markdown_section",
+			level = string.match(marker_text, "=") and 1 or 2,
+
+			text = text,
+			range = {
+				row_start = range.row_start + 2,
+				row_end = row_end,
+				org_end = row_end,
+
+				col_start = range.col_start,
+				col_end = 0
+			}
+		});
+	end
 end
 
 ---@param buffer integer

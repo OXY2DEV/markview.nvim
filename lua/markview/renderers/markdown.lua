@@ -2383,6 +2383,8 @@ markdown.setext_heading = function (buffer, item)
 	local main_config = spec.get({ "markdown", "headings" }, { fallback = nil, eval_args = { buffer, item } });
 	local lvl = item.marker:match("%=") and 1 or 2;
 
+	local shift_width = spec.get({ "shift_width" }, { source = main_config, fallback = 1, eval_args = { buffer, item } });
+
 	if not main_config then
 		return;
 	elseif not spec.get({ "setext_" .. lvl }, { source = main_config }) then
@@ -2396,10 +2398,13 @@ markdown.setext_heading = function (buffer, item)
 	if config.style == "simple" then
 		vim.api.nvim_buf_set_extmark(buffer, markdown.ns, range.row_start, range.col_start, {
 			undo_restore = false, invalidate = true,
+
 			sign_text = config.sign,
 			sign_hl_group = utils.set_hl(config.sign_hl),
+
 			end_row = range.row_end,
 			end_col = range.col_end,
+
 			line_hl_group = utils.set_hl(config.hl)
 		});
 	elseif config.style == "decorated" then
@@ -2413,11 +2418,18 @@ markdown.setext_heading = function (buffer, item)
 				then
 					vim.api.nvim_buf_set_extmark(buffer, markdown.ns, range.row_start + (l - 1), math.min(#line, range.col_start), {
 						undo_restore = false, invalidate = true,
+
 						sign_text = config.sign,
 						sign_hl_group = utils.set_hl(config.sign_hl),
+
 						line_hl_group = utils.set_hl(config.hl),
+
 						virt_text_pos = "inline",
 						virt_text = {
+							{
+								string.rep(" ", shift_width * (lvl - 1)),
+								utils.set_hl(config.hl)
+							},
 							{
 								config.icon,
 								utils.set_hl(config.icon_hl or config.hl)
@@ -2429,9 +2441,15 @@ markdown.setext_heading = function (buffer, item)
 				else
 					vim.api.nvim_buf_set_extmark(buffer, markdown.ns, range.row_start + (l - 1), math.min(#line, range.col_start), {
 						undo_restore = false, invalidate = true,
+
 						line_hl_group = utils.set_hl(config.hl),
+
 						virt_text_pos = "inline",
 						virt_text = {
+							{
+								string.rep(" ", shift_width * (lvl - 1)),
+								utils.set_hl(config.hl)
+							},
 							{
 								string.rep(" ", vim.fn.strdisplaywidth(config.icon)),
 								utils.set_hl(config.icon_hl or config.hl)

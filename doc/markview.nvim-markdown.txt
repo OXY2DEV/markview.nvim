@@ -1568,7 +1568,7 @@ shift_width ~
   • type: `integer`
     default: `1`
 
-Number of spaces to add per heading level.
+Number of spaces to add(before the section content) per heading level.
 
 org_indent ~
 
