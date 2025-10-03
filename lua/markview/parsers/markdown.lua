@@ -554,10 +554,12 @@ markdown.section = function (buffer, TSNode, text, range)
 	local org_end = range.row_end;
 
 	while next_sibling do
-		if next_sibling and next_sibling:type() == "section" then
+		if vim.list_contains({ "section", "setext_heading" }, next_sibling:type()) then
 			org_end = -1 + next_sibling:range();
+			break;
 		end
 
+		_, _, org_end, _ = next_sibling:range();
 		next_sibling = next_sibling:next_sibling();
 	end
 
