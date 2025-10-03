@@ -452,6 +452,22 @@ markview.splitview_render = function ()
 		math.min(line_count, cursor[1] + (max_lines + 1)),
 		false
 	);
+
+	--[[
+		BUG: Calling `nvim_buf_set_lines()` with mismatch line-count causes issues.
+
+		This happens because id we are replacing 7 lines with 6 lines of text the 7th line doesn't get deleted.
+		FIX: Clear lines first than apply the updated text.
+
+		See #408
+	]]
+	vim.api.nvim_buf_set_lines(
+		pre_buf,
+		math.max(0, cursor[1] - (max_lines + 1)),
+		math.min(line_count, cursor[1] + (max_lines + 1)),
+		false,
+		{}
+	);
 	vim.api.nvim_buf_set_lines(
 		pre_buf,
 		math.max(0, cursor[1] - (max_lines + 1)),
