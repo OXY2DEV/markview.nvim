@@ -41,29 +41,6 @@ utils.within_range = function (range, pos)
 	return true;
 end
 
---- Escapes magic characters from a string
----@param input string
----@return string
-utils.escape_string = function (input)
-	input = input:gsub("%%", "%%%%");
-
-	input = input:gsub("%(", "%%(");
-	input = input:gsub("%)", "%%)");
-
-	input = input:gsub("%.", "%%.");
-	input = input:gsub("%+", "%%+");
-	input = input:gsub("%-", "%%-");
-	input = input:gsub("%*", "%%*");
-	input = input:gsub("%?", "%%?");
-	input = input:gsub("%^", "%%^");
-	input = input:gsub("%$", "%%$");
-
-	input = input:gsub("%[", "%%[");
-	input = input:gsub("%]", "%%]");
-
-	return input;
-end
-
 --- Clamps a value between a range
 ---@param val number
 ---@param min number
@@ -415,7 +392,7 @@ utils.str_contains = function (str, chars)
 	local tmp = str;
 
 	for _, char in ipairs(chars or {}) do
-		tmp = string.gsub(tmp, utils.escape_string(char), "");
+		tmp = string.gsub(tmp, vim.pesc(char), "");
 	end
 
 	return string.match(tmp, "^%s*$") ~= nil;

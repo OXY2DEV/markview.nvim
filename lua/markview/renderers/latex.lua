@@ -76,7 +76,7 @@ latex.command = function (buffer, item)
 	if item.command == nil or item.command.name == nil then
 		return;
 	else
-		command_name = string.format("^%s$", utils.escape_string(item.command.name));
+		command_name = string.format("^%s$", vim.pesc(item.command.name));
 	end
 
 	if not main_config then

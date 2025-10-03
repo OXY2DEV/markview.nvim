@@ -15,7 +15,7 @@ typst.cache = {
 ---@return string
 local concat = function (list)
 	for i, item in ipairs(list) do
-		list[i] = utils.escape_string(item);
+		list[i] = vim.pesc(item);
 	end
 
 	return table.concat(list);
@@ -93,9 +93,9 @@ typst.get_visual_text = {
 				str_a = str_a:sub(0, min);
 			end
 
-			str_b = utils.escape_string(str_b);
-			content = utils.escape_string(content);
-			str_a = utils.escape_string(str_a);
+			str_b = vim.pesc(str_b);
+			content = vim.pesc(content);
+			str_a = vim.pesc(str_a);
 
 			str = str:gsub(str_b .. content .. str_a, string.rep("X", vim.fn.strdisplaywidth(content)))
 
