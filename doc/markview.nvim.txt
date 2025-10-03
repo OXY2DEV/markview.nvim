@@ -1,4 +1,5 @@
 *markview.nvim.txt*                                            ☄️markview.nvim
+                                                    *markview* *markview.nvim*
 
 image[_1]
 

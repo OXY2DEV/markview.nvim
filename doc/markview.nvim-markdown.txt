@@ -1,4 +1,4 @@
-*markvkew.nvim-markdown.txt*                               📝 Markdown options
+*markview.nvim-markdown.txt*                               📝 Markdown options
 
 ▌ 💡 Tip
 ▌ You can find the type definition in `definitions/renderers/markdown.lua`[^1].
