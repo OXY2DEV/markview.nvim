@@ -158,7 +158,7 @@ inline.emojis = function (_, TSNode, text, range)
 				}
 			});
 
-			_line = _line:gsub(utils.escape_string(short_code), function (s)
+			_line = _line:gsub(vim.pesc(short_code), function (s)
 				return string.rep("X", vim.fn.strchars(s));
 			end, 1);
 		end
@@ -249,7 +249,7 @@ inline.highlights = function (_, TSNode, text, range)
 				}
 			});
 
-			_line = _line:gsub(utils.escape_string(highlight), function (s)
+			_line = _line:gsub(vim.pesc(highlight), function (s)
 				return string.rep("X", vim.fn.strchars(s));
 			end, 1);
 		end

@@ -393,7 +393,7 @@ markdown.list_item = function (buffer, TSNode, _, range)
 
 	if before:match("%>$") then
 		local tmp = text[1]:gsub(
-			"^" .. utils.escape_string(before),
+			"^" .. vim.pesc(before),
 			""
 		);
 

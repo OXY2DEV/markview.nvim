@@ -26,7 +26,7 @@ end
 ---@return string
 local concat = function (list)
 	for i, item in ipairs(list) do
-		list[i] = utils.escape_string(item);
+		list[i] = vim.pesc(item);
 	end
 
 	return table.concat(list);
@@ -149,7 +149,7 @@ markdown.output = function (str, buffer)
 			str = str:gsub(
 				concat({
 					"`",
-					utils.escape_string(inline_code),
+					vim.pesc(inline_code),
 					"`"
 				}),
 				concat({
@@ -909,9 +909,9 @@ markdown.get_visual_text = {
 				str_a = str_a:sub(0, min);
 			end
 
-			str_b = utils.escape_string(str_b);
-			content = utils.escape_string(content);
-			str_a = utils.escape_string(str_a);
+			str_b = vim.pesc(str_b);
+			content = vim.pesc(content);
+			str_a = vim.pesc(str_a);
 
 			str = str:gsub(str_b .. content .. str_a, string.rep("X", vim.fn.strdisplaywidth(content)))
 
@@ -2105,7 +2105,7 @@ markdown.list_item = function (buffer, item)
 			return spec.get({ "unchecked" }, { source = checkboxes, eval_args = chk_args });
 		end
 
-		local _state = utils.escape_string(state) or "";
+		local _state = vim.pesc(state);
 		return utils.match(checkboxes, "^" .. _state .. "$", { default = false, ignore_keys = { "checked", "unchecked", "enable" }, eval_args = chk_args });
 	end
 
