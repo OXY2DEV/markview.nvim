@@ -1086,7 +1086,7 @@ markdown.atx_heading = function (buffer, item)
 				space = string.rep(" ", w_wid - wid);
 			end
 		else
-			space = string.rep(" ", #item.marker * shift_width);
+			space = string.rep(" ", (#item.marker - 1) * shift_width);
 		end
 
 		--- DO NOT USE `hl_mode = "combine"`
@@ -1132,7 +1132,7 @@ markdown.atx_heading = function (buffer, item)
 			sign_hl_group = utils.set_hl(config.sign_hl),
 			virt_text_pos = "inline",
 			virt_text = {
-				{ string.rep(" ", #item.marker * shift_width) },
+				{ string.rep(" ", (#item.marker - 1) * shift_width) },
 				{ icon, utils.set_hl(config.icon_hl or config.hl) },
 			},
 			line_hl_group = utils.set_hl(config.hl),
@@ -2343,7 +2343,7 @@ markdown.section = function (buffer, item)
 						shift_char,
 						math.max(
 							0,
-							shift_width * item.level
+							shift_width * (item.level - 1)
 						)
 					)
 				}
@@ -3650,7 +3650,7 @@ markdown.__section = function (buffer, item)
 				string.rep(" " or shift_char,
 					math.max(
 						0,
-						shift_width * item.level
+						shift_width * (item.level - 1)
 					)
 				)
 			}
