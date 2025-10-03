@@ -576,6 +576,23 @@ It comes with the following sub-commands,
 >[!NOTE]
 > When no sub-command name is provided(or an invalid sub-command is used) `:Markview` will run `:Markview Toggle`.
 
+| Sub-command      | Arguments           | Description                              |
+|------------------|---------------------|------------------------------------------|
+| `Toggle`         | none                | Toggles preview *globally*.              |
+| `Enable`         | none                | Enables preview *globally*.              |
+| `Disable`        | none                | Disables preview *globally*.             |
+| ———————————————— | ——————————————————— | ———————————————————————————————————————— |
+| `toggle`         | **buffer**, integer | Toggles preview for **buffer**.          |
+| `enable`         | **buffer**, integer | Enables preview for **buffer**.          |
+| `disable`        | **buffer**, integer | Disables preview for **buffer**.         |
+| ———————————————— | ——————————————————— | ———————————————————————————————————————— |
+| `splitToggle`    | none                | Toggles *splitview*.                     |
+
+
+<details>
+    <summary>Advanced commands are given below</summary><!-- --+ -->
+
+Sub-commands related to auto-registering new buffers for previews and/or manually attaching/detaching buffers,
 
 | Sub-command      | Arguments           | Description                              |
 |------------------|---------------------|------------------------------------------|
@@ -584,18 +601,14 @@ It comes with the following sub-commands,
 | ———————————————— | ——————————————————— | ———————————————————————————————————————— |
 | `attach`         | **buffer**, integer | Attaches to **buffer**.                  |
 | `detach`         | **buffer**, integer | Detaches from **buffer**.                |
-| ———————————————— | ——————————————————— | ———————————————————————————————————————— |
-| `Enable`         | none                | Enables preview *globally*.              |
-| `Disable`        | none                | Disables preview *globally*.             |
-| `Toggle`         | none                | Toggles preview *globally*.              |
-| ———————————————— | ——————————————————— | ———————————————————————————————————————— |
+
+Sub-commands related to controlling **hybrid_mode**,
+
+| Sub-command      | Arguments           | Description                              |
+|------------------|---------------------|------------------------------------------|
 | `HybridEnable`   | none                | Enables hybrid mode.                     |
 | `HybridDisable`  | none                | Disables hybrid mode.                    |
 | `HybridToggle`   | none                | Toggles hybrid mode.                     |
-| ———————————————— | ——————————————————— | ———————————————————————————————————————— |
-| `enable`         | **buffer**, integer | Enables preview for **buffer**.          |
-| `disable`        | **buffer**, integer | Disables preview for **buffer**.         |
-| `toggle`         | **buffer**, integer | Toggles preview for **buffer**.          |
 | ———————————————— | ——————————————————— | ———————————————————————————————————————— |
 | `hybridEnable`   | **buffer**, integer | Enables hybrid mode for **buffer**.      |
 | `hybridDisable`  | **buffer**, integer | Disables hybrid mode for **buffer**.     |
@@ -604,24 +617,41 @@ It comes with the following sub-commands,
 | `linewiseEnable` | none                | Enables linewise hybrid mode.            |
 | `linewiseDisable`| none                | Disables linewise hybrid mode.           |
 | `linewiseToggle` | none                | Toggles linewise hybrid mode.            |
-| ———————————————— | ——————————————————— | ———————————————————————————————————————— |
+
+Sub-commands for working with `splitview`,
+
+| Sub-command      | Arguments           | Description                              |
+|------------------|---------------------|------------------------------------------|
 | `splitOpen`      | **buffer**, integer | Opens *splitview* for **buffer**.        |
 | `splitClose`     | none                | Closes any open *splitview*.             |
-| `splitToggle`    | none                | Toggles *splitview*.                     |
 | `splitRedraw`    | none                | Updates *splitview* contents.            |
-| ———————————————— | ——————————————————— | ———————————————————————————————————————— |
+
+Sub-commands for manual `preview` updates,
+
+| Sub-command      | Arguments           | Description                              |
+|------------------|---------------------|------------------------------------------|
 | `Render`         | none                | Updates preview of all *active* buffers. |
 | `Clear`          | none                | Clears preview of all **active** buffer. |
 | ———————————————— | ——————————————————— | ———————————————————————————————————————— |
 | `render`         | **buffer**, integer | Renders preview for **buffer**.          |
 | `clear`          | **buffer**, integer | Clears preview for **buffer**.           |
-| ———————————————— | ——————————————————— | ———————————————————————————————————————— |
+
+Sub-commands for `bug report`,
+
+| Sub-command      | Arguments           | Description                              |
+|------------------|---------------------|------------------------------------------|
+| `traceExport`    | none                | Exports trace logs to `trace.txt`.       |
+| `traceShow`      | none                | Shows trace logs in a window.            |
+
+**DEPRECATED** subcommands,
+
+| Sub-command      | Arguments           | Description                              |
+|------------------|---------------------|------------------------------------------|
 | `toggleAll`      | none                | **Deprecated** version of `Toggle`.      |
 | `enableAll`      | none                | **Deprecated** version of `Enable`.      |
 | `disableAll`     | none                | **Deprecated** version of `Disable`.     |
-| ———————————————— | ——————————————————— | ———————————————————————————————————————— |
-| `traceExport`    | none                | Exports trace logs to `trace.txt`.       |
-| `traceShow`      | none                | Shows trace logs in a window.            |
+
+</details>
 
 >[!TIP]
 > **buffer** defaults to the current buffer. So, you can run commands on the current buffer without providing the buffer.
