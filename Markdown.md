@@ -1582,7 +1582,7 @@ Text used for indenting in [org_indent](#org_indent).
 - type: `integer`
   default: `1`
 
-Number of characters to add per heading level in [org_indent](#org_indent).
+Number of characters to add(before the section content) per heading level in [org_indent](#org_indent).
 
 ## horizontal_rules
 
