@@ -1157,8 +1157,6 @@ markview.actions = {
 
 		if not default_path then
 			return;
-		elseif markview.state.modified_queries then
-			return;
 		end
 
 		local default = table.concat(
@@ -1185,10 +1183,13 @@ markview.actions = {
 		local updated = string.gsub(default, capture_1, ""):gsub(capture_2, "");
 		vim.treesitter.query.set("markdown", "highlights", updated);
 
-		markview.state.modified_queries = true;
-
 		vim.treesitter.stop(buffer);
 		vim.treesitter.start(buffer)
+
+		-- This will cause only `buffer` to have it's query modified.
+		-- Any *new* buffer should have the original queries.
+		-- See #404.
+		vim.treesitter.query.set("markdown", "highlights", vim.g.__markdown_default_hl_query);
 	end,
 
 	["reset_query"] = function (buffer)
@@ -1197,7 +1198,6 @@ markview.actions = {
 		end
 
 		vim.treesitter.query.set("markdown", "highlights", vim.g.__markdown_default_hl_query);
-		markview.state.modified_queries = false;
 
 		vim.treesitter.stop(buffer);
 		vim.treesitter.start(buffer)
