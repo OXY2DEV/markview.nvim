@@ -1132,7 +1132,9 @@ end, {
 ------------------------------------------------------------------------------
 
 --[[ In case the user **lazy-loads**, we call the *necessary* functions. ]]
-vim.uv.new_timer():start(vim.g.markview_max_startup_delay or 500, 0, vim.schedule_wrap(function ()
+vim.uv.new_timer():start(vim.g.markview_max_startup_delay or 100, 0, vim.schedule_wrap(function ()
+	vim.print("defer");
+
 	if passed_vimenter then
 		-- Do nothing if `Neovim` has passed **VimEnter**.
 		return;
