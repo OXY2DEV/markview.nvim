@@ -6,6 +6,21 @@ local links = {};
 local health = require("markview.health");
 local spec = require("markview.spec");
 
+--[[ Reference to links. ]]
+links.reference = {};
+
+links.clear = function (buffer)
+	links.reference[buffer] = {};
+end
+
+links.new = function (buffer, name, range)
+	if not links.reference[buffer] then
+		links.reference[buffer] = {};
+	end
+
+	links.reference[buffer][name] = range;
+end
+
 --- Tree-sitter node processor.
 ---@type { [string]: fun(buffer: integer, node: table): string? }
 local processors = {};
@@ -196,12 +211,46 @@ links.__open = function (buffer, address)
 			cmd:wait();
 		elseif err then
 			health.notify("msg", {
-				message = { err, "DiagnosticError" }
+				message = { { err, "DiagnosticError" } }
 			});
 		end
 	end
 
-	if can_open(address) == false then
+	if string.match(address, "^#") then
+		require("markview.parser").parse_links(buffer);
+
+		local id = string.match(address, "^#(.+)$");
+
+		if
+			not id or
+			not links.reference[buffer] or not links.reference[buffer][id]
+		then
+			health.notify("msg", {
+				message = {
+					{ "Couldn't find ", "Comment" },
+					{ " ID ", "DiagnosticVirtualTextHint" },
+					{ " in document! ", "Comment" },
+				}
+			});
+			return;
+		end
+
+		local item = links.reference[buffer][id];
+		local wins = vim.fn.win_findbuf(buffer);
+
+		if not wins or #wins == 0 then
+			return;
+		end
+
+		pcall(
+			vim.api.nvim_win_set_cursor,
+			wins[1],
+			{
+				item[1] + 1,
+				item[2]
+			}
+		);
+	elseif can_open(address) == false then
 		--- {address} isn't a file or it doesn't
 		--- exist.
 		ui_open(address);

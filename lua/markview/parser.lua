@@ -170,4 +170,71 @@ end
 -- Chore: This is for backwards compatibility.
 parser.parse = parser.init;
 
+
+--[[ Parses various `links` from `buffer`. ]]
+---
+---@param buffer number
+parser.parse_links = function (buffer)
+	---|fS
+
+	local _parsers = {
+		-- markdown = require("markview.parsers.markdown");
+		-- markdown_inline = require("markview.parsers.markdown_inline");
+		html = require("markview.parsers.links.html");
+		-- latex = require("markview.parsers.latex");
+		-- typst = require("markview.parsers.typst");
+		-- yaml = require("markview.parsers.yaml");
+	};
+
+	-- Clear link references.
+	require("markview.links").clear(buffer);
+
+	if not pcall(vim.treesitter.get_parser, buffer) then
+		-- Couldn't call parser retrieval function.
+		return;
+	end
+
+    vim.treesitter.get_parser(buffer):parse(true);
+	local root_parser = vim.treesitter.get_parser(buffer);
+
+	if not root_parser then
+		-- Can't find root parser.
+		return parser.content, parser.sorted;
+	end
+
+	---|fS "chore: Announce start of parsing"
+	---@type integer Start time
+	local start = vim.uv.hrtime();
+
+	health.notify("trace", {
+		level = 1,
+		message = string.format("Link parsing(start): %d", buffer)
+	});
+	health.__child_indent_in();
+	---|fE
+
+	root_parser:for_each_tree(function (TSTree, language_tree)
+		language_tree:parse(true);
+
+		local language = language_tree:lang();
+
+		if _parsers[language] and not parser.should_ignore(TSTree) then
+			_parsers[language].parse(buffer, TSTree);
+		end
+	end)
+
+	---|fS "chore: Announce end of parsing"
+	---@type integer End time
+	local now = vim.uv.hrtime();
+
+	health.__child_indent_de();
+	health.notify("trace", {
+		level = 3,
+		message = string.format("Link parsing(end, %dms): %d", (now - start) / 1e6, buffer)
+	});
+	---|fE
+
+	---|fE
+end
+
 return parser;
