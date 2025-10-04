@@ -178,7 +178,7 @@ parser.parse_links = function (buffer)
 	---|fS
 
 	local _parsers = {
-		-- markdown = require("markview.parsers.markdown");
+		markdown = require("markview.parsers.links.markdown");
 		-- markdown_inline = require("markview.parsers.markdown_inline");
 		html = require("markview.parsers.links.html");
 		-- latex = require("markview.parsers.latex");

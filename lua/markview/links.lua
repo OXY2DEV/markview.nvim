@@ -6,19 +6,45 @@ local links = {};
 local health = require("markview.health");
 local spec = require("markview.spec");
 
---[[ Reference to links. ]]
+--[[ Link reference maps for `buffers`. ]]
+---@type table<integer, table<string, integer[]>>
 links.reference = {};
 
+--[[ Clears link references for `buffer`. ]]
+---@param buffer integer
 links.clear = function (buffer)
 	links.reference[buffer] = {};
 end
 
+--[[ Adds a new link reference to `buffer`. ]]
+---@param buffer integer
+---@param name string
+---@param range integer[]
 links.new = function (buffer, name, range)
+	---|fS
+
 	if not links.reference[buffer] then
 		links.reference[buffer] = {};
 	end
 
 	links.reference[buffer][name] = range;
+
+	---|fE
+end
+
+--[[ Gets a link reference named `name` from `buffer`. ]]
+---@param buffer integer
+---@param name string
+links.get = function (buffer, name)
+	---|fS
+
+	if not links.reference[buffer] then
+		return;
+	end
+
+	return links.reference[buffer][name];
+
+	---|fE
 end
 
 --- Tree-sitter node processor.
@@ -204,7 +230,7 @@ links.__open = function (buffer, address)
 
 	--- Wrapper for `vim.ui.open`.
 	---@param path string
-	local ui_open = function (path)
+	local function ui_open (path)
 		local cmd, err = vim.ui.open(path);
 
 		if cmd then
