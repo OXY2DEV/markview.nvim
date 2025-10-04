@@ -339,18 +339,6 @@ Plug "OXY2DEV/markview.nvim"
 
 The plugin should be loaded *after* your colorscheme to ensure the correct highlight groups are used.
 
->[!NOTE]
-> If you are forced to lazy load this plugin for whatever reason. You can add this to your `config` to have the highlights/colors,
->
-> ```lua
-> init = function ()
->    -- TIP: Optional, change how long `markview` defers the `VimEnter` pass checkup.
->    -- You normally **don't** need to change this.
->    -- You can change this value if you have other *heavy* stuff load alongside `markview`.
->    -- vim.g.markview_max_startup_delay = 500;
-> end
-> ```
-
 ```lua
 -- For `plugins/markview.lua` users.
 return {
