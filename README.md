@@ -38,7 +38,9 @@ Core features,
 <details>
     <summary>Expand to see complete feature list</summary><!--+-->
 
-HTML features,
+### 📜 Complete feature-list
+
+#### HTML features,
 
 <img src="https://github.com/OXY2DEV/markview.nvim/blob/images/v25/repo/html-tokyonight_night.png">
 
@@ -61,7 +63,7 @@ HTML features,
     + `<hr>`
     + `<br>`
 
-LaTeX features,
+#### LaTeX features,
 
 <img src="https://github.com/OXY2DEV/markview.nvim/blob/images/v25/repo/latex-cyberdream.png">
 
@@ -134,7 +136,7 @@ LaTeX features,
 + Supports Unicode based *subscript* & *superscript* texts.
 + Supports **2056** different math symbol definitions.
 
-Markdown features,
+#### Markdown features,
 
 <img src="https://github.com/OXY2DEV/markview.nvim/blob/images/v25/repo/markdown-catppuccin_mocha.png">
 
@@ -155,7 +157,7 @@ Markdown features,
 
 + Org-mode like indentation for headings.
 
-Markdown inline features,
+#### Markdown inline features,
 
 <img src="https://github.com/OXY2DEV/markview.nvim/blob/images/v25/repo/markdown_inline-nightfly.png">
 
@@ -183,7 +185,7 @@ Markdown inline features,
 
 + Custom configuration based on link patterns.
 
-Typst features,
+#### Typst features,
 
 <img src="https://github.com/OXY2DEV/markview.nvim/blob/images/v25/repo/typst-kanagawa_wave.png">
 
@@ -211,7 +213,7 @@ Typst features,
 
 + Supports Unicode based *subscript* & *superscript* texts.
 
-YAML features,
+#### YAML features,
 
 <img src="https://github.com/OXY2DEV/markview.nvim/blob/images/v25/repo/yaml-material_palenight.png">
 
@@ -231,7 +233,7 @@ YAML features,
 
 ---
 
-Hybrid mode features,
+#### Hybrid mode features,
 
 
 | Normal hybrid mode | Linewise hybrid mode |
@@ -252,7 +254,7 @@ Internal Icon provider features,
 + **708** different filetype configuration.
 + Dynamic highlight groups for matching the colorscheme.
 
-Tracing features,
+#### Tracing features,
 
 <img src="https://github.com/OXY2DEV/markview.nvim/blob/images/v25/repo/traceback.png">
 
