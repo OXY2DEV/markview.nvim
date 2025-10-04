@@ -35,10 +35,10 @@ Core features,
 + Dynamic config that allows **any** option to be a function.
 + Dynamic `highlight groups` that automatically updates with the colorscheme.
 
+### 📜 Complete feature-list
+
 <details>
     <summary>Expand to see complete feature list</summary><!--+-->
-
-### 📜 Complete feature-list
 
 #### HTML features,
 
