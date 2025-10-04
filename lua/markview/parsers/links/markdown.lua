@@ -86,7 +86,7 @@ markdown.atx_heading = function (buffer, _, text, range)
 	require("markview.links").new(
 		buffer,
 		id,
-		{ range }
+		range
 	);
 
 	---|fE
@@ -107,7 +107,7 @@ markdown.setext_heading = function (buffer, _, text, range)
 	require("markview.links").new(
 		buffer,
 		id,
-		{ range }
+		range
 	);
 
 	---|fE

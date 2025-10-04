@@ -10,6 +10,7 @@ html.link_attribute = function (buffer, TSNode, _, _)
 	if not element or not value then
 		return;
 	elseif value:type() == "quoted_attribute_value" then
+		local range = { element:range() };
 		local inner = value:named_child(0);
 
 		if not inner then
@@ -19,13 +20,27 @@ html.link_attribute = function (buffer, TSNode, _, _)
 		require("markview.links").new(
 			buffer,
 			vim.treesitter.get_node_text(inner, buffer, {}),
-			{ element:range() }
+			{
+				row_start = range[1],
+				row_end = range[3],
+
+				col_start = range[2],
+				col_end = range[4],
+			}
 		);
 	elseif value:type() == "attribute_value" then
+		local range = { element:range() };
+
 		require("markview.links").new(
 			buffer,
 			vim.treesitter.get_node_text(value, buffer, {}),
-			{ element:range() }
+			{
+				row_start = range[1],
+				row_end = range[3],
+
+				col_start = range[2],
+				col_end = range[4],
+			}
 		);
 	end
 end

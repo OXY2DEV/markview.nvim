@@ -7,7 +7,7 @@ local health = require("markview.health");
 local spec = require("markview.spec");
 
 --[[ Link reference maps for `buffers`. ]]
----@type table<integer, table<string, integer[]>>
+---@type table<integer, table<string, markview.parsed.range>>
 links.reference = {};
 
 --[[ Clears link references for `buffer`. ]]
@@ -272,8 +272,8 @@ links.__open = function (buffer, address)
 			vim.api.nvim_win_set_cursor,
 			wins[1],
 			{
-				item[1] + 1,
-				item[2]
+				item.row_start + 1,
+				item.col_start
 			}
 		);
 	elseif can_open(address) == false then
