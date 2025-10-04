@@ -160,11 +160,19 @@ markdown.setext_heading = function (buffer, TSNode, text, range)
 
 	while sibling do
 		if vim.list_contains({ "setext_heading", "atx_heading" }, sibling:type()) then
+			-- We have reaches another `heading`.
+			-- Indentation should end at the *start* of the next `heading`.
+			row_end, _, _, _ = sibling:range();
 			break;
 		end
 
-		_, _, row_end, _ = sibling:range();
 		sibling = sibling:next_sibling();
+	end
+
+	if not sibling then
+		-- We have reached the end of the `section`.
+		-- Use the `row_end` of the section to prevent missing lines.
+		_, _, row_end, _ = TSNode:parent():range();
 	end
 
 	local marker_text = vim.treesitter.get_node_text(marker, buffer, {});
@@ -176,7 +184,13 @@ markdown.setext_heading = function (buffer, TSNode, text, range)
 
 			text = text,
 			range = {
-				row_start = range.row_start + 2,
+				--[[
+					NOTE: Indentation starts from the end of the setext heading.
+
+					This heading node *bleeds* into the start of the `next line`.
+					So, we deduct 1 from it to get the correct section start.
+				]]
+				row_start = range.row_end - 1,
 				row_end = row_end,
 				org_end = row_end,
 
