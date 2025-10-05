@@ -2652,7 +2652,7 @@ markdown.table = function (buffer, item)
 			hl = hls[from][index];
 		end
 
-		return parts[from][index], hl;
+		return parts[from][index], utils.set_hl(hl);
 	end
 
 	local function bottom_part (index)
@@ -2695,7 +2695,7 @@ markdown.table = function (buffer, item)
 
 					virt_text_pos = "inline",
 					virt_text = {
-						{ border, utils.set_hl(border_hl) }
+						{ border, border_hl }
 					},
 
 					hl_mode = "combine"
@@ -2896,7 +2896,7 @@ markdown.table = function (buffer, item)
 
 				virt_text_pos = "inline",
 				virt_text = {
-					{ border, utils.set_hl(border_hl) }
+					{ border, border_hl }
 				},
 
 				hl_mode = "combine"
@@ -2908,7 +2908,7 @@ markdown.table = function (buffer, item)
 				undo_restore = false, invalidate = true,
 				virt_text_pos = "inline",
 				virt_text = {
-					is_wrapped == true and { "|", "@punctuation.special.markdown" } or { border, utils.set_hl(border_hl) }
+					is_wrapped == true and { "|", "@punctuation.special.markdown" } or { border, border_hl }
 				},
 
 				right_gravity = s ~= 1,
@@ -3159,7 +3159,7 @@ markdown.table = function (buffer, item)
 
 						virt_text_pos = "inline",
 						virt_text = {
-							{ border, utils.set_hl(border_hl) }
+							{ border, border_hl }
 						},
 
 						hl_mode = "combine"
@@ -3294,7 +3294,7 @@ markdown.table = function (buffer, item)
 
 					virt_text_pos = "inline",
 					virt_text = {
-						{ border, utils.set_hl(border_hl) }
+						{ border, border_hl }
 					},
 
 					hl_mode = "combine"
