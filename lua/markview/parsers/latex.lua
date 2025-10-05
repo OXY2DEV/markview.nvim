@@ -10,8 +10,7 @@ local function bulk_gsub (text, gsubs)
 	local _o = text or "";
 
 	for _, g in ipairs(gsubs) do
-		g = utils.escape_string(g);
-		_o = _o:gsub(g, "");
+		_o = _o:gsub(vim.pesc(g), "");
 	end
 
 	return _o;

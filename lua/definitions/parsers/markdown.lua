@@ -43,6 +43,9 @@
 
 ---@class markview.parsed.markdown.code_blocks.range
 ---
+---@field start_delim integer[] Range of the **start** delimiter.
+---@field end_delim? integer[] Range of the **end** delimiter.
+---
 ---@field row_start integer
 ---@field row_end integer
 ---@field col_start integer
@@ -50,6 +53,25 @@
 ---
 ---@field language? integer[] Range of the language string.
 ---@field info_string? integer[] Range of info string.
+
+------------------------------------------------------------------------------
+
+---@class markview.parsed.markdown.indented_code_blocks
+---
+---@field class "markdown_indented_code_block"
+---
+---@field text string[]
+---@field range markview.parsed.markdown.indented_code_blocks.range
+
+
+---@class markview.parsed.markdown.indented_code_blocks.range
+---
+---@field row_start integer
+---@field row_end integer
+---@field col_start integer
+---@field col_end integer
+---
+---@field space_end integer Column where leading *whitespaces* end.
 
 ------------------------------------------------------------------------------
 
@@ -86,6 +108,7 @@
 ---@class markview.parsed.markdown.list_items
 ---
 ---@field class "markdown_list_item"
+---@field __nested boolean Is the node nested?
 ---
 ---@field candidates integer[] List of line numbers(0-indexed) from start that should be indented.
 ---
@@ -199,5 +222,15 @@
 ---@field level integer
 ---
 ---@field text string[]
----@field range markview.parsed.range
+---@field range markview.parsed.markdown.sections.range
+
+
+---@class markview.parsed.markdown.sections.range
+---
+---@field row_start integer
+---@field row_end integer
+---@field col_start integer
+---@field col_end integer
+---
+---@field org_end integer Line where `Org indent` should end.
 

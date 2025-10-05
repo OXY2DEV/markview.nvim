@@ -1,6 +1,8 @@
 !_TAG_FILE_ENCODING	utf-8	//
 maeviww.nvim-renderers	markview.nvim-renderers.txt	/*maeviww.nvim-renderers*
 markviee.nvim-presets.txt	markview.nvim-presets.txt	/*markviee.nvim-presets.txt*
+markview	markview.nvim.txt	/*markview*
+markview.nvim	markview.nvim.txt	/*markview.nvim*
 markview.nvim-advanced.txt	markview.nvim-advanced.txt	/*markview.nvim-advanced.txt*
 markview.nvim-autocmds	markview.nvim.txt	/*markview.nvim-autocmds*
 markview.nvim-commands	markview.nvim.txt	/*markview.nvim-commands*
@@ -14,10 +16,10 @@ markview.nvim-extras.headings	markview.nvim-extra.txt	/*markview.nvim-extras.hea
 markview.nvim-hl	markview.nvim.txt	/*markview.nvim-hl*
 markview.nvim-html.txt	markview.nvim-html.txt	/*markview.nvim-html.txt*
 markview.nvim-latex.txt	markview.nvim-latex.txt	/*markview.nvim-latex.txt*
+markview.nvim-markdown.txt	markview.nvim-markdown.txt	/*markview.nvim-markdown.txt*
 markview.nvim-markdown_inline.txt	markview.nvim-markdown_inline.txt	/*markview.nvim-markdown_inline.txt*
 markview.nvim-migration.txt	markview.nvim-migration.txt	/*markview.nvim-migration.txt*
 markview.nvim-preview.txt	markview.nvim-preview.txt	/*markview.nvim-preview.txt*
 markview.nvim-typst.txt	markview.nvim-typst.txt	/*markview.nvim-typst.txt*
 markview.nvim-yaml.txt	markview.nvim-yaml.txt	/*markview.nvim-yaml.txt*
 markview.nvim.txt	markview.nvim.txt	/*markview.nvim.txt*
-markvkew.nvim-markdown.txt	markview.nvim-markdown.txt	/*markvkew.nvim-markdown.txt*

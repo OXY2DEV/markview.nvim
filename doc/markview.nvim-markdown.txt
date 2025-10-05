@@ -1,4 +1,4 @@
-*markvkew.nvim-markdown.txt*                               📝 Markdown options
+*markview.nvim-markdown.txt*                               📝 Markdown options
 
 ▌ 💡 Tip
 ▌ You can find the type definition in `definitions/renderers/markdown.lua`[^1].
@@ -1568,7 +1568,7 @@ shift_width ~
   • type: `integer`
     default: `1`
 
-Number of spaces to add per heading level.
+Number of spaces to add(before the section content) per heading level.
 
 org_indent ~
 

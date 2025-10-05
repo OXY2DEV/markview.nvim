@@ -20,7 +20,9 @@ markview.state = {
 
 	splitview_buffer = nil,
 	splitview_source = nil,
-	splitview_window = nil
+	splitview_window = nil,
+
+	modified_queries = false,
 };
 
 -------------------------------------------------------------------------------------------
@@ -282,6 +284,22 @@ markview.render = function (buffer, state, config)
 
 	state = state or markview.state.buffer_states[buffer];
 
+	if not state then
+		if vim.api.nvim_buf_is_valid(buffer) == false then
+			---@type boolean Should preview be enabled on the buffer?
+			local enable = spec.get({ "preview", "enable" }, { fallback = true, ignore_enable = true });
+			---@type boolean Should hybrid mode be enabled on the buffer?
+			local hm_enable = spec.get({ "preview", "enable_hybrid_mode" }, { fallback = true, ignore_enable = true });
+
+			state = {
+				enable = enable,
+				hybrid_mode = hm_enable
+			};
+		else
+			return;
+		end
+	end
+
 	local function hybrid_mode()
 		if type(state) == "table" and state.hybrid_mode == false then
 			return false;
@@ -433,6 +451,22 @@ markview.splitview_render = function ()
 		math.max(0, cursor[1] - (max_lines + 1)),
 		math.min(line_count, cursor[1] + (max_lines + 1)),
 		false
+	);
+
+	--[[
+		BUG: Calling `nvim_buf_set_lines()` with mismatch line-count causes issues.
+
+		This happens because id we are replacing 7 lines with 6 lines of text the 7th line doesn't get deleted.
+		FIX: Clear lines first than apply the updated text.
+
+		See #408
+	]]
+	vim.api.nvim_buf_set_lines(
+		pre_buf,
+		math.max(0, cursor[1] - (max_lines + 1)),
+		math.min(line_count, cursor[1] + (max_lines + 1)),
+		false,
+		{}
 	);
 	vim.api.nvim_buf_set_lines(
 		pre_buf,
@@ -669,6 +703,7 @@ markview.actions = {
 		});
 
 		if enable == true then
+			markview.actions.set_query(buffer);
 			markview.actions.__exec_callback("on_enable", buffer, vim.fn.win_findbuf(buffer))
 
 			--- Execute the enable/disable one too.
@@ -705,6 +740,7 @@ markview.actions = {
 				});
 			end
 		else
+			markview.actions.reset_query(buffer);
 			markview.actions.__exec_callback("on_disable", buffer, vim.fn.win_findbuf(buffer))
 			markview.clear(buffer);
 
@@ -771,6 +807,7 @@ markview.actions = {
 
 	["disable"] = function (buffer)
 		---|fS
+
 		---@type integer
 		buffer = buffer or vim.api.nvim_get_current_buf();
 
@@ -791,6 +828,8 @@ markview.actions = {
 			message = string.format("Disabled: %d", buffer)
 		});
 		health.__child_indent_in();
+
+		markview.actions.reset_query(buffer);
 
 		---|fS 
 
@@ -867,6 +906,7 @@ markview.actions = {
 			message = string.format("Enabled: %d", buffer)
 		});
 		health.__child_indent_in();
+		markview.actions.set_query(buffer);
 
 		markview.state.buffer_states[buffer].enable = true;
 
@@ -1126,6 +1166,57 @@ markview.actions = {
 			markview.render(buffer);
 		end
 		---|fE
+	end,
+
+	["set_query"] = function (buffer)
+		local default_path = vim.treesitter.query.get_files("markdown", "highlights")[1];
+
+		if not default_path then
+			return;
+		end
+
+		local default = table.concat(
+			vim.fn.readfile(default_path),
+			"\n"
+		);
+		vim.g.__markdown_default_hl_query = default;
+
+		local capture_1 = table.concat({
+			"%(fenced_code_block",
+			"%s*%(fenced_code_block_delimiter%) @markup.raw.block",
+			'%s*%(#set! conceal ""%)',
+			'%s*%(#set! conceal_lines ""%)%)',
+		}, "");
+
+		local capture_2 = table.concat({
+			"%(fenced_code_block",
+			'%s*%(info_string',
+			'%s*%(language%) @label',
+			'%s*%(#set! conceal ""%)',
+			'%s*%(#set! conceal_lines ""%)%)%)',
+		}, "");
+
+		local updated = string.gsub(default, capture_1, ""):gsub(capture_2, "");
+		vim.treesitter.query.set("markdown", "highlights", updated);
+
+		vim.treesitter.stop(buffer);
+		vim.treesitter.start(buffer)
+
+		-- This will cause only `buffer` to have it's query modified.
+		-- Any *new* buffer should have the original queries.
+		-- See #404.
+		vim.treesitter.query.set("markdown", "highlights", vim.g.__markdown_default_hl_query);
+	end,
+
+	["reset_query"] = function (buffer)
+		if not vim.g.__markdown_default_hl_query then
+			return;
+		end
+
+		vim.treesitter.query.set("markdown", "highlights", vim.g.__markdown_default_hl_query);
+
+		vim.treesitter.stop(buffer);
+		vim.treesitter.start(buffer)
 	end
 
 	---|fE
@@ -1363,10 +1454,6 @@ markview.commands = {
 ---@param config table?
 markview.setup = function (config)
 	spec.setup(config);
-
-	local highlights = require("markview.highlights");
-	highlights.setup(spec.get({ "highlight_groups" }, { fallback = {} }));
-
 	markview.commands.Render();
 end
 

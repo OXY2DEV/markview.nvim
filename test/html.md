@@ -10,6 +10,30 @@
 <sup>Superscript</sup>
 <u>Underlined</u>
 
+; Keyboard sequence
+
+<kbd>Ctrl</kbd>
+<kbd><CTRL-h></kbd>
+<kbd><C-h></kbd>
+
+<kbd>Shift</kbd>
+<kbd><SHIFT-h></kbd>
+<kbd><S-h></kbd>
+
+<kbd>Option</kbd>
+<kbd>Meta</kbd>
+<kbd><M-h></kbd>
+
+<kbd>CMD</kbd>
+<kbd>Command</kbd>
+
+<kbd>Caps Lock</kbd>
+
+<kbd><C-x></kbd> + <kbd><C-o></kbd>
+<kbd>Space</kbd> + <kbd>z</kbd>
+<kbd>CTRL</kbd> + <kbd>Enter</kbd>
+<kbd>Shift</kbd> + <kbd>tab</kbd>
+
 ; Headings
 
 <h1>Heading 1</h1>
@@ -25,3 +49,7 @@
 
 A line. <br> Another line.
 
+
+<!--
+vim:nospell
+-->

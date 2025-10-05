@@ -1,5 +1,69 @@
 # Changelog
 
+## [26.0.1](https://github.com/OXY2DEV/markview.nvim/compare/v26.0.0...v26.0.1) (2025-09-30)
+
+
+### Bug Fixes
+
+* **parser_markdown:** Fixed an error with trailing wrap cleanup code ([7bdec07](https://github.com/OXY2DEV/markview.nvim/commit/7bdec07cb9a14b34edaee9776d92658b8773f4fa))
+* **renderer_markdown:** Fixed a bug where trailing code block delimiters don't get hidden ([f8f4470](https://github.com/OXY2DEV/markview.nvim/commit/f8f44709af021ba24a50674bb9a66adbab26f98f))
+
+## [26.0.0](https://github.com/OXY2DEV/markview.nvim/compare/v25.11.0...v26.0.0) (2025-09-28)
+
+
+### ⚠ BREAKING CHANGES
+
+* **wrap:** Removed relaince on `screenpos` for wrap support
+* **wrap:** Reworked how `wrap` support is implamented
+* Calling `setup()` no longer re-apply highlights
+* **config:** Separated config into multiple files
+* Removed dependency for custom query files
+
+### refacto
+
+* **wrap:** Removed relaince on `screenpos` for wrap support ([01825b0](https://github.com/OXY2DEV/markview.nvim/commit/01825b0e3c1ed5fb40fcaf0d9ada42b0a8404f58))
+
+
+### Features
+
+* **parser_markdown:** Parsed list items now have nesting data ([24f5b38](https://github.com/OXY2DEV/markview.nvim/commit/24f5b3867947b49dbd41ec8d251119c268450d3f))
+* **parser_markdown:** Parsed sections now have indentation ranges ([92c6168](https://github.com/OXY2DEV/markview.nvim/commit/92c6168c36796892f3952ebf1408fa706ab8f949))
+
+
+### Bug Fixes
+
+* **config:** Fixed an issue with `<a></a>` tags icon being cut off ([fd4bc72](https://github.com/OXY2DEV/markview.nvim/commit/fd4bc723276b2008c6f68758fae0dedabbec267c))
+* **core:** Fixed issues with non-existing buffer missing state value ([82c21e3](https://github.com/OXY2DEV/markview.nvim/commit/82c21e3b3f982ae76107a787fb28383d76fffeab)), closes [#394](https://github.com/OXY2DEV/markview.nvim/issues/394)
+* **parser_markdown:** Added missing proeprty for block quotes ([1ec84d4](https://github.com/OXY2DEV/markview.nvim/commit/1ec84d43e76e770aa37899ce1788646d6b3f620a))
+* **parser_markdown:** Fixes indentation of trailing lines in list items ([3df4aea](https://github.com/OXY2DEV/markview.nvim/commit/3df4aea6a8ecdf6451a44325c8cf0d397e869a40)), closes [#399](https://github.com/OXY2DEV/markview.nvim/issues/399)
+* **renderer_markdown:** Block quote borders now have correct `right_gravity` ([1276282](https://github.com/OXY2DEV/markview.nvim/commit/1276282cd01ed822be4603348fdb58227b8b3b87))
+
+
+### Code Refactoring
+
+* Calling `setup()` no longer re-apply highlights ([b895174](https://github.com/OXY2DEV/markview.nvim/commit/b895174117b00ce993242f0d0123c2b9f04abb6a))
+* **config:** Separated config into multiple files ([b7aeff1](https://github.com/OXY2DEV/markview.nvim/commit/b7aeff113d16cb74067b7ba425a694ef3e3996d6))
+* Removed dependency for custom query files ([b8cec24](https://github.com/OXY2DEV/markview.nvim/commit/b8cec240cd76d4d4c743b874b16222082c92970f)), closes [#332](https://github.com/OXY2DEV/markview.nvim/issues/332)
+* **wrap:** Reworked how `wrap` support is implamented ([b5f90fe](https://github.com/OXY2DEV/markview.nvim/commit/b5f90fe92974d16a1d07e4617e7a74e21b4ed32d)), closes [#393](https://github.com/OXY2DEV/markview.nvim/issues/393)
+
+## [25.11.0](https://github.com/OXY2DEV/markview.nvim/compare/v25.10.0...v25.11.0) (2025-09-01)
+
+
+### Features
+
+* **parser_markdown:** Added heading level to parsed data ([b342ee9](https://github.com/OXY2DEV/markview.nvim/commit/b342ee9f2058a800636ab15cf0ecc09ce0b4d1d2)), closes [#384](https://github.com/OXY2DEV/markview.nvim/issues/384)
+* **renderer_latex:** Added some supplementary symbols for `subscript` & `superscript` ([6e06451](https://github.com/OXY2DEV/markview.nvim/commit/6e06451f4952de0fb8d1454943405c51854121f8)), closes [#379](https://github.com/OXY2DEV/markview.nvim/issues/379)
+
+
+### Bug Fixes
+
+* **core:** Check buffee validity before running callbacks after closing `splitView` ([4e5f93e](https://github.com/OXY2DEV/markview.nvim/commit/4e5f93e054b1c3dce026731dfcea1e44b0941137)), closes [#388](https://github.com/OXY2DEV/markview.nvim/issues/388)
+* **parsee_markdown:** Fixed a bug with how text was extracted from elements ([6d63416](https://github.com/OXY2DEV/markview.nvim/commit/6d63416c86ed1be16ad66a042ae7d2b15c53152e)), closes [#387](https://github.com/OXY2DEV/markview.nvim/issues/387)
+* **parser_latex:** Added new symbols to the parser ([2f071fd](https://github.com/OXY2DEV/markview.nvim/commit/2f071fd428b2cabd3271b45f5b046db43b60c1da))
+* **parser_markdown:** Fixed a bug with missing indent level ([3feaed6](https://github.com/OXY2DEV/markview.nvim/commit/3feaed690e5be223108a7f9727e3f962832e9c3b)), closes [#384](https://github.com/OXY2DEV/markview.nvim/issues/384)
+* **renderer_latex:** Removed incorrect `epsilon` symbol for `subscript` ([ea7e9d6](https://github.com/OXY2DEV/markview.nvim/commit/ea7e9d6e8107d9226426fc9a34cce0413c22e8c2)), closes [#379](https://github.com/OXY2DEV/markview.nvim/issues/379)
+* **renderer_markdown:** Fixed an issue with `org_indent` not handling indention correctly ([#389](https://github.com/OXY2DEV/markview.nvim/issues/389)) ([e6b0f5a](https://github.com/OXY2DEV/markview.nvim/commit/e6b0f5aee8105adab6077509c46459812db4cffa))
+
 ## [25.10.0](https://github.com/OXY2DEV/markview.nvim/compare/v25.9.0...v25.10.0) (2025-08-04)
 
 

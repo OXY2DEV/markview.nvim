@@ -777,11 +777,11 @@ fts.get = function (ft)
 		conf.sign = no_icon;
 		conf.hl = no_icon;
 	else
-		conf = fts.styles[_ft] or fts.styles[ft] or fts.styles["default"];
+		conf = vim.tbl_extend("force", fts.styles[_ft] or fts.styles[ft] or fts.styles["default"], {});
 	end
 
 	local this_conf = fts.styles[_ft] or fts.styles[ft] or fts.styles.default;
-	conf.name = this_conf.name or ft or "Unknown";
+	conf.name = this_conf.name or string.gsub(ft, "^%w", string.upper) or "Unknown";
 
 	return conf;
 end

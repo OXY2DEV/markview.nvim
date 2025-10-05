@@ -1,4 +1,5 @@
 *markview.nvim.txt*                                            ☄️markview.nvim
+                                                    *markview* *markview.nvim*
 
 image[_1]
 
@@ -69,7 +70,9 @@ any of the following sub-commands,
   • `Disable<bufnr>` Disables preview on the given buffer(current buffer if
     not provided).
 
-------------------------------------------------------------------------------
+Auto registering ~
+
+These commands are related to auto-registering new buffers for `previewing`.
 
   • `Start` Starts the plugin. Any visited/opened buffers will have the plugin
     attached to them.
@@ -79,14 +82,16 @@ any of the following sub-commands,
 ▌ If you run `:Markview Stop`, open a buffer, run `:Markview Start`
 ▌ and revisit that buffer, the plugin will attach to that buffer!
 
-------------------------------------------------------------------------------
+These commands are related to manually registering buffers for `previewing`.
 
   • `attach` Attaches the plugin to a buffer.
   • `detach` Detaches the plugin from a buffer.
 
 ▌ Revisiting a detached buffer will cause it to be attached!
 
-------------------------------------------------------------------------------
+Hybrid mode ~
+
+These commmands are for controlling various aspects of `hybrid mode`.
 
   • `HybridToggle` Toggles hybrid mode globally.
 
@@ -116,7 +121,9 @@ any of the following sub-commands,
 
 ▌ These work `globally`! And require `preview.hybrid_modes` to be set!
 
-------------------------------------------------------------------------------
+Splitview ~
+
+These commands are for conrtrolling `splitview`.
 
   • `splitOpen<bufnr>` Opens the given buffer’s(current buffer if not
     provided) preview in a split window.
@@ -129,7 +136,9 @@ any of the following sub-commands,
 
 ▌ Only 1 splitview window will be open!
 
-------------------------------------------------------------------------------
+Preview ~
+
+Sub-commands for manual `preview` updates,
 
   • `Render` Updates the preview of all enabled buffers.
 
@@ -146,7 +155,9 @@ any of the following sub-commands,
 ▌ `render` & `clear` can be run on any buffer, even if the previews
 ▌ are disabled!
 
-------------------------------------------------------------------------------
+Dev ~
+
+Sub-commands for `bug report`,
 
   • `traceShow` Shows the plugin’s internal messages in a window.
 

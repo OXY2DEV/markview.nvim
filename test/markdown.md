@@ -79,6 +79,8 @@ author: "OXY2DEV"
 
 ; Code block
 
+    Some text.
+    Even more text!
 
 ```c Info string
 printf("Hello world!")
@@ -96,7 +98,7 @@ console.log("Hello world!");
 vim.print("Hello world!");
 ```
 
-```md
+```markdown
 Hello *world!*
 ```
 
