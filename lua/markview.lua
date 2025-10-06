@@ -1293,34 +1293,6 @@ markview.commands = {
 		markview.clear(buffer);
 	end,
 
-	["toggleAll"] = function ()
-		health.notify("deprecation", {
-			option = ":Markview toggleAll",
-			alter = ":Markview Toggle",
-			silent = true
-		});
-
-		markview.commands.Toggle();
-	end,
-	["enableAll"] = function ()
-		health.notify("deprecation", {
-			option = ":Markview enableAll",
-			alter = ":Markview Enable",
-			silent = true
-		});
-
-		markview.commands.Enable();
-	end,
-	["disableAll"] = function ()
-		health.notify("deprecation", {
-			option = ":Markview disableAll",
-			alter = ":Markview Disable",
-			silent = true
-		});
-
-		markview.commands.Disable();
-	end,
-
 	["toggle"] = function (buffer)
 		---|fS
 		buffer = buffer or vim.api.nvim_get_current_buf();
