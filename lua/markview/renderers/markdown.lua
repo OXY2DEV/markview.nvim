@@ -2332,7 +2332,7 @@ markdown.section = function (buffer, item)
 
 	local range = item.range;
 
-	for l = range.row_start + 1, (range.org_end or range.row_end) - 1 do
+	for l = range.row_start + 1, range.org_end do
 		vim.api.nvim_buf_set_extmark(buffer, markdown.ns, l, 0, {
 			undo_restore = false, invalidate = true,
 

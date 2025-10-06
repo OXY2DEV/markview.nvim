@@ -163,6 +163,7 @@ markdown.setext_heading = function (buffer, TSNode, text, range)
 			-- We have reaches another `heading`.
 			-- Indentation should end at the *start* of the next `heading`.
 			row_end, _, _, _ = sibling:range();
+			row_end = row_end - 1;
 			break;
 		end
 
@@ -173,6 +174,7 @@ markdown.setext_heading = function (buffer, TSNode, text, range)
 		-- We have reached the end of the `section`.
 		-- Use the `row_end` of the section to prevent missing lines.
 		_, _, row_end, _ = TSNode:parent():range();
+		row_end = row_end - 1;
 	end
 
 	local marker_text = vim.treesitter.get_node_text(marker, buffer, {});
