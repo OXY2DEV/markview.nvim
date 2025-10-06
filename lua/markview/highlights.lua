@@ -1,33 +1,49 @@
---- *Dynamic* highlight group related methods
---- for `markview.nvim`.
-local highlights = {};
-local utils = require("markview.utils");
-
-local lerp = utils.lerp;
-local clamp = utils.clamp;
-
 
 ---@class markview.hl
 ---
 ---@field group_name? string
 ---@field value? table
 
+---@class markview.hl.rgb
+---
+---@field r integer
+---@field g integer
+---@field b integer
 
---- Returns RGB value from the provided input.
---- Supported input types,
----     • Hexadecimal values(`#FFFFFF` & `FFFFFF`).
----     • Number value of the hexadecimal color(from `nvim_get_hl()`).
----     • Color name(e.g. `red`, `green`).
---- 
----@param input string | number[]
----@return number[]?
+---@class markview.hl.Lab
+---
+---@field L integer
+---@field a integer
+---@field b integer
+
+------------------------------------------------------------------------------
+
+--[[
+*Dynamic* highlights for `markview.nvim` to match the current `colorscheme`.
+
+Usage,
+
+```lua
+require("markview.highlights").setup();
+```
+]]
+local highlights = {};
+
+local function clamp (c)
+	return math.min(
+		math.max(
+			0,
+			math.floor(c)
+		),
+		255
+	);
+end
+
+--[[ Turns given color into **RGB** color value. ]]
+---@param input string | number
+---@return markview.hl.rgb
 highlights.rgb = function (input)
-	--- Lookup table for the regular color names.
-	--- For example,
-	---     • `red` → `#FF0000`.
-	---     • `green` → `#00FF00`.
-	--- 
-	---@type { [string]: string }
+	---@type table<string, string> Common *color name* to `hex` color code mappings.
 	local lookup = {
 		["red"] = "#FF0000",        ["lightred"] = "#FFBBBB",      ["darkred"] = "#8B0000",
 		["green"] = "#00FF00",      ["lightgreen"] = "#90EE90",    ["darkgreen"] = "#006400",    ["seagreen"] = "#2E8B57",
@@ -41,12 +57,7 @@ highlights.rgb = function (input)
 		["orange"] = "#FFA500",     ["purple"] = "#800080",        ["violet"] = "#EE82EE"
 	};
 
-	--- Lookup table for the Neovim-specific color names.
-	--- For example,
-	---     • `nvimdarkblue` → `#004C73`.
-	---     • `nvimdarkred` → `#590008`.
-	--- 
-	---@type { [string]: string }
+	---@type table<string, string> Neovim *color name* to `hex` color code mappings.
 	local lookup_nvim = {
 		["nvimdarkblue"] = "#004C73",    ["nvimlightblue"] = "#A6DBFF",
 		["nvimdarkcyan"] = "#007373",    ["nvimlightcyan"] = "#8CF8F7",
@@ -64,371 +75,112 @@ highlights.rgb = function (input)
 		["nvimdarkyellow"] = "#6B5300",  ["nvimlightyellow"] = "#FCE094",
 	};
 
-	if type(input) == "string" then
-		--- Match cases,
-		---     • RR GG BB, # is optional.
-		---     • R G B, # is optional.
-		---     • Color name.
-		---     • HSL values(as `{ h, s, l }`)
+	local hex;
 
-		if input:match("^%#?(%x%x?)(%x%x?)(%x%x?)$") then
-			--- Pattern explanation:
-			---     #? RR? GG? BB?
-			--- String should have **3** parts & each part
-			--- should have a minimum of *1* & a maximum
-			--- of *2* characters.
-			---
-			--- # is optional.
-			---
-			---@type string, string, string
-			local r, g, b = input:match("^%#?(%x%x?)(%x%x?)(%x%x?)$");
-
-			return { tonumber(r, 16), tonumber(g, 16), tonumber(b, 16) };
-		elseif lookup[input] then
-			local r, g, b = lookup[input]:match("(%x%x)(%x%x)(%x%x)$");
-
-			return { tonumber(r, 16), tonumber(g, 16), tonumber(b, 16) };
-		elseif lookup_nvim[input] then
-			local r, g, b = lookup_nvim[input]:match("(%x%x)(%x%x)(%x%x)$");
-
-			return { tonumber(r, 16), tonumber(g, 16), tonumber(b, 16) };
-		end
-
+	if type(input) == "string" and (lookup_nvim[input] or lookup[input]) then
+		hex = lookup_nvim[input] or lookup[input];
 	elseif type(input) == "number" then
-		--- Format the number into a hexadecimal string.
-		--- Then get the **r**, **g**, **b** parts.
-		--- 
-		---@type string, string, string
-		local r, g, b = string.format("%06x", input):match("(%x%x)(%x%x)(%x%x)$");
-
-		return { tonumber(r, 16), tonumber(g, 16), tonumber(b, 16) };
+		hex = string.format("#%06x", input);
+	else
+		hex = type(input) == "string" and input or "#FFFFFD";
 	end
+
+	return {
+		r = tonumber(
+			string.sub(hex, 2, 3),
+			16
+		),
+		g = tonumber(
+			string.sub(hex, 4, 5),
+			16
+		),
+		b = tonumber(
+			string.sub(hex, 6, 7),
+			16
+		),
+	};
 end
 
---- Simple RGB *color-mixer* function.
---- Supports mixing colors by % values.
----
---- NOTE: `per_1` & `per_2` are between
---- **0** & **1**.
---- 
----@param c_1 number[]
----@param c_2 number[]
----@param per_1 number
----@param per_2 number
----@return number[]
-highlights.mix = function (c_1, c_2, per_1, per_2)
-	local _r = (c_1[1] * per_1) + (c_2[1] * per_2);
-	local _g = (c_1[2] * per_1) + (c_2[2] * per_2);
-	local _b = (c_1[3] * per_1) + (c_2[3] * per_2);
+--[[ Simple RGB color mixer. ]]
+---@param c1 markview.hl.rgb | markview.hl.Lab
+---@param c2 markview.hl.rgb | markview.hl.Lab
+---@param p1 number
+---@param p2 number
+---@return markview.hl.rgb | markview.hl.Lab
+highlights.mix = function (c1, c2, p1, p2)
+	local out = {};
 
-	return { math.floor(_r), math.floor(_g), math.floor(_b) };
+	for k, v in pairs(c1) do
+		if c2[k] then
+			out[k] = (v * p1) + (c2[k] * p2);
+		else
+			out[k] = v;
+		end
+	end
+
+	return out;
 end
 
---- RGB to hexadecimal string converter.
----
----@param color number[]
+--[[ `RGB` to `hex color code` converter. ]]
+---@param color markview.hl.rgb
 ---@return string
 highlights.rgb_to_hex = function (color)
-	return string.format("#%02x%02x%02x", math.floor(color[1]), math.floor(color[2]), math.floor(color[3]))
+	return string.format(
+		"#%02x%02x%02x",
+		clamp(color.r),
+		clamp(color.g),
+		clamp(color.b)
+	)
 end
 
---- RGB to HSL converter.
---- Input: `{ r, g, b }` where,
----   r ∈ [0, 255]
----   g ∈ [0, 255]
----   b ∈ [0, 255]
----
---- Return: `{ h, s, l }` where,
----   h ∈ [0, 360]
----   s ∈ [0, 1]
----   l ∈ [0, 1]
----
----@param color number[]
----@return number[]
-highlights.rgb_to_hsl = function (color)
-	local nR, nG, nB = color[1] / 255, color[2] / 255, color[3] / 255;
-	local min, max = math.min(nR, nG, nB), math.max(nR, nG, nB);
+---|fS "chunk: sRGB <-> Oklab"
 
-	local h, s, l;
-	l = (min + max) / 2;
+--[[
+`sRGB` -> `Oklab` conversion.
 
-	if min == max then
-		s = 0;
-	elseif l <= 0.5 then
-		s = (max - min) / (max + min);
-	else
-		s = (max - min) / (2 - max - min);
-	end
+Source: https://bottosson.github.io/posts/oklab/#converting-from-linear-srgb-to-oklab
+License: https://bottosson.github.io/misc/License.txt
+]]
+---@param c markview.hl.rgb
+---@return markview.hl.Lab
+highlights.srgb_to_oklab = function (c)
+    local l = 0.4122214708 * c.r + 0.5363325363 * c.g + 0.0514459929 * c.b;
+	local m = 0.2119034982 * c.r + 0.6806995451 * c.g + 0.1073969566 * c.b;
+	local s = 0.0883024619 * c.r + 0.2817188376 * c.g + 0.6299787005 * c.b;
 
-	if max == nR then
-		h = (nG - nB) / (max - min);
-	elseif max == nG then
-		h = 2 + (nB - nR) / (max - min);
-	else
-		h = 4 + (nR - nG) / (max - min);
-	end
+    local l_ = math.pow(l, 1 / 3);
+    local m_ = math.pow(m, 1 / 3);
+    local s_ = math.pow(s, 1 / 3);
 
-	if h < 0 then
-		h = 1 - h;
-	end
-
-	return { h * 60, s, l };
+    return {
+        L = 0.2104542553 *l_ + 0.7936177850 *m_ - 0.0040720468 *s_,
+        a = 1.9779984951 *l_ - 2.4285922050 *m_ + 0.4505937099 *s_,
+        b = 0.0259040371 *l_ + 0.7827717662 *m_ - 0.8086757660 *s_,
+    };
 end
 
---- HSL to RGB converter.
---- Input: `{ h, s, l }` where,
----   h ∈ [0, 360]
----   s ∈ [0, 1]
----   l ∈ [0, 1]
----
---- Return: `{ r, g, b }` where,
----   r ∈ [0, 255]
----   g ∈ [0, 255]
----   b ∈ [0, 255]
----
----@param color integer[]
-highlights.hsl_to_rgb = function (color)
-	local h, s, l = color[1] / 360, color[2], color[3];
 
-	if s == 0 then
-		return { l * 255, l * 255, l * 255 };
-	end
+--[[
+`Oklab` -> `sRGB` conversion.
 
-	local tmp_1, tmp_2;
+Source: https://bottosson.github.io/posts/oklab/#converting-from-linear-srgb-to-oklab
+License: https://bottosson.github.io/misc/License.txt
+]]
+highlights.oklab_to_srgb = function (c)
+    local l_ = c.L + 0.3963377774 * c.a + 0.2158037573 * c.b;
+    local m_ = c.L - 0.1055613458 * c.a - 0.0638541728 * c.b;
+    local s_ = c.L - 0.0894841775 * c.a - 1.2914855480 * c.b;
 
-	if l < 0.5 then
-		tmp_1 = l * (1 + s);
-	else
-		tmp_1 = l + s - (l * s);
-	end
+    local l = l_*l_*l_;
+    local m = m_*m_*m_;
+    local s = s_*s_*s_;
 
-	tmp_2 = (2 * l) - tmp_1;
-	local tR, tG, tB;
-
-	tR = h + 0.333;
-	tG = h;
-	tB = h - 0.333;
-
-	tR = tR < 0 and tR + 1 or tR;
-	tG = tG < 0 and tG + 1 or tG;
-	tB = tB < 0 and tB + 1 or tB;
-
-	local function checker (val)
-		if 6 * val < 1 then
-			return tmp_2 + (tmp_1 - tmp_2) * 6 * val;
-		elseif 2 * val < 1 then
-			return tmp_1;
-		elseif 3 * val < 2 then
-			return tmp_2 + (tmp_1 - tmp_2) * (0.666 - val) * 6;
-		else
-			return tmp_2;
-		end
-	end
-
-	return {
-		clamp(checker(tR) * 255, 0, 255),
-		clamp(checker(tG) * 255, 0, 255),
-		clamp(checker(tB) * 255, 0, 255),
-	};
+    return {
+		r = clamp( 4.0767416621 * l - 3.3077115913 * m + 0.2309699292 * s),
+		g = clamp(-1.2684380046 * l + 2.6097574011 * m - 0.3413193965 * s),
+		b = clamp(-0.0041960863 * l - 0.7034186147 * m + 1.7076147010 * s),
+    };
 end
-
---- Deprecated RGB to HSL converter.
----@param rgb integer[]
----@return integer[]
----@deprecated
-highlights.hsl = function (rgb)
-	vim.notify("[ markview.nvim ]: highlights.hsl is deprecated. Use 'highlights.rgb_to_hsl' instead", vim.log.levels.WARN);
-	return highlights.rgb_to_hsl(rgb);
-end
-
---- Gets the luminosity of a RGB value.
----
---- Input: `{ r, g, b }` where,
----   r ∈ [0, 255]
----   g ∈ [0, 255]
----   b ∈ [0, 255]
----
---- Return: `l` where,
----   l ∈ [0, 1]
----
----@param input number[]
----@return number
-highlights.lumen = function (input)
-	local min = math.min(input[1], input[2], input[3]);
-	local max = math.max(input[1], input[2], input[3]);
-
-	return (min + max) / 2;
-end
-
---- Mixes a color with it's background based on
---- the provided `alpha`(between 0 & 1).
----
---- Input:
----   fg: `{ r, g, b }` where,
----     r ∈ [0, 255]
----     g ∈ [0, 255]
----     b ∈ [0, 255]
----
----   bg: `{ r, g, b }` where,
----     r ∈ [0, 255]
----     g ∈ [0, 255]
----     b ∈ [0, 255]
----
----   alpha: `a` where,
----     a ∈ [0, 1]
----
----@param fg number[]
----@param bg number[]
----@param alpha number
----@return number[]
----@deprecated
-highlights.opacify = function (fg, bg, alpha)
-	vim.notify("[ markview.nvim ]: highlights.opacify is deprecated. Use 'highlights.mix' instead", vim.log.levels.WARN);
-	return {
-		math.floor((fg[1] * alpha) + (bg[1] * (1 - alpha))),
-		math.floor((fg[2] * alpha) + (bg[2] * (1 - alpha))),
-		math.floor((fg[3] * alpha) + (bg[3] * (1 - alpha))),
-	}
-end
-
---- Turns RGB color-space into XYZ.
----
---- Input: `{ r, g, b }` where,
----   r ∈ [0, 255]
----   g ∈ [0, 255]
----   b ∈ [0, 255]
----
----@param color number[]
----@return number[]
-highlights.rgb_to_xyz = function (color)
-	local RGB = {};
-
-	for c, channel in ipairs(color) do
-		local _ch = channel / 255;
-
-		if _ch <= 0.04045 then
-			_ch = _ch / 12.92;
-		else
-			_ch = ((_ch + 0.055) / 1.055)^2.4;
-		end
-
-		RGB[c] = _ch;
-	end
-
-	local matrix = {
-		0.4124504, 0.3575761, 0.1804375,
-		0.2126729, 0.7151522, 0.0721750,
-		0.0193339, 0.1191920, 0.9503041
-	};
-
-	return {
-		(RGB[1] * matrix[1] + RGB[2] * matrix[2] + RGB[3] * matrix[3]) * 100,
-		(RGB[1] * matrix[4] + RGB[2] * matrix[5] + RGB[3] * matrix[6]) * 100,
-		(RGB[1] * matrix[7] + RGB[2] * matrix[8] + RGB[3] * matrix[9]) * 100
-	}
-end
-
---- Turns XYZ color-space into RGB.
----@param color number[]
----@return number[]
-highlights.xyz_to_rgb = function (color)
-	local XYZ = color;
-
-	for c, channel in ipairs(color) do
-		local _ch = channel / 100;
-		XYZ[c] = _ch;
-	end
-
-	local rev_matrix = {
-		3.2404542, -1.5371385, -0.4985314,
-		-0.9692660, 1.8760108, 0.0415560,
-		0.0556434, -0.2040259, 1.0572252
-	};
-
-	local RGB = {
-		XYZ[1] * rev_matrix[1] + XYZ[2] * rev_matrix[2] + XYZ[3] * rev_matrix[3],
-		XYZ[1] * rev_matrix[4] + XYZ[2] * rev_matrix[5] + XYZ[3] * rev_matrix[6],
-		XYZ[1] * rev_matrix[7] + XYZ[2] * rev_matrix[8] + XYZ[3] * rev_matrix[9]
-	};
-
-	for c, channel in ipairs(RGB) do
-		local _ch = channel;
-
-		if _ch <= 0.0031308 then
-			_ch = _ch * 12.92;
-		else
-			_ch = (1.055 * (_ch^(1 / 2.4))) - 0.055;
-		end
-
-		RGB[c] = clamp(_ch * 255, 0, 255);
-	end
-
-	return RGB;
-end
-
---- Turns XYZ color-space into Lab.
----@param color number[]
----@return number[]
-highlights.xyz_to_lab = function (color)
-	local ref_point = { 95.047, 100, 108.883 };
-
-	local f = function (t)
-		if t > (6 / 29)^3 then
-			return t^(1/3);
-		else
-			return ( (1 / 3) * t * ((6 / 29)^-2) ) + (4 / 29);
-		end
-	end
-
-	return {
-		( 116 * f(color[2] / ref_point[2]) ) - 16,
-		500 * (  f(color[1] / ref_point[1]) - f(color[2] / ref_point[2]) ),
-		200 * (  f(color[2] / ref_point[2]) - f(color[3] / ref_point[3]) )
-	};
-end
-
---- Turns Lab color-space into XYZ.
----@param color number[]
----@return number[]
-highlights.lab_to_xyz = function (color)
-	local ref_point = { 95.047, 100, 108.883 };
-
-	local f_inv = function (t)
-		if t > (6 / 29) then
-			return t^3;
-		else
-			return 3 * ((6 / 29)^2) * (t - (4 / 29));
-		end
-	end
-
-	local tmp = (color[1] + 16) / 116;
-
-	return {
-		ref_point[1] * f_inv( tmp + (color[2] / 500) ),
-		ref_point[2] * f_inv(tmp),
-		ref_point[3] * f_inv( tmp - (color[3] / 200) )
-	};
-end
-
---- Turns RGB color-space into Lab.
----@param RGB number[]
----@return number[]
-highlights.rgb_to_lab = function (RGB)
-	local XYZ = highlights.rgb_to_xyz(RGB);
-	return highlights.xyz_to_lab(XYZ);
-end
-
---- Turns Lab color-space into RGB.
----@param Lab number[]
----@return number[]
-highlights.lab_to_rgb = function (Lab)
-	local XYZ = highlights.lab_to_xyz(Lab);
-	return highlights.xyz_to_rgb(XYZ);
-end
-
---- Holds info about highlight groups.
----@type string[]
-highlights.created = {};
 
 --- Wrapper function for `nvim_set_hl()`.
 ---@param name string
@@ -440,6 +192,7 @@ highlights.set_hl = function (name, value)
 		return;
 	end
 
+	value.default = true;
 	local success, err = pcall(vim.api.nvim_set_hl, 0, name, value);
 
 	if success == false and err then
@@ -449,16 +202,12 @@ highlights.set_hl = function (name, value)
 
 			message = err
 		});
-	else
-		table.insert(highlights.created, name);
 	end
 end
 
 --- Creates highlight groups from an array of tables
 ---@param array { [string]: markview.hl | fun(): markview.hl }
 highlights.create = function (array)
-	highlights.created = {};
-
 	if type(array) == "string" then
 		if not highlights[array] then
 			return;
@@ -471,39 +220,35 @@ highlights.create = function (array)
 	table.sort(hls);
 
 	for _, hl in ipairs(hls) do
-		local value = array[hl];
+		local _value = array[hl];
+		local value;
+
+		if type(_value) == "function" then
+			local s, v = pcall(_value);
+
+			if s then
+				value = v;
+			else
+				value = {};
+			end
+		else
+			value = _value;
+		end
 
 		if not hl:match("^Markview") then
 			hl = "Markview" .. hl;
 		end
 
-		if type(value) == "table" then
-			highlights.set_hl(hl, value);
-		else
-			local val = value();
-
-			if vim.islist(val) then
-				for _, item in ipairs(val) do
-					highlights.set_hl(item.group_name, item.value);
-				end
-			else
-				highlights.set_hl(hl, val);
+		if vim.islist(value) and #value > 0 then
+			---@cast value table[]
+			for _, entry in ipairs(value) do
+				highlights.set_hl(entry.group_name, entry.value);
 			end
+		elseif type(value) == "table" then
+			---@cast value table
+			highlights.set_hl(hl, value);
 		end
 	end
-end
-
---- Destroys created highlight groups.
---- Internal function! Should be only called
---- manually!
-highlights.destroy = function ()
-	for _, name in ipairs(highlights.created) do
-		--- BUG, `nvim_set_hl()` gives unexpected
-		--- behavior.
-		vim.cmd("hi clear " .. name);
-	end
-
-	highlights.created = {};
 end
 
 --- Is the background "dark"?
@@ -512,1110 +257,406 @@ end
 ---@param on_dark any
 ---@return any
 local is_dark = function (on_light, on_dark)
-	return vim.o.background == "dark" and (on_dark or true) or (on_light or false);
+	return vim.o.background == "dark" and on_dark or on_light;
 end
 
---- Gets {property} from a list of highlight groups.
+--[[ Gets `property` from a list of `highlight group`s. ]]
 ---@param property string
 ---@param groups string[]
 ---@param light any
 ---@param dark any
 ---@return any
+---@private
 highlights.get_property = function (property, groups, light, dark)
 	local val;
 
 	for _, item in ipairs(groups) do
-		if
-			vim.fn.hlexists(item) and
-			vim.api.nvim_get_hl(0, { name = item, link = false })[property]
-		then
-			val = vim.api.nvim_get_hl(0, { name = item, link = false })[property];
+		local hl = vim.api.nvim_get_hl(0, { name = item, link = false, create = false });
+
+		if vim.fn.hlexists(item) == 1 and hl[property] then
+			val = hl[property];
 			break;
 		end
 	end
 
-	if val then
-		return vim.list_contains({ "fg", "bg", "sp" }, property) and highlights.rgb(val) or val;
+	local fallback = is_dark(light, dark);
+
+	if property == "fg" or property == "bg" or property == "sp" then
+		if val then
+			return highlights.rgb(val);
+		else
+			return fallback;
+		end
+	else
+		return val ~= nil and val or fallback;
 	end
-
-	return vim.list_contains({ "fg", "bg", "sp" }, property) and highlights.rgb(is_dark(light, dark)) or is_dark(light, dark);
 end
 
---- Gets color properties from a highlight group.
----@param opt string
----@param fallback any
----@param on_light any
----@param on_dark any
----@return any
----@deprecated
-highlights.color = function (opt, fallback, on_light, on_dark)
-	vim.notify("[ markview.nvim ]: highlights.color is deprecated. Use 'highlights.get_property' instead", vim.log.levels.WARN);
-	highlights.get_property(opt, fallback, on_light, on_dark);
-end
+------------------------------------------------------------------------------
 
---- Generates a heading highlight group.
----@return markview.hl
----@deprecated
-highlights.generate_heading = function (opts)
-	local vim_bg = highlights.rgb_to_lab(highlights.get_property(
+highlights.create_pallete = function (n, src, light, dark)
+	---@type markview.hl.rgb
+	local nr = highlights.get_property(
 		"bg",
-		opts.bg_fallbacks or { "Normal" },
-		opts.light_bg or "#FFFFFF",
-		opts.dark_bg or "#000000"
+		{ "LineNr" },
+		nil,
+		nil
+	);
+
+	local bg = highlights.srgb_to_oklab(highlights.get_property(
+		"bg",
+		{ "Normal" },
+		"#EFF1F5",
+		"#1E1E2E"
 	));
-	local h_fg = highlights.rgb_to_lab(highlights.get_property(
+	local fg = highlights.srgb_to_oklab(highlights.get_property(
 		"fg",
-		opts.fallbacks,
-		opts.light_fg or "#000000",
-		opts.dark_fg or "#FFFFFF"
+		src,
+		light or "#1E1E2E",
+		dark or "#EFF1F5"
 	));
 
-	local l_bg = highlights.lumen(highlights.lab_to_rgb(vim_bg));
-	local alpha = opts.alpha or (l_bg > 0.5 and 0.15 or 0.25);
+	if not nr then
+		nr = highlights.oklab_to_srgb(bg);
+	end;
 
-	local res_bg = highlights.lab_to_rgb(highlights.mix(h_fg, vim_bg, alpha, 1 - alpha));
+	---@type number
+	local alpha = vim.g.markview_alpha or ( bg.L >= 0.5 and 0.15 or 0.25 );
 
-	vim_bg = highlights.lab_to_rgb(vim_bg);
-	h_fg = highlights.lab_to_rgb(h_fg);
+	local _mix = highlights.mix(
+		bg,
+		fg,
+		(1 - alpha),
+		alpha
+	) --[[ @as markview.hl.Lab ]];
+
+	local mix = highlights.oklab_to_srgb(_mix);
+	local _fg = highlights.oklab_to_srgb(fg);
 
 	return {
-		bg = highlights.rgb_to_hex(res_bg),
-		fg = highlights.rgb_to_hex(h_fg)
+		{
+			group_name = string.format("MarkviewPalette%d", n),
+			value = {
+				bg = highlights.rgb_to_hex(mix),
+				fg = highlights.rgb_to_hex(_fg)
+			}
+		},
+		{
+			group_name = string.format("MarkviewPalette%dSign", n),
+			value = {
+				bg = highlights.rgb_to_hex(nr),
+				fg = highlights.rgb_to_hex(_fg)
+			}
+		},
+		{
+			group_name = string.format("MarkviewPalette%dFg", n),
+			value = {
+				fg = highlights.rgb_to_hex(_fg)
+			}
+		},
+		{
+			group_name = string.format("MarkviewPalette%dBg", n),
+			value = {
+				bg = highlights.rgb_to_hex(mix),
+			}
+		},
 	};
 end
 
---- Generates a highlight group.
----@param opts { source_opt: string?, output_opt: string?, hl_opts: markview.hl?, source: string[], fallback_light: string, fallback_dark: string }
----@return markview.hl
-highlights.hl_generator = function (opts)
-	local hi = highlights.get_property(
-		opts.source_opt or "fg",
-		opts.source or { "Normal" },
-		opts.fallback_light or "#000000",
-		opts.fallback_dark or "#FFFFFF"
-	);
+highlights.inherit = function (from, with, properties)
+	local _from = vim.api.nvim_get_hl(0, { name = from, link = false, create = false }) or {};
+	local output = {};
 
-	return vim.tbl_extend("force", {
-		[opts.output_opt or "fg"] = highlights.rgb_to_hex(hi)
-	}, opts.hl_opts or {})
+	if properties and vim.islist(properties) then
+		for _, property in ipairs(properties) do
+			output[property] = _from[property];
+		end
+	else
+		output = _from;
+	end
+
+	return vim.tbl_extend("force", output, with);
 end
 
----@type { [string]: function }
-highlights.dynamic = {
-	["0P"] = function ()
-		local vim_bg = highlights.rgb_to_lab(highlights.get_property(
-			"bg",
-			{ "Normal" },
-			"#EFF1F5",
-			"#1E1E2E"
-		));
-		local h_fg = highlights.rgb_to_lab(highlights.get_property(
-			"fg",
+highlights.icon_hl = function (n)
+	return highlights.inherit(
+		"MarkviewCode",
+		{
+			fg = vim.api.nvim_get_hl(0, {
+				name = string.format("MarkviewPalette%d", n),
+				link = false, create = false
+			}).fg
+		}
+	);
+end
+
+
+highlights.groups = {
+	["0"] = function ()
+		return highlights.create_pallete(
+			0,
 			{ "Comment" },
 			"#9CA0B0",
 			"#6C7086"
-		));
-
-		local l_bg = highlights.lumen(highlights.lab_to_rgb(vim_bg));
-		local alpha = vim.g.__mkv_palette_alpha or (l_bg > 0.5 and 0.15 or 0.25);
-
-		local nr_bg = vim.api.nvim_get_hl(0, { name = "LineNr", link = false }).bg
-		local res_bg = highlights.lab_to_rgb(highlights.mix(h_fg, vim_bg, alpha, 1 - alpha));
-
-		vim_bg = highlights.lab_to_rgb(vim_bg);
-		h_fg = highlights.lab_to_rgb(h_fg);
-
-		return {
-			{
-				group_name = "MarkviewPalette0",
-				value = {
-					default = true,
-
-					bg = highlights.rgb_to_hex(res_bg),
-					fg = highlights.rgb_to_hex(h_fg)
-				}
-			},
-			{
-				group_name = "MarkviewPalette0Fg",
-				value = {
-					default = true,
-
-					fg = highlights.rgb_to_hex(h_fg)
-				}
-			},
-			{
-				group_name = "MarkviewPalette0Bg",
-				value = {
-					default = true,
-
-					bg = highlights.rgb_to_hex(res_bg),
-				}
-			},
-			{
-				group_name = "MarkviewPalette0Sign",
-				value = {
-					default = true,
-
-					bg = nr_bg,
-					fg = highlights.rgb_to_hex(h_fg)
-				}
-			}
-		};
+		);
 	end,
-	["1P"] = function ()
-		local vim_bg = highlights.rgb_to_lab(highlights.get_property(
-			"bg",
-			{ "Normal" },
-			"#EFF1F5",
-			"#1E1E2E"
-		));
-		local h_fg = highlights.rgb_to_lab(highlights.get_property(
-			"fg",
+	["1"] = function ()
+		return highlights.create_pallete(
+			1,
 			{ "@markup.heading.1.markdown", "@markup.heading", "markdownH1"  },
 			"#D20F39",
 			"#F38BA8"
-		));
-
-		local l_bg = highlights.lumen(highlights.lab_to_rgb(vim_bg));
-		local alpha = vim.g.__mkv_palette_alpha or (l_bg > 0.5 and 0.15 or 0.25);
-
-		local nr_bg = vim.api.nvim_get_hl(0, { name = "LineNr", link = false }).bg
-		local res_bg = highlights.lab_to_rgb(highlights.mix(h_fg, vim_bg, alpha, 1 - alpha));
-
-		vim_bg = highlights.lab_to_rgb(vim_bg);
-		h_fg = highlights.lab_to_rgb(h_fg);
-
-		return {
-			{
-				group_name = "MarkviewPalette1",
-				value = {
-					default = true,
-
-					bg = highlights.rgb_to_hex(res_bg),
-					fg = highlights.rgb_to_hex(h_fg)
-				}
-			},
-			{
-				group_name = "MarkviewPalette1Fg",
-				value = {
-					default = true,
-
-					fg = highlights.rgb_to_hex(h_fg)
-				}
-			},
-			{
-				group_name = "MarkviewPalette1Bg",
-				value = {
-					default = true,
-
-					bg = highlights.rgb_to_hex(res_bg),
-				}
-			},
-			{
-				group_name = "MarkviewPalette1Sign",
-				value = {
-					default = true,
-
-					bg = nr_bg,
-					fg = highlights.rgb_to_hex(h_fg)
-				}
-			}
-		};
+		);
 	end,
-	["2P"] = function ()
-		local vim_bg = highlights.rgb_to_lab(highlights.get_property(
-			"bg",
-			{ "Normal" },
-			"#EFF1F5",
-			"#1E1E2E"
-		));
-		local h_fg = highlights.rgb_to_lab(highlights.get_property(
-			"fg",
+	["2"] = function ()
+		return highlights.create_pallete(
+			2,
 			{ "@markup.heading.2.markdown", "@markup.heading", "markdownH2"  },
 			"#FAB387",
 			"#FE640B"
-		));
-
-		local l_bg = highlights.lumen(highlights.lab_to_rgb(vim_bg));
-		local alpha = vim.g.__mkv_palette_alpha or (l_bg > 0.5 and 0.15 or 0.25);
-
-		local nr_bg = vim.api.nvim_get_hl(0, { name = "LineNr", link = false }).bg
-		local res_bg = highlights.lab_to_rgb(highlights.mix(h_fg, vim_bg, alpha, 1 - alpha));
-
-		vim_bg = highlights.lab_to_rgb(vim_bg);
-		h_fg = highlights.lab_to_rgb(h_fg);
-
-		return {
-			{
-				group_name = "MarkviewPalette2",
-				value = {
-					default = true,
-
-					bg = highlights.rgb_to_hex(res_bg),
-					fg = highlights.rgb_to_hex(h_fg)
-				}
-			},
-			{
-				group_name = "MarkviewPalette2Fg",
-				value = {
-					default = true,
-
-					fg = highlights.rgb_to_hex(h_fg)
-				}
-			},
-			{
-				group_name = "MarkviewPalette2Bg",
-				value = {
-					default = true,
-
-					bg = highlights.rgb_to_hex(res_bg),
-				}
-			},
-			{
-				group_name = "MarkviewPalette2Sign",
-				value = {
-					default = true,
-
-					bg = nr_bg,
-					fg = highlights.rgb_to_hex(h_fg)
-				}
-			}
-		};
+		);
 	end,
-	["3P"] = function ()
-		local vim_bg = highlights.rgb_to_lab(highlights.get_property(
-			"bg",
-			{ "Normal" },
-			"#EFF1F5",
-			"#1E1E2E"
-		));
-		local h_fg = highlights.rgb_to_lab(highlights.get_property(
-			"fg",
+	["3"] = function ()
+		return highlights.create_pallete(
+			3,
 			{ "@markup.heading.3.markdown", "@markup.heading", "markdownH3"  },
 			"#DF8E1D",
 			"#F9E2AF"
-		));
-
-		local l_bg = highlights.lumen(highlights.lab_to_rgb(vim_bg));
-		local alpha = vim.g.__mkv_palette_alpha or (l_bg > 0.5 and 0.15 or 0.25);
-
-		local nr_bg = vim.api.nvim_get_hl(0, { name = "LineNr", link = false }).bg
-		local res_bg = highlights.lab_to_rgb(highlights.mix(h_fg, vim_bg, alpha, 1 - alpha));
-
-		vim_bg = highlights.lab_to_rgb(vim_bg);
-		h_fg = highlights.lab_to_rgb(h_fg);
-
-		return {
-			{
-				group_name = "MarkviewPalette3",
-				value = {
-					default = true,
-
-					bg = highlights.rgb_to_hex(res_bg),
-					fg = highlights.rgb_to_hex(h_fg)
-				}
-			},
-			{
-				group_name = "MarkviewPalette3Fg",
-				value = {
-					default = true,
-
-					fg = highlights.rgb_to_hex(h_fg)
-				}
-			},
-			{
-				group_name = "MarkviewPalette3Bg",
-				value = {
-					default = true,
-
-					bg = highlights.rgb_to_hex(res_bg),
-				}
-			},
-			{
-				group_name = "MarkviewPalette3Sign",
-				value = {
-					default = true,
-
-					bg = nr_bg,
-					fg = highlights.rgb_to_hex(h_fg)
-				}
-			}
-		};
+		);
 	end,
-	["4P"] = function ()
-		local vim_bg = highlights.rgb_to_lab(highlights.get_property(
-			"bg",
-			{ "Normal" },
-			"#EFF1F5",
-			"#1E1E2E"
-		));
-		local h_fg = highlights.rgb_to_lab(highlights.get_property(
-			"fg",
+	["4"] = function ()
+		return highlights.create_pallete(
+			4,
 			{ "@markup.heading.4.markdown", "@markup.heading", "markdownH4"  },
 			"#40A02B",
 			"#A6E3A1"
-		));
-
-		local l_bg = highlights.lumen(highlights.lab_to_rgb(vim_bg));
-		local alpha = vim.g.__mkv_palette_alpha or (l_bg > 0.5 and 0.15 or 0.25);
-
-		local nr_bg = vim.api.nvim_get_hl(0, { name = "LineNr", link = false }).bg
-		local res_bg = highlights.lab_to_rgb(highlights.mix(h_fg, vim_bg, alpha, 1 - alpha));
-
-		vim_bg = highlights.lab_to_rgb(vim_bg);
-		h_fg = highlights.lab_to_rgb(h_fg);
-
-		return {
-			{
-				group_name = "MarkviewPalette4",
-				value = {
-					default = true,
-
-					bg = highlights.rgb_to_hex(res_bg),
-					fg = highlights.rgb_to_hex(h_fg)
-				}
-			},
-			{
-				group_name = "MarkviewPalette4Fg",
-				value = {
-					default = true,
-
-					fg = highlights.rgb_to_hex(h_fg)
-				}
-			},
-			{
-				group_name = "MarkviewPalette4Bg",
-				value = {
-					default = true,
-
-					bg = highlights.rgb_to_hex(res_bg),
-				}
-			},
-			{
-				group_name = "MarkviewPalette4Sign",
-				value = {
-					default = true,
-
-					bg = nr_bg,
-					fg = highlights.rgb_to_hex(h_fg)
-				}
-			}
-		};
+		);
 	end,
-	["5P"] = function ()
-		local vim_bg = highlights.rgb_to_lab(highlights.get_property(
-			"bg",
-			{ "Normal" },
-			"#EFF1F5",
-			"#1E1E2E"
-		));
-		local h_fg = highlights.rgb_to_lab(highlights.get_property(
-			"fg",
+	["5"] = function ()
+		return highlights.create_pallete(
+			5,
 			{ "@markup.heading.5.markdown", "@markup.heading", "markdownH5"  },
 			"#209FB5",
 			"#74C7EC"
-		));
-
-		local l_bg = highlights.lumen(highlights.lab_to_rgb(vim_bg));
-		local alpha = vim.g.__mkv_palette_alpha or (l_bg > 0.5 and 0.15 or 0.25);
-
-		local nr_bg = vim.api.nvim_get_hl(0, { name = "LineNr", link = false }).bg
-		local res_bg = highlights.lab_to_rgb(highlights.mix(h_fg, vim_bg, alpha, 1 - alpha));
-
-		vim_bg = highlights.lab_to_rgb(vim_bg);
-		h_fg = highlights.lab_to_rgb(h_fg);
-
-		return {
-			{
-				group_name = "MarkviewPalette5",
-				value = {
-					default = true,
-
-					bg = highlights.rgb_to_hex(res_bg),
-					fg = highlights.rgb_to_hex(h_fg)
-				}
-			},
-			{
-				group_name = "MarkviewPalette5Fg",
-				value = {
-					default = true,
-
-					fg = highlights.rgb_to_hex(h_fg)
-				}
-			},
-			{
-				group_name = "MarkviewPalette5Bg",
-				value = {
-					default = true,
-
-					bg = highlights.rgb_to_hex(res_bg),
-				}
-			},
-			{
-				group_name = "MarkviewPalette5Sign",
-				value = {
-					default = true,
-
-					bg = nr_bg,
-					fg = highlights.rgb_to_hex(h_fg)
-				}
-			}
-		};
+		);
 	end,
-	["6P"] = function ()
-		local vim_bg = highlights.rgb_to_lab(highlights.get_property(
-			"bg",
-			{ "Normal" },
-			"#EFF1F5",
-			"#1E1E2E"
-		));
-		local h_fg = highlights.rgb_to_lab(highlights.get_property(
-			"fg",
+	["6"] = function ()
+		return highlights.create_pallete(
+			6,
 			{ "@markup.heading.6.markdown", "@markup.heading", "markdownH6"  },
 			"#7287FD",
 			"#B4BEFE"
-		));
-
-		local l_bg = highlights.lumen(highlights.lab_to_rgb(vim_bg));
-		local alpha = vim.g.__mkv_palette_alpha or (l_bg > 0.5 and 0.15 or 0.25);
-
-		local nr_bg = vim.api.nvim_get_hl(0, { name = "LineNr", link = false }).bg
-		local res_bg = highlights.lab_to_rgb(highlights.mix(h_fg, vim_bg, alpha, 1 - alpha));
-
-		vim_bg = highlights.lab_to_rgb(vim_bg);
-		h_fg = highlights.lab_to_rgb(h_fg);
-
-		return {
-			{
-				group_name = "MarkviewPalette6",
-				value = {
-					default = true,
-
-					bg = highlights.rgb_to_hex(res_bg),
-					fg = highlights.rgb_to_hex(h_fg)
-				}
-			},
-			{
-				group_name = "MarkviewPalette6Fg",
-				value = {
-					default = true,
-
-					fg = highlights.rgb_to_hex(h_fg)
-				}
-			},
-			{
-				group_name = "MarkviewPalette6Bg",
-				value = {
-					default = true,
-
-					bg = highlights.rgb_to_hex(res_bg),
-				}
-			},
-			{
-				group_name = "MarkviewPalette6Sign",
-				value = {
-					default = true,
-
-					bg = nr_bg,
-					fg = highlights.rgb_to_hex(h_fg)
-				}
-			}
-		};
+		);
 	end,
-	["7P"] = function ()
-		local vim_bg = highlights.rgb_to_lab(highlights.get_property(
+	["7"] = function ()
+		return highlights.create_pallete(
+			7,
+			{ "@conditional", "@keyword.conditional", "Conditional" },
+			"#8839EF",
+			"#CBA6F7"
+		);
+	end,
+
+	["8"] = function ()
+		local bg = highlights.srgb_to_oklab(highlights.get_property(
 			"bg",
 			{ "Normal" },
 			"#EFF1F5",
 			"#1E1E2E"
 		));
-		local h_fg = highlights.rgb_to_lab(highlights.get_property(
-			"fg",
-			{ "@conditional", "@keyword.conditional", "Conditional" },
-			"#8839EF",
-			"#CBA6F7"
+
+		---@type number
+		local alpha = vim.g.markview_code_alpha or ( bg.L >= 4 and 0.025 or 0.15 );
+
+		local mix = {
+			L = bg.L * (1 + (bg.L >= 4 and (-1 * alpha) or alpha)),
+			a = bg.a,
+			b = bg.b
+		};
+
+		return {
+			{
+				group_name = "MarkviewCode",
+				value = {
+					bg = highlights.rgb_to_hex(
+						highlights.oklab_to_srgb(mix)
+					)
+				}
+			},
+		};
+	end,
+	["9"] = function ()
+		local bg = highlights.srgb_to_oklab(highlights.get_property(
+			"bg",
+			{ "Normal" },
+			"#EFF1F5",
+			"#1E1E2E"
 		));
 
-		local l_bg = highlights.lumen(highlights.lab_to_rgb(vim_bg));
-		local alpha = vim.g.__mkv_palette_alpha or (l_bg > 0.5 and 0.15 or 0.25);
+		---@type number
+		local alpha = vim.g.markview_inline_code_alpha or ( bg.L >= 4 and 0.025 or 0.2 );
 
-		local nr_bg = vim.api.nvim_get_hl(0, { name = "LineNr", link = false }).bg
-		local res_bg = highlights.lab_to_rgb(highlights.mix(h_fg, vim_bg, alpha, 1 - alpha));
-
-		vim_bg = highlights.lab_to_rgb(vim_bg);
-		h_fg = highlights.lab_to_rgb(h_fg);
+		local mix = {
+			L = bg.L * (1 + (bg.L >= 4 and (-1 * alpha) or alpha)),
+			a = bg.a,
+			b = bg.b
+		};
 
 		return {
 			{
-				group_name = "MarkviewPalette7",
+				group_name = "MarkviewInlineCode",
 				value = {
-					default = true,
-
-					bg = highlights.rgb_to_hex(res_bg),
-					fg = highlights.rgb_to_hex(h_fg)
+					bg = highlights.rgb_to_hex(
+						highlights.oklab_to_srgb(mix)
+					)
 				}
 			},
-			{
-				group_name = "MarkviewPalette7Fg",
-				value = {
-					default = true,
-
-					fg = highlights.rgb_to_hex(h_fg)
-				}
-			},
-			{
-				group_name = "MarkviewPalette7Bg",
-				value = {
-					default = true,
-
-					bg = highlights.rgb_to_hex(res_bg),
-				}
-			},
-			{
-				group_name = "MarkviewPalette7Sign",
-				value = {
-					default = true,
-
-					bg = nr_bg,
-					fg = highlights.rgb_to_hex(h_fg)
-				}
-			}
 		};
 	end,
 
-	["BlockQuoteDefault"] = function ()
-		return {
-			default = true,
-			link = "MarkviewPalette0Fg"
-		};
-	end,
+	["BlockQuoteDefault"] = { link = "MarkviewPalette0Fg" },
+	["BlockQuoteError"] = { link = "MarkviewPalette1Fg" },
+	["BlockQuoteNote"] = { link = "MarkviewPalette5Fg" },
+	["BlockQuoteOk"] = { link = "MarkviewPalette4Fg" },
+	["BlockQuoteSpecial"] = { link = "MarkviewPalette3Fg" },
+	["BlockQuoteWarn"] = { link = "MarkviewPalette2Fg" },
 
-	["BlockQuoteError"] = function ()
-		return {
-			default = true,
-			link = "MarkviewPalette1Fg"
-		};
-	end,
-
-	["BlockQuoteNote"] = function ()
-		return {
-			default = true,
-			link = "MarkviewPalette5Fg"
-		};
-	end,
-
-	["BlockQuoteOk"] = function ()
-		return {
-			default = true,
-			link = "MarkviewPalette4Fg"
-		};
-	end,
-
-	["BlockQuoteSpecial"] = function ()
-		return {
-			default = true,
-			link = "MarkviewPalette3Fg"
-		};
-	end,
-
-	["BlockQuoteWarn"] = function ()
-		return {
-			default = true,
-			link = "MarkviewPalette2Fg"
-		};
-	end,
-	["CheckboxCancelled"] = function ()
-		return {
-			default = true,
-			link = "MarkviewPalette0Fg"
-		};
-	end,
-	["CheckboxChecked"] = function ()
-		return {
-			default = true,
-			link = "MarkviewPalette4Fg"
-		};
-	end,
-	["CheckboxPending"] = function ()
-		return {
-			default = true,
-			link = "MarkviewPalette2Fg"
-		};
-	end,
-	["CheckboxProgress"] = function ()
-		return {
-			default = true,
-			link = "MarkviewPalette6Fg"
-		};
-	end,
-	["CheckboxUnchecked"] = function ()
-		return {
-			default = true,
-			link = "MarkviewPalette1Fg"
-		};
-	end,
+	["CheckboxCancelled"] = { link = "MarkviewPalette0Fg" },
+	["CheckboxChecked"] = { link = "MarkviewPalette4Fg" },
+	["CheckboxPending"] = { link = "MarkviewPalette2Fg" },
+	["CheckboxProgress"] = { link = "MarkviewPalette6Fg" },
+	["CheckboxUnchecked"] = { link = "MarkviewPalette1Fg" },
 	["CheckboxStriked"] = function ()
-		return {
-			default = true,
-			strikethrough = true,
-			fg = vim.api.nvim_get_hl(0, { name = "MarkviewPalette0Fg" }).fg
-		};
+		return highlights.inherit(
+			"MarkviewPalette0Fg",
+			{
+				strikethrough = true,
+			}
+		);
 	end,
-	["Code"] = function ()
-		local vim_bg = highlights.rgb_to_hsl(highlights.get_property(
-			"bg",
-			{ "Normal" },
-			"#FFFFFF",
-			"#000000"
-		));
 
-		if vim_bg[3] > 0.5 then
-			vim_bg[3] = clamp(vim_bg[3] - 0.05, 0.1, 0.9);
-		else
-			vim_bg[3] = clamp(vim_bg[3] + 0.05, 0.1, 0.9);
-		end
-
-		vim_bg = highlights.hsl_to_rgb(vim_bg);
-
-		return {
-			bg = highlights.rgb_to_hex(vim_bg)
-		};
-	end,
 	["CodeInfo"] = function ()
-		local vim_bg = highlights.rgb_to_hsl(highlights.get_property(
-			"bg",
-			{ "Normal" },
-			"#FFFFFF",
-			"#000000"
-		));
-		local code_fg = highlights.get_property(
+		local fg = highlights.get_property(
 			"fg",
 			{ "Comment" },
 			"#9CA0B0",
 			"#6C7086"
 		);
 
-		if vim_bg[3] > 0.5 then
-			vim_bg[3] = clamp(vim_bg[3] - 0.05, 0.1, 0.9);
-		else
-			vim_bg[3] = clamp(vim_bg[3] + 0.05, 0.1, 0.9);
-		end
+		return highlights.inherit(
+			"MarkviewCode",
+			{
+				strikethrough = true,
 
-		vim_bg = highlights.hsl_to_rgb(vim_bg);
-
-		return {
-			bg = highlights.rgb_to_hex(vim_bg),
-			fg = highlights.rgb_to_hex(code_fg)
-		};
+				fg = highlights.rgb_to_hex(fg)
+			}
+		);
 	end,
 	["CodeFg"] = function ()
-		local vim_bg = highlights.rgb_to_hsl(highlights.get_property(
+		local fg = highlights.get_property(
 			"bg",
-			{ "Normal" },
-			"#FFFFFF",
-			"#000000"
-		));
-
-		if vim_bg[3] > 0.5 then
-			vim_bg[3] = clamp(vim_bg[3] - 0.05, 0.1, 0.9);
-		else
-			vim_bg[3] = clamp(vim_bg[3] + 0.05, 0.1, 0.9);
-		end
-
-		vim_bg = highlights.hsl_to_rgb(vim_bg);
+			{ "MarkviewCode" },
+			"#ccced2",
+			"#2d2d42"
+		);
 
 		return {
-			fg = highlights.rgb_to_hex(vim_bg)
+			fg = highlights.rgb_to_hex(fg)
 		};
 	end,
-	["InlineCode"] = function ()
-		local vim_bg = highlights.rgb_to_hsl(highlights.get_property(
-			"bg",
-			{ "Normal" },
-			"#FFFFFF",
-			"#000000"
-		));
-
-		if vim_bg[3] > 0.5 then
-			vim_bg[3] = clamp(vim_bg[3] - 0.1, 0.1, 0.9);
-		else
-			vim_bg[3] = clamp(vim_bg[3] + 0.1, 0.1, 0.9);
-		end
-
-		vim_bg = highlights.hsl_to_rgb(vim_bg);
-
-		return {
-			bg = highlights.rgb_to_hex(vim_bg)
-		};
-	end,
-
 
 	["Icon0"] = function ()
-		return highlights.hl_generator({
-			source = { "MarkviewPalette0" },
-			light_fg = "#FE640B",
-			dark_fg = "#FAB387",
-
-			hl_opts = {
-				bg = vim.api.nvim_get_hl(0, { name = "MarkviewCode", link = false }).bg
-			}
-		});
+		return highlights.icon_hl(0);
 	end,
-
 	["Icon1"] = function ()
-		return highlights.hl_generator({
-			source = { "MarkviewPalette1" },
-			light_fg = "#FE640B",
-			dark_fg = "#FAB387",
-
-			hl_opts = {
-				bg = vim.api.nvim_get_hl(0, { name = "MarkviewCode", link = false }).bg
-			}
-		});
+		return highlights.icon_hl(1);
 	end,
-
 	["Icon2"] = function ()
-		return highlights.hl_generator({
-			source = { "MarkviewPalette2" },
-			light_fg = "#FE640B",
-			dark_fg = "#FAB387",
-
-			hl_opts = {
-				bg = vim.api.nvim_get_hl(0, { name = "MarkviewCode", link = false }).bg
-			}
-		});
+		return highlights.icon_hl(2);
 	end,
-
 	["Icon3"] = function ()
-		return highlights.hl_generator({
-			source = { "MarkviewPalette3" },
-			light_fg = "#F9E2AF",
-			dark_fg = "#DF8E1D",
-
-			hl_opts = {
-				bg = vim.api.nvim_get_hl(0, { name = "MarkviewCode", link = false }).bg
-			}
-		});
+		return highlights.icon_hl(3);
 	end,
-
 	["Icon4"] = function ()
-		return highlights.hl_generator({
-			source = { "MarkviewPalette4" },
-			light_fg = "#A6E3A1",
-			dark_fg = "#40A02B",
-
-			hl_opts = {
-				bg = vim.api.nvim_get_hl(0, { name = "MarkviewCode", link = false }).bg
-			}
-		});
+		return highlights.icon_hl(4);
 	end,
-
 	["Icon5"] = function ()
-		return highlights.hl_generator({
-			source = { "MarkviewPalette5" },
-			light_fg = "#74C7EC",
-			dark_fg = "#209FB5",
-
-			hl_opts = {
-				bg = vim.api.nvim_get_hl(0, { name = "MarkviewCode", link = false }).bg
-			}
-		});
+		return highlights.icon_hl(5);
 	end,
-
 	["Icon6"] = function ()
-		return highlights.hl_generator({
-			source = { "MarkviewPalette6" },
-			light_fg = "#B4BEFE",
-			dark_fg = "#7287FD",
-
-			hl_opts = {
-				bg = vim.api.nvim_get_hl(0, { name = "MarkviewCode", link = false }).bg
-			}
-		});
-	end,
-	["Heading1"] = function ()
-		return {
-			default = true,
-			link = "MarkviewPalette1"
-		};
-	end,
-	["Heading2"] = function ()
-		return {
-			default = true,
-			link = "MarkviewPalette2"
-		};
-	end,
-	["Heading3"] = function ()
-		return {
-			default = true,
-			link = "MarkviewPalette3"
-		};
-	end,
-	["heading4"] = function ()
-		return {
-			default = true,
-			link = "MarkviewPalette4"
-		};
-	end,
-	["Heading5"] = function ()
-		return {
-			default = true,
-			link = "MarkviewPalette5"
-		};
-	end,
-	["Heading6"] = function ()
-		return {
-			default = true,
-			link = "MarkviewPalette6"
-		};
+		return highlights.icon_hl(6);
 	end,
 
+	["heading"] = function ()
+		local output = {};
 
-	["Heading1Sign"] = function ()
-		return {
-			default = true,
-			link = "MarkviewPalette1Sign"
-		};
-	end,
-	["Heading2Sign"] = function ()
-		return {
-			default = true,
-			link = "MarkviewPalette2Sign"
-		};
-	end,
-	["Heading3Sign"] = function ()
-		return {
-			default = true,
-			link = "MarkviewPalette3Sign"
-		};
-	end,
-	["heading4Sign"] = function ()
-		return {
-			default = true,
-			link = "MarkviewPalette4Sign"
-		};
-	end,
-	["Heading5Sign"] = function ()
-		return {
-			default = true,
-			link = "MarkviewPalette5Sign"
-		};
-	end,
-	["Heading6Sign"] = function ()
-		return {
-			default = true,
-			link = "MarkviewPalette6Sign"
-		};
-	end,
-
-	["Gradient0"] = function ()
-		local from = highlights.get_property("bg", { "Normal" }, "#CDD6F4", "#1E1E2E");
-
-		return {
-			default = true,
-			fg = highlights.rgb_to_hex(from);
-		};
-	end,
-	["Gradient1"] = function ()
-		local from = highlights.get_property("bg", { "Normal" }, "#CDD6F4", "#1E1E2E");
-		local to   = highlights.get_property("fg", { "Title" }, "#1e66f5", "#89b4fa");
-
-		return {
-			default = true,
-			fg = highlights.rgb_to_hex({
-				lerp(from[1], to[1], 1 / 9),
-				lerp(from[2], to[2], 1 / 9),
-				lerp(from[3], to[3], 1 / 9),
+		for h = 1, 6, 1 do
+			table.insert(output, {
+				group_name = string.format("MarkviewHeading%d", h),
+				value = { link = string.format("MarkviewPalette%d", h) }
 			});
-		};
-	end,
-	["Gradient2"] = function ()
-		local from = highlights.get_property("bg", { "Normal" }, "#CDD6F4", "#1E1E2E");
-		local to   = highlights.get_property("fg", { "Title" }, "#1e66f5", "#89b4fa");
-
-		return {
-			default = true,
-			fg = highlights.rgb_to_hex({
-				lerp(from[1], to[1], 2 / 9),
-				lerp(from[2], to[2], 2 / 9),
-				lerp(from[3], to[3], 2 / 9),
+			table.insert(output, {
+				group_name = string.format("MarkviewHeading%dSign", h),
+				value = { link = string.format("MarkviewPalette%dSign", h) }
 			});
-		};
-	end,
-	["Gradient3"] = function ()
-		local from = highlights.get_property("bg", { "Normal" }, "#CDD6F4", "#1E1E2E");
-		local to   = highlights.get_property("fg", { "Title" }, "#1e66f5", "#89b4fa");
+		end
 
-		return {
-			default = true,
-			fg = highlights.rgb_to_hex({
-				lerp(from[1], to[1], 3 / 9),
-				lerp(from[2], to[2], 3 / 9),
-				lerp(from[3], to[3], 3 / 9),
-			});
-		};
-	end,
-	["Gradient4"] = function ()
-		local from = highlights.get_property("bg", { "Normal" }, "#CDD6F4", "#1E1E2E");
-		local to   = highlights.get_property("fg", { "Title" }, "#1e66f5", "#89b4fa");
-
-		return {
-			default = true,
-			fg = highlights.rgb_to_hex({
-				lerp(from[1], to[1], 4 / 9),
-				lerp(from[2], to[2], 4 / 9),
-				lerp(from[3], to[3], 4 / 9),
-			});
-		};
-	end,
-	["Gradient5"] = function ()
-		local from = highlights.get_property("bg", { "Normal" }, "#CDD6F4", "#1E1E2E");
-		local to   = highlights.get_property("fg", { "Title" }, "#1e66f5", "#89b4fa");
-
-		return {
-			default = true,
-			fg = highlights.rgb_to_hex({
-				lerp(from[1], to[1], 5 / 9),
-				lerp(from[2], to[2], 5 / 9),
-				lerp(from[3], to[3], 5 / 9),
-			});
-		};
-	end,
-	["Gradient6"] = function ()
-		local from = highlights.get_property("bg", { "Normal" }, "#CDD6F4", "#1E1E2E");
-		local to   = highlights.get_property("fg", { "Title" }, "#1e66f5", "#89b4fa");
-
-		return {
-			default = true,
-			fg = highlights.rgb_to_hex({
-				lerp(from[1], to[1], 6 / 9),
-				lerp(from[2], to[2], 6 / 9),
-				lerp(from[3], to[3], 6 / 9),
-			});
-		};
-	end,
-	["Gradient7"] = function ()
-		local from = highlights.get_property("bg", { "Normal" }, "#CDD6F4", "#1E1E2E");
-		local to   = highlights.get_property("fg", { "Title" }, "#1e66f5", "#89b4fa");
-
-		return {
-			default = true,
-			fg = highlights.rgb_to_hex({
-				lerp(from[1], to[1], 7 / 9),
-				lerp(from[2], to[2], 7 / 9),
-				lerp(from[3], to[3], 7 / 9),
-			});
-		};
-	end,
-	["Gradient8"] = function ()
-		local from = highlights.get_property("bg", { "Normal" }, "#CDD6F4", "#1E1E2E");
-		local to   = highlights.get_property("fg", { "Title" }, "#1e66f5", "#89b4fa");
-
-		return {
-			default = true,
-			fg = highlights.rgb_to_hex({
-				lerp(from[1], to[1], 8 / 9),
-				lerp(from[2], to[2], 8 / 9),
-				lerp(from[3], to[3], 8 / 9),
-			});
-		};
-	end,
-	["Gradient9"] = function ()
-		local to   = highlights.get_property("fg", { "Title" }, "#CDD6F4", "#1E1E2E");
-
-		return {
-			default = true,
-			fg = highlights.rgb_to_hex(to);
-		};
+		return output;
 	end,
 
-	["Hyperlink"] = function ()
-		return {
-			default = true,
-			link = "@markup.link.label.markdown_inline"
-		}
+	["Gradient"] = function ()
+		local from = highlights.srgb_to_oklab(highlights.get_property(
+			"bg",
+			{ "Normal" },
+			"#CDD6F4",
+			"#1E1E2E"
+		));
+		local to   = highlights.srgb_to_oklab(highlights.get_property(
+			"fg",
+			{ "Title" },
+			"#1e66f5",
+			"#89b4fa"
+		));
+
+		local output = {};
+
+		for i = 0, 9, 1 do
+			local step = highlights.mix(
+				from,
+				to,
+				1 - ( i / 9),
+				i / 9
+			);
+
+			table.insert(output, {
+				group_name = string.format("MarkviewGradient%d", i),
+				value = {
+					fg = highlights.rgb_to_hex(
+						highlights.oklab_to_srgb(step)
+					)
+				}
+			})
+		end
+
+		return output;
 	end,
 
-	["Image"] = function ()
-		return {
-			default = true,
-			link = "@markup.link.label.markdown_inline"
-		}
-	end,
+	["Hyperlink"] = { link = "@markup.link.label.markdown_inline" },
+	["Image"] = { link = "@markup.link.label.markdown_inline" },
+	["Email"] = { link = "@markup.link.url.markdown_inline" },
+	["Subscript"] = { link = "MarkviewPalette3Fg" },
+	["Superscript"] = { link = "MarkviewPalette6Fg" },
 
-	["Email"] = function ()
-		return {
-			default = true,
-			link = "@markup.link.url.markdown_inline"
-		}
-	end,
-	["Subscript"] = function ()
-		return {
-			default = true,
-			link = "MarkviewPalette3Fg"
-		};
-	end,
-	["Superscript"] = function ()
-		return {
-			default = true,
-			link = "MarkviewPalette6Fg"
-		};
-	end,
-	["ListItemMinus"] = function ()
-		return {
-			default = true,
-			link = "MarkviewPalette2Fg"
-		};
-	end,
-	["ListItemPlus"] = function ()
-		return {
-			default = true,
-			link = "MarkviewPalette4Fg"
-		};
-	end,
-	["ListItemStar"] = function ()
-		return {
-			default = true,
-			link = "MarkviewPalette6Fg"
-		};
-	end,
-	["TableHeader"] = function ()
-		return {
-			default = true,
-			link = "@markup.heading"
-		};
-	end,
+	["ListItemMinus"] = { link = "MarkviewPalette2Fg" },
+	["ListItemPlus"] = { link = "MarkviewPalette4Fg" },
+	["ListItemStar"] = { link = "MarkviewPalette6Fg" },
 
-	["TableBorder"] = function ()
-		return {
-			default = true,
-			link = "MarkviewPalette5Fg"
-		};
-	end,
-
-	["TableAlignLeft"] = function ()
-		return {
-			default = true,
-			link = "@markup.heading"
-		}
-	end,
-
-	["TableAlignCenter"] = function ()
-		return {
-			default = true,
-			link = "@markup.heading"
-		}
-	end,
-
-	["TableAlignRight"] = function ()
-		return {
-			default = true,
-			link = "@markup.heading"
-		}
-	end,
+	["TableHeader"] = { link = "@markup.heading" },
+	["TableBorder"] = { link = "MarkviewPalette5Fg" },
+	["TableAlignLeft"] = { link = "@markup.heading" },
+	["TableAlignCenter"] = { link = "@markup.heading" },
+	["TableAlignRight"] = { link = "@markup.heading" },
 };
-
-highlights.groups = highlights.dynamic;
 
 --- Setup function.
 ---@param opt { [string]: markview.hl }?
