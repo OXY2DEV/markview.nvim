@@ -165,16 +165,19 @@ markview.clean = function ()
 		return false;
 	end
 
-	for index, buffer in ipairs(markview.state.attached_buffers) do
+	markview.state.attached_buffers = vim.tbl_filter(function (buffer)
 		if should_clean(buffer) == true then
-			table.remove(markview.state.attached_buffers, index);
 			markview.state.buffer_states[buffer] = nil;
 
 			if markview.state.splitview_source == buffer then
 				markview.actions.splitClose();
 			end
+
+			return false;
 		end
-	end
+
+		return true;
+	end, markview.state.attached_buffers);
 
 	---|fE
 end
