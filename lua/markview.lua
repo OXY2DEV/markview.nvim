@@ -549,6 +549,7 @@ markview.actions = {
 		end
 
 		vim.bo[markview.state.splitview_buffer].ft = vim.bo[markview.state.splitview_source].ft;
+		markview.actions.set_query(markview.state.splitview_buffer);
 
 		if markview.win_is_safe(markview.state.splitview_window) == false then
 			pcall(vim.api.nvim_win_close, markview.state.splitview_window, true);
@@ -564,6 +565,9 @@ markview.actions = {
 
 		vim.wo[markview.state.splitview_window].wrap = vim.wo[win].wrap;
 		vim.wo[markview.state.splitview_window].linebreak = vim.wo[win].linebreak;
+
+		vim.wo[markview.state.splitview_window].number = false;
+		vim.wo[markview.state.splitview_window].relativenumber = false;
 
 		---|fE
 	end,
