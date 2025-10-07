@@ -631,14 +631,6 @@ Sub-commands for `bug report`,
 | `traceExport`    | none                | Exports trace logs to `trace.txt`.       |
 | `traceShow`      | none                | Shows trace logs in a window.            |
 
-**DEPRECATED** subcommands,
-
-| Sub-command      | Arguments           | Description                              |
-|------------------|---------------------|------------------------------------------|
-| `toggleAll`      | none                | **Deprecated** version of `Toggle`.      |
-| `enableAll`      | none                | **Deprecated** version of `Enable`.      |
-| `disableAll`     | none                | **Deprecated** version of `Disable`.     |
-
 </details>
 
 >[!TIP]
