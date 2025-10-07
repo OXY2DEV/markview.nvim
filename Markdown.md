@@ -1856,6 +1856,12 @@ marker_dot = {
 
     add_padding = true,
     conceal_on_checkboxes = true
+
+    text = function (_, item)
+        -- Auto numbering(used with formatters).
+        return string.format("%d.", item.n);
+    end,
+    hl = "@markup.list.markdown"
 }
 ```
 
@@ -1879,6 +1885,19 @@ Enables indentation in preview for this type of list items.
   default: `true`
 
 Allows hiding the marker of the list item when checkboxes are present.
+
+<h4 id="list_numbered_text">text</h4>
+
+- type: `string | fun(buffer: integer, item: markview.parsed.markdown.list_item): string?`
+
+Text used as the marker in preview.
+
+#### hl
+
+- type: `string`
+  default: `@markup.list.markdown`
+
+Highlight group for [text](#list_numbered_text).
 
 ### marker_minus
 
