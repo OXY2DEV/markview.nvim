@@ -1895,7 +1895,7 @@ Text used as the marker in preview.
 #### hl
 
 - type: `string`
-  default: `@markup.list.markdown`
+  default: `"@markup.list.markdown"`
 
 Highlight group for [text](#list_numbered_text).
 
