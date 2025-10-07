@@ -1890,6 +1890,9 @@ Allows hiding the marker of the list item when checkboxes are present.
 
 - type: `string | fun(buffer: integer, item: markview.parsed.markdown.list_item): string?`
 
+>[!TIP]
+> You can set this to `""` to show the original marker.
+
 Text used as the marker in preview.
 
 #### hl
@@ -1944,6 +1947,9 @@ Allows hiding the marker of the list item when checkboxes are present.
 
 - type: `string`
   default: `"●"`
+
+>[!TIP]
+> You can set this to `""` to show the original marker.
 
 Text used as the marker in preview.
 
