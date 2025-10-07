@@ -1883,6 +1883,9 @@ TEXT
 
   • type: `string`
 
+▌ 💡 Tip
+▌ You can set this to `""` to disble the text.
+
 Text used as the marker in preview.
 
 HL
@@ -1958,6 +1961,9 @@ TEXT
 
   • type: `string`
     default: `"●"`
+
+▌ 💡 Tip
+▌ You can set this to `""` to show the original marker.
 
 Text used as the marker in preview.
 
