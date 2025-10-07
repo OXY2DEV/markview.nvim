@@ -412,7 +412,7 @@ return {
 		},
 
 		marker_parenthesis = {
-			text = "" or function (_, item)
+			text = function (_, item)
 				return string.format("%d)", item.n);
 			end,
 			hl = "@markup.list.markdown",
