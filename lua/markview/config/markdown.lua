@@ -403,11 +403,19 @@ return {
 		},
 
 		marker_dot = {
+			text = function (_, item)
+				return string.format("%d.", item.n);
+			end,
+			hl = "@markup.list.markdown",
 			add_padding = true,
 			conceal_on_checkboxes = true
 		},
 
 		marker_parenthesis = {
+			text = "" or function (_, item)
+				return string.format("%d)", item.n);
+			end,
+			hl = "@markup.list.markdown",
 			add_padding = true,
 			conceal_on_checkboxes = true
 		}

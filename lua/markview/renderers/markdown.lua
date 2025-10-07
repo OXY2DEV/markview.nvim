@@ -2144,7 +2144,7 @@ markdown.list_item = function (buffer, item)
 				});
 			end
 		end
-	elseif item.marker:match("[%+%-%*]") then
+	elseif config.text and config.text ~= "" then
 		vim.api.nvim_buf_set_extmark(buffer, markdown.ns, range.row_start, range.col_start + item.indent, {
 			undo_restore = false, invalidate = true,
 			end_col = range.col_start + (item.indent + #item.marker),

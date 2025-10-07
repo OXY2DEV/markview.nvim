@@ -419,7 +419,7 @@ end
 
 --- List item parser.
 ---@param buffer integer
----@param TSNode table
+---@param TSNode TSNode
 ---@param range markview.parsed.range
 markdown.list_item = function (buffer, TSNode, _, range)
 	---@type string[]
@@ -554,9 +554,21 @@ markdown.list_item = function (buffer, TSNode, _, range)
 		parent = parent:parent();
 	end
 
+	---@type integer List item count.
+	local N = 1;
+	local prev_sibling  = TSNode:prev_sibling();
+
+	-- TODO: Is there a better way to do this?
+	while prev_sibling do
+		N = N + 1;
+		prev_sibling = prev_sibling:prev_sibling();
+	end
+
 	markdown.insert({
 		class = "markdown_list_item",
 		__nested = nested,
+
+		n = N,
 
 		candidates = candidates,
 		marker = marker:gsub("%s", ""),
