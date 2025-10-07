@@ -566,13 +566,15 @@ markview.actions = {
 					ignore_enable = true
 				})
 			);
+
+			vim.wo[markview.state.splitview_window].wrap = vim.wo[win].wrap;
+			vim.wo[markview.state.splitview_window].linebreak = vim.wo[win].linebreak;
+
+			vim.wo[markview.state.splitview_window].number = false;
+			vim.wo[markview.state.splitview_window].relativenumber = false;
+			vim.wo[markview.state.splitview_window].list = false;
+			vim.wo[markview.state.splitview_window].winhl = "Normal:Normal";
 		end
-
-		vim.wo[markview.state.splitview_window].wrap = vim.wo[win].wrap;
-		vim.wo[markview.state.splitview_window].linebreak = vim.wo[win].linebreak;
-
-		vim.wo[markview.state.splitview_window].number = false;
-		vim.wo[markview.state.splitview_window].relativenumber = false;
 
 		---|fE
 	end,
