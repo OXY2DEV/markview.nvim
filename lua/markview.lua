@@ -1,11 +1,15 @@
---- Base module for `markview.nvim`.
---- Contains,
----     • State variables.
----     • Default autocmd group.
----     • Plugin commands implementations.
----     • Setup function.
----     • And various helper functions.
---- And other minor things!
+--[[
+Base module for `markview.nvim`.
+
+Contains,
+- State variables.
+- Default autocmd group.
+- Plugin commands implementations.
+- Setup function.
+- And various helper functions.
+
+And other minor things!
+]]
 local markview = {};
 
 local spec = require("markview.spec");
@@ -27,26 +31,40 @@ markview.state = {
 
 -------------------------------------------------------------------------------------------
 
---- Simple 1-time renderer for `markview`.
----
---- A buffer must be cleared before being
---- able to render it again.
-markview.strict_render = {
-	---|fS "feat: Allow rendering buffers only once"
+--[[
+Allows *strictly* rendering into `buffer`. To redraw preview of `buffer` it must first be **cleared**.
 
-	---@type integer[] Buffers where immediate render was used.
+Useful if you want include it into some function that runs **very frequently**, but only want to render *on demand*.
+
+You can draw on a buffer like so,
+
+```lua
+local renderer = require("markview").strict_render;
+
+renderer:render(0, nil);
+```
+
+To redraw into the same buffer you have to run,
+
+```lua
+renderer:clear();
+renderer:render(0, nil);
+```
+]]
+markview.strict_render = {
+	---|fS "feat: Allow rendering buffers strictly(on_demand)"
+
+	---@type integer[] Buffers where strict render was used.
 	on = {},
 
-	--- Clears an immediately rendered buffer.
-	--- Makes rendering on that buffer possible
-	--- again.
+	--[[ Allows `buffer` to be rendered again. ]]
 	---@param self table
 	---@param buffer integer?
 	clear = function (self, buffer)
 		---|fS
 
-		---@type integer
 		buffer = buffer or vim.api.nvim_get_current_buf();
+		---@cast buffer integer
 
 		if vim.list_contains(self.on, buffer) == false then
 			return;
@@ -54,25 +72,10 @@ markview.strict_render = {
 
 		markview.clear(buffer);
 
-		---|fS "chore: Simulate detaching from the buffer"
+		---|fS "chunk: Simulate detaching from the buffer"
 
 		markview.actions.__exec_callback("on_disable", buffer, vim.fn.win_findbuf(buffer))
-		vim.api.nvim_exec_autocmds("User", {
-			pattern = "MarkviewDisable",
-			data = {
-				buffer = buffer,
-				windows = vim.fn.win_findbuf(buffer)
-			}
-		});
-
 		markview.actions.__exec_callback("on_detach", buffer, vim.fn.win_findbuf(buffer))
-		vim.api.nvim_exec_autocmds("User", {
-			pattern = "MarkviewDetach",
-			data = {
-				buffer = buffer,
-				windows = vim.fn.win_findbuf(buffer)
-			}
-		});
 
 		---|fE
 
@@ -86,22 +89,22 @@ markview.strict_render = {
 		---|fE
 	end,
 
-	--- Immediately renders in buffer.
-	--- Prevents redrawing on that buffer again(until cleared).
+	--[[ Renders `buffer` and prevents redrawing until `:clear()` is called. ]]
 	---@param self table
-	---@param buffer integer?
+	---@param buffer? integer?
+	---@param max_lines? integer
 	render = function (self, buffer, max_lines)
 		---|fS
 
-		---@type integer
 		buffer = buffer or vim.api.nvim_get_current_buf();
 		max_lines = max_lines or spec.get({ "prevent", "max_buf_lines" }, { ignore_enable = true, fallback = 1000 });
 
+		---@cast buffer integer
+		---@cast max_lines integer
+
 		if vim.list_contains(self.on, buffer) then
-			-- Already rendered.
 			return;
 		elseif vim.api.nvim_buf_line_count(buffer) >= max_lines then
-			-- Buffer is too large.
 			return;
 		end
 
@@ -114,24 +117,7 @@ markview.strict_render = {
 		---|fS "chore: Simulate attaching to the buffer"
 
 		markview.actions.__exec_callback("on_attach", buffer, vim.fn.win_findbuf(buffer))
-		vim.api.nvim_exec_autocmds("User", {
-			pattern = "MarkviewAttach",
-			data = {
-				buffer = buffer,
-				windows = vim.fn.win_findbuf(buffer)
-			}
-		});
-
 		markview.actions.__exec_callback("on_enable", buffer, vim.fn.win_findbuf(buffer))
-
-		--- Execute the enable/disable one too.
-		vim.api.nvim_exec_autocmds("User", {
-			pattern = "MarkviewEnable",
-			data = {
-				buffer = buffer,
-				windows = vim.fn.win_findbuf(buffer)
-			}
-		});
 
 		---|fE
 
@@ -150,7 +136,7 @@ markview.strict_render = {
 markview.clean = function ()
 	---|fS
 
-	--- Should a buffer be cleaned?
+	--[[ Should `buffer` be cleaned? ]]
 	---@param buffer integer
 	---@return boolean
 	local function should_clean(buffer)
@@ -182,7 +168,7 @@ markview.clean = function ()
 	---|fE
 end
 
---- Checks if the buffer is safe.
+--[[ Checks if `buffer` is safe. ]]
 ---@param buffer integer?
 ---@return boolean
 markview.buf_is_safe = function (buffer)
@@ -193,9 +179,12 @@ markview.buf_is_safe = function (buffer)
 	elseif vim.api.nvim_buf_is_valid(buffer) == false then
 		return false;
 	elseif vim.v.exiting ~= vim.NIL then
-		-- BUG, there's a bug where if this function
-		-- is ran when exiting Neovim, then a crash
-		-- happens or an error pops up.
+		--[[
+			BUG(no-repro): Crash when exiting Neovim.
+
+			There used to be a bug that caused crashes when exiting `Neovim`.
+			I can no longer reproduce it on `main`. So, this is *legacy code*.
+		]]
 		return false;
 	end
 
@@ -204,7 +193,7 @@ markview.buf_is_safe = function (buffer)
 	---|fE
 end
 
---- Checks if the window is safe.
+--[[ Checks if `window` is safe. ]]
 ---@param window integer?
 ---@return boolean
 markview.win_is_safe = function (window)
@@ -226,7 +215,7 @@ markview.win_is_safe = function (window)
 	---|fE
 end
 
---- Checks if the buffer can be attached to.
+--- Checks if the `buffer` can be attached to.
 ---@param buffer integer
 ---@return boolean
 markview.can_attach = function (buffer)
@@ -496,13 +485,27 @@ markview.actions = {
 	---|fS
 
 	["__exec_callback"] = function (autocmd, ...)
-		if vim.list_contains({ "string", "integer" }, type(autocmd)) == false then
-			--- Invalid data type.
+		---|fS
+
+		local args = { ... };
+		local map = {
+			on_attach = { "MarkviewAttach", { buffer = args[1], windows = args[2] } },
+			on_enable = { "MarkviewEnable", { buffer = args[1], windows = args[2] } },
+			on_hybrid_enable = { "MarkviewHybridEnable", { buffer = args[1], windows = args[2] } },
+			on_hybrid_disable = { "MarkviewHybridDisable", { buffer = args[1], windows = args[2] } },
+			on_disable = { "MarkviewDisable", { buffer = args[1], windows = args[2] } },
+			on_detach = { "MarkviewDetach", { buffer = args[1], windows = args[2] } },
+			on_splitview_open = { "MarkviewSplitviewOpen", { source = args[1], preview_buffer = args[2], preview_window = args[3] } },
+			on_splitview_close = { "MarkviewSplitviewClose", { source = args[1], preview_buffer = args[2], preview_window = args[3] } },
+		};
+
+		if not map[autocmd] then
 			return;
 		end
 
 		local callbacks = spec.get({ "preview", "callbacks" }, { fallback = nil, ignore_enable = true });
 		pcall(callbacks[autocmd], ...);
+		vim.api.nvim_exec_autocmds("User", { pattern = map[autocmd][1], data = map[autocmd][2] });
 
 		health.notify("trace", {
 			level = 1,
@@ -511,6 +514,8 @@ markview.actions = {
 				{ " " .. autocmd .. " ", "DiagnosticVirtualTextInfo" }
 			}
 		});
+
+		---|fE
 	end,
 	["__is_attached"] = function (buffer)
 		buffer = buffer or vim.api.nvim_get_current_buf();
@@ -532,11 +537,11 @@ markview.actions = {
 		---|fS
 
 		if markview.buf_is_safe(markview.state.splitview_source) == false then
+			markview.actions.splitClose();
 			return;
 		end
 
-		local utils = require("markview.utils");
-		local win = utils.buf_getwin(markview.state.splitview_source);
+		local win = vim.fn.win_findbuf(markview.state.splitview_source)[1];
 
 		if markview.win_is_safe(win) == false then
 			markview.actions.splitClose();
@@ -662,7 +667,6 @@ markview.actions = {
 		buffer = buffer or vim.api.nvim_get_current_buf();
 
 		if markview.can_attach(buffer) == false then
-			--- Failed to attach.
 			return;
 		end
 
@@ -692,73 +696,30 @@ markview.actions = {
 		---@type boolean Whether `gx` should be remapped.
 		local map_gx = spec.get({ "preview", "map_gx" }, { ignore_enable = true, fallback = true });
 
-		if map_gx == true then
+		if map_gx then
 			vim.api.nvim_buf_set_keymap(buffer, "n", "gx", "<CMD>Markview open<CR>", {
 				desc = "Tree-sitter based link opener from `markview.nvim`."
 			});
 		end
 
-		--- Execute the attaching callback.
 		markview.actions.__exec_callback("on_attach", buffer, vim.fn.win_findbuf(buffer))
-		--- Execute the autocmd too.
-		vim.api.nvim_exec_autocmds("User", {
-			pattern = "MarkviewAttach",
-			data = {
-				buffer = buffer,
-				windows = vim.fn.win_findbuf(buffer)
-			}
-		});
 
 		if enable == true then
 			markview.actions.set_query(buffer);
-			markview.actions.__exec_callback("on_enable", buffer, vim.fn.win_findbuf(buffer))
 
-			--- Execute the enable/disable one too.
-			vim.api.nvim_exec_autocmds("User", {
-				pattern = "MarkviewEnable",
-				data = {
-					buffer = buffer,
-					windows = vim.fn.win_findbuf(buffer)
-				}
-			});
+			markview.actions.__exec_callback("on_enable", buffer, vim.fn.win_findbuf(buffer))
 			markview.render(buffer);
 
 			if hm_enable == true then
-				--- Execute the hybrid mode enabling callback.
 				markview.actions.__exec_callback("on_hybrid_enable", buffer, vim.fn.win_findbuf(buffer))
-				--- Execute the autocmd too.
-				vim.api.nvim_exec_autocmds("User", {
-					pattern = "MarkviewHybridEnable",
-					data = {
-						buffer = buffer,
-						windows = vim.fn.win_findbuf(buffer)
-					}
-				});
 			else
-				--- Execute the hybrid mode disabling callback.
 				markview.actions.__exec_callback("on_hybrid_disable", buffer, vim.fn.win_findbuf(buffer))
-				--- Execute the autocmd too.
-				vim.api.nvim_exec_autocmds("User", {
-					pattern = "MarkviewHybridDisable",
-					data = {
-						buffer = buffer,
-						windows = vim.fn.win_findbuf(buffer)
-					}
-				});
 			end
 		else
 			markview.actions.reset_query(buffer);
-			markview.actions.__exec_callback("on_disable", buffer, vim.fn.win_findbuf(buffer))
 			markview.clear(buffer);
 
-			--- Execute the enable/disable one too.
-			vim.api.nvim_exec_autocmds("User", {
-				pattern = "MarkviewDisable",
-				data = {
-					buffer = buffer,
-					windows = vim.fn.win_findbuf(buffer)
-				}
-			});
+			markview.actions.__exec_callback("on_disable", buffer, vim.fn.win_findbuf(buffer))
 		end
 
 		health.__child_indent_de();
@@ -772,10 +733,7 @@ markview.actions = {
 		---@type integer
 		buffer = buffer or vim.api.nvim_get_current_buf();
 
-		if markview.buf_is_safe(buffer) == false then
-			--- Something went wrong.
-			return;
-		elseif markview.can_attach(buffer) == true then
+		if markview.can_attach(buffer) == true then
 			--- This buffer hasn't been attached to.
 			return;
 		end
@@ -786,29 +744,23 @@ markview.actions = {
 		});
 		health.__child_indent_in();
 
-		--- Execute the attaching autocmd.
 		markview.actions.__exec_callback("on_detach", buffer, vim.fn.win_findbuf(buffer))
-		--- Execute the autocmd too.
-		vim.api.nvim_exec_autocmds("User", {
-			pattern = "MarkviewDetach",
-			data = {
-				buffer = buffer,
-				windows = vim.fn.win_findbuf(buffer)
-			}
-		});
 
-		--- Remove the entry.
-		--- DON'T REMOVE THE STATES THOUGH!
-		--- (We may need them in the future)
+		--[[
+			Remove buffer from the list of attached buffers.
+
+			NOTE: The `state` should be kept in case we need to reuse them later.
+		]]
 		for i, buf in ipairs(markview.state.attached_buffers) do
 			if buf == buffer then
 				table.remove(markview.state.attached_buffers, i);
+				break;
 			end
 		end
 
-		--- Clear decorations too!
 		markview.clear(buffer);
 		health.__child_indent_de()
+
 		---|fE
 	end,
 
@@ -825,8 +777,6 @@ markview.actions = {
 			return;
 		elseif buffer == markview.state.splitview_source then
 			markview.state.buffer_states[buffer].enable = false;
-			markview.state.buffer_states[buffer].y = -999;
-
 			return;
 		end
 
@@ -859,16 +809,7 @@ markview.actions = {
 		markview.state.buffer_states[buffer].enable = false;
 		markview.clear(buffer);
 
-		--- Execute the attaching autocmd.
 		markview.actions.__exec_callback("on_disable", buffer, vim.fn.win_findbuf(buffer))
-		--- Execute the autocmd too.
-		vim.api.nvim_exec_autocmds("User", {
-			pattern = "MarkviewDisable",
-			data = {
-				buffer = buffer,
-				windows = vim.fn.win_findbuf(buffer)
-			}
-		});
 
 		local mode = vim.api.nvim_get_mode().mode;
 		---@type string[]
@@ -881,15 +822,8 @@ markview.actions = {
 
 		--- Execute the attaching autocmd.
 		markview.actions.__exec_callback("on_hybrid_disable", buffer, vim.fn.win_findbuf(buffer))
-		--- Execute the autocmd too.
-		vim.api.nvim_exec_autocmds("User", {
-			pattern = "MarkviewHybridDisable",
-			data = {
-				buffer = buffer,
-				windows = vim.fn.win_findbuf(buffer)
-			}
-		});
 		health.__child_indent_de();
+
 		---|fE
 	end,
 	["enable"] = function (buffer)
@@ -940,7 +874,7 @@ markview.actions = {
 		local win = vim.fn.win_findbuf(buffer)[1];
 
 		if vim.bo[buffer].ft == "markdown" and win then
-			-- warning: `breakindent` must be set before rendering!
+			-- NOTE: `breakindent` must be set before rendering!
 			vim.w[win].__mkv_cached_breakindet = vim.wo[win].breakindent;
 			vim.wo[win].breakindent = false;
 		end
@@ -951,14 +885,6 @@ markview.actions = {
 
 		--- Execute the attaching autocmd.
 		markview.actions.__exec_callback("on_enable", buffer, vim.fn.win_findbuf(buffer))
-		--- Execute the autocmd too.
-		vim.api.nvim_exec_autocmds("User", {
-			pattern = "MarkviewEnable",
-			data = {
-				buffer = buffer,
-				windows = vim.fn.win_findbuf(buffer)
-			}
-		});
 
 		if vim.list_contains(hybd_modes, mode) == false then
 			health.__child_indent_de();
@@ -967,15 +893,8 @@ markview.actions = {
 
 		--- Execute the attaching autocmd.
 		markview.actions.__exec_callback("on_hybrid_enable", buffer, vim.fn.win_findbuf(buffer))
-		--- Execute the autocmd too.
-		vim.api.nvim_exec_autocmds("User", {
-			pattern = "MarkviewHybridEnable",
-			data = {
-				buffer = buffer,
-				windows = vim.fn.win_findbuf(buffer)
-			}
-		});
 		health.__child_indent_de();
+
 		---|fE
 	end,
 
@@ -1007,14 +926,6 @@ markview.actions = {
 
 			--- Execute the attaching autocmd.
 			markview.actions.__exec_callback("on_hybrid_enable", buffer, vim.fn.win_findbuf(buffer))
-			--- Execute the autocmd too.
-			vim.api.nvim_exec_autocmds("User", {
-				pattern = "MarkviewHybridEnable",
-				data = {
-					buffer = buffer,
-					windows = vim.fn.win_findbuf(buffer)
-				}
-			});
 		end
 
 		---|fE
@@ -1048,14 +959,6 @@ markview.actions = {
 
 			--- Execute the attaching autocmd.
 			markview.actions.__exec_callback("on_hybrid_disable", buffer, vim.fn.win_findbuf(buffer))
-			--- Execute the autocmd too.
-			vim.api.nvim_exec_autocmds("User", {
-				pattern = "MarkviewHybridDisable",
-				data = {
-					buffer = buffer,
-					windows = vim.fn.win_findbuf(buffer)
-				}
-			});
 		end
 
 		---|fE
@@ -1075,13 +978,6 @@ markview.actions = {
 
 		if markview.actions.__is_enabled(buffer) == true then
 			markview.actions.__exec_callback("on_disable", buffer, vim.fn.win_findbuf(buffer));
-			vim.api.nvim_exec_autocmds("User", {
-				pattern = "MarkviewDisable",
-				data = {
-					buffer = buffer,
-					windows = vim.fn.win_findbuf(buffer)
-				}
-			});
 		end
 
 		markview.state.splitview_source = buffer;
@@ -1089,15 +985,6 @@ markview.actions = {
 		markview.clear(buffer);
 
 		markview.actions.__exec_callback("on_splitview_open", buffer, markview.state.splitview_buffer, markview.state.splitview_window);
-		vim.api.nvim_exec_autocmds("User", {
-			pattern = "MarkviewSplitviewOpen",
-			data = {
-				source = buffer,
-				preview_buffer = markview.state.splitview_buffer,
-				preview_window = markview.state.splitview_window
-			}
-		});
-
 		markview.splitview_render();
 		---|fE
 	end,
@@ -1112,14 +999,6 @@ markview.actions = {
 		--- FEAT, Allow `on_splitview_close` to take arguments
 		--- regarding splitview.
 		markview.actions.__exec_callback("on_splitview_close", markview.state.splitview_source, markview.state.splitview_buffer, markview.state.splitview_window);
-		vim.api.nvim_exec_autocmds("User", {
-			pattern = "MarkviewSplitviewClose",
-			data = {
-				source = markview.state.splitview_source,
-				preview_buffer = markview.state.splitview_buffer,
-				preview_window = markview.state.splitview_window
-			}
-		});
 
 		--- Attempt to close the window.
 		--- Also remove the reference to that window.
@@ -1159,13 +1038,6 @@ markview.actions = {
 			markview.state.buffer_states[buffer].enable == true
 		then
 			markview.actions.__exec_callback("on_enable", buffer, vim.fn.win_findbuf(buffer));
-			vim.api.nvim_exec_autocmds("User", {
-				pattern = "MarkviewEnable",
-				data = {
-					buffer = buffer,
-					windows = vim.fn.win_findbuf(buffer)
-				}
-			});
 		end
 
 		--- Don't forget to render the preview if possible.
@@ -1300,7 +1172,6 @@ markview.commands = {
 	["toggle"] = function (buffer)
 		---|fS
 		buffer = buffer or vim.api.nvim_get_current_buf();
-
 		local state = markview.state.buffer_states[buffer];
 
 		if state == nil then
@@ -1424,6 +1295,7 @@ markview.commands = {
 	["open"] = function ()
 		require("markview.links").open();
 	end
+
 	---|fE
 };
 
@@ -1437,4 +1309,3 @@ markview.setup = function (config)
 end
 
 return markview;
--- vim:foldmethod=marker:foldmarker=|fS,|fE:

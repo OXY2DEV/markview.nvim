@@ -6,13 +6,20 @@
 ---@field enable boolean Should markview register new buffers?
 ---@field attached_buffers integer[] List of attached buffers.
 ---
----@field buffer_states { [integer]: { enable: boolean, hybrid_mode: boolean?, y: integer? } } Buffer local states.
+---@field buffer_states table<integer, markview.state.buf> Buffer local states.
 ---
 ---@field splitview_source? integer Source buffer for hybrid mode.
 ---@field splitview_buffer? integer Preview buffer for hybrid mode.
 ---@field splitview_window? integer Preview window for hybrid mode.
 ---
 ---@field modified_queries boolean Has the `markdown` been modified?
+
+
+--[[ Buffer state for `markview.nvim`. ]]
+---@class markview.state.buf
+---
+---@field enable boolean Is the `preview` enabled?
+---@field hybrid_mode boolean Is `hybrid_mode` enabled?
 
 
 --- Configuration options for `markview.nvim`.
