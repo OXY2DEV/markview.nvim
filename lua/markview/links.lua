@@ -279,6 +279,8 @@ links.__to_fragment = function (buffer, fragment)
 		return;
 	end
 
+	-- NOTE: Add the current position to the `jumplist`. See #410.
+	vim.cmd("normal! m'");
 	pcall(
 		vim.api.nvim_win_set_cursor,
 		wins[1],
