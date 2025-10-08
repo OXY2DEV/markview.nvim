@@ -1331,7 +1331,7 @@ markdown.code_block = function (buffer, item)
 			return range.start_delim[4];
 		else
 			local _to = item.info_string:match("^%S+%s*"):len();
-			return range.start_delim[4] + _to;
+			return (range.info_string and range.info_string[2] or range.start_delim[4]) + _to;
 		end
 	end
 

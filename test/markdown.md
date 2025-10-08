@@ -90,6 +90,10 @@ printf("Hello world!")
 <p>Hello world!</p>
 ```
 
+``` sh
+ls -la
+```
+
 ```js
 console.log("Hello world!");
 ```
