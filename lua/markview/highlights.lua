@@ -546,8 +546,6 @@ highlights.groups = {
 		return highlights.inherit(
 			"MarkviewCode",
 			{
-				strikethrough = true,
-
 				fg = highlights.rgb_to_hex(fg)
 			}
 		);
