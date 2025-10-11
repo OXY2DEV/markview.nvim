@@ -1430,6 +1430,8 @@ markdown.code_block = function (buffer, item)
 
 	--- Renders block style code blocks.
 	local function render_block ()
+		---|fS
+
 		---|fS "chunk: Calculate various widths"
 
 		local pad_amount = config.pad_amount or 0;
@@ -1676,6 +1678,8 @@ markdown.code_block = function (buffer, item)
 				}
 			});
 		end
+
+		---|fE
 	end
 
 	if not win or config.style == "simple" or ( vim.o.wrap == true or vim.wo[win].wrap == true ) then

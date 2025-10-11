@@ -316,10 +316,16 @@ markdown.code_block = function (buffer, TSNode, _, range)
 		if child:type() == "fenced_code_block_delimiter" then
 			if not start_delim then
 				start_delim = child;
+				local delim = vim.treesitter.get_node_text(child, buffer, {});
+
 				range.start_delim = { child:range() };
+				range.start_delim[2] = range.start_delim[2] + #string.match(delim, "^%s*");
 			else
 				end_delim = child;
+				local delim = vim.treesitter.get_node_text(child, buffer, {});
+
 				range.end_delim = { child:range() };
+				range.end_delim[2] = range.end_delim[2] + #string.match(delim, "^%s*");
 				break;
 			end
 		end
