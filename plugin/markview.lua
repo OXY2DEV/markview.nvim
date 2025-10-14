@@ -312,6 +312,36 @@ vim.api.nvim_create_autocmd({
 	end
 });
 
+-- See #419
+vim.api.nvim_create_autocmd({ "FileChangedShellPost" }, {
+	group = augroup,
+	callback = function (event)
+		---|fS "feat: Attaches to new buffers"
+
+		local markview = require("markview");
+
+		local buffer = event.buf;
+		markview.clean();
+
+		if vim.api.nvim_buf_is_valid(buffer) == false then
+			--- If the buffer got deleted before we
+			--- get here, we ignore it.
+			--- See #356
+			return;
+		elseif markview.state.enable == false then
+			--- New buffers shouldn't be registered.
+			return;
+		elseif markview.actions.__is_attached(buffer) == false then
+			--- Already attached to this buffer!
+			return;
+		end
+
+		markview.actions.set_query(buffer);
+
+		---|fE
+	end
+});
+
 --- Timer for 'filetype', 'buftype' changes.
 ---@diagnostic disable-next-line: undefined-field
 local bf_timer = vim.uv.new_timer();
