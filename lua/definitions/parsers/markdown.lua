@@ -110,6 +110,8 @@
 ---@field class "markdown_list_item"
 ---@field __nested boolean Is the node nested?
 ---
+---@field n integer List item number.
+---
 ---@field candidates integer[] List of line numbers(0-indexed) from start that should be indented.
 ---
 ---@field marker "-" | "+" | "*" | string List marker text.

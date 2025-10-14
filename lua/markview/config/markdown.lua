@@ -403,11 +403,19 @@ return {
 		},
 
 		marker_dot = {
+			text = function (_, item)
+				return string.format("%d.", item.n);
+			end,
+			hl = "@markup.list.markdown",
 			add_padding = true,
 			conceal_on_checkboxes = true
 		},
 
 		marker_parenthesis = {
+			text = function (_, item)
+				return string.format("%d)", item.n);
+			end,
+			hl = "@markup.list.markdown",
 			add_padding = true,
 			conceal_on_checkboxes = true
 		}
@@ -633,17 +641,17 @@ return {
 		},
 
 		hl = {
-			top = { "TableHeader", "TableHeader", "TableHeader", "TableHeader" },
-			header = { "TableHeader", "TableHeader", "TableHeader" },
-			separator = { "TableHeader", "TableHeader", "TableHeader", "TableHeader" },
-			row = { "TableBorder", "TableBorder", "TableBorder" },
-			bottom = { "TableBorder", "TableBorder", "TableBorder", "TableBorder" },
+			top = { "MarkviewTableHeader", "MarkviewTableHeader", "MarkviewTableHeader", "MarkviewTableHeader" },
+			header = { "MarkviewTableHeader", "MarkviewTableHeader", "MarkviewTableHeader" },
+			separator = { "MarkviewTableHeader", "MarkviewTableHeader", "MarkviewTableHeader", "MarkviewTableHeader" },
+			row = { "MarkviewTableBorder", "MarkviewTableBorder", "MarkviewTableBorder" },
+			bottom = { "MarkviewTableBorder", "MarkviewTableBorder", "MarkviewTableBorder", "MarkviewTableBorder" },
 
-			overlap = { "TableBorder", "TableBorder", "TableBorder", "TableBorder" },
+			overlap = { "MarkviewTableBorder", "MarkviewTableBorder", "MarkviewTableBorder", "MarkviewTableBorder" },
 
-			align_left = "TableAlignLeft",
-			align_right = "TableAlignRight",
-			align_center = { "TableAlignCenter", "TableAlignCenter" }
+			align_left = "MarkviewTableAlignLeft",
+			align_right = "MarkviewTableAlignRight",
+			align_center = { "MarkviewTableAlignCenter", "MarkviewTableAlignCenter" }
 		}
 	},
 };

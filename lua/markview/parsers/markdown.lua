@@ -163,6 +163,7 @@ markdown.setext_heading = function (buffer, TSNode, text, range)
 			-- We have reaches another `heading`.
 			-- Indentation should end at the *start* of the next `heading`.
 			row_end, _, _, _ = sibling:range();
+			row_end = row_end - 1;
 			break;
 		end
 
@@ -173,6 +174,7 @@ markdown.setext_heading = function (buffer, TSNode, text, range)
 		-- We have reached the end of the `section`.
 		-- Use the `row_end` of the section to prevent missing lines.
 		_, _, row_end, _ = TSNode:parent():range();
+		row_end = row_end - 1;
 	end
 
 	local marker_text = vim.treesitter.get_node_text(marker, buffer, {});
@@ -314,10 +316,16 @@ markdown.code_block = function (buffer, TSNode, _, range)
 		if child:type() == "fenced_code_block_delimiter" then
 			if not start_delim then
 				start_delim = child;
+				local delim = vim.treesitter.get_node_text(child, buffer, {});
+
 				range.start_delim = { child:range() };
+				range.start_delim[2] = range.start_delim[2] + #string.match(delim, "^%s*");
 			else
 				end_delim = child;
+				local delim = vim.treesitter.get_node_text(child, buffer, {});
+
 				range.end_delim = { child:range() };
+				range.end_delim[2] = range.end_delim[2] + #string.match(delim, "^%s*");
 				break;
 			end
 		end
@@ -417,7 +425,7 @@ end
 
 --- List item parser.
 ---@param buffer integer
----@param TSNode table
+---@param TSNode TSNode
 ---@param range markview.parsed.range
 markdown.list_item = function (buffer, TSNode, _, range)
 	---@type string[]
@@ -552,9 +560,21 @@ markdown.list_item = function (buffer, TSNode, _, range)
 		parent = parent:parent();
 	end
 
+	---@type integer List item count.
+	local N = 1;
+	local prev_sibling  = TSNode:prev_sibling();
+
+	-- TODO: Is there a better way to do this?
+	while prev_sibling do
+		N = N + 1;
+		prev_sibling = prev_sibling:prev_sibling();
+	end
+
 	markdown.insert({
 		class = "markdown_list_item",
 		__nested = nested,
+
+		n = N,
 
 		candidates = candidates,
 		marker = marker:gsub("%s", ""),

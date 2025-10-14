@@ -1871,8 +1871,29 @@ Configuration for `N.` list items.
 
         add_padding = true,
         conceal_on_checkboxes = true
+
+		text = function (_, item)
+			return string.format("%d.", item.n);
+		end,
+		hl = "@markup.list.markdown",
     }
 <
+
+TEXT
+
+  • type: `string`
+
+▌ 💡 Tip
+▌ You can set this to `""` to disble the text.
+
+Text used as the marker in preview.
+
+HL
+
+  • type: `string`
+    default: `"@markup.list.markdown"`
+
+Highlight group for `text`.
 
 ENABLE
 
@@ -1935,10 +1956,14 @@ CONCEAL_ON_CHECKBOXES
     default: `true`
 
 Allows hiding the marker of the list item when checkboxes are present.
-text
+
+TEXT
 
   • type: `string`
     default: `"●"`
+
+▌ 💡 Tip
+▌ You can set this to `""` to show the original marker.
 
 Text used as the marker in preview.
 

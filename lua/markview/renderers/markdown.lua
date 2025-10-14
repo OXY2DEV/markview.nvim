@@ -1331,7 +1331,7 @@ markdown.code_block = function (buffer, item)
 			return range.start_delim[4];
 		else
 			local _to = item.info_string:match("^%S+%s*"):len();
-			return range.start_delim[4] + _to;
+			return (range.info_string and range.info_string[2] or range.start_delim[4]) + _to;
 		end
 	end
 
@@ -1430,6 +1430,8 @@ markdown.code_block = function (buffer, item)
 
 	--- Renders block style code blocks.
 	local function render_block ()
+		---|fS
+
 		---|fS "chunk: Calculate various widths"
 
 		local pad_amount = config.pad_amount or 0;
@@ -1676,6 +1678,8 @@ markdown.code_block = function (buffer, item)
 				}
 			});
 		end
+
+		---|fE
 	end
 
 	if not win or config.style == "simple" or ( vim.o.wrap == true or vim.wo[win].wrap == true ) then
@@ -2144,7 +2148,7 @@ markdown.list_item = function (buffer, item)
 				});
 			end
 		end
-	elseif item.marker:match("[%+%-%*]") then
+	elseif config.text and config.text ~= "" then
 		vim.api.nvim_buf_set_extmark(buffer, markdown.ns, range.row_start, range.col_start + item.indent, {
 			undo_restore = false, invalidate = true,
 			end_col = range.col_start + (item.indent + #item.marker),
@@ -2332,7 +2336,7 @@ markdown.section = function (buffer, item)
 
 	local range = item.range;
 
-	for l = range.row_start + 1, (range.org_end or range.row_end) - 1 do
+	for l = range.row_start + 1, range.org_end do
 		vim.api.nvim_buf_set_extmark(buffer, markdown.ns, l, 0, {
 			undo_restore = false, invalidate = true,
 
@@ -2652,7 +2656,7 @@ markdown.table = function (buffer, item)
 			hl = hls[from][index];
 		end
 
-		return parts[from][index], hl;
+		return parts[from][index], utils.set_hl(hl);
 	end
 
 	local function bottom_part (index)
@@ -2695,7 +2699,7 @@ markdown.table = function (buffer, item)
 
 					virt_text_pos = "inline",
 					virt_text = {
-						{ border, utils.set_hl(border_hl) }
+						{ border, border_hl }
 					},
 
 					hl_mode = "combine"
@@ -2896,7 +2900,7 @@ markdown.table = function (buffer, item)
 
 				virt_text_pos = "inline",
 				virt_text = {
-					{ border, utils.set_hl(border_hl) }
+					{ border, border_hl }
 				},
 
 				hl_mode = "combine"
@@ -2908,7 +2912,7 @@ markdown.table = function (buffer, item)
 				undo_restore = false, invalidate = true,
 				virt_text_pos = "inline",
 				virt_text = {
-					is_wrapped == true and { "|", "@punctuation.special.markdown" } or { border, utils.set_hl(border_hl) }
+					is_wrapped == true and { "|", "@punctuation.special.markdown" } or { border, border_hl }
 				},
 
 				right_gravity = s ~= 1,
@@ -3159,7 +3163,7 @@ markdown.table = function (buffer, item)
 
 						virt_text_pos = "inline",
 						virt_text = {
-							{ border, utils.set_hl(border_hl) }
+							{ border, border_hl }
 						},
 
 						hl_mode = "combine"
@@ -3294,7 +3298,7 @@ markdown.table = function (buffer, item)
 
 					virt_text_pos = "inline",
 					virt_text = {
-						{ border, utils.set_hl(border_hl) }
+						{ border, border_hl }
 					},
 
 					hl_mode = "combine"
