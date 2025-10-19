@@ -1,27 +1,43 @@
+<!--markdoc
+    {
+        "generic": {
+            "filename": "doc/markview.nvim.txt",
+            "force_write": true,
+            "header": {
+                "desc": "A hackable `Markdown`, `LaTeX`, `Typst` etc. previewer.",
+                "tag": "markview.nvim"
+            }
+        },
+        "markdown": {
+            "tags": {
+                "Features$": [ "markview.nvim-feature" ],
+                "Configuration$": [ "markview.nvim-config" ],
+                "Commands$": [ "markview.nvim-commands" ],
+                "Autocmds$": [ "markview.nvim-autocmds" ],
+                "Highlight groups$": [ "markview.nvim-hl", "markview.nvim-highlights" ],
+                "Presets$": [ "markview.nvim-presets" ],
+                "Extra modules$": [ "markview.nvim-extras" ],
+                "Contributing to the projects$": [ "markview.nvim-contribute" ]
+            }
+        }
+    }
+-->
+<!--markdoc_ignore_start-->
+
 <h1 align="center">☄️ Markview.nvim</h1>
 
 <p align="center">
     A hackable <b>Markdown</b>, <b>HTML</b>, <b>LaTeX</b>, <b>Typst</b> & <b>YAML</b> previewer for Neovim.
 </p>
+<!--markdoc_ignore_end-->
 
-<img src="https://github.com/OXY2DEV/markview.nvim/blob/images/v25/repo/markdown-catppuccin_mocha.png">
+<div align="center">
+    <img src="https://github.com/OXY2DEV/markview.nvim/blob/images/v25/repo/markdown-catppuccin_mocha.png">
+</div>
 
 <div align="center">
     <a href="https://github.com/OXY2DEV/markview.nvim/wiki/Home">📚 Wiki</a> | <a href="#-extra-modules">🧩 Extras</a> | <a href="#-presets">📦 Presets</a>
 </div>
-
-## 📖 Table of contents
-
-- [✨ Features](#-features)
-- [📚 Requirements](#-requirements)
-- [📐 Installation](#-installation)
-- [🧭 Configuration](#-configuration)
-
-- [🎇 Commands](#-commands)
-- [📞 Autocmds](#-autocmds)
-- [🎨 Highlight groups](#-highlight-groups)
-
-- [🎁 Extra modules](#-extra-modules)
 
 ## ✨ Features
 
@@ -35,10 +51,12 @@ Core features,
 + Dynamic config that allows **any** option to be a function.
 + Dynamic `highlight groups` that automatically updates with the colorscheme.
 
+<!--markdoc_ignore_start-->
 ### 📜 Complete feature-list
 
 <details>
-    <summary>Expand to see complete feature list</summary><!--+-->
+    <summary>Expand to see complete feature list</summary>
+<!--markdoc_ignore_end-->
 
 #### HTML features,
 
@@ -260,9 +278,9 @@ Internal Icon provider features,
 
 + You can use `:Markview traceShow` to see what the plugin has been doing(including how long some of them took).
 - You can also use `:Markview traceExport` to export these logs.
-
-<!--_-->
+<!--markdoc_ignore_start-->
 </details>
+<!--markdoc_ignore_end-->
 
 ## 📚 Requirements
 

@@ -1,346 +1,1071 @@
-*markview.nvim.txt*                                            ☄️markview.nvim
-                                                    *markview* *markview.nvim*
+*markview.nvim*          A hackable `Markdown`, `LaTeX`, `Typst` etc. previewer.
 
-image[_1]
+                                  Image {img:1}                                 
 
-A hackable `markdown`, `latex`, `typst`, `html`(inline) & `yaml` previewer for
-Neovim.
+                  📚 Wiki {3} | 🧩 Extras {2} | 📦 Presets {1}                  
 
-------------------------------------------------------------------------------
-Table of contents
+--------------------------------------------------------------------------------
+✨ Features                                              *markview.nvim-feature*
 
-On this page,
+Core features,
 
-  • Commands, `markview.nvim-commands`.
-  • Autocmds, `markview.nvim-autocmds`.
-  • Highlight groups, `markview.nvim-hl`.
-    • Main groups
-    • Secondary groups
++ Supports previewing `HTML`, $LaTeX$, `Markdown`, `Typst` & `YAML`.
++ Highly customisable! Everything is done via the configuration table to ensure
+  maximum customisability.
++ Hybrid editing mode! Allows editing & previewing files at the same time.
++ Split view! Allows previewing files on a separate window that updates in
+  real-time!
++ Previews are compatible with `'wrap'`(only for `markdown` at the moment).
++ Dynamic config that allows any option to be a function.
++ Dynamic `highlight groups` that automatically updates with the colorscheme.
 
 
-------------------------------------------------------------------------------
+HTML features, ~
 
-Also read,
+Image {img:2}
 
-  • Configuration, `markview.nvim-config`.
++ Allows customising how various container & void elements are shown.
++ Supports heading elements out of the box.
++ Supports the following container elements out of the box,
+    + `<a></a>`
+    + `<b></b>`
+    + `<code></code>`
+    + `<em></em>`
+    + `<i></i>`
+    + `<mark></mark>`
+    + `<strong></strong>`
+    + `<pre></pre>`
+    + `<sub></sub>`
+    + `<sup></sup>`
+    + `<u></u>`
 
-    • Markdown, `markview.nvim-markdown.txt`
-    • Markdown inline, `markview.nvim-markdown_inline.txt`.
-    • LaTeX, `markview.nvim-latex.txt`.
-    • Typst, `markview.nvim-typst.txt`.
-    • YAML, `markview.nvim-yaml.txt`.
++ Supports the following void elements out of the box,
+    + `<hr>`
+    + `<br>`
 
-  • Developer docuemntation, `markview.nvim-dev.txt`.
+LaTeX features, ~
 
-------------------------------------------------------------------------------
+Image {img:3}
 
-For the tinkerers,
++ Supports the following items,
+    + Math blocks(typically `$$...$$`) & inline math(typically `$...$`).
+    + LaTeX commands.
+    + Escaped characters.
+    + Math fonts
+    + Subscript.
+    + Superscript.
+    + Math symbols.
+    + `\text{}`.
 
-  • Experimental otions, `markview.nvim-experimental`.
-  • Preview otions, `markview.nvim-preview`.
++ Supports commonly used math commands out of the box,
+    + `\frac{}`
+    + `\sin{}`
+    + `\cos{}`
+    + `\tan{}`
+    + `\sinh{}`
+    + `\cosh{}`
+    + `\tanh{}`
+    + `\csc{}`
+    + `\sec{}`
+    + `\cot{}`
+    + `\csch{}`
+    + `\sech{}`
+    + `\coth{}`
+    + `\arcsin{}`
+    + `\arccos{}`
+    + `\arctan{}`
+    + `\arg{}`
+    + `\deg{}`
+    + `\drt{}`
+    + `\dim{}`
+    + `\exp{}`
+    + `\gcd{}`
+    + `\hom{}`
+    + `\inf{}`
+    + `\ker{}`
+    + `\lg{}`
+    + `\lim{}`
+    + `\liminf{}`
+    + `\limsup{}`
+    + `\ln{}`
+    + `\log{}`
+    + `\min{}`
+    + `\max{}`
+    + `\Pr{}`
+    + `\sup{}`
+    + `\sqrt{}`
+    + `\lvert{}`
+    + `\lVert{}`
+    + `\boxed{}`
 
-  • Advanced usage, `markview.nvim-advanced.txt`.
-  • Presets, `markview.nvim-presets.txt`.
-  • Extra, `markview.nvim-extra.txt`.
++ Supports the following fonts(requires any modern Unicode font),
+    + `default`(Default math font).
+    + `\mathbb{}`
+    + `\mathbf{}`
+    + `\mathbffrak{}`
+    + `\mathbfit{}`
+    + `\nathbfscr{}`
+    + `\mathcal{}`
+    + `\mathfrak{}`
+    + `\mathsf{}`
+    + `\mathsfbf{}`
+    + `\mathsfbfit{}`
+    + `\mathsfit{}`
+    + `\mathtt{}`
 
-------------------------------------------------------------------------------
-💡 Commands                                           *markview.nvim-commands*
++ Supports Unicode based subscript & superscript texts.
++ Supports 2056 different math symbol definitions.
 
-The plugin comes with a single command, `:Markview`. It can be used trigger
-any of the following sub-commands,
+Markdown features, ~
 
->vim
-    :Markview Toggle
+Image {img:4}
+
++ Supports the following items,
+    + Block quotes(with support for `callouts` & titles).
+    + Fenced code blocks.
+    + Headings(setext & atx).
+    + Horizontal rules.
+    + List items(`+`, `-`, `*`, `n.` & `n)`).
+    + Minus & plus metadata.
+    + Reference link definitions.
+    + Tables.
+
++ `wrap` option support for the following items,
+    + Block quotes.
+    + Headings(when `org_indent` is used).
+    + List items(when `add_padding` is true).
+
++ Org-mode like indentation for headings.
+
+Markdown inline features, ~
+
+Image {img:5}
+
++ Supports the following items,
+    + Checkboxes(supports minimal-style checkboxes).
+    + Email links.
+    + Entities.
+    + Escaped characters.
+    + Footnotes.
+    + Hyperlinks.
+    + Images.
+    + Inline codes/Code spans.
+    + URI autolinks.
+
++ Obsidian/PKM extended item support,
+    + Block reference links.
+    + Embed file links.
+    + Internal links(supports aliases).
+
++ Wide variety of HTML entity names & codes support.
+    + Supported named entities: 786.
+    + Supported entity codes: 853.
+
++ Github emoji shorthands support. Supports 1920 shorthands.
+
++ Custom configuration based on link patterns.
+
+Typst features, ~
+
+Image {img:6}
+
++ Supports the following items,
+    + Code blocks.
+    + Code spans.
+    + Escaped characters.
+    + Headings.
+    + Labels.
+    + List items(`-`, `+` & `n.`).
+    + Math blocks.
+    + Math spans.
+    + Raw blocks.
+    + Raw spans.
+    + Reference links.
+    + Subscripts.
+    + Superscripts.
+    + Symbols.
+    + Terms.
+    + URL links.
+
++ Supports a variety of typst symbols,
+    + Symbol entries: 932
+    + Symbol shorthands: 40
+
++ Supports Unicode based subscript & superscript texts.
+
+YAML features, ~
+
+Image {img:7}
+
+- Custom property icons.
+- Custom property scope decorations.
+- Custom icons(/decorations) based on property type & value(e.g. `booleans`).
+
+- Supports the following properties out of the box,
+    + tags.
+    + aliases.
+    + cssclasses.
+    + publish.
+    + permalink.
+    + description.
+    + images.
+    + cover.
+
+ ╶────────────────────────────────────────────────────────────────────────────╴ 
+
+Hybrid mode features, ~
+
+
+╭──────────────────────┬──────────────────────╮
+│ Normal hybrid mode   │ Linewise hybrid mode │
+├──────────────────────┼──────────────────────┤
+│ hybrid_mode {img:8}  │ linewise_hybrid_mode │
+│                      │ {img:9}              │
+╰──────────────────────┴──────────────────────╯
+
+
++ Node-based edit range.
+  Clears a range of lines covered by the (named)`TSNode` under the cursor.
+  Useful when editing lists, block quotes, code blocks, tables etc.
+
++ Range-based edit range.
+  Clears the selected number of lines above & below the cursor.
+
++ Works even when a `buffer` is being viewed by multiple `window`s.
+
+Internal Icon provider features,
+
++ 708 different filetype configuration.
++ Dynamic highlight groups for matching the colorscheme.
+
+Tracing features, ~
+
+Image {img:10}
+
++ You can use `:Markview traceShow` to see what the plugin has been
+  doing(including how long some of them took).
+- You can also use `:Markview traceExport` to export these logs.
+
+--------------------------------------------------------------------------------
+📚 Requirements
+
+System,
+
+- Neovim: 0.10.3
+
+▋ 󰋽 Note
+▋ It is recommended to use `nowrap`(though there is wrap support in the plugin)
+▋ & `expandtab`.
+
+  ╶────────────────────────────────────────────────────────────────────────────╴ 
+
+Colorscheme,
+
+- Any tree-sitter based colorscheme is recommended.
+
+External icon providers,
+
+▋ 󰋽 Note
+▋ You need to change the config to use the desired icon provider.
+▋ 
+>lua
+	{
+	    preview = {
+	        icon_provider = "internal", -- "mini" or "devicons"
+	    }
+	}
 <
 
-  • `Toggle` Toggles the preview on all attached buffers! Buffers that have
-    their previews disabled will have it enabled and the ones that have it
-    enabled will be disabled.
 
-  • `Enable` Enables preview on all attached buffers.
+- mini.icons {4}
+- nvim-web-devicons {5}
 
-  • `Disable` Disables preview on all attached buffers.
+Parsers,
 
-  • `toggle<bufnr>` Toggles the plugin on the given buffer(current buffer if
-    not provided).
+▋  Tip
+▋ You can use `nvim-treesitter` to easily install parsers. You can install all
+▋ the parsers with the following command,
+▋ 
+>vim
+	:TSInstall markdown markdown_inline html latex typst yaml
+<
 
-  • `enable<bufnr>` Enables preview on the given buffer(current buffer if not
-    provided).
 
-  • `Disable<bufnr>` Disables preview on the given buffer(current buffer if
-    not provided).
+▋  Important
+▋ On windows, you might need `tree-sitter` CLI for the $LaTeX$ parser.
 
-Auto registering ~
+- `markdown`
+- `markdown_inline`
+- `html`(optional)
+- `latex`(optional)
+- `typst`(optional)
+- `yaml`(optional)
 
-These commands are related to auto-registering new buffers for `previewing`.
+Fonts,
 
-  • `Start` Starts the plugin. Any visited/opened buffers will have the plugin
-    attached to them.
+- Any modern Unicode font is required for math symbols.
+- Nerd fonts are recommended.
 
-  • `Stop` Stops the plugin. The plugin won’t attach to any new buffers.
+▋  Tip
+▋ It is recommended to run `:checkhealth markview` after installing the plugin
+▋ to check if any potential issues exist.
 
-▌ If you run `:Markview Stop`, open a buffer, run `:Markview Start`
-▌ and revisit that buffer, the plugin will attach to that buffer!
+--------------------------------------------------------------------------------
+📐 Installation
 
-These commands are related to manually registering buffers for `previewing`.
+VIM-PLUG
 
-  • `attach` Attaches the plugin to a buffer.
-  • `detach` Detaches the plugin from a buffer.
+Add this to your plugin list.
 
-▌ Revisiting a detached buffer will cause it to be attached!
+>vim
+	Plug "OXY2DEV/markview.nvim"
+<
 
-Hybrid mode ~
 
-These commmands are for controlling various aspects of `hybrid mode`.
+LAZY.NVIM
 
-  • `HybridToggle` Toggles hybrid mode globally.
+▋  Warning
+▋ Do not lazy load this plugin as it is already lazy-loaded. Lazy-loading may
+▋ cause more time for the previews to load when starting Neovim!
 
-  • `HybridEnable` Enables hybrid mode globally.
+The plugin should be loaded after your colorscheme to ensure the correct
+highlight groups are used.
 
-  • `HybridDisable` Disables hybrid mode globally.
+>lua
+	-- For `plugins/markview.lua` users.
+	return {
+	    "OXY2DEV/markview.nvim",
+	    lazy = false,
+	
+	    -- For blink.cmp's completion
+	    -- source
+	    -- dependencies = {
+	    --     "saghen/blink.cmp"
+	    -- },
+	};
+<
 
-  • `hybridToggle<bufnr>` Toggles hybrid mode of the given buffer(current
-    buffer if not provided).
 
-  • `hybridEnable<bufnr>` Enables hybrid mode of the given buffer(current
-    buffer if not provided).
+>lua
+	-- For `plugins.lua` users.
+	{
+	    "OXY2DEV/markview.nvim",
+	    lazy = false,
+	
+	    -- For blink.cmp's completion
+	    -- source
+	    -- dependencies = {
+	    --     "saghen/blink.cmp"
+	    -- },
+	},
+<
 
-  • `hybridDisable<bufnr>` Disables hybrid mode of the given buffer(current
-    buffer if not provided).
 
-▌ These commands won’t do anything if `preview.hybrid_modes` aren’t
-▌ set!
+MINI.DEPS
 
-------------------------------------------------------------------------------
+>lua
+	local MiniDeps = require("mini.deps");
+	
+	MiniDeps.add({
+	    source = "OXY2DEV/markview.nvim",
+	
+	    -- For blink.cmp's completion
+	    -- source
+	    -- depends = {
+	    --     "saghen/blink.cmp"
+	    -- },
+	});
+<
 
-  • `linewiseToggle` Toggles `linewise hybrid mode`.
 
-  • `linewiseEnable` Enables `linewise hybrid mode`.
+ROCKS.NVIM
 
-  • `linewiseDisable` Disables `linewise hybrid mode`.
+▋  Warning
+▋ `luarocks package` may sometimes be a bit behind `main`.
 
-▌ These work `globally`! And require `preview.hybrid_modes` to be set!
+>vim
+	:Rocks install markview.nvim
+<
 
-Splitview ~
 
-These commands are for conrtrolling `splitview`.
+GITHUB RELEASE
 
-  • `splitOpen<bufnr>` Opens the given buffer’s(current buffer if not
-    provided) preview in a split window.
+Tagged releases can be found in the release page {6}.
 
-  • `splitClose` Closes any open split-view window.
+▋ 󰋽 Note
+▋ `Github releases` may sometimes be slightly behind `main`.
 
-  • `splitToggle` Toggles `splitview`.
+DEVELOPMENT VERSION
 
-  • `splitRedraw` Redraws the splitview window.
+You can use the dev {7} branch to use test features.
 
-▌ Only 1 splitview window will be open!
+▋  Warning
+▋ Development releases can contain breaking changes and experimental changes.
+▋ Use at your own risk!
 
-Preview ~
+>lua
+	return {
+	    "OXY2DEV/markview.nvim",
+	    branch = "dev",
+	    lazy = false
+	};
+<
+
+
+--------------------------------------------------------------------------------
+🪲 Known bugs
+
+- `code span`s don't get recognized when on the line after a `code block`(if the
+  line after the `code span` is empty).
+  This is most likely due to some bug in either the `markdown` or the
+  `markdown_inline` parser.
+
+- Incorrect wrapping when setting `wrap` using `modeline`.
+  This is due to `textoff` being 0(instead of the size of the `statuscolumn`)
+  when entering a buffer.
+
+--------------------------------------------------------------------------------
+🧭 Configuration                                          *markview.nvim-config*
+
+Check the wiki {8} for the entire configuration table. A simplified version is
+given below.
+
+CLICK FOR CONFIG JUMP-SCARE
+
+>lua
+	--- Configuration table for `markview.nvim`.
+	---@class mkv.config
+	---
+	---@field experimental config.experimental | fun(): config.experimental
+	---@field highlight_groups { [string]: config.hl } | fun(): { [string]: config.hl }
+	---@field html config.html | fun(): config.html
+	---@field latex config.latex | fun(): config.latex
+	---@field markdown config.markdown | fun(): config.markdown
+	---@field markdown_inline config.markdown_inline | fun(): config.markdown_inline
+	---@field preview config.preview | fun(): config.preview
+	---@field renderers config.renderer[] | fun(): config.renderer[]
+	---@field typst config.typst | fun(): config.typst
+	---@field yaml config.yaml | fun(): config.yaml
+	mkv.config = {
+	    experimental = {
+	        date_formats = {},
+	        date_time_formats = {},
+	
+	        text_filetypes = {},
+	        read_chunk_size = 1000,
+	        link_open_alerts = false,
+	        prefer_nvim = true,
+	        file_open_command = "tabnew",
+	
+	        list_empty_line_tolerance = 3
+	    },
+	    highlight_groups = {},
+	    preview = {
+	        enable = true,
+	        filetypes = { "md", "rmd", "quarto" },
+	        ignore_buftypes = { "nofile" },
+	        ignore_previews = {},
+	
+	        modes = { "n", "no", "c" },
+	        hybrid_modes = {},
+	        debounce = 50,
+	        draw_range = { vim.o.lines, vim.o.lines },
+	        edit_range = { 1, 0 },
+	
+	        callbacks = {},
+	
+	        splitview_winopts = { split = "left" }
+	    },
+	    renderers = {},
+	
+	    html = {
+	        enable = true,
+	
+	        container_elements = {},
+	        headings = {},
+	        void_elements = {},
+	    },
+	    latex = {
+	        enable = true,
+	
+	        blocks = {},
+	        commands = {},
+	        escapes = {},
+	        fonts = {},
+	        inlines = {},
+	        parenthesis = {},
+	        subscripts = {},
+	        superscripts = {},
+	        symbols = {},
+	        texts = {}
+	    },
+	    markdown = {
+	        enable = true,
+	
+	        block_quotes = {},
+	        code_blocks = {},
+	        headings = {},
+	        horizontal_rules = {},
+	        list_items = {},
+	        metadata_plus = {},
+	        metadata_minus = {},
+	        tables = {}
+	    },
+	    markdown_inline = {
+	        enable = true,
+	
+	        block_references = {},
+	        checkboxes = {},
+	        emails = {},
+	        embed_files = {},
+	        entities = {},
+	        escapes = {},
+	        footnotes = {},
+	        highlights = {},
+	        hyperlinks = {},
+	        images = {},
+	        inline_codes = {},
+	        internal_links = {},
+	        uri_autolinks = {}
+	    },
+	    typst = {
+	        enable = true,
+	
+	        codes = {},
+	        escapes = {},
+	        headings = {},
+	        labels = {},
+	        list_items = {},
+	        math_blocks = {},
+	        math_spans = {},
+	        raw_blocks = {},
+	        raw_spans = {},
+	        reference_links = {},
+	        subscripts = {},
+	        superscript = {},
+	        symbols = {},
+	        terms = {},
+	        url_links = {}
+	    },
+	    yaml = {
+	        enable = true,
+	
+	        properties = {}
+	    }
+	}
+<
+
+
+--------------------------------------------------------------------------------
+🎇 Commands                                             *markview.nvim-commands*
+
+This plugin follows the sub-commands approach for creating commands. There is
+only a single `:Markview` command.
+
+It comes with the following sub-commands,
+
+▋ 󰋽 Note
+▋ When no sub-command name is provided(or an invalid sub-command is used)
+▋ `:Markview` will run `:Markview Toggle`.
+
+╭────────────────────┬──────────────────────┬──────────────────────╮
+│ Sub-command        │ Arguments            │ Description          │
+├────────────────────┼──────────────────────┼──────────────────────┤
+│ `Toggle`           │ none                 │ Toggles preview      │
+│                    │                      │ globally.            │
+│ `Enable`           │ none                 │ Enables preview      │
+│                    │                      │ globally.            │
+│ `Disable`          │ none                 │ Disables preview     │
+│                    │                      │ globally.            │
+│ ————————————————   │ ———————————————————  │ ———————————————————— │
+│                    │                      │ ———————————————————— │
+│ `toggle`           │ buffer, integer      │ Toggles preview for  │
+│                    │                      │ buffer.              │
+│ `enable`           │ buffer, integer      │ Enables preview for  │
+│                    │                      │ buffer.              │
+│ `disable`          │ buffer, integer      │ Disables preview for │
+│                    │                      │ buffer.              │
+│ ————————————————   │ ———————————————————  │ ———————————————————— │
+│                    │                      │ ———————————————————— │
+│ `splitToggle`      │ none                 │ Toggles splitview.   │
+╰────────────────────┴──────────────────────┴──────────────────────╯
+
+
+ADVANCED COMMANDS ARE GIVEN BELOW
+
+Sub-commands related to auto-registering new buffers for previews and/or
+manually attaching/detaching buffers,
+
+╭────────────────────┬──────────────────────┬──────────────────────╮
+│ Sub-command        │ Arguments            │ Description          │
+├────────────────────┼──────────────────────┼──────────────────────┤
+│ `Start`            │ none                 │ Allows attaching to  │
+│                    │                      │ new buffers.         │
+│ `Stop`             │ none                 │ Prevents attaching   │
+│                    │                      │ to new buffers.      │
+│ ————————————————   │ ———————————————————  │ ———————————————————— │
+│                    │                      │ ———————————————————— │
+│ `attach`           │ buffer, integer      │ Attaches to buffer.  │
+│ `detach`           │ buffer, integer      │ Detaches from        │
+│                    │                      │ buffer.              │
+╰────────────────────┴──────────────────────┴──────────────────────╯
+
+Sub-commands related to controlling hybrid_mode,
+
+╭────────────────────┬──────────────────────┬──────────────────────╮
+│ Sub-command        │ Arguments            │ Description          │
+├────────────────────┼──────────────────────┼──────────────────────┤
+│ `HybridEnable`     │ none                 │ Enables hybrid mode. │
+│ `HybridDisable`    │ none                 │ Disables hybrid      │
+│                    │                      │ mode.                │
+│ `HybridToggle`     │ none                 │ Toggles hybrid mode. │
+│ ————————————————   │ ———————————————————  │ ———————————————————— │
+│                    │                      │ ———————————————————— │
+│ `hybridEnable`     │ buffer, integer      │ Enables hybrid mode  │
+│                    │                      │ for buffer.          │
+│ `hybridDisable`    │ buffer, integer      │ Disables hybrid mode │
+│                    │                      │ for buffer.          │
+│ `hybridToggle`     │ buffer, integer      │ Toggles hybrid mode  │
+│                    │                      │ for buffer.          │
+│ ————————————————   │ ———————————————————  │ ———————————————————— │
+│                    │                      │ ———————————————————— │
+│ `linewiseEnable`   │ none                 │ Enables linewise     │
+│                    │                      │ hybrid mode.         │
+│ `linewiseDisable`  │ none                 │ Disables linewise    │
+│                    │                      │ hybrid mode.         │
+│ `linewiseToggle`   │ none                 │ Toggles linewise     │
+│                    │                      │ hybrid mode.         │
+╰────────────────────┴──────────────────────┴──────────────────────╯
+
+Sub-commands for working with `splitview`,
+
+╭────────────────────┬──────────────────────┬──────────────────────╮
+│ Sub-command        │ Arguments            │ Description          │
+├────────────────────┼──────────────────────┼──────────────────────┤
+│ `splitOpen`        │ buffer, integer      │ Opens splitview for  │
+│                    │                      │ buffer.              │
+│ `splitClose`       │ none                 │ Closes any open      │
+│                    │                      │ splitview.           │
+│ `splitRedraw`      │ none                 │ Updates splitview    │
+│                    │                      │ contents.            │
+╰────────────────────┴──────────────────────┴──────────────────────╯
 
 Sub-commands for manual `preview` updates,
 
-  • `Render` Updates the preview of all enabled buffers.
-
-  • `Clear` Clears the preview of all enabled buffers.
-
-  • `render<bufnr>` Renders preview in the given buffer(current buffer if not
-    provided).
-
-  • `clear<bufnr>` Clears the preview of given buffer(current buffer if not
-    provided).
-
-▌ These commands can be used to fix visual glitches in the preview!
-
-▌ `render` & `clear` can be run on any buffer, even if the previews
-▌ are disabled!
-
-Dev ~
+╭────────────────────┬──────────────────────┬──────────────────────╮
+│ Sub-command        │ Arguments            │ Description          │
+├────────────────────┼──────────────────────┼──────────────────────┤
+│ `Render`           │ none                 │ Updates preview of   │
+│                    │                      │ all active buffers.  │
+│ `Clear`            │ none                 │ Clears preview of    │
+│                    │                      │ all active buffer.   │
+│ ————————————————   │ ———————————————————  │ ———————————————————— │
+│                    │                      │ ———————————————————— │
+│ `render`           │ buffer, integer      │ Renders preview for  │
+│                    │                      │ buffer.              │
+│ `clear`            │ buffer, integer      │ Clears preview for   │
+│                    │                      │ buffer.              │
+╰────────────────────┴──────────────────────┴──────────────────────╯
 
 Sub-commands for `bug report`,
 
-  • `traceShow` Shows the plugin’s internal messages in a window.
+╭────────────────────┬──────────────────────┬──────────────────────╮
+│ Sub-command        │ Arguments            │ Description          │
+├────────────────────┼──────────────────────┼──────────────────────┤
+│ `traceExport`      │ none                 │ Exports trace logs   │
+│                    │                      │ to `trace.txt`.      │
+│ `traceShow`        │ none                 │ Shows trace logs in  │
+│                    │                      │ a window.            │
+╰────────────────────┴──────────────────────┴──────────────────────╯
 
-  • `traceExport` Exports the plugin’s trace into a text file(`trace.txt`).
-
-------------------------------------------------------------------------------
-📻 Autocmds                                           *markview.nvim-autocmds*
-
-▌ `render` & `clear` can be run on any buffer, even if the previews
-
-Autocmds will be executed after their corresponding `callback`! Arguments are
-passed in `event.data`.
-
->lua
-    vim.api.nvim_create_autocmd("User", {
-        pattern = "MarkviewAttach",
-        callback = function (event)
-            vim.print(event.data);
-        end
-    });
+▋  Tip
+▋ buffer defaults to the current buffer. So, you can run commands on the current
+▋ buffer without providing the buffer.
+>vim
+	:Markview toggle "Toggles preview of the current buffer.
 <
 
-  • MarkviewAttach Called when the plugin attaches to a buffer.
 
-    Arguments,
+--------------------------------------------------------------------------------
+📞 Autocmds                                             *markview.nvim-autocmds*
 
-    • `buffer`, the buffer being attached to.
-    • `windows`, the windows attached to `buffer`(see `win_findbuf()`).
+`markview.nvim` emits various autocmd events during different parts of the
+rendering allowing users to extend the plugin's functionality.
 
-  • MarkviewDetach Called when the plugin detaches from a buffer.
-
-    Arguments,
-
-    • `buffer`, the buffer being detached from.
-    • `windows`, the windows attached to `buffer`.
-
-------------------------------------------------------------------------------
-
-  • MarkviewEnable Called when preview is enabled for a buffer.
-
-    Arguments,
-
-    • `buffer`, the buffer that’s preview is enabled.
-    • `windows`, the windows attached to `buffer`.
-
-  • MarkviewDisable Called when preview is disabled for a buffer.
-
-    Arguments,
-
-    • `buffer`, the buffer that’s preview is disabled.
-    • `windows`, the windows attached to `buffer`.
-
-------------------------------------------------------------------------------
-
-  • MarkviewSplitviewOpen Called when `splitview` is opened.
-
-    Arguments,
-
-    • `source`, the buffer that’s preview is being shown.
-    • `preview_buffer`, preview buffer.
-    • `windows`, preview window.
-
-  • MarkviewSplitviewClose Called when `splitview` is being closed.
-
-    Arguments,
-
-    • `source`, the buffer that’s preview is being shown.
-    • `preview_buffer`, preview buffer.
-    • `windows`, preview window.
+>lua
+	vim.api.nvim_create_autocmd("User", {
+	    pattern = "MarkviewAttach",
+	    callback = function (event)
+	        --- This will have all the data you need.
+	        local data = event.data;
+	
+	        vim.print(data);
+	    end
+	})
+<
 
 
-------------------------------------------------------------------------------
-🎨 Highlight groups                                         *markview.nvim-hl*
+▋ 󰋽 Note
+▋ Autocmds are executed after callbacks!
 
-These highlight groups are created by the plugin,
+Currently emitted autocmds are,
 
-▌ The value of these groups are updated when changing the colorscheme!
+- MarkviewAttach
+  Called when attaching to a buffer.
 
-Main groups ~
+  Arguments,
 
-These groups will be updated to match the colorscheme whenever the
-`ColorScheme` update is detected,
+  + `buffer`, integer
+    The buffer that's being attached to.
 
-  • `MarkviewPalette0`, has a background & foreground.
-  • `MarkviewPalette0Fg`, only the foreground
-  • `MarkviewPalette0Bg`, only the background.
-  • `MarkviewPalette0Sign`, background of the sign column(`LineNr`) &
-    foreground.
-  • `MarkviewPalette1`
-  • `MarkviewPalette1Fg`
-  • `MarkviewPalette1Bg`
-  • `MarkviewPalette1Sign`
-  • `MarkviewPalette2`
-  • `MarkviewPalette2Fg`
-  • `MarkviewPalette2Bg`
-  • `MarkviewPalette2Sign`
-  • `MarkviewPalette3`
-  • `MarkviewPalette3Fg`
-  • `MarkviewPalette3Bg`
-  • `MarkviewPalette3Sign`
-  • `MarkviewPalette4`
-  • `MarkviewPalette4Fg`
-  • `MarkviewPalette4Bg`
-  • `MarkviewPalette4Sign`
-  • `MarkviewPalette5`
-  • `MarkviewPalette5Fg`
-  • `MarkviewPalette5Bg`
-  • `MarkviewPalette5Sign`
-  • `MarkviewPalette6`
-  • `MarkviewPalette6Fg`
-  • `MarkviewPalette6Bg`
-  • `MarkviewPalette6Sign`
-  • `MarkviewCode`.
-  • `MarkviewCodeInfo`.
-  • `MarkviewCodeFg`.
-  • `MarkviewInlineCode`.
+  + `windows`, integer[]
+    List of windows attached to `buffer`.
 
-▌ These groups are meant to create a gradient!
+- MarkviewDetach
+  Called when detaching from a buffer.
 
-  • `MarkviewGradient0`
-  • `MarkviewGradient1`
-  • `MarkviewGradient2`
-  • `MarkviewGradient3`
-  • `MarkviewGradient4`
-  • `MarkviewGradient5`
-  • `MarkviewGradient6`
-  • `MarkviewGradient7`
-  • `MarkviewGradient8`
-  • `MarkviewGradient9`
+  Arguments,
 
-Secondary groups ~
+  + `buffer`, integer
+    The buffer that's being detached from.
 
-These are typically linked to one of the above group,
+  + `windows`, integer[]
+    List of windows attached to `buffer`.
 
-  • `MarkviewBlockQuoteDefault`, links to `MarkviewPalette0Fg`.
-  • `MarkviewBlockQuoteError`, links to `MarkviewPalette1Fg`.
-  • `MarkviewBlockQuoteNote`, links to `MarkviewPalette5Fg`.
-  • `MarkviewBlockQuoteOk`, links to `MarkviewPalette4Fg`.
-  • `MarkviewBlockQuoteSpecial`, links to `MarkviewPalette3Fg`.
-  • `MarkviewBlockQuoteWarn`, links to `MarkviewPalette2Fg`.
-  • `MarkviewCheckboxCancelled`, links to `MarkviewPalette0Fg`.
-  • `MarkviewCheckboxChecked`, links to `MarkviewPalette4Fg`.
-  • `MarkviewCheckboxPending`, links to `MarkviewPalette2Fg`.
-  • `MarkviewCheckboxProgress`, links to `MarkviewPalette6Fg`.
-  • `MarkviewCheckboxUnchecked`, links to `MarkviewPalette1Fg`.
-  • `MarkviewCheckboxStriked`, links to `MarkviewPalette0Fg`.
-  • `MarkviewIcon0`, links to `MarkviewPalette0Fg`.
-  • `MarkviewIcon1`, links to `MarkviewPalette1Fg`.
-  • `MarkviewIcon2`, links to `MarkviewPalette2Fg`.
-  • `MarkviewIcon3`, links to `MarkviewPalette3Fg`.
-  • `MarkviewIcon4`, links to `MarkviewPalette4Fg`.
-  • `MarkviewIcon5`, links to `MarkviewPalette5Fg`.
-  • `MarkviewIcon6`, links to `MarkviewPalette6Fg`.
-  • `MarkviewHeading1`, links to `MarkviewPalette1`.
-  • `MarkviewHeading2`, links to `MarkviewPalette2`.
-  • `MarkviewHeading3`, links to `MarkviewPalette3`.
-  • `MarkviewHeading4`, links to `MarkviewPalette4`.
-  • `MarkviewHeading5`, links to `MarkviewPalette5`.
-  • `MarkviewHeading6`, links to `MarkviewPalette6`.
-  • `MarkviewHeading1Sign`, links to `MarkviewPalette1Sign`.
-  • `MarkviewHeading2Sign`, links to `MarkviewPalette2Sign`.
-  • `MarkviewHeading3Sign`, links to `MarkviewPalette3Sign`.
-  • `MarkviewHeading4Sign`, links to `MarkviewPalette4Sign`.
-  • `MarkviewHeading5Sign`, links to `MarkviewPalette5Sign`.
-  • `MarkviewHeading6Sign`, links to `MarkviewPalette6Sign`.
-  • `MarkviewHyperlink`, links to @markup.link.label.markdown_inline.
-  • `MarkviewImage`, links to @markup.link.label.markdown_inline.
-  • `MarkviewEmail`, links to @markup.link.url.markdown_inline.
-  • `MarkviewSubscript`, links to `MarkviewPalette3Fg`.
-  • `MarkviewSuperscript`, links to `MarkviewPalette6Fg`.
-  • `MarkviewListItemMinus`, links to `MarkviewPalette2Fg`.
-  • `MarkviewListItemPlus`, links to `MarkviewPalette4Fg`.
-  • `MarkviewListItemStar`, links to `MarkviewPalette6Fg`.
-  • `MarkviewTableHeader`, links to `@markup.heading.markdown`.
-  • `MarkviewTableBorder`, links to `MarkviewPalette5Fg`.
-  • `MarkviewTableAlignLeft`, links to `@markup.heading.markdown`.
-  • `MarkviewTableAlignCenter`, links to `@markup.heading.markdown`.
-  • `MarkviewTableAlignRight`, links to `@markup.heading.markdown`.
+- MarkviewDisable
+  Called when disabling previews in a buffer.
 
-------------------------------------------------------------------------------
+  Arguments,
 
-Image references ~
+  + `buffer`, integer
+    The buffer whose the preview was disabled.
 
- 1: https://github.com/OXY2DEV/markview.nvim/blob/images/v25/repo/markdown-catppuccin_mocha.png
+  + `windows`, integer[]
+    List of windows attached to `buffer`.
 
-vim:ft=help:tw=78:ts=4:
+- MarkviewEnable
+  Called when enabling previews in a buffer.
+
+  Arguments,
+
+  + `buffer`, integer
+    The buffer whose the preview was enabled.
+
+  + `windows`, integer[]
+    List of windows attached to `buffer`.
+
+- MarkviewSplitviewClose
+  Called when the splitview window is closed. Called before splitview is closed.
+
+  Arguments,
+
+  + `source`, integer
+    The buffer whose contents are being shown.
+
+  + `preview_buffer`, integer
+    The buffer that's showing the preview.
+
+  + `preview_window`, integer
+    The window where the `preview_buffer` is being shown.
+
+- MarkviewSplitviewOpen
+  Called when the splitview window is opened.
+
+  Arguments,
+
+  + `source`, integer
+    The buffer whose contents are being shown.
+
+  + `preview_buffer`, integer
+    The buffer that's showing the preview.
+
+  + `preview_window`, integer
+    The window where the `preview_buffer` is being shown.
+
+--------------------------------------------------------------------------------
+🎨 Highlight groups                                           *markview.nvim-hl*
+                                                      *markview.nvim-highlights*
+
+You can find more details on highlight groups here {9}. The following highlight
+groups are created by the plugin,
+
+▋ 󰋽 Note
+▋ The value of these groups are updated when changing the colorscheme!
+
+- `MarkviewPalette0`, has a background & foreground.
+- `MarkviewPalette0Fg`, only the foreground
+- `MarkviewPalette0Bg`, only the background.
+- `MarkviewPalette0Sign`, background of the sign column(`LineNr`) & foreground.
+
+- `MarkviewPalette1`
+- `MarkviewPalette1Fg`
+- `MarkviewPalette1Bg`
+- `MarkviewPalette1Sign`
+
+- `MarkviewPalette2`
+- `MarkviewPalette2Fg`
+- `MarkviewPalette2Bg`
+- `MarkviewPalette2Sign`
+
+- `MarkviewPalette3`
+- `MarkviewPalette3Fg`
+- `MarkviewPalette3Bg`
+- `MarkviewPalette3Sign`
+
+- `MarkviewPalette4`
+- `MarkviewPalette4Fg`
+- `MarkviewPalette4Bg`
+- `MarkviewPalette4Sign`
+
+- `MarkviewPalette5`
+- `MarkviewPalette5Fg`
+- `MarkviewPalette5Bg`
+- `MarkviewPalette5Sign`
+
+- `MarkviewPalette6`
+- `MarkviewPalette6Fg`
+- `MarkviewPalette6Bg`
+- `MarkviewPalette6Sign`
+
+- `MarkviewCode`.
+- `MarkviewCodeInfo`.
+- `MarkviewCodeFg`.
+- `MarkviewInlineCode`.
+
+▋ 󰋽 Note
+▋ These groups are meant to create a gradient!
+
+- `MarkviewGradient0`
+- `MarkviewGradient1`
+- `MarkviewGradient2`
+- `MarkviewGradient3`
+- `MarkviewGradient4`
+- `MarkviewGradient5`
+- `MarkviewGradient6`
+- `MarkviewGradient7`
+- `MarkviewGradient8`
+- `MarkviewGradient9`
+
+ ╶────────────────────────────────────────────────────────────────────────────╴ 
+
+- `MarkviewBlockQuoteDefault`, links to `MarkviewPalette0Fg`.
+- `MarkviewBlockQuoteError`, links to `MarkviewPalette1Fg`.
+- `MarkviewBlockQuoteNote`, links to `MarkviewPalette5Fg`.
+- `MarkviewBlockQuoteOk`, links to `MarkviewPalette4Fg`.
+- `MarkviewBlockQuoteSpecial`, links to `MarkviewPalette3Fg`.
+- `MarkviewBlockQuoteWarn`, links to `MarkviewPalette2Fg`.
+
+- `MarkviewCheckboxCancelled`, links to `MarkviewPalette0Fg`.
+- `MarkviewCheckboxChecked`, links to `MarkviewPalette4Fg`.
+- `MarkviewCheckboxPending`, links to `MarkviewPalette2Fg`.
+- `MarkviewCheckboxProgress`, links to `MarkviewPalette6Fg`.
+- `MarkviewCheckboxUnchecked`, links to `MarkviewPalette1Fg`.
+- `MarkviewCheckboxStriked`, links to `MarkviewPalette0Fg`^1.
+
+- `MarkviewIcon0`, links to `MarkviewPalette0Fg`^2.
+- `MarkviewIcon1`, links to `MarkviewPalette1Fg`^2.
+- `MarkviewIcon2`, links to `MarkviewPalette2Fg`^2.
+- `MarkviewIcon3`, links to `MarkviewPalette3Fg`^2.
+- `MarkviewIcon4`, links to `MarkviewPalette4Fg`^2.
+- `MarkviewIcon5`, links to `MarkviewPalette5Fg`^2.
+- `MarkviewIcon6`, links to `MarkviewPalette6Fg`^2.
+
+- `MarkviewHeading1`, links to `MarkviewPalette1`.
+- `MarkviewHeading2`, links to `MarkviewPalette2`.
+- `MarkviewHeading3`, links to `MarkviewPalette3`.
+- `MarkviewHeading4`, links to `MarkviewPalette4`.
+- `MarkviewHeading5`, links to `MarkviewPalette5`.
+- `MarkviewHeading6`, links to `MarkviewPalette6`.
+
+- `MarkviewHeading1Sign`, links to `MarkviewPalette1Sign`.
+- `MarkviewHeading2Sign`, links to `MarkviewPalette2Sign`.
+- `MarkviewHeading3Sign`, links to `MarkviewPalette3Sign`.
+- `MarkviewHeading4Sign`, links to `MarkviewPalette4Sign`.
+- `MarkviewHeading5Sign`, links to `MarkviewPalette5Sign`.
+- `MarkviewHeading6Sign`, links to `MarkviewPalette6Sign`.
+
+- `MarkviewHyperlink`, links to `@markup.link.label.markdown_inline`.
+- `MarkviewImage`, links to `@markup.link.label.markdown_inline`.
+- `MarkviewEmail`, links to `@markup.link.url.markdown_inline`.
+
+- `MarkviewSubscript`, links to `MarkviewPalette3Fg`.
+- `MarkviewSuperscript`, links to `MarkviewPalette6Fg`.
+
+- `MarkviewListItemMinus`, links to `MarkviewPalette2Fg`.
+- `MarkviewListItemPlus`, links to `MarkviewPalette4Fg`.
+- `MarkviewListItemStar`, links to `MarkviewPalette6Fg`.
+
+- `MarkviewTableHeader`, links to `@markup.heading.markdown`.
+- `MarkviewTableBorder`, links to `MarkviewPalette5Fg`.
+- `MarkviewTableAlignLeft`, links to `@markup.heading.markdown`.
+- `MarkviewTableAlignCenter`, links to `@markup.heading.markdown`.
+- `MarkviewTableAlignRight`, links to `@markup.heading.markdown`.
+
+--------------------------------------------------------------------------------
+🌟 Presets                                               *markview.nvim-presets*
+
+▋  Important
+▋ Presets are looking for contributors!
+▋
+▋ If you have any custom configuration that you would like to have as a preset
+▋ you can open a `pull request` for that.
+
+Check the wiki page {10} for more information.
+
+USAGE
+
+>lua
+	local presets = require("markview.presets");
+	
+	require("markview").setup({
+	    markdown = {
+	        headings = presets.headings.slanted
+	    }
+	});
+<
+
+
+Currently available presets are,
+
+HEADINGS
+
+Accessed using `require("markview.presets").headings`.
+
+- `glow`
+  Like the headings in the `Glow` CLI app.
+
+- `glow_center`
+  Centered version of `glow`.
+
+- `slanted`
+  Heading level + slanted tail.
+
+- `arrowed`
+  Heading level + arrowed tail.
+
+- `simple`
+  Headings similar to headings in some books.
+
+- `marker`
+  Simple marker for heading level.
+
+HORIZONTAL_RULES
+
+Accessed using `require("markview.presets").horizontal_rules`.
+
+- `thin`
+  Simple line.
+
+- `thick`
+  Slightly thicker line.
+
+- `double`
+  Double lines.
+
+- `dashed`
+  Dashed line.
+
+- `dotted`
+  Dotted line.
+
+- `solid`
+  Very thick line.
+
+- `arrowed`
+  Arrowed line.
+
+TABLES
+
+Accessed using `require("markview.presets").tables`.
+
+- `none`
+  Border-less table(kinda like the ones used in some help files).
+
+- `single`
+  Single border table.
+
+- `double`
+  Double border table.
+
+- `rounded`
+  Single border with rounded edges(default).
+
+- `solid`
+  Solid border table.
+
+--------------------------------------------------------------------------------
+🎁 Extra modules                                          *markview.nvim-extras*
+
+`markview.nvim` comes with a few extra things for added functionality. Currently
+available modules are,
+
+- checkboxes.lua {12}
+  Checkbox toggle, state change & more! Supports visual mode too with checkbox
+  state caching!
+  Wiki section {11}
+
+- editor.lua {14}
+  A simple `code block` creator & editor with support for nested elements!
+  Wiki section {13}
+
+- headings.lua {16}
+  Simple heading level changer with support for `setext` headings.
+  Wiki section {15}
+
+Example usage,
+
+>lua
+	-- Load the checkboxes module.
+	require("markview.extras.checkboxes").setup();
+<
+
+
+Go over a line with a checkbox and run,
+
+>vim
+	:Checkbox interactive
+<
+
+
+Now use `h`, `j`, `k`, `l` to change the checkbox state.
+
+--------------------------------------------------------------------------------
+✅ Contributing to the projects                       *markview.nvim-contribute*
+
+If you have time and want to make this project better, consider helping me fix
+any of these issues,
+
+- [ ] Add support for more filetypes in the internal icon provider.
+- [ ] Optimization of `require("markview.renderers.markdown").output()`.
+- [ ] Optimization of the table renderer.
+- [ ] Stricter logic to reduce preview redraws.
+- [X] Make `splitview` update as little content as possible.
+- [X] Make the help files/wiki more beginner friendly.
+
+ ╶────────────────────────────────────────────────────────────────────────────╴ 
+
+^1: The value of the linked group is used literally. So, manually changing the
+link group wouldn't work for this.
+^2: The value of `MarkviewCode` is used for the background. So, changing either
+of the linked group wouldn't affect these.
+
+Images ~
+1: #-presets
+2: #-extra-modules
+3: https://github.com/OXY2DEV/markview.nvim/wiki/Home
+4: https://github.com/echasnovski/mini.icons
+5: https://github.com/nvim-tree/nvim-web-devicons
+6: https://github.com/OXY2DEV/markview.nvim/releases
+7: https://github.com/OXY2DEV/markview.nvim/tree/dev
+8: https://github.com/OXY2DEV/markview.nvim/wiki
+9: https://github.com/OXY2DEV/markview.nvim/wiki/Home#-highlight-groups
+10: https://github.com/OXY2DEV/markview.nvim/wiki
+11: https://github.com/OXY2DEV/markview.nvim/wiki/Extra-modules#-checkboxes
+12: https://github.com/OXY2DEV/markview.nvim/blob/main/lua/markview/extras/checkboxes.lua
+13: https://github.com/OXY2DEV/markview.nvim/wiki/Extra-modules#-editor
+14: https://github.com/OXY2DEV/markview.nvim/blob/main/lua/markview/extras/editor.lua
+15: https://github.com/OXY2DEV/markview.nvim/wiki/Extra-modules#-heading
+16: https://github.com/OXY2DEV/markview.nvim/blob/main/lua/markview/extras/headings.lua
+
+
+vim:ft=vimdoc:textwidth=80:tabstop=4:noexpandtab:
