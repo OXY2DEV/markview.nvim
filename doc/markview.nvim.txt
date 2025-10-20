@@ -1,4 +1,4 @@
-*markview.nvim*          A hackable `Markdown`, `LaTeX`, `Typst` etc. previewer.
+*markview.nvim*       ☄️ A hackable `Markdown`, `LaTeX`, `Typst` etc. previewer.
 
                                   Image {img:1}                                 
 
@@ -9,207 +9,206 @@
 
 Core features,
 
-+ Supports previewing `HTML`, $LaTeX$, `Markdown`, `Typst` & `YAML`.
-+ Highly customisable! Everything is done via the configuration table to ensure
+◇ Supports previewing `HTML`, $LaTeX$, `Markdown`, `Typst` & `YAML`.
+◇ Highly customisable! Everything is done via the configuration table to ensure
   maximum customisability.
-+ Hybrid editing mode! Allows editing & previewing files at the same time.
-+ Split view! Allows previewing files on a separate window that updates in
+◇ Hybrid editing mode! Allows editing & previewing files at the same time.
+◇ Split view! Allows previewing files on a separate window that updates in
   real-time!
-+ Previews are compatible with `'wrap'`(only for `markdown` at the moment).
-+ Dynamic config that allows any option to be a function.
-+ Dynamic `highlight groups` that automatically updates with the colorscheme.
+◇ Previews are compatible with `'wrap'`(only for `markdown` at the moment).
+◇ Dynamic config that allows any option to be a function.
+◇ Dynamic `highlight groups` that automatically updates with the colorscheme.
 
 
 HTML features, ~
 
 Image {img:2}
 
-+ Allows customising how various container & void elements are shown.
-+ Supports heading elements out of the box.
-+ Supports the following container elements out of the box,
-    + `<a></a>`
-    + `<b></b>`
-    + `<code></code>`
-    + `<em></em>`
-    + `<i></i>`
-    + `<mark></mark>`
-    + `<strong></strong>`
-    + `<pre></pre>`
-    + `<sub></sub>`
-    + `<sup></sup>`
-    + `<u></u>`
+◇ Allows customising how various container & void elements are shown.
+◇ Supports heading elements out of the box.
+◇ Supports the following container elements out of the box,
+    ◇ `<a></a>`
+    ◇ `<b></b>`
+    ◇ `<code></code>`
+    ◇ `<em></em>`
+    ◇ `<i></i>`
+    ◇ `<mark></mark>`
+    ◇ `<strong></strong>`
+    ◇ `<pre></pre>`
+    ◇ `<sub></sub>`
+    ◇ `<sup></sup>`
+    ◇ `<u></u>`
 
-+ Supports the following void elements out of the box,
-    + `<hr>`
-    + `<br>`
+◇ Supports the following void elements out of the box,
+    ◇ `<hr>`
+    ◇ `<br>`
 
 LaTeX features, ~
 
 Image {img:3}
 
-+ Supports the following items,
-    + Math blocks(typically `$$...$$`) & inline math(typically `$...$`).
-    + LaTeX commands.
-    + Escaped characters.
-    + Math fonts
-    + Subscript.
-    + Superscript.
-    + Math symbols.
-    + `\text{}`.
+◇ Supports the following items,
+    ◇ Math blocks(typically `$$...$$`) & inline math(typically `$...$`).
+    ◇ LaTeX commands.
+    ◇ Escaped characters.
+    ◇ Math fonts
+    ◇ Subscript.
+    ◇ Superscript.
+    ◇ Math symbols.
+    ◇ `\text{}`.
 
-+ Supports commonly used math commands out of the box,
-    + `\frac{}`
-    + `\sin{}`
-    + `\cos{}`
-    + `\tan{}`
-    + `\sinh{}`
-    + `\cosh{}`
-    + `\tanh{}`
-    + `\csc{}`
-    + `\sec{}`
-    + `\cot{}`
-    + `\csch{}`
-    + `\sech{}`
-    + `\coth{}`
-    + `\arcsin{}`
-    + `\arccos{}`
-    + `\arctan{}`
-    + `\arg{}`
-    + `\deg{}`
-    + `\drt{}`
-    + `\dim{}`
-    + `\exp{}`
-    + `\gcd{}`
-    + `\hom{}`
-    + `\inf{}`
-    + `\ker{}`
-    + `\lg{}`
-    + `\lim{}`
-    + `\liminf{}`
-    + `\limsup{}`
-    + `\ln{}`
-    + `\log{}`
-    + `\min{}`
-    + `\max{}`
-    + `\Pr{}`
-    + `\sup{}`
-    + `\sqrt{}`
-    + `\lvert{}`
-    + `\lVert{}`
-    + `\boxed{}`
+◇ Supports commonly used math commands out of the box,
+    ◇ `\frac{}`
+    ◇ `\sin{}`
+    ◇ `\cos{}`
+    ◇ `\tan{}`
+    ◇ `\sinh{}`
+    ◇ `\cosh{}`
+    ◇ `\tanh{}`
+    ◇ `\csc{}`
+    ◇ `\sec{}`
+    ◇ `\cot{}`
+    ◇ `\csch{}`
+    ◇ `\sech{}`
+    ◇ `\coth{}`
+    ◇ `\arcsin{}`
+    ◇ `\arccos{}`
+    ◇ `\arctan{}`
+    ◇ `\arg{}`
+    ◇ `\deg{}`
+    ◇ `\drt{}`
+    ◇ `\dim{}`
+    ◇ `\exp{}`
+    ◇ `\gcd{}`
+    ◇ `\hom{}`
+    ◇ `\inf{}`
+    ◇ `\ker{}`
+    ◇ `\lg{}`
+    ◇ `\lim{}`
+    ◇ `\liminf{}`
+    ◇ `\limsup{}`
+    ◇ `\ln{}`
+    ◇ `\log{}`
+    ◇ `\min{}`
+    ◇ `\max{}`
+    ◇ `\Pr{}`
+    ◇ `\sup{}`
+    ◇ `\sqrt{}`
+    ◇ `\lvert{}`
+    ◇ `\lVert{}`
+    ◇ `\boxed{}`
 
-+ Supports the following fonts(requires any modern Unicode font),
-    + `default`(Default math font).
-    + `\mathbb{}`
-    + `\mathbf{}`
-    + `\mathbffrak{}`
-    + `\mathbfit{}`
-    + `\nathbfscr{}`
-    + `\mathcal{}`
-    + `\mathfrak{}`
-    + `\mathsf{}`
-    + `\mathsfbf{}`
-    + `\mathsfbfit{}`
-    + `\mathsfit{}`
-    + `\mathtt{}`
+◇ Supports the following math fonts(requires any modern Unicode font),
+    ◇ `default`(Default math font).
+    ◇ `\mathbb{}`
+    ◇ `\mathbf{}`
+    ◇ `\mathbffrak{}`
+    ◇ `\mathbfit{}`
+    ◇ `\nathbfscr{}`
+    ◇ `\mathcal{}`
+    ◇ `\mathfrak{}`
+    ◇ `\mathsf{}`
+    ◇ `\mathsfbf{}`
+    ◇ `\mathsfbfit{}`
+    ◇ `\mathsfit{}`
+    ◇ `\mathtt{}`
 
-+ Supports Unicode based subscript & superscript texts.
-+ Supports 2056 different math symbol definitions.
+◇ Supports Unicode based subscript & superscript texts.
+◇ Supports 2056 different math symbol definitions.
 
 Markdown features, ~
 
 Image {img:4}
 
-+ Supports the following items,
-    + Block quotes(with support for `callouts` & titles).
-    + Fenced code blocks.
-    + Headings(setext & atx).
-    + Horizontal rules.
-    + List items(`+`, `-`, `*`, `n.` & `n)`).
-    + Minus & plus metadata.
-    + Reference link definitions.
-    + Tables.
+◇ Supports the following items,
+    ◇ Block quotes(with support for `callouts` & titles).
+    ◇ Fenced code blocks.
+    ◇ Headings(setext & atx).
+    ◇ Horizontal rules.
+    ◇ List items(`+`, `-`, `*`, `n.` & `n)`).
+    ◇ Minus & plus metadata.
+    ◇ Reference link definitions.
+    ◇ Tables.
 
-+ `wrap` option support for the following items,
-    + Block quotes.
-    + Headings(when `org_indent` is used).
-    + List items(when `add_padding` is true).
+◇ `wrap` option support for the following items,
+    ◇ Block quotes.
+    ◇ Headings(when `org_indent` is used).
+    ◇ List items(when `add_padding` is true).
 
-+ Org-mode like indentation for headings.
+◇ Org-mode like indentation for headings.
 
 Markdown inline features, ~
 
 Image {img:5}
 
-+ Supports the following items,
-    + Checkboxes(supports minimal-style checkboxes).
-    + Email links.
-    + Entities.
-    + Escaped characters.
-    + Footnotes.
-    + Hyperlinks.
-    + Images.
-    + Inline codes/Code spans.
-    + URI autolinks.
+◇ Supports the following items,
+    ◇ Checkboxes(supports minimal-style checkboxes).
+    ◇ Email links.
+    ◇ Entities.
+    ◇ Escaped characters.
+    ◇ Footnotes.
+    ◇ Hyperlinks.
+    ◇ Images.
+    ◇ Inline codes/Code spans.
+    ◇ URI autolinks.
 
-+ Obsidian/PKM extended item support,
-    + Block reference links.
-    + Embed file links.
-    + Internal links(supports aliases).
+◇ Obsidian/PKM extended syntax support,
+    ◇ Block reference links.
+    ◇ Embed file links.
+    ◇ Internal links(supports aliases).
 
-+ Wide variety of HTML entity names & codes support.
-    + Supported named entities: 786.
-    + Supported entity codes: 853.
+◇ Wide variety of HTML entity names & codes support.
+    ◇ Supported named entities: 786.
+    ◇ Supported entity codes: 853.
 
-+ Github emoji shorthands support. Supports 1920 shorthands.
-
-+ Custom configuration based on link patterns.
+◇ Github emoji shorthands support. Supports 1920 shorthands.
+◇ Custom configuration based on link patterns.
 
 Typst features, ~
 
 Image {img:6}
 
-+ Supports the following items,
-    + Code blocks.
-    + Code spans.
-    + Escaped characters.
-    + Headings.
-    + Labels.
-    + List items(`-`, `+` & `n.`).
-    + Math blocks.
-    + Math spans.
-    + Raw blocks.
-    + Raw spans.
-    + Reference links.
-    + Subscripts.
-    + Superscripts.
-    + Symbols.
-    + Terms.
-    + URL links.
+◇ Supports the following items,
+    ◇ Code blocks.
+    ◇ Code spans.
+    ◇ Escaped characters.
+    ◇ Headings.
+    ◇ Labels.
+    ◇ List items(`-`, `+` & `n.`).
+    ◇ Math blocks.
+    ◇ Math spans.
+    ◇ Raw blocks.
+    ◇ Raw spans.
+    ◇ Reference links.
+    ◇ Subscripts.
+    ◇ Superscripts.
+    ◇ Symbols.
+    ◇ Terms.
+    ◇ URL links.
 
-+ Supports a variety of typst symbols,
-    + Symbol entries: 932
-    + Symbol shorthands: 40
+◇ Supports a variety of typst symbols,
+    ◇ Symbol entries: 932
+    ◇ Symbol shorthands: 40
 
-+ Supports Unicode based subscript & superscript texts.
+◇ Supports Unicode based subscript & superscript texts.
 
 YAML features, ~
 
 Image {img:7}
 
-- Custom property icons.
-- Custom property scope decorations.
-- Custom icons(/decorations) based on property type & value(e.g. `booleans`).
+◇ Custom property icons.
+◇ Custom property scope decorations.
+◇ Custom icons(/decorations) based on property type & value(e.g. `booleans`).
 
-- Supports the following properties out of the box,
-    + tags.
-    + aliases.
-    + cssclasses.
-    + publish.
-    + permalink.
-    + description.
-    + images.
-    + cover.
+◇ Supports the following properties out of the box,
+    ◇ tags.
+    ◇ aliases.
+    ◇ cssclasses.
+    ◇ publish.
+    ◇ permalink.
+    ◇ description.
+    ◇ images.
+    ◇ cover.
 
  ╶────────────────────────────────────────────────────────────────────────────╴ 
 
@@ -224,34 +223,34 @@ Hybrid mode features, ~
 ╰──────────────────────┴──────────────────────╯
 
 
-+ Node-based edit range.
+◇ Node-based edit range.
   Clears a range of lines covered by the (named)`TSNode` under the cursor.
   Useful when editing lists, block quotes, code blocks, tables etc.
 
-+ Range-based edit range.
+◇ Range-based edit range.
   Clears the selected number of lines above & below the cursor.
 
-+ Works even when a `buffer` is being viewed by multiple `window`s.
+◇ Works even when a `buffer` is being viewed by multiple `window`s.
 
 Internal Icon provider features,
 
-+ 708 different filetype configuration.
-+ Dynamic highlight groups for matching the colorscheme.
+◇ 708 different filetype configuration.
+◇ Dynamic highlight groups for matching the colorscheme.
 
 Tracing features, ~
 
 Image {img:10}
 
-+ You can use `:Markview traceShow` to see what the plugin has been
+◇ You can use `:Markview traceShow` to see what the plugin has been
   doing(including how long some of them took).
-- You can also use `:Markview traceExport` to export these logs.
+◇ You can also use `:Markview traceExport` to export these logs.
 
 --------------------------------------------------------------------------------
 📚 Requirements
 
 System,
 
-- Neovim: 0.10.3
+◆ Neovim: >= 0.10.3
 
 ▋ 󰋽 Note
 ▋ It is recommended to use `nowrap`(though there is wrap support in the plugin)
@@ -261,7 +260,7 @@ System,
 
 Colorscheme,
 
-- Any tree-sitter based colorscheme is recommended.
+◆ Any tree-sitter based colorscheme is recommended.
 
 External icon providers,
 
@@ -277,8 +276,8 @@ External icon providers,
 <
 
 
-- mini.icons {4}
-- nvim-web-devicons {5}
+◆ mini.icons {4}
+◆ nvim-web-devicons {5}
 
 Parsers,
 
@@ -294,17 +293,17 @@ Parsers,
 ▋  Important
 ▋ On windows, you might need `tree-sitter` CLI for the $LaTeX$ parser.
 
-- `markdown`
-- `markdown_inline`
-- `html`(optional)
-- `latex`(optional)
-- `typst`(optional)
-- `yaml`(optional)
+◆ `markdown`
+◆ `markdown_inline`
+◆ `html`(optional)
+◆ `latex`(optional)
+◆ `typst`(optional)
+◆ `yaml`(optional)
 
 Fonts,
 
-- Any modern Unicode font is required for math symbols.
-- Nerd fonts are recommended.
+◆ Any modern Unicode font is required for math symbols.
+◆ Nerd fonts are recommended.
 
 ▋  Tip
 ▋ It is recommended to run `:checkhealth markview` after installing the plugin
@@ -395,42 +394,23 @@ Tagged releases can be found in the release page {6}.
 ▋ 󰋽 Note
 ▋ `Github releases` may sometimes be slightly behind `main`.
 
-DEVELOPMENT VERSION
-
-You can use the dev {7} branch to use test features.
-
-▋  Warning
-▋ Development releases can contain breaking changes and experimental changes.
-▋ Use at your own risk!
-
->lua
-	return {
-	    "OXY2DEV/markview.nvim",
-	    branch = "dev",
-	    lazy = false
-	};
-<
-
-
 --------------------------------------------------------------------------------
 🪲 Known bugs
 
-- `code span`s don't get recognized when on the line after a `code block`(if the
+◆ `code span`s don't get recognized when on the line after a `code block`(if the
   line after the `code span` is empty).
   This is most likely due to some bug in either the `markdown` or the
   `markdown_inline` parser.
 
-- Incorrect wrapping when setting `wrap` using `modeline`.
+◆ Incorrect wrapping when setting `wrap` using `modeline`.
   This is due to `textoff` being 0(instead of the size of the `statuscolumn`)
   when entering a buffer.
 
 --------------------------------------------------------------------------------
 🧭 Configuration                                          *markview.nvim-config*
 
-Check the wiki {8} for the entire configuration table. A simplified version is
+Check the wiki {7} for the entire configuration table. A simplified version is
 given below.
-
-CLICK FOR CONFIG JUMP-SCARE
 
 >lua
 	--- Configuration table for `markview.nvim`.
@@ -555,7 +535,6 @@ CLICK FOR CONFIG JUMP-SCARE
 	}
 <
 
-
 --------------------------------------------------------------------------------
 🎇 Commands                                             *markview.nvim-commands*
 
@@ -567,6 +546,7 @@ It comes with the following sub-commands,
 ▋ 󰋽 Note
 ▋ When no sub-command name is provided(or an invalid sub-command is used)
 ▋ `:Markview` will run `:Markview Toggle`.
+
 
 ╭────────────────────┬──────────────────────┬──────────────────────╮
 │ Sub-command        │ Arguments            │ Description          │
@@ -590,8 +570,6 @@ It comes with the following sub-commands,
 │ `splitToggle`      │ none                 │ Toggles splitview.   │
 ╰────────────────────┴──────────────────────┴──────────────────────╯
 
-
-ADVANCED COMMANDS ARE GIVEN BELOW
 
 Sub-commands related to auto-registering new buffers for previews and/or
 manually attaching/detaching buffers,
@@ -710,196 +688,196 @@ rendering allowing users to extend the plugin's functionality.
 
 Currently emitted autocmds are,
 
-- MarkviewAttach
+◆ MarkviewAttach
   Called when attaching to a buffer.
 
   Arguments,
 
-  + `buffer`, integer
+  ◇ `buffer`, integer
     The buffer that's being attached to.
 
-  + `windows`, integer[]
+  ◇ `windows`, integer[]
     List of windows attached to `buffer`.
 
-- MarkviewDetach
+◆ MarkviewDetach
   Called when detaching from a buffer.
 
   Arguments,
 
-  + `buffer`, integer
+  ◇ `buffer`, integer
     The buffer that's being detached from.
 
-  + `windows`, integer[]
+  ◇ `windows`, integer[]
     List of windows attached to `buffer`.
 
-- MarkviewDisable
+◆ MarkviewDisable
   Called when disabling previews in a buffer.
 
   Arguments,
 
-  + `buffer`, integer
+  ◇ `buffer`, integer
     The buffer whose the preview was disabled.
 
-  + `windows`, integer[]
+  ◇ `windows`, integer[]
     List of windows attached to `buffer`.
 
-- MarkviewEnable
+◆ MarkviewEnable
   Called when enabling previews in a buffer.
 
   Arguments,
 
-  + `buffer`, integer
+  ◇ `buffer`, integer
     The buffer whose the preview was enabled.
 
-  + `windows`, integer[]
+  ◇ `windows`, integer[]
     List of windows attached to `buffer`.
 
-- MarkviewSplitviewClose
+◆ MarkviewSplitviewClose
   Called when the splitview window is closed. Called before splitview is closed.
 
   Arguments,
 
-  + `source`, integer
+  ◇ `source`, integer
     The buffer whose contents are being shown.
 
-  + `preview_buffer`, integer
+  ◇ `preview_buffer`, integer
     The buffer that's showing the preview.
 
-  + `preview_window`, integer
+  ◇ `preview_window`, integer
     The window where the `preview_buffer` is being shown.
 
-- MarkviewSplitviewOpen
+◆ MarkviewSplitviewOpen
   Called when the splitview window is opened.
 
   Arguments,
 
-  + `source`, integer
+  ◇ `source`, integer
     The buffer whose contents are being shown.
 
-  + `preview_buffer`, integer
+  ◇ `preview_buffer`, integer
     The buffer that's showing the preview.
 
-  + `preview_window`, integer
+  ◇ `preview_window`, integer
     The window where the `preview_buffer` is being shown.
 
 --------------------------------------------------------------------------------
 🎨 Highlight groups                                           *markview.nvim-hl*
                                                       *markview.nvim-highlights*
 
-You can find more details on highlight groups here {9}. The following highlight
+You can find more details on highlight groups here {8}. The following highlight
 groups are created by the plugin,
 
 ▋ 󰋽 Note
 ▋ The value of these groups are updated when changing the colorscheme!
 
-- `MarkviewPalette0`, has a background & foreground.
-- `MarkviewPalette0Fg`, only the foreground
-- `MarkviewPalette0Bg`, only the background.
-- `MarkviewPalette0Sign`, background of the sign column(`LineNr`) & foreground.
+◆ `MarkviewPalette0`, has a background & foreground.
+◆ `MarkviewPalette0Fg`, only the foreground
+◆ `MarkviewPalette0Bg`, only the background.
+◆ `MarkviewPalette0Sign`, background of the sign column(`LineNr`) & foreground.
 
-- `MarkviewPalette1`
-- `MarkviewPalette1Fg`
-- `MarkviewPalette1Bg`
-- `MarkviewPalette1Sign`
+◆ `MarkviewPalette1`
+◆ `MarkviewPalette1Fg`
+◆ `MarkviewPalette1Bg`
+◆ `MarkviewPalette1Sign`
 
-- `MarkviewPalette2`
-- `MarkviewPalette2Fg`
-- `MarkviewPalette2Bg`
-- `MarkviewPalette2Sign`
+◆ `MarkviewPalette2`
+◆ `MarkviewPalette2Fg`
+◆ `MarkviewPalette2Bg`
+◆ `MarkviewPalette2Sign`
 
-- `MarkviewPalette3`
-- `MarkviewPalette3Fg`
-- `MarkviewPalette3Bg`
-- `MarkviewPalette3Sign`
+◆ `MarkviewPalette3`
+◆ `MarkviewPalette3Fg`
+◆ `MarkviewPalette3Bg`
+◆ `MarkviewPalette3Sign`
 
-- `MarkviewPalette4`
-- `MarkviewPalette4Fg`
-- `MarkviewPalette4Bg`
-- `MarkviewPalette4Sign`
+◆ `MarkviewPalette4`
+◆ `MarkviewPalette4Fg`
+◆ `MarkviewPalette4Bg`
+◆ `MarkviewPalette4Sign`
 
-- `MarkviewPalette5`
-- `MarkviewPalette5Fg`
-- `MarkviewPalette5Bg`
-- `MarkviewPalette5Sign`
+◆ `MarkviewPalette5`
+◆ `MarkviewPalette5Fg`
+◆ `MarkviewPalette5Bg`
+◆ `MarkviewPalette5Sign`
 
-- `MarkviewPalette6`
-- `MarkviewPalette6Fg`
-- `MarkviewPalette6Bg`
-- `MarkviewPalette6Sign`
+◆ `MarkviewPalette6`
+◆ `MarkviewPalette6Fg`
+◆ `MarkviewPalette6Bg`
+◆ `MarkviewPalette6Sign`
 
-- `MarkviewCode`.
-- `MarkviewCodeInfo`.
-- `MarkviewCodeFg`.
-- `MarkviewInlineCode`.
+◆ `MarkviewCode`.
+◆ `MarkviewCodeInfo`.
+◆ `MarkviewCodeFg`.
+◆ `MarkviewInlineCode`.
 
 ▋ 󰋽 Note
 ▋ These groups are meant to create a gradient!
 
-- `MarkviewGradient0`
-- `MarkviewGradient1`
-- `MarkviewGradient2`
-- `MarkviewGradient3`
-- `MarkviewGradient4`
-- `MarkviewGradient5`
-- `MarkviewGradient6`
-- `MarkviewGradient7`
-- `MarkviewGradient8`
-- `MarkviewGradient9`
+◆ `MarkviewGradient0`
+◆ `MarkviewGradient1`
+◆ `MarkviewGradient2`
+◆ `MarkviewGradient3`
+◆ `MarkviewGradient4`
+◆ `MarkviewGradient5`
+◆ `MarkviewGradient6`
+◆ `MarkviewGradient7`
+◆ `MarkviewGradient8`
+◆ `MarkviewGradient9`
 
  ╶────────────────────────────────────────────────────────────────────────────╴ 
 
-- `MarkviewBlockQuoteDefault`, links to `MarkviewPalette0Fg`.
-- `MarkviewBlockQuoteError`, links to `MarkviewPalette1Fg`.
-- `MarkviewBlockQuoteNote`, links to `MarkviewPalette5Fg`.
-- `MarkviewBlockQuoteOk`, links to `MarkviewPalette4Fg`.
-- `MarkviewBlockQuoteSpecial`, links to `MarkviewPalette3Fg`.
-- `MarkviewBlockQuoteWarn`, links to `MarkviewPalette2Fg`.
+◆ `MarkviewBlockQuoteDefault`, links to `MarkviewPalette0Fg`.
+◆ `MarkviewBlockQuoteError`, links to `MarkviewPalette1Fg`.
+◆ `MarkviewBlockQuoteNote`, links to `MarkviewPalette5Fg`.
+◆ `MarkviewBlockQuoteOk`, links to `MarkviewPalette4Fg`.
+◆ `MarkviewBlockQuoteSpecial`, links to `MarkviewPalette3Fg`.
+◆ `MarkviewBlockQuoteWarn`, links to `MarkviewPalette2Fg`.
 
-- `MarkviewCheckboxCancelled`, links to `MarkviewPalette0Fg`.
-- `MarkviewCheckboxChecked`, links to `MarkviewPalette4Fg`.
-- `MarkviewCheckboxPending`, links to `MarkviewPalette2Fg`.
-- `MarkviewCheckboxProgress`, links to `MarkviewPalette6Fg`.
-- `MarkviewCheckboxUnchecked`, links to `MarkviewPalette1Fg`.
-- `MarkviewCheckboxStriked`, links to `MarkviewPalette0Fg`^1.
+◆ `MarkviewCheckboxCancelled`, links to `MarkviewPalette0Fg`.
+◆ `MarkviewCheckboxChecked`, links to `MarkviewPalette4Fg`.
+◆ `MarkviewCheckboxPending`, links to `MarkviewPalette2Fg`.
+◆ `MarkviewCheckboxProgress`, links to `MarkviewPalette6Fg`.
+◆ `MarkviewCheckboxUnchecked`, links to `MarkviewPalette1Fg`.
+◆ `MarkviewCheckboxStriked`, links to `MarkviewPalette0Fg`^1.
 
-- `MarkviewIcon0`, links to `MarkviewPalette0Fg`^2.
-- `MarkviewIcon1`, links to `MarkviewPalette1Fg`^2.
-- `MarkviewIcon2`, links to `MarkviewPalette2Fg`^2.
-- `MarkviewIcon3`, links to `MarkviewPalette3Fg`^2.
-- `MarkviewIcon4`, links to `MarkviewPalette4Fg`^2.
-- `MarkviewIcon5`, links to `MarkviewPalette5Fg`^2.
-- `MarkviewIcon6`, links to `MarkviewPalette6Fg`^2.
+◆ `MarkviewIcon0`, links to `MarkviewPalette0Fg`^2.
+◆ `MarkviewIcon1`, links to `MarkviewPalette1Fg`^2.
+◆ `MarkviewIcon2`, links to `MarkviewPalette2Fg`^2.
+◆ `MarkviewIcon3`, links to `MarkviewPalette3Fg`^2.
+◆ `MarkviewIcon4`, links to `MarkviewPalette4Fg`^2.
+◆ `MarkviewIcon5`, links to `MarkviewPalette5Fg`^2.
+◆ `MarkviewIcon6`, links to `MarkviewPalette6Fg`^2.
 
-- `MarkviewHeading1`, links to `MarkviewPalette1`.
-- `MarkviewHeading2`, links to `MarkviewPalette2`.
-- `MarkviewHeading3`, links to `MarkviewPalette3`.
-- `MarkviewHeading4`, links to `MarkviewPalette4`.
-- `MarkviewHeading5`, links to `MarkviewPalette5`.
-- `MarkviewHeading6`, links to `MarkviewPalette6`.
+◆ `MarkviewHeading1`, links to `MarkviewPalette1`.
+◆ `MarkviewHeading2`, links to `MarkviewPalette2`.
+◆ `MarkviewHeading3`, links to `MarkviewPalette3`.
+◆ `MarkviewHeading4`, links to `MarkviewPalette4`.
+◆ `MarkviewHeading5`, links to `MarkviewPalette5`.
+◆ `MarkviewHeading6`, links to `MarkviewPalette6`.
 
-- `MarkviewHeading1Sign`, links to `MarkviewPalette1Sign`.
-- `MarkviewHeading2Sign`, links to `MarkviewPalette2Sign`.
-- `MarkviewHeading3Sign`, links to `MarkviewPalette3Sign`.
-- `MarkviewHeading4Sign`, links to `MarkviewPalette4Sign`.
-- `MarkviewHeading5Sign`, links to `MarkviewPalette5Sign`.
-- `MarkviewHeading6Sign`, links to `MarkviewPalette6Sign`.
+◆ `MarkviewHeading1Sign`, links to `MarkviewPalette1Sign`.
+◆ `MarkviewHeading2Sign`, links to `MarkviewPalette2Sign`.
+◆ `MarkviewHeading3Sign`, links to `MarkviewPalette3Sign`.
+◆ `MarkviewHeading4Sign`, links to `MarkviewPalette4Sign`.
+◆ `MarkviewHeading5Sign`, links to `MarkviewPalette5Sign`.
+◆ `MarkviewHeading6Sign`, links to `MarkviewPalette6Sign`.
 
-- `MarkviewHyperlink`, links to `@markup.link.label.markdown_inline`.
-- `MarkviewImage`, links to `@markup.link.label.markdown_inline`.
-- `MarkviewEmail`, links to `@markup.link.url.markdown_inline`.
+◆ `MarkviewHyperlink`, links to `@markup.link.label.markdown_inline`.
+◆ `MarkviewImage`, links to `@markup.link.label.markdown_inline`.
+◆ `MarkviewEmail`, links to `@markup.link.url.markdown_inline`.
 
-- `MarkviewSubscript`, links to `MarkviewPalette3Fg`.
-- `MarkviewSuperscript`, links to `MarkviewPalette6Fg`.
+◆ `MarkviewSubscript`, links to `MarkviewPalette3Fg`.
+◆ `MarkviewSuperscript`, links to `MarkviewPalette6Fg`.
 
-- `MarkviewListItemMinus`, links to `MarkviewPalette2Fg`.
-- `MarkviewListItemPlus`, links to `MarkviewPalette4Fg`.
-- `MarkviewListItemStar`, links to `MarkviewPalette6Fg`.
+◆ `MarkviewListItemMinus`, links to `MarkviewPalette2Fg`.
+◆ `MarkviewListItemPlus`, links to `MarkviewPalette4Fg`.
+◆ `MarkviewListItemStar`, links to `MarkviewPalette6Fg`.
 
-- `MarkviewTableHeader`, links to `@markup.heading.markdown`.
-- `MarkviewTableBorder`, links to `MarkviewPalette5Fg`.
-- `MarkviewTableAlignLeft`, links to `@markup.heading.markdown`.
-- `MarkviewTableAlignCenter`, links to `@markup.heading.markdown`.
-- `MarkviewTableAlignRight`, links to `@markup.heading.markdown`.
+◆ `MarkviewTableHeader`, links to `@markup.heading.markdown`.
+◆ `MarkviewTableBorder`, links to `MarkviewPalette5Fg`.
+◆ `MarkviewTableAlignLeft`, links to `@markup.heading.markdown`.
+◆ `MarkviewTableAlignCenter`, links to `@markup.heading.markdown`.
+◆ `MarkviewTableAlignRight`, links to `@markup.heading.markdown`.
 
 --------------------------------------------------------------------------------
 🌟 Presets                                               *markview.nvim-presets*
@@ -910,7 +888,7 @@ groups are created by the plugin,
 ▋ If you have any custom configuration that you would like to have as a preset
 ▋ you can open a `pull request` for that.
 
-Check the wiki page {10} for more information.
+Check the wiki page {9} for more information.
 
 USAGE
 
@@ -931,66 +909,66 @@ HEADINGS
 
 Accessed using `require("markview.presets").headings`.
 
-- `glow`
+◆ `glow`
   Like the headings in the `Glow` CLI app.
 
-- `glow_center`
+◆ `glow_center`
   Centered version of `glow`.
 
-- `slanted`
+◆ `slanted`
   Heading level + slanted tail.
 
-- `arrowed`
+◆ `arrowed`
   Heading level + arrowed tail.
 
-- `simple`
+◆ `simple`
   Headings similar to headings in some books.
 
-- `marker`
+◆ `marker`
   Simple marker for heading level.
 
 HORIZONTAL_RULES
 
 Accessed using `require("markview.presets").horizontal_rules`.
 
-- `thin`
+◆ `thin`
   Simple line.
 
-- `thick`
+◆ `thick`
   Slightly thicker line.
 
-- `double`
+◆ `double`
   Double lines.
 
-- `dashed`
+◆ `dashed`
   Dashed line.
 
-- `dotted`
+◆ `dotted`
   Dotted line.
 
-- `solid`
+◆ `solid`
   Very thick line.
 
-- `arrowed`
+◆ `arrowed`
   Arrowed line.
 
 TABLES
 
 Accessed using `require("markview.presets").tables`.
 
-- `none`
+◆ `none`
   Border-less table(kinda like the ones used in some help files).
 
-- `single`
+◆ `single`
   Single border table.
 
-- `double`
+◆ `double`
   Double border table.
 
-- `rounded`
+◆ `rounded`
   Single border with rounded edges(default).
 
-- `solid`
+◆ `solid`
   Solid border table.
 
 --------------------------------------------------------------------------------
@@ -999,18 +977,18 @@ Accessed using `require("markview.presets").tables`.
 `markview.nvim` comes with a few extra things for added functionality. Currently
 available modules are,
 
-- checkboxes.lua {12}
+◆ checkboxes.lua {11}
   Checkbox toggle, state change & more! Supports visual mode too with checkbox
   state caching!
-  Wiki section {11}
+  Wiki section {10}
 
-- editor.lua {14}
+◆ editor.lua {13}
   A simple `code block` creator & editor with support for nested elements!
-  Wiki section {13}
+  Wiki section {12}
 
-- headings.lua {16}
+◆ headings.lua {15}
   Simple heading level changer with support for `setext` headings.
-  Wiki section {15}
+  Wiki section {14}
 
 Example usage,
 
@@ -1035,12 +1013,12 @@ Now use `h`, `j`, `k`, `l` to change the checkbox state.
 If you have time and want to make this project better, consider helping me fix
 any of these issues,
 
-- [ ] Add support for more filetypes in the internal icon provider.
-- [ ] Optimization of `require("markview.renderers.markdown").output()`.
-- [ ] Optimization of the table renderer.
-- [ ] Stricter logic to reduce preview redraws.
-- [X] Make `splitview` update as little content as possible.
-- [X] Make the help files/wiki more beginner friendly.
+◆ [ ] Add support for more filetypes in the internal icon provider.
+◆ [ ] Optimization of `require("markview.renderers.markdown").output()`.
+◆ [ ] Optimization of the table renderer.
+◆ [ ] Stricter logic to reduce preview redraws.
+◆ [X] Make `splitview` update as little content as possible.
+◆ [X] Make the help files/wiki more beginner friendly.
 
  ╶────────────────────────────────────────────────────────────────────────────╴ 
 
@@ -1050,22 +1028,21 @@ link group wouldn't work for this.
 of the linked group wouldn't affect these.
 
 Images ~
-1: #-presets
-2: #-extra-modules
+1: |markview.nvim-presets|
+2: |markview.nvim-extras|
 3: https://github.com/OXY2DEV/markview.nvim/wiki/Home
-4: https://github.com/echasnovski/mini.icons
+4: https://github.com/nvim-mini/mini.icons
 5: https://github.com/nvim-tree/nvim-web-devicons
 6: https://github.com/OXY2DEV/markview.nvim/releases
-7: https://github.com/OXY2DEV/markview.nvim/tree/dev
-8: https://github.com/OXY2DEV/markview.nvim/wiki
-9: https://github.com/OXY2DEV/markview.nvim/wiki/Home#-highlight-groups
-10: https://github.com/OXY2DEV/markview.nvim/wiki
-11: https://github.com/OXY2DEV/markview.nvim/wiki/Extra-modules#-checkboxes
-12: https://github.com/OXY2DEV/markview.nvim/blob/main/lua/markview/extras/checkboxes.lua
-13: https://github.com/OXY2DEV/markview.nvim/wiki/Extra-modules#-editor
-14: https://github.com/OXY2DEV/markview.nvim/blob/main/lua/markview/extras/editor.lua
-15: https://github.com/OXY2DEV/markview.nvim/wiki/Extra-modules#-heading
-16: https://github.com/OXY2DEV/markview.nvim/blob/main/lua/markview/extras/headings.lua
+7: https://github.com/OXY2DEV/markview.nvim/wiki
+8: https://github.com/OXY2DEV/markview.nvim/wiki/Home#-highlight-groups
+9: https://github.com/OXY2DEV/markview.nvim/wiki
+10: https://github.com/OXY2DEV/markview.nvim/wiki/Extra-modules#-checkboxes
+11: https://github.com/OXY2DEV/markview.nvim/blob/main/lua/markview/extras/checkboxes.lua
+12: https://github.com/OXY2DEV/markview.nvim/wiki/Extra-modules#-editor
+13: https://github.com/OXY2DEV/markview.nvim/blob/main/lua/markview/extras/editor.lua
+14: https://github.com/OXY2DEV/markview.nvim/wiki/Extra-modules#-heading
+15: https://github.com/OXY2DEV/markview.nvim/blob/main/lua/markview/extras/headings.lua
 
 
 vim:ft=vimdoc:textwidth=80:tabstop=4:noexpandtab:

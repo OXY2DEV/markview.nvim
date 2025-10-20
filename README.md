@@ -4,11 +4,19 @@
             "filename": "doc/markview.nvim.txt",
             "force_write": true,
             "header": {
-                "desc": "A hackable `Markdown`, `LaTeX`, `Typst` etc. previewer.",
+                "desc": "☄️ A hackable `Markdown`, `LaTeX`, `Typst` etc. previewer.",
                 "tag": "markview.nvim"
             }
         },
         "markdown": {
+            "link_url_modifiers": [
+                [ "^#%-extra%-modules", "|markview.nvim-extras|" ],
+                [ "^#%-presets", "|markview.nvim-presets|" ]
+            ],
+            "list_items": {
+                "marker_minus": "◆",
+                "marker_plus": "◇"
+            },
             "tags": {
                 "Features$": [ "markview.nvim-feature" ],
                 "Configuration$": [ "markview.nvim-config" ],
@@ -27,7 +35,7 @@
 <h1 align="center">☄️ Markview.nvim</h1>
 
 <p align="center">
-    A hackable <b>Markdown</b>, <b>HTML</b>, <b>LaTeX</b>, <b>Typst</b> & <b>YAML</b> previewer for Neovim.
+   A hackable <b>Markdown</b>, <b>HTML</b>, <b>LaTeX</b>, <b>Typst</b> & <b>YAML</b> previewer for Neovim.
 </p>
 <!--markdoc_ignore_end-->
 
@@ -136,7 +144,7 @@ Core features,
     + `\lVert{}`
     + `\boxed{}`
 
-+ Supports the following fonts(requires any *modern* Unicode font),
++ Supports the following math fonts(requires any *modern* Unicode font),
     + `default`(Default math font).
     + `\mathbb{}`
     + `\mathbf{}`
@@ -190,7 +198,7 @@ Core features,
     + Inline codes/Code spans.
     + URI autolinks.
 
-+ Obsidian/PKM extended item support,
++ Obsidian/PKM extended syntax support,
     + Block reference links.
     + Embed file links.
     + Internal links(supports *aliases*).
@@ -200,7 +208,6 @@ Core features,
     + Supported entity codes: **853**.
 
 + Github emoji shorthands support. Supports **1920** shorthands.
-
 + Custom configuration based on link patterns.
 
 #### Typst features,
@@ -235,11 +242,11 @@ Core features,
 
 <img src="https://github.com/OXY2DEV/markview.nvim/blob/images/v25/repo/yaml-material_palenight.png">
 
-- Custom property icons.
-- Custom property scope decorations.
-- Custom icons(/decorations) based on property type & value(e.g. `booleans`).
++ Custom property icons.
++ Custom property scope decorations.
++ Custom icons(/decorations) based on property type & value(e.g. `booleans`).
 
-- Supports the following properties out of the box,
++ Supports the following properties out of the box,
     + tags.
     + aliases.
     + cssclasses.
@@ -277,7 +284,7 @@ Internal Icon provider features,
 <img src="https://github.com/OXY2DEV/markview.nvim/blob/images/v25/repo/traceback.png">
 
 + You can use `:Markview traceShow` to see what the plugin has been doing(including how long some of them took).
-- You can also use `:Markview traceExport` to export these logs.
++ You can also use `:Markview traceExport` to export these logs.
 <!--markdoc_ignore_start-->
 </details>
 <!--markdoc_ignore_end-->
@@ -286,7 +293,7 @@ Internal Icon provider features,
 
 System,
 
-- **Neovim:** 0.10.3
+- **Neovim:** >= 0.10.3
 
 >[!NOTE]
 > It is recommended to use `nowrap`(though there is wrap support in the plugin) & `expandtab`.
@@ -310,7 +317,7 @@ External icon providers,
 > }
 > ```
 
-- [mini.icons](https://github.com/echasnovski/mini.icons)
+- [mini.icons](https://github.com/nvim-mini/mini.icons)
 - [nvim-web-devicons](https://github.com/nvim-tree/nvim-web-devicons)
 
 Parsers,
@@ -417,22 +424,6 @@ Tagged releases can be found in the [release page](https://github.com/OXY2DEV/ma
 >[!NOTE]
 > `Github releases` may sometimes be slightly behind `main`.
 
-### 🚨 Development version
-
-You can use the [dev](https://github.com/OXY2DEV/markview.nvim/tree/dev) branch to use test features.
-
->[!WARNING]
-> Development releases can contain *breaking changes* and **experimental changes**.
-> Use at your own risk!
-
-```lua
-return {
-    "OXY2DEV/markview.nvim",
-    branch = "dev",
-    lazy = false
-};
-```
-
 ## 🪲 Known bugs
 
 - `code span`s don't get recognized when on the line after a `code block`(if the line after the `code span` is empty).
@@ -445,9 +436,11 @@ return {
 
 Check the [wiki](https://github.com/OXY2DEV/markview.nvim/wiki) for the entire configuration table. A simplified version is given below.
 
+<!--markdoc_ignore_start-->
 <details>
     <summary>Click for config jump-scare</summary><!-- --+ -->
 
+<!--markdoc_ignore_end-->
 ```lua
 --- Configuration table for `markview.nvim`.
 ---@class mkv.config
@@ -570,9 +563,11 @@ mkv.config = {
     }
 }
 ```
+<!--markdoc_ignore_start-->
 <!-- --_ -->
 </details>
 
+<!--markdoc_ignore_end-->
 ## 🎇 Commands
 
 This plugin follows the *sub-commands* approach for creating commands. There is only a single `:Markview` command.
@@ -581,6 +576,7 @@ It comes with the following sub-commands,
 
 >[!NOTE]
 > When no sub-command name is provided(or an invalid sub-command is used) `:Markview` will run `:Markview Toggle`.
+
 
 | Sub-command      | Arguments           | Description                              |
 |------------------|---------------------|------------------------------------------|
@@ -595,9 +591,10 @@ It comes with the following sub-commands,
 | `splitToggle`    | none                | Toggles *splitview*.                     |
 
 
+<!--markdoc_ignore_start-->
 <details>
     <summary>Advanced commands are given below</summary><!-- --+ -->
-
+<!--markdoc_ignore_end-->
 Sub-commands related to auto-registering new buffers for previews and/or manually attaching/detaching buffers,
 
 | Sub-command      | Arguments           | Description                              |
@@ -649,8 +646,10 @@ Sub-commands for `bug report`,
 | `traceExport`    | none                | Exports trace logs to `trace.txt`.       |
 | `traceShow`      | none                | Shows trace logs in a window.            |
 
+<!--markdoc_ignore_start-->
 </details>
 
+<!--markdoc_ignore_end-->
 >[!TIP]
 > **buffer** defaults to the current buffer. So, you can run commands on the current buffer without providing the buffer.
 > ```vim
