@@ -646,6 +646,20 @@ end
 
 ------------------------------------------------------------------------------
 
+actions.splitToggle = function ()
+	--|fS
+
+	local state = require("markview.state");
+
+	if state.get_splitview_source() then
+		actions.splitClose();
+	else
+		actions.splitOpen();
+	end
+
+	---|fE
+end
+
 actions.splitOpen = function (buffer)
 	--|fS
 
