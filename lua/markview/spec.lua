@@ -280,6 +280,15 @@ spec.should_fix_config = function (config)
 	return false;
 end
 
+---@param config markview.config?
+spec.tmp_setup = function (config)
+	spec.tmp_config = config;
+end
+
+spec.tmp_reset = function ()
+	spec.tmp_config = nil;
+end
+
 --- Setup function for markview.
 ---@param config markview.config?
 spec.setup = function (config)
