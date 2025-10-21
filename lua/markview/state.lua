@@ -91,6 +91,42 @@ state.set_splitview_source = function (buffer)
 	state.vars.splitview_source = buffer;
 end
 
+state.get_splitview_buffer = function (create)
+	if create ~= false then
+		state.set_splitview_buffer();
+	end
+
+	return state.vars.splitview_buffer;
+end
+
+state.set_splitview_buffer = function ()
+	local old = state.get_splitview_buffer();
+
+	if not old or vim.api.nvim_buf_is_valid(old) == false then
+		state.vars.splitview_buffer = vim.api.nvim_create_buf(false, true);
+	end
+end
+
+state.get_splitview_window = function (opts, create)
+	if create ~= false then
+		state.set_splitview_window(opts);
+	end
+
+	return state.vars.splitview_window;
+end
+
+state.set_splitview_window = function (opts)
+	local old = state.get_splitview_window();
+
+	if not old or vim.api.nvim_win_is_valid(old) == false then
+		state.vars.splitview_window = vim.api.nvim_open_win(
+			state.get_splitview_buffer(),
+			false,
+			opts or { split = "right", }
+		);
+	end
+end
+
 ---@param buffer? integer
 ---@param default? boolean
 ---@return markview.state.buf?

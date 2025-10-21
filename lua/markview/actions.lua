@@ -115,13 +115,15 @@ actions.render = function (_buffer, _state, _config)
 	spec.tmp_setup(_config);
 
 	local buffer = _buffer or vim.api.nvim_get_current_buf();
-	local state = _state or require("markview.state").get_buffer_state(buffer, true);
 
-	---@cast state markview.state.buf
+	local state = require("markview.state");
+	local buf_state = _state or state.get_buffer_state(buffer, true);
+
+	---@cast buf_state markview.state.buf
 
 	actions.clear(buffer);
 
-	if state.enable == false then
+	if buf_state.enable == false then
 		spec.tmp_reset();
 		return;
 	end
@@ -153,6 +155,98 @@ actions.render = function (_buffer, _state, _config)
 	end
 
 	spec.tmp_reset();
+
+	---|fE
+end
+
+actions.splitview_setup = function ()
+	---|fS
+
+	local spec = require("markview.spec");
+	local state = require("markview.state");
+	local src = state.get_splitview_source();
+
+	if not src or state.buf_safe(src) == false then
+		actions.splitClose();
+		return;
+	end
+
+	local win = vim.fn.win_findbuf(src)[1];
+
+	if state.win_safe(win) == false then
+		actions.splitClose();
+		return;
+	end
+
+	local sp_buf = state.get_splitview_buffer();
+
+	vim.bo[sp_buf].ft = vim.bo[sp_buf].ft;
+	actions.set_query(sp_buf);
+
+	local sp_win = state.get_splitview_window(
+		spec.get({ "preview", "splitview_winopts", }, {
+			fallback = { split = "right" },
+			ignore_enable = true
+		})
+	);
+
+	vim.wo[sp_win].wrap = vim.wo[win].wrap;
+	vim.wo[sp_win].linebreak = vim.wo[win].linebreak;
+
+	vim.wo[sp_win].number = false;
+	vim.wo[sp_win].relativenumber = false;
+	vim.wo[sp_win].list = false;
+	vim.wo[sp_win].winhl = "Normal:Normal";
+
+	---|fE
+end
+
+actions.splitview_render = function ()
+	---|fS
+
+	local state = require("markview.state");
+	local utils = require("markview.utils");
+
+	local buffer = state.get_splitview_source();
+
+	if state.buf_safe(buffer) == false then
+		pcall(actions.splitClose);
+		return;
+	end
+
+	local spec =require("markview.spec");
+
+	actions.splitview_setup();
+
+	local max_lines = spec.get({ "preview", "max_buf_lines" }, { fallback = 1000, ignore_enable = true });
+	local line_count = vim.api.nvim_buf_line_count(buffer);
+
+	local main_win = utils.buf_getwin(buffer);
+	local cursor = vim.api.nvim_win_get_cursor(main_win);
+
+	---@type integer, integer
+	local pre_buf, pre_win = state.get_splitview_buffer(), state.get_splitview_window();
+
+	local R = actions.get_range(cursor[1], { max_lines, max_lines + 1 }, line_count);
+	local lines = vim.api.nvim_buf_get_lines(buffer, R[1], R[2], false);
+
+	--[[
+		BUG: Calling `nvim_buf_set_lines()` with mismatch line-count causes issues.
+
+		This happens because id we are replacing 7 lines with 6 lines of text the 7th line doesn't get deleted.
+		FIX: Clear lines first than apply the updated text.
+
+		See #408
+	]]
+	vim.api.nvim_buf_set_lines(pre_buf, R[1], R[2], false, {});
+	vim.api.nvim_buf_set_lines(pre_buf, R[1], R[1], false, lines);
+
+	pcall(vim.api.nvim_win_set_cursor, pre_win, cursor);
+
+	actions.render(pre_buf, {
+		enable = true,
+		hybrid_mode = false
+	});
 
 	---|fE
 end
@@ -546,6 +640,84 @@ actions.hybridDisable = function (buffer)
 	end
 
 	actions.render(buffer);
+
+	---|fE
+end
+
+------------------------------------------------------------------------------
+
+actions.splitOpen = function (buffer)
+	--|fS
+
+	---@type integer
+	buffer = buffer or vim.api.nvim_get_current_buf();
+	local state = require("markview.state");
+
+	if state.buf_safe(buffer) == false then
+		return;
+	end
+
+	actions.splitClose();
+
+	local buf_state = state.get_buffer_state(buffer, false);
+
+	if buf_state and buf_state.enable == true then
+		actions.autocmd("on_disable", buffer, vim.fn.win_findbuf(buffer));
+	end
+
+	state.set_splitview_source(buffer);
+
+	actions.splitview_setup();
+	actions.clear(buffer);
+
+	actions.autocmd("on_splitview_open", buffer, state.get_splitview_buffer(), state.get_splitview_window());
+	actions.splitview_render();
+
+	---|fE
+end
+
+actions.splitClose = function ()
+	---|fS
+
+	local state = require("markview.state");
+	local src = state.get_splitview_source();
+
+	if not src then
+		return;
+	end
+
+	local sp_buf = state.get_splitview_buffer(false);
+	local sp_win = state.get_splitview_window({}, false);
+
+	actions.autocmd("on_splitview_close", src, sp_buf, sp_win);
+	pcall(vim.api.nvim_win_close, sp_win, true);
+	state.vars.splitview_window = nil;
+
+	if state.buf_safe(sp_buf) == true then
+		actions.clear(sp_buf);
+		vim.api.nvim_buf_set_lines(sp_buf, 0, -1, false, {});
+	end
+
+	if state.buf_safe(src) == false then
+		return;
+	elseif not state.get_buffer_state(src, false) then
+		return;
+	end
+
+	local src_state = state.get_buffer_state(src, false);
+
+	--[[
+		NOTE(@OXY2DEV): Only trigger `on_enable` on valid buffers!
+
+		For a buffer to be considered *valid*,
+			1. `markview.nvim`'s preview must be **enabled**.
+			2. `markview.nvim` should be attached to `buffer`.
+			3. Previews must be **enabled** for `buffer`.
+	]]
+	if state.enabled() and src_state and src_state.enable then
+		actions.autocmd("on_enable", src, vim.fn.win_findbuf(src));
+		actions.render(src);
+	end
 
 	---|fE
 end
