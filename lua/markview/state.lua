@@ -64,7 +64,7 @@ end
 --- Enable/Disable `markview.nvim`
 ---@param to boolean
 state.enable = function (to)
-	state.enable = to;
+	state.vars.enable = to;
 end
 
 ---@param buffer? integer
