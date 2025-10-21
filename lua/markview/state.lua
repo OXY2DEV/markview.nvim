@@ -100,7 +100,7 @@ state.get_splitview_buffer = function (create)
 end
 
 state.set_splitview_buffer = function ()
-	local old = state.get_splitview_buffer();
+	local old = state.get_splitview_buffer(false);
 
 	if not old or vim.api.nvim_buf_is_valid(old) == false then
 		state.vars.splitview_buffer = vim.api.nvim_create_buf(false, true);
@@ -116,7 +116,7 @@ state.get_splitview_window = function (opts, create)
 end
 
 state.set_splitview_window = function (opts)
-	local old = state.get_splitview_window();
+	local old = state.get_splitview_window({}, false);
 
 	if not old or vim.api.nvim_win_is_valid(old) == false then
 		state.vars.splitview_window = vim.api.nvim_open_win(
