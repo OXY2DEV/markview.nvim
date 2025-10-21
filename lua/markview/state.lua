@@ -67,6 +67,30 @@ state.enable = function (to)
 	state.vars.enable = to;
 end
 
+state.enabled = function ()
+	return state.vars.enable;
+end
+
+state.buf_attach = function (buffer, to)
+	state.vars.attached_buffers[buffer] = to;
+
+	if not state.vars.buffer_states[buffer] and to then
+		state.set_buffer_state(buffer);
+	end
+end
+
+state.buf_attached = function (buffer)
+	return state.vars.attached_buffers[buffer] == true;
+end
+
+state.get_splitview_source = function ()
+	return state.vars.splitview_source;
+end
+
+state.set_splitview_source = function (buffer)
+	state.vars.splitview_source = buffer;
+end
+
 ---@param buffer? integer
 ---@param default? boolean
 ---@return markview.state.buf?
@@ -93,7 +117,7 @@ state.get_buffer_state = function (buffer, default)
 end
 
 ---@param buffer integer
----@param new_state markview.state.buf
+---@param new_state? markview.state.buf
 state.set_buffer_state = function (buffer, new_state)
 	if state.vars.buffer_states[buffer] and not new_state then
 		return;
@@ -106,7 +130,7 @@ state.set_buffer_state = function (buffer, new_state)
 	---@type boolean Should hybrid mode be enabled on the buffer?
 	local hm_enable = spec.get({ "preview", "enable_hybrid_mode" }, { fallback = true, ignore_enable = true });
 
-	state.vars.buffer_states[buffer] = vim.tbl_extend("force", {
+	state.vars.buffer_states[buffer] = vim.tbl_extend("force", state.vars.buffer_states[buffer] or {
 		enable = enable,
 		hybrid_mode = hm_enable
 	}, new_state or {});
@@ -115,7 +139,7 @@ end
 state.can_attach = function (buffer)
 	if state.buf_safe(buffer) == false then
 		return false;
-	elseif vim.list_contains(state.vars.attached_buffers, buffer) then
+	elseif state.vars.attached_buffers[buffer] then
 		return false;
 	end
 
@@ -128,8 +152,16 @@ state.attach = function (buffer, _state)
 		return;
 	end
 
-	table.insert(state.vars.attached_buffers, buffer);
+	state.vars.attached_buffers[buffer] = true;
 	state.set_buffer_state(buffer, _state);
+end
+
+state.detach = function (buffer, reset_state)
+	state.vars.attached_buffers[buffer] = nil;
+
+	if reset_state then
+		state.vars.buffer_states[buffer] = nil;
+	end
 end
 
 return state;
