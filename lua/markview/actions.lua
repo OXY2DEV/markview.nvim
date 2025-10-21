@@ -180,7 +180,7 @@ actions.splitview_setup = function ()
 
 	local sp_buf = state.get_splitview_buffer();
 
-	vim.bo[sp_buf].ft = vim.bo[sp_buf].ft;
+	vim.bo[sp_buf].ft = vim.bo[src].ft;
 	actions.set_query(sp_buf);
 
 	local sp_win = state.get_splitview_window(
