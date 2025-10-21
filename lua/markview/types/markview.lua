@@ -37,6 +37,51 @@
 ---@field yaml? markview.config.yaml
 
 
+--[[ Sub-commands for `markview.nvim`. ]]
+---@class markview.commands
+---
+---@field Start fun(): nil Starts `markview`.
+---@field Stop fun(): nil Starts `markview`.
+---
+---@field disable fun (buffer: integer?): nil Disables `preview` for `buffer`.
+---@field enable fun (buffer: integer?): nil Enables `preview` for `buffer`.
+---@field toggle fun (buffer: integer?): nil Toggles `preview` for `buffer`.
+---
+---@field Disable fun (): nil Disables `preview` for all *attached* buffers.
+---@field Enable fun (): nil Enables `preview` for all *attached* buffers.
+---@field Toggle fun (): nil Toggles `preview` for all *attached* buffers.
+---
+---@field attach fun (buffer: integer?): nil Attaches `markview` to `buffer`.
+---@field detach fun (buffer: integer?): nil Detaches `markview` from `buffer`.
+---
+---
+---@field clear fun (buffer: integer?): nil Clears previews in `buffer`.
+---@field render fun (buffer: integer?): nil Renders previews in `buffer`.
+---
+---@field Clear fun (): nil Clears previews in all *attached* buffers.
+---@field Render fun (): nil Renders previews in all *attached* buffers.
+---
+---
+---@field hybridDisable fun (buffer: integer?): nil Disables `hybrid mode`(if enabled) for `buffer`. NOTE: Needs `config.preview.hybrid_modes` to be set.
+---@field hybridEnable fun (buffer: integer?): nil Enables `hybrid mode`(if disables) for `buffer`. NOTE: Needs `config.preview.hybrid_modes` to be set.
+---@field hybridToggle fun (buffer: integer?): nil Toggles `hybrid mode` for `buffer`. NOTE: Needs `config.preview.hybrid_modes` to be set.
+---
+---@field HybridDisable fun (buffer: integer?): nil Disables `hybrid mode`(if enabled). NOTE: Needs `config.preview.hybrid_modes` to be set.
+---@field HybridEnable fun (buffer: integer?): nil Enables `hybrid mode`(if disables). NOTE: Needs `config.preview.hybrid_modes` to be set.
+---@field HybridToggle fun (buffer: integer?): nil Toggles `hybrid mode`. NOTE: Needs `config.preview.hybrid_modes` to be set.
+---
+---@field linewiseDisable fun (): nil Disables `linewise hybrid mode`(if enabled). NOTE: Needs `config.preview.hybrid_modes` to be set.
+---@field linewiseEnable fun (): nil Enables `linewise hybrid mode`(if disables). NOTE: Needs `config.preview.hybrid_modes` to be set.
+---@field linewiseToggle fun (): nil Toggles `linewise hybrid mode`. NOTE: Needs `config.preview.hybrid_modes` to be set.
+
+
+
+
+
+
+
+
+
 --- Options used for retrieving values from
 --- the configuration table.
 ---@class markview.spec.get_opts
