@@ -691,6 +691,8 @@ actions.splitClose = function ()
 
 	actions.autocmd("on_splitview_close", src, sp_buf, sp_win);
 	pcall(vim.api.nvim_win_close, sp_win, true);
+
+	state.set_splitview_source(nil);
 	state.vars.splitview_window = nil;
 
 	if state.buf_safe(sp_buf) == true then
