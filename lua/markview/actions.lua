@@ -198,6 +198,8 @@ actions.autocmd = function (autocmd, ...)
 	---|fE
 end
 
+------------------------------------------------------------------------------
+
 actions.set_query = function (buffer)
 	---|fS
 
@@ -262,6 +264,8 @@ actions.reset_query = function (buffer)
 	---|fE
 end
 
+------------------------------------------------------------------------------
+
 actions.attach = function (buffer, _state)
 	---|fS
 
@@ -314,6 +318,234 @@ actions.attach = function (buffer, _state)
 	end
 
 	-- health.__child_indent_de();
+
+	---|fE
+end
+
+actions.detach = function (buffer)
+	---|fS
+
+	---@type integer
+	buffer = buffer or vim.api.nvim_get_current_buf();
+
+	-- health.notify("trace", {
+	-- 	level = 9,
+	-- 	message = string.format("Detached: %d", buffer)
+	-- });
+	-- health.__child_indent_in();
+
+	actions.autocmd("on_detach", buffer, vim.fn.win_findbuf(buffer))
+
+	--[[
+		Remove buffer from the list of attached buffers.
+
+		NOTE: The `state` should be kept in case we need to reuse them later.
+	]]
+	require("markview.state").detach(buffer, false);
+	actions.clear(buffer);
+	-- health.__child_indent_de()
+
+	---|fE
+end
+
+------------------------------------------------------------------------------
+
+actions.enable = function (buffer)
+	---|fS
+	---@type integer
+	buffer = buffer or vim.api.nvim_get_current_buf();
+
+	local spec = require("markview.spec");
+	local state = require("markview.state");
+
+	if state.buf_attached(buffer) == false then
+		return;
+	elseif state.get_splitview_source() == buffer then
+		return;
+	end
+
+	-- health.notify("trace", {
+	-- 	level = 6,
+	-- 	message = string.format("Enabled: %d", buffer)
+	-- });
+	-- health.__child_indent_in();
+	actions.set_query(buffer);
+	state.set_buffer_state(buffer, { enable = true, hybrid_mode = nil });
+
+	local mode = vim.api.nvim_get_mode().mode;
+	---@type string[]
+	local prev_modes = spec.get({ "preview", "modes" }, { fallback = {}, ignore_enable = true });
+
+	if vim.list_contains(prev_modes, mode) == false then
+		-- health.__child_indent_de();
+		return;
+	end
+
+	---|fS 
+
+	--[[
+		fix(markdown): Disable `breakindent` before rendering.
+
+		This is to prevent `text wrap support` from being broken due to `breakindent` changing where wrapped text is shown.
+	]]
+
+	for _, win in ipairs(vim.fn.win_findbuf(buffer)) do
+		vim.w[win].__mkv_cached_breakindet = vim.wo[win].breakindent;
+		vim.wo[win].breakindent = false;
+	end
+
+	---|fE
+
+	actions.render(buffer);
+	actions.autocmd("on_enable", buffer, vim.fn.win_findbuf(buffer))
+
+	if actions.in_hybrid_mode() then
+		actions.autocmd("on_hybrid_enable", buffer, vim.fn.win_findbuf(buffer))
+	end
+
+	-- health.__child_indent_de();
+
+	---|fE
+end
+
+actions.disable = function (buffer)
+	---|fS
+
+	---@type integer
+	buffer = buffer or vim.api.nvim_get_current_buf();
+
+	local state = require("markview.state");
+
+	if state.buf_attached(buffer) == false then
+		return;
+	elseif state.get_splitview_source() == buffer then
+		state.enable(false);
+		return;
+	end
+
+	-- health.notify("trace", {
+	-- 	level = 7,
+	-- 	message = string.format("Disabled: %d", buffer)
+	-- });
+	-- health.__child_indent_in();
+
+	actions.reset_query(buffer);
+
+	--[[
+		fix(markdown): Restore `breakindent` before clearing.
+
+		We need to *restore* the original value of `breakindent` to respect user preference(we need to check if a cached value exists first).
+	]]
+
+	for _, win in ipairs(vim.fn.win_findbuf(buffer)) do
+		vim.wo[win].breakindent = vim.w[win].__mkv_cached_breakindet;
+	end
+
+	state.enable(false);
+	actions.clear(buffer);
+
+	actions.autocmd("on_disable", buffer, vim.fn.win_findbuf(buffer))
+
+	if actions.in_hybrid_mode() then
+		actions.autocmd("on_hybrid_disable", buffer, vim.fn.win_findbuf(buffer))
+	end
+
+	-- health.__child_indent_de();
+
+	---|fE
+end
+
+------------------------------------------------------------------------------
+
+actions.hybrid_toggle = function (buffer)
+	---|fS
+
+	buffer = buffer or vim.api.nvim_get_current_buf();
+
+	local state = require("markview.state");
+	local old_state = state.get_buffer_state(buffer, false);
+
+	if state.buf_attached(buffer) == false then
+		return;
+	elseif not old_state then
+		return;
+	end
+
+	if old_state.hybrid_mode == true then
+		actions.hybrid_disable();
+	else
+		actions.hybrid_enable();
+	end
+
+	---|fE
+end
+
+actions.hybrid_enable = function (buffer)
+	---|fS
+
+	buffer = buffer or vim.api.nvim_get_current_buf();
+
+	local state = require("markview.state");
+	local old_state = state.get_buffer_state(buffer, false);
+
+	if state.buf_attached(buffer) == false then
+		return;
+	elseif not old_state then
+		return;
+	elseif old_state.hybrid_mode == true then
+		return;
+	end
+
+	old_state.enable = true;
+	state.set_buffer_state(buffer, old_state);
+
+	if old_state.enable == false then
+		return;
+	elseif state.get_splitview_source() == buffer then
+		return;
+	end
+
+
+	if actions.in_hybrid_mode() then
+		actions.autocmd("on_hybrid_enable", buffer, vim.fn.win_findbuf(buffer))
+	end
+
+	actions.render(buffer);
+
+	---|fE
+end
+
+actions.hybrid_disable = function (buffer)
+	---|fS
+
+	buffer = buffer or vim.api.nvim_get_current_buf();
+
+	local state = require("markview.state");
+	local old_state = state.get_buffer_state(buffer, false);
+
+	if state.buf_attached(buffer) == false then
+		return;
+	elseif not old_state then
+		return;
+	elseif old_state.hybrid_mode == false then
+		return;
+	end
+
+	old_state.enable = false;
+	state.set_buffer_state(buffer, old_state);
+
+	if old_state.enable == false then
+		return;
+	elseif state.get_splitview_source() == buffer then
+		return;
+	end
+
+
+	if actions.in_hybrid_mode() then
+		actions.autocmd("on_hybrid_enable", buffer, vim.fn.win_findbuf(buffer))
+	end
+
+	actions.render(buffer);
 
 	---|fE
 end
