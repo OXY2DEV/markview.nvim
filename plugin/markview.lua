@@ -166,9 +166,9 @@ vim.api.nvim_create_autocmd("ModeChanged", {
 			elseif do_render then
 				-- warning: `breakindent` must be set before rendering!
 				vim.w[win].__mkv_cached_breakindet = vim.wo[win].breakindent;
-				vim.wo[win].breakindent = true;
+				vim.wo[win].breakindent = false;
 			elseif vim.w[win].__mkv_cached_breakindet then
-				vim.wo[win].breakindent = true;
+				vim.wo[win].breakindent = vim.w[win].__mkv_cached_breakindet;
 			end
 		end
 
