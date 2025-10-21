@@ -457,7 +457,7 @@ end
 
 ------------------------------------------------------------------------------
 
-actions.hybrid_toggle = function (buffer)
+actions.hybridTtoggle = function (buffer)
 	---|fS
 
 	buffer = buffer or vim.api.nvim_get_current_buf();
@@ -480,7 +480,7 @@ actions.hybrid_toggle = function (buffer)
 	---|fE
 end
 
-actions.hybrid_enable = function (buffer)
+actions.hybridEnable = function (buffer)
 	---|fS
 
 	buffer = buffer or vim.api.nvim_get_current_buf();
@@ -515,7 +515,7 @@ actions.hybrid_enable = function (buffer)
 	---|fE
 end
 
-actions.hybrid_disable = function (buffer)
+actions.hybridDisable = function (buffer)
 	---|fS
 
 	buffer = buffer or vim.api.nvim_get_current_buf();
