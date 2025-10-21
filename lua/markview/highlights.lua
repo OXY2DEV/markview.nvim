@@ -508,7 +508,8 @@ highlights.groups = {
 				value = {
 					bg = highlights.rgb_to_hex(
 						highlights.oklab_to_srgb(mix)
-					)
+					),
+					fg = vim.api.nvim_get_hl(0, { name = "@markup.raw", create = false, link = false }).fg
 				}
 			},
 		};
