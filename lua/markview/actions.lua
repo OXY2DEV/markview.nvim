@@ -314,6 +314,17 @@ actions.autocmd = function (autocmd, ...)
 	---|fE
 end
 
+actions.clean = function ()
+	---|fS
+
+	require("markview.state").clean(nil, function ()
+		-- NOTE: If the buffer is being previewed in a `split view` we should close the split view window.
+		actions.splitClose();
+	end);
+
+	---|fE
+end
+
 ------------------------------------------------------------------------------
 
 actions.set_query = function (buffer)

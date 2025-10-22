@@ -61,6 +61,19 @@ state.win_safe = function (window)
 end
 
 
+state.clean = function (on_clear, on_splitview_clear)
+	for buffer, _ in pairs(state.vars.attached_buffers) do
+		if state.buf_safe(buffer) == false then
+			state.vars.attached_buffers[buffer] = nil;
+			pcall(on_clear, buffer);
+		end
+
+		if buffer == state.get_splitview_source() then
+			pcall(on_splitview_clear, buffer);
+		end
+	end
+end
+
 --- Enable/Disable `markview.nvim`
 ---@param to boolean
 state.enable = function (to)
