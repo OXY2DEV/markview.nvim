@@ -143,8 +143,13 @@ actions.render = function (_buffer, _state, _config)
 			renderer.render(buffer, content);
 		end
 	else
+		local draw_range = spec.get({ "preview", "draw_range" }, { fallback = { vim.o.lines, vim.o.lines }, ignore_enable = true });
+
 		for _, win in ipairs(vim.fn.win_findbuf(buffer)) do
-			local content, _ = parser.parse(buffer, 0, -1, true);
+			local cursor = vim.api.nvim_win_get_cursor(win);
+			local R = actions.get_range(cursor[1], draw_range, L);
+
+			local content, _ = parser.parse(buffer, R[1], R[2], true);
 
 			if H then
 				actions.handle_hybrid_mode(LH, buffer, L, { win }, content);
