@@ -202,7 +202,7 @@ spec.default = {
 		linewise_hybrid_mode = false,
 		max_buf_lines = 1000,
 
-		draw_range = { 2 * vim.o.lines, 2 * vim.o.lines },
+		draw_range = { 1 * vim.o.lines, 1 * vim.o.lines },
 		edit_range = { 0, 0 },
 
 		splitview_winopts = {
@@ -211,20 +211,6 @@ spec.default = {
 	},
 
 	renderers = {},
-
-	--
-	-- markdown = {
-	-- },
-	-- markdown_inline = {
-	-- },
-	-- html = {
-	-- },
-	-- latex = {
-	-- },
-	-- typst = {
-	-- },
-	-- yaml = {
-	-- }
 };
 
 ---@type string[] Properties that should be sourced *externally*.
