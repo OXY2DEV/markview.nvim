@@ -199,10 +199,11 @@ autocmds.cursor = function (args)
 	local actions = require("markview.actions");
 
 	autocmds.cursor_timer:stop();
+	local splitview_src = state.get_splitview_source();
 
 	if not args.buf or not state.enabled() or not state.buf_attached(args.buf) then
 		return;
-	else
+	elseif args.buf ~= splitview_src then
 		local buf_state = state.get_buffer_state(args.buf, false)
 
 		if not buf_state or not buf_state.enable then
@@ -213,6 +214,10 @@ autocmds.cursor = function (args)
 	local use_delay, ignore = autocmds.use_delay(args.buf, args.event, args);
 
 	if ignore then
+		if args.buf == splitview_src then
+			actions.splitview_cursor();
+		end
+
 		return;
 	end
 
