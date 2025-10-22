@@ -201,12 +201,34 @@ actions.splitview_setup = function ()
 	---|fE
 end
 
+actions.splitview_cursor = function ()
+	---|fS
+
+	local state = require("markview.state");
+
+	local buffer = state.get_splitview_source();
+	local window = vim.fn.win_findbuf(buffer)[1];
+
+	if state.buf_safe(buffer) == false then
+		return;
+	elseif not window or state.win_safe(window) == false then
+		return;
+	end
+
+	local sp_win = state.get_splitview_window({}, false);
+
+	if sp_win then
+		local cursor = vim.api.nvim_win_get_cursor(window);
+		pcall(vim.api.nvim_win_set_cursor, sp_win, cursor);
+	end
+
+	---|fE
+end
+
 actions.splitview_render = function ()
 	---|fS
 
 	local state = require("markview.state");
-	local utils = require("markview.utils");
-
 	local buffer = state.get_splitview_source();
 
 	if state.buf_safe(buffer) == false then
@@ -221,7 +243,7 @@ actions.splitview_render = function ()
 	local max_lines = spec.get({ "preview", "max_buf_lines" }, { fallback = 1000, ignore_enable = true });
 	local line_count = vim.api.nvim_buf_line_count(buffer);
 
-	local main_win = utils.buf_getwin(buffer);
+	local main_win = vim.fn.win_findbuf(buffer)[1];
 	local cursor = vim.api.nvim_win_get_cursor(main_win);
 
 	---@type integer, integer
