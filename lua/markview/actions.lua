@@ -500,6 +500,32 @@ end
 
 ------------------------------------------------------------------------------
 
+actions.toggle = function (buffer)
+	---|fS
+	---@type integer
+	buffer = buffer or vim.api.nvim_get_current_buf();
+
+	local state = require("markview.state");
+
+	if state.buf_attached(buffer) == false then
+		return;
+	elseif state.get_splitview_source() == buffer then
+		return;
+	end
+
+	local buf_state = state.get_buffer_state(buffer, false);
+
+	if not buf_state then
+		return;
+	elseif buf_state.enable then
+		actions.disable(buffer);
+	else
+		actions.enable(buffer);
+	end
+
+	---|fE
+end
+
 actions.enable = function (buffer)
 	---|fS
 	---@type integer
