@@ -771,4 +771,12 @@ actions.splitClose = function ()
 	---|fE
 end
 
+------------------------------------------------------------------------------
+
+actions.forEach = function (fn, list)
+	for _, item in ipairs(list) do
+		pcall(fn, item);
+	end
+end
+
 return actions;

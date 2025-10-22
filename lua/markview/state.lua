@@ -96,6 +96,25 @@ state.buf_attached = function (buffer)
 	return state.vars.attached_buffers[buffer] == true;
 end
 
+state.get_attached_buffers = function ()
+	return vim.tbl_keys(state.vars.attached_buffers);
+end
+
+state.get_enabled_buffers = function ()
+	local output = {};
+
+	for buf, _ in pairs(state.vars.attached_buffers) do
+		local buf_state = state.get_buffer_state(buf, false);
+
+		if buf_state and buf_state.enable then
+			table.insert(output, buf);
+		end
+	end
+
+	table.sort(output);
+	return output;
+end
+
 state.get_splitview_source = function ()
 	return state.vars.splitview_source;
 end
