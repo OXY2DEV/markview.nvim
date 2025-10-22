@@ -2,10 +2,28 @@ local actions = {};
 
 ---|fS "chunk: Hybrid mode related stuff"
 
+---@return boolean in_preview_mode
+actions.in_preview_mode = function (mode)
+	---|fS
+
+	local spec = require("markview.spec");
+
+	---@type string[] List of modes where to show previews.
+	local modes = spec.get({ "preview", "modes" }, { fallback = {}, ignore_enable = true });
+	mode = mode or vim.api.nvim_get_mode().mode;
+
+	if vim.list_contains(modes, mode) == false then
+		return false;
+	end
+
+	return true;
+
+	---|fE
+end
+
 ---@return boolean in_hybrid_mode
 ---@return boolean in_linewise_hybrid_mode
----@private
-actions.in_hybrid_mode = function ()
+actions.in_hybrid_mode = function (mode)
 	---|fS
 
 	local spec = require("markview.spec");
@@ -15,7 +33,7 @@ actions.in_hybrid_mode = function ()
 	---@type boolean Is line-wise hybrid mode enabled?
 	local linewise_hybrid_mode = spec.get({ "preview", "linewise_hybrid_mode" }, { fallback = false, ignore_enable = true })
 
-	local mode = vim.api.nvim_get_mode().mode;
+	mode = mode or vim.api.nvim_get_mode().mode;
 
 	if vim.list_contains(hybrid_modes, mode) == false then
 		return false, false;
@@ -431,7 +449,7 @@ actions.attach = function (buffer, _state)
 	actions.autocmd("on_attach", buffer, vim.fn.win_findbuf(buffer))
 	local buf_state = state.get_buffer_state(buffer, false);
 
-	if buf_state and buf_state.enable == true then
+	if buf_state and buf_state.enable then
 		actions.set_query(buffer);
 
 		actions.autocmd("on_enable", buffer, vim.fn.win_findbuf(buffer))
