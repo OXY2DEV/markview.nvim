@@ -1,4 +1,4 @@
-*markview.nvim-advanced*              🔥Advanced usage guide for `markview.nvim`
+*markview.nvim-advanced*             🔥 Advanced usage guide for `markview.nvim`
 
 This is a collection of `configs` that,
 
