@@ -502,6 +502,7 @@ end
 
 actions.toggle = function (buffer)
 	---|fS
+
 	---@type integer
 	buffer = buffer or vim.api.nvim_get_current_buf();
 
@@ -606,6 +607,7 @@ actions.disable = function (buffer)
 	-- health.__child_indent_in();
 
 	actions.reset_query(buffer);
+	state.set_buffer_state(buffer, { enable = false, hybrid_mode = nil });
 
 	--[[
 		fix(markdown): Restore `breakindent` before clearing.
