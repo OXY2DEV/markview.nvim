@@ -1,5 +1,8 @@
 ; Container elements
 
+<a href="https://example.com">Example</a>
+<img src="https://example.com"/>
+
 <b>Bold</b>
 <code>Code span</code>
 <em>Emphasis</em>
@@ -9,6 +12,7 @@
 <sub>Subscript</sub>
 <sup>Superscript</sup>
 <u>Underlined</u>
+<s>Striked</s>
 
 ; Keyboard sequence
 

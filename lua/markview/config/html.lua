@@ -149,6 +149,21 @@ return {
 			on_node = { hl_group = "MarkviewSuperscript" },
 			on_closing_tag = { conceal = "", hl_mode = "combine", virt_text_pos = "inline", virt_text = { { "]", "MarkviewSuperscript" } } },
 		},
+		["^s$"] = {
+			on_opening_tag = { conceal = "" },
+			on_node = { hl_group = "@markup.strikethrough" },
+			on_closing_tag = { conceal = "" },
+		},
+		["^strike$"] = {
+			on_opening_tag = { conceal = "" },
+			on_node = { hl_group = "@markup.strikethrough" },
+			on_closing_tag = { conceal = "" },
+		},
+		["^del$"] = {
+			on_opening_tag = { conceal = "" },
+			on_node = { hl_group = "@markup.strikethrough" },
+			on_closing_tag = { conceal = "" },
+		},
 		["^u$"] = {
 			on_opening_tag = { conceal = "" },
 			on_node = { hl_group = "Underlined" },
