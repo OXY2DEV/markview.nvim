@@ -3,16 +3,16 @@
 <!-- Show wiki map -->
 
 - [🔥 Advanced usage]()
-- Configuration
-    - Experimental
-    - HTML
-    - LaTeX
-    - Markdown
-    - Markdown inline
-    - Preview
-    - Renderers
-    - Typst
-    - YAML
+- [🔩Configuration]()
+    - [🧩 Experimental]()
+    - [🧩 HTML]()
+    - [🧩 LaTeX]()
+    - [🧩 Markdown]()
+    - [🧩 Markdown inline]()
+    - [🧩 Preview]()
+    - [🧩Renderers]()
+    - [🧩 Typst]()
+    - [🧩 YAML]()
 - Development
 - Extras
 - Highlight groups
