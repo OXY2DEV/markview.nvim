@@ -13,8 +13,8 @@
     - [🧩Renderers]()
     - [🧩 Typst]()
     - [🧩 YAML]()
-- Development
-- Extras
+- [💻 Development]()
+- [📦 Extras]()
 - Highlight groups
 - Integrations
 - Presets
