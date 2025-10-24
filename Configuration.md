@@ -1,4 +1,24 @@
+<!--markdoc
+    {
+        "generic": {
+            "filename": "../doc/markview.nvim-config.txt",
+            "force_write": true,
+            "header": {
+                "desc": "🔩 Configuring `markview`",
+                "tag": "markview.nvim-config.txt"
+            }
+        },
+        "markdown": {
+            "list_items": {
+                "marker_minus": "◆",
+                "marker_plus": "◇"
+            }
+        }
+    }
+-->
+<!--markdoc_ignore_start-->
 # 🔩 Configuration
+<!--markdoc_ignore_end-->
 
 Configuration options for `markview.nvim`.
 
@@ -20,7 +40,7 @@ Configuration options for `markview.nvim`.
 - [🧩 Typst]()
 - [🧩 YAML]()
 
-The configuration table has the following structure,
+Type definition for the configuration table,
 
 ```lua from: ../lua/markview/types/markview.lua class: markview.config
 ---@class markview.config
@@ -35,6 +55,8 @@ The configuration table has the following structure,
 ---@field typst? markview.config.typst
 ---@field yaml? markview.config.yaml
 ```
+
+The configuration table has the following structure,
 
 ```lua
 ---@type markview.config

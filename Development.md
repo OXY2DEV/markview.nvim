@@ -1,4 +1,24 @@
+<!--markdoc
+    {
+        "generic": {
+            "filename": "../doc/markview.nvim-dev.txt",
+            "force_write": true,
+            "header": {
+                "desc": "💻 Development with `markview`",
+                "tag": "markview.nvim-dev.txt"
+            }
+        },
+        "markdown": {
+            "list_items": {
+                "marker_minus": "◆",
+                "marker_plus": "◇"
+            }
+        }
+    }
+-->
+<!--markdoc_ignore_start-->
 # 💻 Development
+<!--markdoc_ignore_end-->
 
 ## ✨ Using `markview.nvim` as a previewer
 
