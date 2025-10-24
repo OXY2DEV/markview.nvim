@@ -1,158 +1,143 @@
-*markview.nvim-dev*                                      💻 Dev documentations
+*markview.nvim-dev.txt*                           💻 Development with `markview`
 
-Mostly for extending plugin functionalities.
+--------------------------------------------------------------------------------
+✨ Using `markview.nvim` as a previewer
 
-------------------------------------------------------------------------------
-📑 State
+You can use `markview` to render markdown & other filetypes in your plugins.
 
-Plugin states are stored in `require("markview").states`.
+HIGH-LEVEL API
+
+This is the recommended way to use `markview` within external plugins.
+
+You can use this if you,
+
+◇ Don't want to manually set up `concealcursor`, `conceallevel` etc.
+◇ Would like to render with your own configuration.
+◇ Have rendering on demand(like `fzf-lua`).
 
 >lua
-    --- Table containing various plugin states.
-    ---@class mkv.state
-    ---
-    --- List of attached buffers.
-    ---@field attached_buffers integer[]
-    ---
-    --- Buffer local states.
-    ---@field buffer_states { [integer]: { enable: boolean, hybrid_mode: boolean? } }
-    ---
-    --- Source buffer for hybrid mode.
-    ---@field splitview_source? integer
-    --- Preview buffer for hybrid mode.
-    ---@field splitview_buffer? integer
-    --- Preview window for hybrid mode.
-    ---@field splitview_window? integer
-    markview.state = {
-        attached_buffers = {},
-        buffer_states = {},
-
-        splitview_buffer = nil,
-        splitview_source = nil,
-        splitview_window = nil
-    };
+	if package.loaded["markview"] then
+	    local render = require("markview").strict_render;
+	    -- `buffer` is where you want to render in.
+	    render:render(buffer);
+	end
 <
 
-▌ 🚨 Warning
-▌ `splitview_buffer` might not be `nil` even after closing splitview as
-▌ there’s no point in creating a new buffer every time.
+▋  Important
+▋ The `buffer` must be cleared using the API function before calling `:render()`
+▋ again.
 
-------------------------------------------------------------------------------
-🚀 Internal functions
+You can clear a buffer like so,
 
-▌ 💡 Tip
-▌ The sub-command implementation can be found in
-▌ `require("markview").commands`.
+>lua
+	if package.loaded["markview"] then
+	    local render = require("markview").strict_render;
+	    render:clear(buffer);
+	end
+<
 
-Commonly used functions can be found inside `require("markview").actions`.
-These are,
+💡 Using custom states ~
 
-  • `__exec_callback`,
-    Safely executes a given callback.
-    Usage: `markview.actions.__exec_callback(callback, ...)`
+If you don't need stuff like `hybrid mode` in your preview you can disable them
+like so,
 
-    • `callback`, callback name.
-    • `...` arguments.
+>lua
+	local render = require("markview").strict_render;
+	render:render(buffer, {
+	    hybrid_mode = false
+	});
+<
 
-  • `__is_attached`,
-    Checks if `markview` is attached to a buffer or not.
-    Usage: `markview.actions.__is_attached(buffer)`
+Each buffer has the following states,
 
-    • `buffer`, buffer ID(defaults to current buffer).
+>lua
+	---@class markview.state.buf
+	---
+	---@field enable boolean Is the `preview` enabled?
+	---@field hybrid_mode boolean Is `hybrid_mode` enabled?
+<
 
-    Return: `boolean`
+💡 Using custom configuration ~
 
-  • `__is_enabled`,
-    Checks if `markview` is enabled on a buffer or not.
-    Usage: `markview.actions.__is_enabled(buffer)`
+If you want the preview looking a certain way you can do so with this,
 
-    • `buffer`, buffer ID(defaults to current buffer).
+>lua
+	local render = require("markview").strict_render;
+	render:render(buffer, nil, {
+	    markdown = {
+	        heading = { enable = false }
+	    },
+	    -- ...
+	});
+<
 
-    Return: `boolean`
+Configuration table is the same as `setup()`.
 
-  • `__splitview_setup`
-    Sets up the buffer & window for `splitview`.
-    Usage: `markview.actions.__splitview_setup()`
+LOW-LEVEL API
 
-▌ 🚨 Warning
-▌ Anti-pattern: Prevents users from forcefully closing the splitview window.
+▋ 󰋽 Note
+▋ This will not set `concealcursor`, `conceallevel` etc., you will need to set
+▋ them yourself!
 
-------------------------------------------------------------------------------
+To use it add the following code to your plugin,
 
-  • `attach`
-    Attaches `markview` to a buffer.
-    Usage: `markview.actions.attach(buffer)`
+>lua
+	if package.loaded["markview"] then
+	    -- `buffer` is where you want to render in.
+	    require("markview").render(buffer);
+	end
+<
 
-    • `buffer`, buffer ID(defaults to current buffer).
+To clear previews use,
 
-  • `detach`
-    Detaches `markview` to a buffer.
-    Usage: `markview.actions.detach(buffer)`
+>lua
+	if package.loaded["markview"] then
+	    -- `buffer` is where you want to render in.
+	    require("markview").clear(buffer);
+	end
+<
 
-    • `buffer`, buffer ID(defaults to current buffer).
+--------------------------------------------------------------------------------
+✨ Using `markview.nvim` as a parser
 
+You can use `markview` to parse files.
 
-------------------------------------------------------------------------------
+This is useful if you have extended syntax or simply don't want to build a
+parser yourself.
 
-  • `enable`
-    Enables previews for the given buffer.
-    Usage: `markview.actions.enable(buffer)`
+>lua
+	local parser = require("markview.parser");
+	local data, sorted = parser.init(buffer);
+	
+	vim.print(data);
+<
 
-    • `buffer`, buffer ID(defaults to current buffer).
+`data` is a map between the language & a list of parsed nodes.
 
-  • `disable`
-    Disables previews for the given buffer.
-    Usage: `markview.actions.disable(buffer)`
+>lua
+	---@class markview.parsed
+	---
+	---@field html? markview.parsed.html[]
+	---@field latex? markview.parsed.latex[]
+	---@field markdown? markview.parsed.markdown[]
+	---@field markdown_inline? markview.parsed.markdown_inline[]
+	---@field typst? markview.parsed.typst[]
+	---@field yaml? markview.parsed.yaml[]
+<
 
-    • `buffer`, buffer ID(defaults to current buffer).
+`sorted` is a map between the language & another map between node names & a list
+of parsed nodes.
 
-
-------------------------------------------------------------------------------
-
-  • `hybridEnable`
-    Enables hybrid mode for the given buffer.
-    Usage: `markview.actions.hybridEnable(buffer)`
-
-    • `buffer`, buffer ID(defaults to current buffer).
-
-  • `hybridDisable`
-    Disables hybrid mode for the given buffer.
-    Usage: `markview.actions.hybridDisable(buffer)`
-
-    • `buffer`, buffer ID(defaults to current buffer).
-
-------------------------------------------------------------------------------
-
-  • `splitOpen`
-    Opens splitview for the given buffer.
-    Usage: `markview.actions.splitOpen(buffer)`
-
-    • `buffer`, buffer ID(defaults to current buffer).
-
-  • `splitClose`
-    Closes any open splitview window.
-
-------------------------------------------------------------------------------
-✨ Manual previews
-
-You can manually show previews via these functions,
-
-  • markview.render(buffer, state, config)
-    Renders preview on `buffer`(defaults to current buffer).
-
-    • `buffer`, buffer ID.
-    • `state`, buffer state(`{ enable: boolean, hybrid_mode: boolean }).
-    • `config`, custom config to use(doesn’t merge with user config).
-
-  • `markview.clear(buffer)`
-    Clears previews of `buffer`(defaults to current buffer).
-
-------------------------------------------------------------------------------
-
-  • `markview.clean()`
-    Detaches `markview` from any invalid buffer.
-
-------------------------------------------------------------------------------
+>lua
+	---@class markview.parsed_sorted
+	---
+	---@field html? markview.parsed.html_sorted
+	---@field latex? markview.parsed.latex_sorted
+	---@field markdown? markview.parsed.markdown_sorted
+	---@field markdown_inline? markview.parsed.markdown_inline_sorted
+	---@field typst? markview.parsed.typst_sorted
+	---@field yaml? markview.parsed.yaml_sorted
+<
 
 
-vim:ft=help:tw=78:ts=4:
+vim:ft=vimdoc:textwidth=80:tabstop=4:noexpandtab:

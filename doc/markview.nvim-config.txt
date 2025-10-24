@@ -1,310 +1,181 @@
-*markview.nvim-config.txt*                                    🔩 Configuration
+*markview.nvim-config.txt*                             🔩 Configuring `markview`
 
-Configuration can be done by calling `require("markview").setup()` with the
-config table.
+Configuration options for `markview.nvim`.
 
-▌ 💡 Tip
-▌ You can always reset to the default configuration using this,
-
-  >lua
-    local spec = require("markview.spec");
-    spec.config = spec.default;
+▋  Tip
+▋ You can reset the configuration with the following snippet.
+>lua
+	local spec = require("markview.spec");
+	spec.config = vim.deepcopy(spec.default);
 <
 
-------------------------------------------------------------------------------
-Table of Contents
+--------------------------------------------------------------------------------
+🧩 Options
 
-  • Structure, `:h markview.nvim-config.structure`.
-  • Inline elements, `:h markview.nvim-config.inline`.
+◆ [🧩 Experimental]()
+◆ [🧩 HTML]()
+◆ [🧩 LaTeX]()
+◆ [🧩 Markdown]()
+◆ [🧩 Markdown inline]()
+◆ [🧩 Preview]()
+◆ [🧩 Typst]()
+◆ [🧩 YAML]()
 
-------------------------------------------------------------------------------
+Type definition for the configuration table,
 
-Also read,
-
-  • Experimental otions, `markview.nvim-experimental`.
-  • Preview otions, `markview.nvim-preview`.
-
-  • Markdown, `:h markview.nvim-markdown`.
-  • Markdown inline, `:h markview.nvim-markdown_inline`.
-  • LaTeX, `:h markview.nvim-latex`.
-  • Typst, `:h markview.nvim-typst`.
-  • YAML, `:h markview.nvim-yaml`.
-
-------------------------------------------------------------------------------
-🧩 Structure
-
-▌ You can find the complete specification in `definitions/markview.lua`[^8].
+>lua
+	---@class markview.config
+	---
+	---@field experimental? markview.config.experimental
+	---@field html? markview.config.html
+	---@field latex? markview.config.latex
+	---@field markdown? markview.config.markdown
+	---@field markdown_inline? markview.config.markdown_inline
+	---@field preview? markview.config.preview
+	---@field renderers? table<string, function>
+	---@field typst? markview.config.typst
+	---@field yaml? markview.config.yaml
+<
 
 The configuration table has the following structure,
 
-▌ 📜 Note
-▌ Due to the sheer size of the actual configuration table, only the top 2
-▌ levels are shown here!
-
 >lua
-    ---@type markview.config
-    {
-        experimental = {
-            date_formats = {},
-            date_time_formats = {},
-
-            file_open_command = nil,
-
-            list_empty_line_tolerance = nil
-
-            prefer_nvim = nil,
-            read_chunk_size = nil,
-
-            linewise_ignore_org_indent = false,
-        },
-        preview = {
-            enable = nil,
-            map_gx = nil,
-
-            callbacks = {},
-
-            filetypes = {},
-            ignore_buftypes = {},
-            ignore_previews = {},
-
-            debounce = nil,
-            icon_provider = nil,
-            max_buf_lines = 100,
-
-            modes = {},
-            hybrid_modes = {},
-            linewise_hybrid_mode = nil,
-
-            draw_range = {},
-            edit_range = {},
-
-            splitview_winopts = {},
-        },
-
-        markdown = {
-            enable = nil,
-
-            block_quoutes = {},
-            code_blocks = {},
-            headings = {},
-            horizontal_rules = {},
-            list_items = {},
-            tables = {},
-
-            metadata_plus = {},
-            metadata_minus = {},
-
-            reference_definitions = {},
-        },
-        markdown_inline = {
-            enable = nil,
-
-            block_references = {},
-            checkboxes = {},
-            emails = {},
-            footnotes = {},
-            hyperlinks = {},
-            images = {},
-            inline_codes = {},
-            uri_autolinks = {},
-
-            embed_files = {},
-            highlights = {},
-            internal_links = {},
-
-            entities = {},
-            emoji_shorthands = {},
-
-            escapes = {},
-        },
-
-        html = {
-            enable = nil,
-
-            container_elements = {},
-            headings = {},
-            void_elements = {},
-        },
-        latex = {
-            enable = nil,
-
-            blocks = {},
-            inlines = {},
-
-            commands = {},
-            escapes = {},
-            parenthesis = {},
-
-            fonts = {},
-            subscripts = {},
-            superscripts = {},
-            symbols = {},
-            texts = {},
-        },
-        yaml = {
-            enable = nil,
-
-            properties = {},
-        },
-
-        typst = {
-            enable = nil,
-
-            code_blocks = {},
-            code_spans = {},
-
-            escapes = {},
-            symbols = {},
-
-            headings = {},
-            labels = {},
-            list_items = {},
-
-            math_blocks = {},
-            math_spans = {},
-
-            raw_blocks = {},
-            raw_spans = {},
-
-            reference_links = {},
-            terms = {},
-            url_links = {},
-
-            subscripts = {},
-            superscripts = {},
-        },
-    }
+	---@type markview.config
+	{
+	    experimental = {
+	        date_formats = {},
+	        date_time_formats = {},
+	
+	        file_open_command = nil,
+	
+	        list_empty_line_tolerance = nil
+	
+	        prefer_nvim = nil,
+	        read_chunk_size = nil,
+	
+	        linewise_ignore_org_indent = false,
+	    },
+	
+	    html = {
+	        enable = nil,
+	
+	        container_elements = {},
+	        headings = {},
+	        void_elements = {},
+	    },
+	
+	    latex = {
+	        enable = nil,
+	
+	        blocks = {},
+	        inlines = {},
+	
+	        commands = {},
+	        escapes = {},
+	        parenthesis = {},
+	
+	        fonts = {},
+	        subscripts = {},
+	        superscripts = {},
+	        symbols = {},
+	        texts = {},
+	    },
+	
+	    markdown = {
+	        enable = nil,
+	
+	        block_quoutes = {},
+	        code_blocks = {},
+	        headings = {},
+	        horizontal_rules = {},
+	        list_items = {},
+	        tables = {},
+	
+	        metadata_plus = {},
+	        metadata_minus = {},
+	
+	        reference_definitions = {},
+	    },
+	    markdown_inline = {
+	        enable = nil,
+	
+	        block_references = {},
+	        checkboxes = {},
+	        emails = {},
+	        footnotes = {},
+	        hyperlinks = {},
+	        images = {},
+	        inline_codes = {},
+	        uri_autolinks = {},
+	
+	        embed_files = {},
+	        highlights = {},
+	        internal_links = {},
+	
+	        entities = {},
+	        emoji_shorthands = {},
+	
+	        escapes = {},
+	    },
+	
+	    preview = {
+	        enable = nil,
+	        map_gx = nil,
+	
+	        callbacks = {},
+	
+	        filetypes = {},
+	        ignore_buftypes = {},
+	        ignore_previews = {},
+	
+	        debounce = nil,
+	        icon_provider = nil,
+	        max_buf_lines = 100,
+	
+	        modes = {},
+	        hybrid_modes = {},
+	        linewise_hybrid_mode = nil,
+	
+	        draw_range = {},
+	        edit_range = {},
+	
+	        splitview_winopts = {},
+	    },
+	
+	    typst = {
+	        enable = nil,
+	
+	        code_blocks = {},
+	        code_spans = {},
+	
+	        escapes = {},
+	        symbols = {},
+	
+	        headings = {},
+	        labels = {},
+	        list_items = {},
+	
+	        math_blocks = {},
+	        math_spans = {},
+	
+	        raw_blocks = {},
+	        raw_spans = {},
+	
+	        reference_links = {},
+	        terms = {},
+	        url_links = {},
+	
+	        subscripts = {},
+	        superscripts = {},
+	    },
+	
+	    yaml = {
+	        enable = nil,
+	
+	        properties = {},
+	    },
+	}
 <
 
-------------------------------------------------------------------------------
-💡 Inline elements
 
-Almost all the inline elements are configured the same way,
-
->lua
-    ---@type markview.config.__inline
-    {
-        enable = nil,
-
-        corner_left = nil,
-        corner_left_hl = nil,
-
-        padding_left = nil,
-        padding_left_hl = nil,
-
-        icon = nil,
-        icon_hl = nil,
-
-        hl = nil,
-
-        padding_right = nil,
-        padding_right_hl = nil,
-
-        corner_right = nil,
-        corner_right_hl = nil,
-
-
-        block_hl = nil,
-        file_hl = nil,
-    }
-<
-
-enable ~
-
-▌ 🧩 Important
-▌ This option is only available if it’s in `markview.<language>.<option>`!
-
-  • type: `boolean`
-
-Enables preview of this element.
-
-corner_left ~
-
-  • type: `string`
-
-Text used as left corner(added before `padding_left`).
-
-corner_left_hl ~
-
-  • type: `string`
-
-Highlight group for `corner_left`.
-
-padding_left ~
-
-  • type: `string`
-
-Text used as left padding(added before `icon`).
-
-padding_left_hl ~
-
-  • type: `string`
-
-Highlight group for `padding_left`.
-
-icon ~
-
-  • type: `string`
-
-Text used as icon(added before the text).
-
-icon_hl ~
-
-  • type: `string`
-
-Highlight group for `icon`.
-
-padding_right ~
-
-  • type: `string`
-
-Text used as right padding(added after the text).
-
-padding_right_hl ~
-
-  • type: `string`
-
-Highlight group for `padding_right`.
-
-corner_right ~
-
-  • type: `string`
-
-Text used as right corner(added after `padding_right`).
-
-corner_right_hl ~
-
-  • type: `string`
-
-Highlight group for `corner_right`.
-
-------------------------------------------------------------------------------
-
-▌ 📜 Note
-▌ The options are only for markview.config.markdown.block_references!
-
-block_hl ~
-
-  • type: `string`
-
-Highlight group for the block name.
-
-file_hl ~
-
-  • type: `string`
-
-Highlight group for the file name.
-
-------------------------------------------------------------------------------
-
-Link references ~
-
-  3: https://github.com/OXY2DEV/markview.nvim/wiki/Markdown
-  4: https://github.com/OXY2DEV/markview.nvim/wiki/Markdown-inline
-  5: https://github.com/OXY2DEV/markview.nvim/wiki/LaTeX
-  6: https://github.com/OXY2DEV/markview.nvim/wiki/Typst
-  7: https://github.com/OXY2DEV/markview.nvim/wiki/YAML
-  8: https://github.com/OXY2DEV/markview.nvim/blob/a803117f272cc47733b67ebbaf1acb91095da276/lua/definitions/markview.lua
-
-
-vim:ft=help:tw=78:ts=4:
+vim:ft=vimdoc:textwidth=80:tabstop=4:noexpandtab:
