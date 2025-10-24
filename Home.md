@@ -15,7 +15,7 @@
     - [🧩 YAML]()
 - [💻 Development]()
 - [📦 Extras]()
-- Highlight groups
+- [🎨 Highlight groups]()
 - Integrations
 - Presets
 - Usage
