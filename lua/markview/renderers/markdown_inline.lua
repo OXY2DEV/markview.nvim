@@ -1006,7 +1006,7 @@ end
 
 --- Renders inline markdown.
 ---@param buffer integer
----@param content table[]
+---@param content markview.parsed.markdown_inline[]
 inline.render = function (buffer, content)
 	local custom = spec.get({ "renderers" }, { fallback = {} });
 

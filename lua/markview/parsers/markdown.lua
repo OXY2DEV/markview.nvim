@@ -2,8 +2,6 @@
 local markdown = {};
 
 local spec = require("markview.spec");
-local utils = require("markview.utils");
-
 local inline = require("markview.parsers.markdown_inline");
 
 --- Queried contents
@@ -900,8 +898,8 @@ end
 ---@param TSTree table
 ---@param from integer?
 ---@param to integer?
----@return table[]
----@return table
+---@return markview.parsed.markdown[]
+---@return markview.parsed.markdown_sorted
 markdown.parse = function (buffer, TSTree, from, to)
 	-- Clear the previous contents
 	markdown.sorted = {}

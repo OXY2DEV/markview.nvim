@@ -206,3 +206,46 @@
 ---
 ---@field range markview.parsed.range
 
+------------------------------------------------------------------------------
+
+---@alias markview.parsed.typst
+---| markview.parsed.typst.code_block
+---| markview.parsed.typst.code_spans
+---| markview.parsed.typst.emphasis
+---| markview.parsed.typst.escapes
+---| markview.parsed.typst.headings
+---| markview.parsed.typst.labels
+---| markview.parsed.typst.list_items
+---| markview.parsed.typst.maths
+---| markview.parsed.typst.raw_blocks
+---| markview.parsed.typst.raw_spans
+---| markview.parsed.typst.reference_links
+---| markview.parsed.typst.strong
+---| markview.parsed.typst.subscripts
+---| markview.parsed.typst.superscripts
+---| markview.parsed.typst.symbols
+---| markview.parsed.typst.terms
+---| markview.parsed.typst.text
+---| markview.parsed.typst.url_links
+
+---@class markview.parsed.typst_sorted
+---
+---@field typst_code_block markview.parsed.typst.code_block[]
+---@field typst_code_span markview.parsed.typst.code_spans[]
+---@field typst_escaped markview.parsed.typst.escapes[]
+---@field typst_heading markview.parsed.typst.headings[]
+---@field typst_labels markview.parsed.typst.labels[]
+---@field typst_list_item markview.parsed.typst.list_items[]
+---@field typst_math_block markview.parsed.typst.maths[]
+---@field typst_math_span markview.parsed.typst.maths[]
+---@field typst_raw_block markview.parsed.typst.raw_blocks[]
+---@field typst_raw_span markview.parsed.typst.raw_spans[]
+---@field typst_link_ref markview.parsed.typst.reference_links[]
+---@field typst_subscript markview.parsed.typst.subscripts[]
+---@field typst_superscript markview.parsed.typst.superscripts[]
+---@field typst_symbol markview.parsed.typst.symbols[]
+---@field typst_term markview.parsed.typst.terms[]
+---@field typst_link_url markview.parsed.typst.url_links[]
+---@field typst_emphasis markview.parsed.typst.emphasis[]
+---@field typst_strong markview.parsed.typst.strong[]
+---@field typst_text markview.parsed.typst.text[]

@@ -1023,7 +1023,7 @@ markdown.ns = vim.api.nvim_create_namespace("markview/markdown");
 
 --- Renders atx headings.
 ---@param buffer integer
----@param item markview.parsed.markdown.atx
+---@param item markview.parsed.markdown.atx_headings
 markdown.atx_heading = function (buffer, item)
 	---@type markview.config.markdown.headings?
 	local main_config = spec.get({ "markdown", "headings" }, { fallback = nil, eval_args = { buffer, item } });
@@ -2381,7 +2381,7 @@ end
 
 --- Renders setext headings.
 ---@param buffer integer
----@param item markview.parsed.markdown.setext
+---@param item markview.parsed.markdown.setext_headings
 markdown.setext_heading = function (buffer, item)
 	---@type markview.config.markdown.headings?
 	local main_config = spec.get({ "markdown", "headings" }, { fallback = nil, eval_args = { buffer, item } });
@@ -3685,8 +3685,8 @@ end
 
 --- Renders markdown preview.
 ---@param buffer integer
----@param content table
----@return table
+---@param content markview.parsed.markdown[]
+---@return markview.parsed
 markdown.render = function (buffer, content)
 	markdown.cache = {};
 
@@ -3719,7 +3719,7 @@ end
 
 --- Post-process effect renderer.
 ---@param buffer integer
----@param content table
+---@param content markview.parsed.markdown[]
 markdown.post_render = function (buffer, content)
 	local custom = spec.get({ "renderers" }, { fallback = {} });
 
@@ -3758,7 +3758,7 @@ end
 ---@param hybrid_mode boolean
 markdown.clear = function (buffer, from, to, hybrid_mode)
 	---@type boolean
-	local experimental = require("markview.spec").get({ "experimental", "linewise_ignore_org_indent" }, { fallback = false });
+	local experimental = spec.get({ "experimental", "linewise_ignore_org_indent" }, { fallback = false });
 
 	if not experimental or not hybrid_mode then
 		vim.api.nvim_buf_clear_namespace(buffer, markdown.ns, from or 0, to or -1);

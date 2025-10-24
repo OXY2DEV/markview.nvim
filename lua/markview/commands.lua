@@ -119,7 +119,7 @@ end
 
 
 commands.linewiseDisable = function ()
-	require("spec").config.preview.linewise_hybrid_mode = false;
+	require("markview.spec").config.preview.linewise_hybrid_mode = false;
 	local actions = require("markview.actions");
 
 	actions.forEach(function (b)
@@ -127,7 +127,7 @@ commands.linewiseDisable = function ()
 	end, require("markview.state").get_enabled_buffers());
 end
 commands.linewiseEnable = function ()
-	require("spec").config.preview.linewise_hybrid_mode = true;
+	require("markview.spec").config.preview.linewise_hybrid_mode = true;
 	local actions = require("markview.actions");
 
 	actions.forEach(function (b)
@@ -136,7 +136,7 @@ commands.linewiseEnable = function ()
 end
 commands.linewiseToggle = function ()
 	---@type boolean Is line-wise hybrid mode enabled?
-	local linewise_hybrid_mode = require("spec").get({ "preview", "linewise_hybrid_mode" }, { fallback = false, ignore_enable = true });
+	local linewise_hybrid_mode = require("markview.spec").get({ "preview", "linewise_hybrid_mode" }, { fallback = false, ignore_enable = true });
 
 	if linewise_hybrid_mode then
 		commands.linewiseDisable();
@@ -164,7 +164,7 @@ end
 
 --[[ Open `link` under cursor. ]]
 commands.open = function ()
-	require("links").open();
+	require("markview.links").open();
 end
 
 

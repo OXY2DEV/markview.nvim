@@ -105,8 +105,8 @@ end
 ---@param TSTree table
 ---@param from integer?
 ---@param to integer?
----@return table[]
----@return table
+---@return markview.parsed.html[]
+---@return markview.parsed.html_sorted
 html.parse = function (buffer, TSTree, from, to)
 	-- Clear the previous contents
 	html.sorted = {};

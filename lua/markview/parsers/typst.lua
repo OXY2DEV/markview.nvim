@@ -477,8 +477,8 @@ end
 ---@param TSTree table
 ---@param from integer?
 ---@param to integer?
----@return table[]
----@return table
+---@return markview.parsed.typst[]
+---@return markview.parsed.typst_sorted
 typst.parse = function (buffer, TSTree, from, to)
 	typst.cache = {
 		list_item_number = 0

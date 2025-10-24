@@ -227,3 +227,37 @@
 ---
 ---@field label integer[] Text inside `[[...]]`(optionally everything before |).
 
+------------------------------------------------------------------------------
+
+---@alias markview.parsed.markdown_inline
+---| markview.parsed.markdown_inline.block_refs
+---| markview.parsed.markdown_inline.checkboxes
+---| markview.parsed.markdown_inline.emails
+---| markview.parsed.markdown_inline.embed_files
+---| markview.parsed.markdown_inline.emojis
+---| markview.parsed.markdown_inline.entities
+---| markview.parsed.markdown_inline.escapes
+---| markview.parsed.markdown_inline.footnotes
+---| markview.parsed.markdown_inline.highlights
+---| markview.parsed.markdown_inline.hyperlinks
+---| markview.parsed.markdown_inline.images
+---| markview.parsed.markdown_inline.inline_codes
+---| markview.parsed.markdown_inline.internal_links
+---| markview.parsed.markdown_inline.uri_autolinks
+
+---@class markview.parsed.markdown_inline_sorted
+---
+---@field inline_checkbox markview.parsed.markdown_inline.checkboxes[]
+---@field inline_code_span markview.parsed.markdown_inline.inline_codes[]
+---@field inline_emoji markview.parsed.markdown_inline.emojis[]
+---@field inline_entity markview.parsed.markdown_inline.entities[]
+---@field inline_escaped markview.parsed.markdown_inline.escapes[]
+---@field inline_footnotes markview.parsed.markdown_inline.footnotes[]
+---@field inline_highlight markview.parsed.markdown_inline.highlights[]
+---@field inline_link_block_ref markview.parsed.markdown_inline.block_refs[]
+---@field inline_link_email markview.parsed.markdown_inline.emails[]
+---@field inline_link_embed_file markview.parsed.markdown_inline.embed_files[]
+---@field inline_link_hyperlink markview.parsed.markdown_inline.hyperlinks[]
+---@field inline_link_image markview.parsed.markdown_inline.images[]
+---@field inline_link_internal markview.parsed.markdown_inline.internal_links[]
+---@field inline_link_uri_autolinks markview.parsed.markdown_inline.uri_autolinks[]

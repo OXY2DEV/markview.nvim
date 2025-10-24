@@ -1569,7 +1569,7 @@ end
 
 --- Renders typst previews.
 ---@param buffer integer
----@param content table[]
+---@param content markview.parsed.typst[]
 typst.render = function (buffer, content)
 	typst.cache = {
 		superscripts = {},

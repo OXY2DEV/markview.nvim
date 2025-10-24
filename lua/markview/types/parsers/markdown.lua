@@ -75,7 +75,7 @@
 
 ------------------------------------------------------------------------------
 
----@class markview.parsed.markdown.atx
+---@class markview.parsed.markdown.atx_headings
 ---
 ---@field class "markdown_atx_heading"
 ---@field levels integer[] Heading depth level.
@@ -86,7 +86,7 @@
 ---@field range markview.parsed.range
 
 
----@class markview.parsed.markdown.setext
+---@class markview.parsed.markdown.setext_headings
 ---
 ---@field class "markdown_setext_heading"
 ---
@@ -236,3 +236,35 @@
 ---
 ---@field org_end integer Line where `Org indent` should end.
 
+------------------------------------------------------------------------------
+
+---@alias markview.parsed.markdown
+---| markview.parsed.markdown.atx_headings
+---| markview.parsed.markdown.block_quotes
+---| markview.parsed.markdown.checkboxes
+---| markview.parsed.markdown.code_blocks
+---| markview.parsed.markdown.hr
+---| markview.parsed.markdown.indented_code_blocks
+---| markview.parsed.markdown.list_items
+---| markview.parsed.markdown.metadata_minus
+---| markview.parsed.markdown.metadata_plus
+---| markview.parsed.markdown.reference_definitions
+---| markview.parsed.markdown.sections
+---| markview.parsed.markdown.setext_headings
+---| markview.parsed.markdown.tables
+
+---@class markview.parsed.markdown_sorted
+---
+---@field markdown_atx_heading markview.parsed.markdown.atx_headings[]
+---@field markdown_block_quote markview.parsed.markdown.block_quotes[]
+---@field markdown_checkbox markview.parsed.markdown.checkboxes[]
+---@field markdown_code_block markview.parsed.markdown.code_blocks[]
+---@field markdown_hr markview.parsed.markdown.hr[]
+---@field markdown_indented_code_block markview.parsed.markdown.indented_code_blocks[]
+---@field markdown_link_ref_definition markview.config.markdown.ref_def[]
+---@field markdown_list_item markview.parsed.markdown.list_items[]
+---@field markdown_metadata_minus markview.parsed.markdown.metadata_minus[]
+---@field markdown_metadata_plus markview.parsed.markdown.metadata_plus[]
+---@field markdown_section markview.parsed.markdown.sections[]
+---@field markdown_setext_heading markview.parsed.markdown.setext_headings[]
+---@field markdown_table markview.parsed.markdown.tables[]

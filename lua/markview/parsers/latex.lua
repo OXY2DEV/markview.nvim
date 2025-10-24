@@ -1,6 +1,5 @@
 --- HTML parser for `markview.nvim`
 local latex = {};
-local utils = require("markview.utils")
 
 --- `string.gsub()` with support for multiple patterns.
 ---@param text string
@@ -472,8 +471,8 @@ end
 ---@param TSTree table
 ---@param from integer?
 ---@param to integer?
----@return table[]
----@return table
+---@return markview.parsed.latex[]
+---@return markview.parsed.latex_sorted
 latex.parse = function (buffer, TSTree, from, to)
 	--- Clear the previous contents
 	latex.sorted = {};

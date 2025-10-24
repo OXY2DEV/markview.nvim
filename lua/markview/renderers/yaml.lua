@@ -75,7 +75,7 @@ yaml.property = function (buffer, item)
 end
 
 ---@param buffer integer
----@param content table
+---@param content markview.parsed.yaml[]
 yaml.render = function (buffer, content)
 	local custom = spec.get({ "renderers" }, { fallback = {} });
 

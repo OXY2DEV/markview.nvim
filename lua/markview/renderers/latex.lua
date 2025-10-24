@@ -838,7 +838,7 @@ end
 
 --- Renders LaTeX preview.
 ---@param buffer integer
----@param content table[]
+---@param content markview.parsed.latex[]
 latex.render = function (buffer, content)
 	--- Clean up previous caches.
 	latex.cache = {

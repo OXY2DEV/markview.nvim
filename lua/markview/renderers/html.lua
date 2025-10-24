@@ -175,7 +175,7 @@ end
 
 --- Renders HTML elements
 ---@param buffer integer
----@param content table[]
+---@param content markview.parsed.html[]
 html.render = function (buffer, content)
 	html.cache = {
 		font_regions = {},

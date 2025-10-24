@@ -511,8 +511,8 @@ end
 ---@param TSTree table
 ---@param from integer?
 ---@param to integer?
----@return table[]
----@return table
+---@return markview.parsed.markdown_inline[]
+---@return markview.parsed.markdown_inline_sorted
 inline.parse = function (buffer, TSTree, from, to)
 	inline.sorted = {};
 	inline.content = {};

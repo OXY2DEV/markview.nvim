@@ -126,8 +126,8 @@ end
 ---@param TSTree table
 ---@param from integer?
 ---@param to integer?
----@return table[]
----@return table
+---@return markview.parsed.yaml[]
+---@return markview.parsed.yaml_sorted
 yaml.parse = function (buffer, TSTree, from, to)
 	-- Clear the previous contents
 	yaml.sorted = {};

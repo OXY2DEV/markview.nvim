@@ -3,6 +3,7 @@
 local renderer = {};
 local health = require("markview.health");
 
+---@type markview.parsed
 renderer.cache = {};
 
 renderer.__filter_cache = {
@@ -400,16 +401,17 @@ end
 
 --- Renders things
 ---@param buffer integer
+---@param parsed_content markview.parsed
 renderer.render = function (buffer, parsed_content)
 	---|fS
 
 	local _renderers = {
-		html = require("markview.renderers.html");
-		markdown = require("markview.renderers.markdown");
-		markdown_inline = require("markview.renderers.markdown_inline");
-		latex = require("markview.renderers.latex");
-		yaml = require("markview.renderers.yaml");
-		typst = require("markview.renderers.typst");
+		html = require("markview.renderers.html"),
+		markdown = require("markview.renderers.markdown"),
+		markdown_inline = require("markview.renderers.markdown_inline"),
+		latex = require("markview.renderers.latex"),
+		yaml = require("markview.renderers.yaml"),
+		typst = require("markview.renderers.typst"),
 	};
 
 	renderer.cache = {};
@@ -428,6 +430,16 @@ renderer.render = function (buffer, parsed_content)
 	---|fE
 
 	for lang, content in pairs(parsed_content) do
+		---@cast lang string
+		---@cast content
+		---| markview.parsed.html[]
+		---| markview.parsed.html[]
+		---| markview.parsed.latex[]
+		---| markview.parsed.markdown[]
+		---| markview.parsed.markdown_inline[]
+		---| markview.parsed.typst[]
+		---| markview.parsed.yaml[]
+
 		if _renderers[lang] then
 			local c = _renderers[lang].render(buffer, content);
 			renderer.cache = vim.tbl_extend("force", renderer.cache, c or {});

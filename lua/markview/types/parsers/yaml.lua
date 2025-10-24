@@ -13,3 +13,11 @@
 ---@field text string[]
 ---@field range markview.parsed.range
 
+------------------------------------------------------------------------------------------
+
+---@alias markview.parsed.yaml
+---| markview.parsed.yaml.properties
+
+---@class markview.parsed.yaml_sorted
+---
+---@field yaml_property markview.parsed.yaml.properties[]

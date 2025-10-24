@@ -43,3 +43,15 @@
 ---@field text string[]
 ---@field range markview.parsed.range
 
+------------------------------------------------------------------------------
+
+---@alias markview.parsed.html
+---| markview.parsed.html.container_elements
+---| markview.parsed.html.headings
+---| markview.parsed.html.void_elements
+
+---@class markview.parsed.html_sorted
+---
+---@field html_container_element markview.parsed.html.container_elements[]
+---@field html_heading markview.parsed.html.headings
+---@field html_void_element markview.parsed.html.void_elements[]

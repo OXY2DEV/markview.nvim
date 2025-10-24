@@ -134,3 +134,32 @@
 ---@field text string[]
 ---@field range markview.parsed.range
 
+------------------------------------------------------------------------------
+
+---@alias markview.parsed.latex
+---| markview.parsed.latex.blocks
+---| markview.parsed.latex.commands
+---| markview.parsed.latex.escapes
+---| markview.parsed.latex.fonts
+---| markview.parsed.latex.inlines
+---| markview.parsed.latex.parenthesis
+---| markview.parsed.latex.subscripts
+---| markview.parsed.latex.superscripts
+---| markview.parsed.latex.symbols
+---| markview.parsed.latex.text
+---| markview.parsed.latex.word
+
+---@class markview.parsed.latex_sorted
+---
+---@field latex_block markview.parsed.latex.blocks[]
+---@field latex_command markview.parsed.latex.commands[]
+---@field latex_escaped markview.parsed.latex.escapes[]
+---@field latex_font markview.parsed.latex.fonts[]
+---@field latex_inlines markview.parsed.latex.inlines[]
+---@field latex_parenthesis markview.parsed.latex.parenthesis[]
+---@field latex_subscript markview.parsed.typst.subscripts[]
+---@field latex_superscript markview.parsed.typst.superscripts[]
+---@field latex_symbols markview.parsed.latex.symbols[]
+---@field latex_text markview.parsed.latex.text[]
+---@field latex_word markview.parsed.latex.word[]
+

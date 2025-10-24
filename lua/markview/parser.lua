@@ -81,7 +81,9 @@ parser.should_ignore = function (TSTree)
 	---|fE
 end
 
+---@type markview.parsed
 parser.content = {};
+---@type markview.parsed_sorted
 parser.sorted = {};
 
 --- Initializes the parsers on the specified buffer
@@ -91,6 +93,8 @@ parser.sorted = {};
 ---@param from integer?
 ---@param to integer?
 ---@param cache boolean?
+---@return markview.parsed
+---@return markview.parsed_sorted
 parser.init = function (buffer, from, to, cache)
 	---|fS
 
