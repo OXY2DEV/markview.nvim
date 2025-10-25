@@ -3,6 +3,7 @@
 <!-- Show wiki map -->
 
 - [🔥 Advanced usage]()
+- [📞 Autocmds]()
 - [🔩Configuration]()
     - [🧩 Experimental]()
     - [🧩 HTML]()
