@@ -16,7 +16,7 @@
 - [💻 Development]()
 - [📦 Extras]()
 - [🎨 Highlight groups]()
-- Integrations
+- [🎇 Integrations]()
 - Presets
 - Usage
 
