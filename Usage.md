@@ -1,4 +1,25 @@
+<!--markdoc
+    {
+        "generic": {
+            "filename": "../doc/markview.nvim-usage.txt",
+            "force_write": true,
+            "header": {
+                "desc": "🪄 Usage examples for `markview.nvim`",
+                "tag": "markview.nvim-usage"
+            }
+        },
+        "markdown": {
+            "heading_ratio": [ 26, 54 ],
+            "list_items": {
+                "marker_minus": "◆",
+                "marker_plus": "◇"
+            }
+        }
+    }
+-->
+<!--markdoc_ignore_start-->
 # 🪄 Usage
+<!--markdoc_ignore_end-->
 
 Various usage recipes for `markview.nvim`.
 

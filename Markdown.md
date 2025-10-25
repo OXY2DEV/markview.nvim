@@ -1,0 +1,1228 @@
+<!--markdoc
+    {
+        "generic": {
+            "filename": "../doc/markview.nvim-markdown.txt",
+            "force_write": true,
+            "header": {
+                "desc": "🧩 Markdown options for `markview.nvim`",
+                "tag": "markview.nvim-markdown"
+            }
+        },
+        "markdown": {
+            "heading_ratio": [ 26, 54 ],
+            "list_items": {
+                "marker_minus": "◆",
+                "marker_plus": "◇"
+            },
+            "tags": {
+                "enable": [ "markview.nvim-markdown.enable" ],
+                "block_quotes": [ "markview.nvim-markdown.block_quotes" ],
+                "code_blocks": [ "markview.nvim-markdown.code_blocks" ],
+                "headings": [ "markview.nvim-markdown.headings" ],
+                "horizontal_rules": [ "markview.nvim-markdown.horizontal_rules", "markview.nvim-markdown.hr" ],
+                "list_items": [ "markview.nvim-markdown.list_items" ],
+                "metadata_minus": [ "markview.nvim-markdown.metadata_minus" ],
+                "metadata_plus": [ "markview.nvim-markdown.metadata_plus" ],
+                "reference_definitions": [ "markview.nvim-markdown.reference_definitions" ],
+                "tables": [ "markview.nvim-markdown.tables" ]
+            }
+        }
+    }
+-->
+<!--markdoc_ignore_start-->
+# 🧩 Markdown
+<!--markdoc_ignore_end-->
+
+```lua from: ../lua/markview/types/renderers/markdown.lua class: markview.config.markdown
+--- Configuration for markdown.
+---@class markview.config.markdown
+---
+---@field enable boolean Enable **markdown** rendering.
+---
+---@field block_quotes markview.config.markdown.block_quotes Block quote configuration.
+---@field code_blocks markview.config.markdown.code_blocks Fenced code block configuration.
+---@field headings markview.config.markdown.headings Heading configuration.
+---@field horizontal_rules markview.config.markdown.hr Horizontal rules configuration.
+---@field list_items markview.config.markdown.list_items List items configuration.
+---@field metadata_minus markview.config.markdown.metadata YAML metadata configuration.
+---@field metadata_plus markview.config.markdown.metadata TOML metadata configuration.
+---@field reference_definitions markview.config.markdown.ref_def Reference link definition configuration.
+---@field tables markview.config.markdown.tables Table configuration.
+```
+
+## enable 
+
+Enables previewing markdown.
+
+```lua
+enable = true
+```
+
+## block_quotes
+
+```lua from: ../lua/markview/types/renderers/markdown.lua class: markview.config.markdown.block_quotes
+--- Configuration for block quotes.
+---@class markview.config.markdown.block_quotes
+---
+---@field enable boolean Enable rendering of block quotes.
+---@field wrap? boolean Enables text wrap support.
+---
+---@field default markview.config.markdown.block_quotes.opts Default configuration.
+---@field [string] markview.config.markdown.block_quotes.opts Configuration for `>[!string]` callout. Name is **case-insensitive**.
+```
+
+Changes how block quotes are shown.
+
+```lua
+block_quotes = {
+    enable = true,
+    wrap = true,
+
+    default = {
+        border = "▋",
+        hl = "MarkviewBlockQuoteDefault"
+    },
+
+    ["ABSTRACT"] = {
+        preview = "󱉫 Abstract",
+        hl = "MarkviewBlockQuoteNote",
+
+        title = true,
+        icon = "󱉫",
+    },
+    ["SUMMARY"] = {
+        hl = "MarkviewBlockQuoteNote",
+        preview = "󱉫 Summary",
+
+        title = true,
+        icon = "󱉫",
+    },
+    ["TLDR"] = {
+        hl = "MarkviewBlockQuoteNote",
+        preview = "󱉫 Tldr",
+
+        title = true,
+        icon = "󱉫",
+    },
+    ["TODO"] = {
+        hl = "MarkviewBlockQuoteNote",
+        preview = " Todo",
+
+        title = true,
+        icon = "",
+    },
+    ["INFO"] = {
+        hl = "MarkviewBlockQuoteNote",
+        preview = " Info",
+
+        custom_title = true,
+        icon = "",
+    },
+    ["SUCCESS"] = {
+        hl = "MarkviewBlockQuoteOk",
+        preview = "󰗠 Success",
+
+        title = true,
+        icon = "󰗠",
+    },
+    ["CHECK"] = {
+        hl = "MarkviewBlockQuoteOk",
+        preview = "󰗠 Check",
+
+        title = true,
+        icon = "󰗠",
+    },
+    ["DONE"] = {
+        hl = "MarkviewBlockQuoteOk",
+        preview = "󰗠 Done",
+
+        title = true,
+        icon = "󰗠",
+    },
+    ["QUESTION"] = {
+        hl = "MarkviewBlockQuoteWarn",
+        preview = "󰋗 Question",
+
+        title = true,
+        icon = "󰋗",
+    },
+    ["HELP"] = {
+        hl = "MarkviewBlockQuoteWarn",
+        preview = "󰋗 Help",
+
+        title = true,
+        icon = "󰋗",
+    },
+    ["FAQ"] = {
+        hl = "MarkviewBlockQuoteWarn",
+        preview = "󰋗 Faq",
+
+        title = true,
+        icon = "󰋗",
+    },
+    ["FAILURE"] = {
+        hl = "MarkviewBlockQuoteError",
+        preview = "󰅙 Failure",
+
+        title = true,
+        icon = "󰅙",
+    },
+    ["FAIL"] = {
+        hl = "MarkviewBlockQuoteError",
+        preview = "󰅙 Fail",
+
+        title = true,
+        icon = "󰅙",
+    },
+    ["MISSING"] = {
+        hl = "MarkviewBlockQuoteError",
+        preview = "󰅙 Missing",
+
+        title = true,
+        icon = "󰅙",
+    },
+    ["DANGER"] = {
+        hl = "MarkviewBlockQuoteError",
+        preview = " Danger",
+
+        title = true,
+        icon = "",
+    },
+    ["ERROR"] = {
+        hl = "MarkviewBlockQuoteError",
+        preview = " Error",
+
+        title = true,
+        icon = "",
+    },
+    ["BUG"] = {
+        hl = "MarkviewBlockQuoteError",
+        preview = " Bug",
+
+        title = true,
+        icon = "",
+    },
+    ["EXAMPLE"] = {
+        hl = "MarkviewBlockQuoteSpecial",
+        preview = "󱖫 Example",
+
+        title = true,
+        icon = "󱖫",
+    },
+    ["QUOTE"] = {
+        hl = "MarkviewBlockQuoteDefault",
+        preview = " Quote",
+
+        title = true,
+        icon = "",
+    },
+    ["CITE"] = {
+        hl = "MarkviewBlockQuoteDefault",
+        preview = " Cite",
+
+        title = true,
+        icon = "",
+    },
+    ["HINT"] = {
+        hl = "MarkviewBlockQuoteOk",
+        preview = " Hint",
+
+        title = true,
+        icon = "",
+    },
+    ["ATTENTION"] = {
+        hl = "MarkviewBlockQuoteWarn",
+        preview = " Attention",
+
+        title = true,
+        icon = "",
+    },
+
+    ["NOTE"] = {
+        hl = "MarkviewBlockQuoteNote",
+        preview = "󰋽 Note",
+
+        title = true,
+        icon = "󰋽",
+    },
+    ["TIP"] = {
+        hl = "MarkviewBlockQuoteOk",
+        preview = " Tip",
+
+        title = true,
+        icon = "",
+    },
+    ["IMPORTANT"] = {
+        hl = "MarkviewBlockQuoteSpecial",
+        preview = " Important",
+
+        title = true,
+        icon = "",
+    },
+    ["WARNING"] = {
+        hl = "MarkviewBlockQuoteWarn",
+        preview = " Warning",
+
+        title = true,
+        icon = "",
+    },
+    ["CAUTION"] = {
+        hl = "MarkviewBlockQuoteError",
+        preview = "󰳦 Caution",
+
+        title = true,
+        icon = "󰳦",
+    }
+},
+```
+
+Each block quote type(callout) has the following options.
+
+```lua from: ../lua/markview/types/renderers/markdown.lua class: markview.config.markdown.block_quotes.opts
+--- Static configuration options for various types of block quotes.
+---@class markview.config.markdown.block_quotes.opts
+---
+---@field border? string | string[] Text for the border. Use an array to apply different border *per line*.
+---@field border_hl? string | string[] Highlight group for the border. Use an array to apply different highlights *per line*.
+---
+---@field hl? string Base highlight group for the block quote.
+---
+---@field icon? string Icon to show before the block quote title.
+---@field icon_hl? string Highlight group for the icon.
+---
+---@field preview? string Callout/Alert preview string(shown where `>[!string]` was).
+---@field preview_hl? string Highlight group for the preview.
+---
+---@field title? boolean Should this callout allow titles(`>[!string] <Title>`)? Disabled by default.
+```
+
+## code_blocks
+
+```lua from: ../lua/markview/types/renderers/markdown.lua class: markview.config.markdown.code_blocks
+--- Configuration for code blocks.
+---@alias markview.config.markdown.code_blocks
+---| markview.config.markdown.code_blocks.simple
+---| markview.config.markdown.code_blocks.block
+```
+
+Changes how code blocks are shown.
+
+```lua
+code_blocks = {
+    enable = true,
+
+    border_hl = "MarkviewCode",
+    info_hl = "MarkviewCodeInfo",
+
+    label_direction = "right",
+    label_hl = nil,
+
+    min_width = 60,
+    pad_amount = 2,
+    pad_char = " ",
+
+    default = {
+        block_hl = "MarkviewCode",
+        pad_hl = "MarkviewCode"
+    },
+
+    ["diff"] = {
+        block_hl = function (_, line)
+            if line:match("^%+") then
+                return "MarkviewPalette4";
+            elseif line:match("^%-") then
+                return "MarkviewPalette1";
+            else
+                return "MarkviewCode";
+            end
+        end,
+        pad_hl = "MarkviewCode"
+    },
+
+    style = "block",
+    sign = true,
+},
+```
+
+Each style is explained below.
+
+### code_blocks: block
+
+```lua from: ../lua/markview/types/renderers/markdown.lua class: markview.config.markdown.code_blocks.block
+---@class markview.config.markdown.code_blocks.block
+---
+---@field enable boolean Enable rendering of code blocks.
+---
+---@field border_hl? string Highlight group for borders.
+---@field info_hl? string Highlight group for the info string.
+---
+---@field label_direction? "left" | "right" Position of the language & icon.
+---@field label_hl? string Highlight group for the label.
+---
+---@field min_width? integer Minimum width of the code block.
+---@field pad_amount? integer Number of `pad_char`s to add on the left & right side of the code block.
+---@field pad_char? string Character used as padding.
+---
+---@field sign? boolean Enables signs for the code block?
+---@field sign_hl? string Highlight group for the sign.
+---
+---@field style "block" Creates a block around the code block. Disabled when `wrap` is enabled.
+---
+---@field default markview.config.markdown.code_blocks.opts
+---@field [string] markview.config.markdown.code_blocks.opts
+```
+
+Creates a block around the code block.
+
+>[!IMPORTANT]
+> This is disabled if `wrap` is enabled.
+
+### code_blocks: simple
+
+```lua from: ../lua/markview/types/renderers/markdown.lua class: markview.config.markdown.code_blocks.simple
+---@class markview.config.markdown.code_blocks.simple
+---
+---@field enable boolean Enable rendering of code blocks.
+---
+---@field border_hl? string Highlight group for borders.
+---@field info_hl? string Highlight group for the info string.
+---
+---@field label_direction? "left" | "right" Position of the language & icon.
+---@field label_hl? string Highlight group for the label.
+---
+---@field sign? boolean Enables signs for the code block?
+---@field sign_hl? string Highlight group for the sign.
+---
+---@field style "simple" Only highlights the line. Enabled when `wrap` is enabled.
+---
+---@field default markview.config.markdown.code_blocks.opts
+---@field [string] markview.config.markdown.code_blocks.opts
+```
+
+Highlights the lines of the code block.
+
+>[!IMPORTANT]
+> This is enabled if `wrap` is enabled.
+
+------
+
+You can also add line specific styles for different languages. Such as this one for diff files.
+
+```lua
+    ["diff"] = {
+        block_hl = function (_, line)
+            if line:match("^%+") then
+                return "MarkviewPalette4";
+            elseif line:match("^%-") then
+                return "MarkviewPalette1";
+            else
+                return "MarkviewCode";
+            end
+        end,
+        pad_hl = "MarkviewCode"
+    },
+```
+
+Each language has the following options.
+
+```lua from: ../lua/markview/types/renderers/markdown.lua class: markview.config.markdown.code_blocks.opts
+---@class markview.config.markdown.code_blocks.opts
+---
+---@field block_hl
+---| string Highlight group for the background of the line.
+---| fun(buffer: integer, line: string): string? Takes `line` & the `buffer` containing it and returns a highlight group for the line.
+---@field pad_hl
+---| string Highlight group for the padding of the line.
+---| fun(buffer: integer, line: string): string? Takes `line` & the `buffer` containing it and returns a highlight group for the padding..
+```
+
+## headings
+
+```lua from: ../lua/markview/types/renderers/markdown.lua class: markview.config.markdown.headings
+--- Configuration for ATX & Setext headings.
+---@class markview.config.markdown.headings
+---
+---@field enable boolean Enable rendering of headings.
+---
+---@field heading_1 markview.config.markdown.headings.atx
+---@field heading_2 markview.config.markdown.headings.atx
+---@field heading_3 markview.config.markdown.headings.atx
+---@field heading_4 markview.config.markdown.headings.atx
+---@field heading_5 markview.config.markdown.headings.atx
+---@field heading_6 markview.config.markdown.headings.atx
+---
+---@field setext_1 markview.config.markdown.headings.setext
+---@field setext_2 markview.config.markdown.headings.setext
+---
+---@field shift_width integer Amount of spaces to add before the text for teach heading level.
+---
+---@field org_indent? boolean Enables `Org mode` like section indentation. Disabled by default.
+---@field org_shift_width? integer Amount of `org_shift_char` to add per heading level.
+---@field org_shift_char? string Character used for indenting/shifting the sections.
+---
+---@field org_indent_wrap? boolean Enable wrap support for sections. Enabled by default
+```
+
+Changes how headings are shown.
+
+```lua
+headings = {
+    enable = true,
+
+    heading_1 = {
+        style = "icon",
+        sign = "󰌕 ", sign_hl = "MarkviewHeading1Sign",
+
+        icon = "󰼏  ", hl = "MarkviewHeading1",
+    },
+    heading_2 = {
+        style = "icon",
+        sign = "󰌖 ", sign_hl = "MarkviewHeading2Sign",
+
+        icon = "󰎨  ", hl = "MarkviewHeading2",
+    },
+    heading_3 = {
+        style = "icon",
+
+        icon = "󰼑  ", hl = "MarkviewHeading3",
+    },
+    heading_4 = {
+        style = "icon",
+
+        icon = "󰎲  ", hl = "MarkviewHeading4",
+    },
+    heading_5 = {
+        style = "icon",
+
+        icon = "󰼓  ", hl = "MarkviewHeading5",
+    },
+    heading_6 = {
+        style = "icon",
+
+        icon = "󰎴  ", hl = "MarkviewHeading6",
+    },
+
+    setext_1 = {
+        style = "decorated",
+
+        sign = "󰌕 ", sign_hl = "MarkviewHeading1Sign",
+        icon = "  ", hl = "MarkviewHeading1",
+        border = "▂"
+    },
+    setext_2 = {
+        style = "decorated",
+
+        sign = "󰌖 ", sign_hl = "MarkviewHeading2Sign",
+        icon = "  ", hl = "MarkviewHeading2",
+        border = "▁"
+    },
+
+    shift_width = 1,
+
+    org_indent = false,
+    org_indent_wrap = true,
+    org_shift_char = " ",
+    org_shift_width = 1,
+},
+```
+
+`heading_<n>` options are for ATX headings. They each have the following options.
+
+```lua from: ../lua/markview/types/renderers/markdown.lua class: markview.config.markdown.headings.atx
+---@alias markview.config.markdown.headings.atx
+---| markview.config.markdown.headings.atx.simple
+---| markview.config.markdown.headings.atx.label
+---| markview.config.markdown.headings.atx.icon
+```
+
+Each style is explained below.
+
+### heading: Simple
+
+```lua from: ../lua/markview/types/renderers/markdown.lua class: markview.config.markdown.headings.atx.simple
+---@class markview.config.markdown.headings.atx.simple
+---
+---@field style "simple" Heading style.
+---@field hl? string Base Highlight group.
+```
+
+### heading: Label
+
+```lua from: ../lua/markview/types/renderers/markdown.lua class: markview.config.markdown.headings.atx.label
+---@class markview.config.markdown.headings.atx.label
+---
+---@field style "label" Heading style.
+---@field align? "left" | "center" | "right" Label alignment.
+---
+---@field corner_left? string Text for left corner.
+---@field corner_left_hl? string Highlight group for left corner.
+---
+---@field corner_right? string Text for right corner.
+---@field corner_right_hl? string Highlight group for right corner.
+---
+---@field hl? string Base Highlight group. Used by other `*_hl` options as default value.
+---
+---@field icon? string Text to use for the icon(use `%d` to add heading number).
+---@field icon_hl? string Highlight group for icon.
+---
+---@field padding_left? string Text for left padding.
+---@field padding_left_hl? string Highlight group for left padding.
+---
+---@field padding_right? string Text for right padding.
+---@field padding_right_hl? string Highlight group for right padding.
+---
+---@field sign? string Text to show on the sign column.
+---@field sign_hl? string Highlight group for the sign.
+```
+
+Creates a label for the heading text that you can optionally align on the left/right/center of the screen screen(like how `glow` shows headings).
+
+>[!NOTE]
+> Only the first window's width is used for alignment! Even if you view the same file in multiple windows.
+
+### heading: Icon
+
+```lua from: ../lua/markview/types/renderers/markdown.lua class: markview.config.markdown.headings.atx.icon
+---@class markview.config.markdown.headings.atx.icon
+---
+---@field style "icon" Heading style.
+---@field hl? string Base Highlight group. Used by other `*_hl` options as default value.
+---
+---@field icon? string Text to use for the icon(use `%d` to add heading number).
+---@field icon_hl? string Highlight group for icon.
+---
+---@field sign? string Text to show on the sign column.
+---@field sign_hl? string Highlight group for the sign.
+```
+
+Like `simple` but adds an icon & sign.
+
+------
+
+`setext_<n>` options are for Setext headings. They each have the following options.
+
+```lua from: ../lua/markview/types/renderers/markdown.lua class: markview.config.markdown.headings.setext
+---@alias markview.config.markdown.headings.setext
+---| markview.config.markdown.headings.setext.simple
+---| markview.config.markdown.headings.setext.decorated
+```
+
+Each style is explained below.
+
+### heading: Simple
+
+```lua from: ../lua/markview/types/renderers/markdown.lua class: markview.config.markdown.headings.setext.simple
+---@class markview.config.markdown.headings.setext.simple
+---
+---@field style "simple" Preview style.
+---@field hl? string Base highlight group.
+---
+---@field sign? string Text to show in the sign column.
+---@field sign_hl? string Highlight group for the sign.
+```
+
+Colors the heading lines and adds an icon & sign.
+
+### heading: Decorated
+
+```lua from: ../lua/markview/types/renderers/markdown.lua class: markview.config.markdown.headings.setext.decorated
+---@class markview.config.markdown.headings.setext.decorated
+---
+---@field style "decorated" Preview style.
+---
+---@field border string Text to use for the preview border.
+---@field border_hl? string Highlight group for the border.
+---
+---@field hl? string Base highlight group.
+---
+---@field icon? string Text to use for the icon.
+---@field icon_hl? string Highlight group for the icon.
+---
+---@field sign? string Text to show in the sign column.
+---@field sign_hl? string Highlight group for the sign.
+```
+
+Like `simple` but allows adding custom borders below the heading text(instead of showing just `---` or `===`).
+
+## horizontal_rules
+
+```lua from: ../lua/markview/types/renderers/markdown.lua class: markview.config.markdown.hr
+--- Configuration for horizontal rules.
+---@class markview.config.markdown.hr
+---
+---@field enable boolean Enable preview of horizontal rules.
+---@field parts markview.config.markdown.hr.part[] Parts for the horizontal rules.
+```
+
+Changes how horizontal rules are shown.
+
+```lua
+horizontal_rules = {
+    enable = true,
+
+    parts = {
+        {
+            type = "repeating",
+            direction = "left",
+
+            repeat_amount = function (buffer)
+                local utils = require("markview.utils");
+                local window = utils.buf_getwin(buffer)
+
+                local width = vim.api.nvim_win_get_width(window)
+                local textoff = vim.fn.getwininfo(window)[1].textoff;
+
+                return math.floor((width - textoff - 3) / 2);
+            end,
+
+            text = "─",
+
+            hl = {
+                "MarkviewGradient1", "MarkviewGradient1",
+                "MarkviewGradient2", "MarkviewGradient2",
+                "MarkviewGradient3", "MarkviewGradient3",
+                "MarkviewGradient4", "MarkviewGradient4",
+                "MarkviewGradient5", "MarkviewGradient5",
+                "MarkviewGradient6", "MarkviewGradient6",
+                "MarkviewGradient7", "MarkviewGradient7",
+                "MarkviewGradient8", "MarkviewGradient8",
+                "MarkviewGradient9", "MarkviewGradient9"
+            }
+        },
+        {
+            type = "text",
+
+            text = "  ",
+            hl = "MarkviewIcon3Fg"
+        },
+        {
+            type = "repeating",
+            direction = "right",
+
+            repeat_amount = function (buffer) --[[@as function]]
+                local utils = require("markview.utils");
+                local window = utils.buf_getwin(buffer)
+
+                local width = vim.api.nvim_win_get_width(window)
+                local textoff = vim.fn.getwininfo(window)[1].textoff;
+
+                return math.ceil((width - textoff - 3) / 2);
+            end,
+
+            text = "─",
+            hl = {
+                "MarkviewGradient1", "MarkviewGradient1",
+                "MarkviewGradient2", "MarkviewGradient2",
+                "MarkviewGradient3", "MarkviewGradient3",
+                "MarkviewGradient4", "MarkviewGradient4",
+                "MarkviewGradient5", "MarkviewGradient5",
+                "MarkviewGradient6", "MarkviewGradient6",
+                "MarkviewGradient7", "MarkviewGradient7",
+                "MarkviewGradient8", "MarkviewGradient8",
+                "MarkviewGradient9", "MarkviewGradient9"
+            }
+        }
+    }
+},
+```
+
+### parts
+
+You can have any of the following parts.
+
+> Text
+
+Shows some text *literally*.
+
+```lua from: ../lua/markview/types/renderers/markdown.lua class: markview.config.markdown.hr.text
+---@class markview.config.markdown.hr.text
+---
+---@field type "text" Part name.
+---
+---@field hl? string Highlight group for this part.
+---@field text string Text to show.
+```
+
+> Repeating
+
+Repeats given text by an amount.
+
+```lua from: ../lua/markview/types/renderers/markdown.lua class: markview.config.markdown.hr.repeating
+---@class markview.config.markdown.hr.repeating
+---
+---@field type "repeating" Part name.
+---
+---@field direction "left" | "right" Direction from which the highlight groups are applied from.
+---
+---@field repeat_amount integer | fun(buffer: integer, item: markview.parsed.markdown.hr): integer How many times to repeat the text.
+---@field repeat_hl? boolean Whether to repeat the highlight groups.
+---@field repeat_text? boolean Whether to repeat the text.
+---
+---@field text string | string[] Text to repeat.
+---@field hl? string | string[] Highlight group for the text.
+```
+
+## list_items
+
+```lua from: ../lua/markview/types/renderers/markdown.lua class: markview.config.markdown.list_items
+--- Configuration for list items.
+---@class markview.config.markdown.list_items
+---
+---@field enable boolean
+---
+---@field indent_size integer | fun(buffer: integer, item: markview.parsed.markdown.list_items): integer Indentation size for list items.
+---@field shift_width integer | fun(buffer: integer, item: markview.parsed.markdown.list_items): integer Virtual indentation size for previewed list items.
+---
+---@field marker_dot markview.config.markdown.list_items.ordered Configuration for `n.` list items.
+---@field marker_minus markview.config.markdown.list_items.unordered Configuration for `-` list items.
+---@field marker_parenthesis markview.config.markdown.list_items.ordered Configuration for `n)` list items.
+---@field marker_plus markview.config.markdown.list_items.unordered Configuration for `+` list items.
+---@field marker_star markview.config.markdown.list_items.unordered Configuration for `*` list items.
+---
+---@field wrap? boolean Enables wrap support.
+```
+
+Changes how list items are shown.
+
+```lua
+list_items = {
+    enable = true,
+    wrap = true,
+
+    indent_size = function (buffer)
+        if type(buffer) ~= "number" then
+            return vim.bo.shiftwidth or 4;
+        end
+
+        --- Use 'shiftwidth' value.
+        return vim.bo[buffer].shiftwidth or 4;
+    end,
+    shift_width = 4,
+
+    marker_minus = {
+        add_padding = true,
+        conceal_on_checkboxes = true,
+
+        text = "●",
+        hl = "MarkviewListItemMinus"
+    },
+
+    marker_plus = {
+        add_padding = true,
+        conceal_on_checkboxes = true,
+
+        text = "◈",
+        hl = "MarkviewListItemPlus"
+    },
+
+    marker_star = {
+        add_padding = true,
+        conceal_on_checkboxes = true,
+
+        text = "◇",
+        hl = "MarkviewListItemStar"
+    },
+
+    marker_dot = {
+        text = function (_, item)
+            return string.format("%d.", item.n);
+        end,
+        hl = "@markup.list.markdown",
+        add_padding = true,
+        conceal_on_checkboxes = true
+    },
+
+    marker_parenthesis = {
+        text = function (_, item)
+            return string.format("%d)", item.n);
+        end,
+        hl = "@markup.list.markdown",
+        add_padding = true,
+        conceal_on_checkboxes = true
+    }
+},
+```
+
+`marker_minus`, `marker_plus` & `marker_star` has the following options.
+
+```lua from: ../lua/markview/types/renderers/markdown.lua class: markview.config.markdown.list_items.unordered
+---@class markview.config.markdown.list_items.unordered
+---
+---@field add_padding boolean
+---@field conceal_on_checkboxes? boolean
+---@field enable? boolean
+---@field hl? string
+---@field text string
+```
+
+`marker_dot` & `marker_parenthesis` has the following options.
+
+```lua from: ../lua/markview/types/renderers/markdown.lua class: markview.config.markdown.list_items.ordered
+---@class markview.config.markdown.list_items.ordered
+---
+---@field add_padding boolean
+---@field conceal_on_checkboxes? boolean
+---@field enable? boolean
+```
+
+## metadata_minus
+
+```lua from: ../lua/markview/types/renderers/markdown.lua class: markview.config.markdown.metadata
+--- Configuration for YAML/TOML metadata.
+---@class markview.config.markdown.metadata
+---
+---@field enable boolean
+---
+---@field border_bottom? string Bottom border.
+---@field border_bottom_hl? string Highlight group for the bottom border.
+---@field border_hl? string Primary highlight group for the borders.
+---@field border_top? string Top border.
+---@field border_top_hl? string Highlight group for the top border.
+---
+---@field hl? string Background highlight group.
+```
+
+Changes how minus metadata sections are shown.
+
+```lua
+metadata_minus = {
+    enable = true,
+
+    hl = "MarkviewCode",
+    border_hl = "MarkviewCodeFg",
+
+    border_top = "▄",
+    border_bottom = "▀"
+},
+```
+
+## metadata_plus
+
+```lua from: ../lua/markview/types/renderers/markdown.lua class: markview.config.markdown.metadata
+--- Configuration for YAML/TOML metadata.
+---@class markview.config.markdown.metadata
+---
+---@field enable boolean
+---
+---@field border_bottom? string Bottom border.
+---@field border_bottom_hl? string Highlight group for the bottom border.
+---@field border_hl? string Primary highlight group for the borders.
+---@field border_top? string Top border.
+---@field border_top_hl? string Highlight group for the top border.
+---
+---@field hl? string Background highlight group.
+```
+
+Changes how plus metadata sections are shown.
+
+```lua
+metadata_plus = {
+    enable = true,
+
+    hl = "MarkviewCode",
+    border_hl = "MarkviewCodeFg",
+
+    border_top = "▄",
+    border_bottom = "▀"
+},
+```
+
+## reference_definitions
+
+```lua from: ../lua/markview/types/renderers/markdown.lua class: markview.config.markdown.ref_def
+--- Configuration for reference definitions.
+---@class markview.config.markdown.ref_def
+---
+---@field enable boolean
+---
+---@field default markview.config.__inline Default configuration for reference definitions.
+---@field [string] markview.config.__inline Configuration for reference definitions whose description matches `string`.
+```
+
+Changes how reference definitions are shown.
+
+```lua
+reference_definitions = {
+    enable = true,
+
+    default = {
+        icon = " ",
+        hl = "MarkviewPalette4Fg"
+    },
+
+    ["github%.com/[%a%d%-%_%.]+%/?$"] = {
+        --- github.com/<user>
+
+        icon = " ",
+        hl = "MarkviewPalette0Fg"
+    },
+    ["github%.com/[%a%d%-%_%.]+/[%a%d%-%_%.]+%/?$"] = {
+        --- github.com/<user>/<repo>
+
+        icon = " ",
+        hl = "MarkviewPalette0Fg"
+    },
+    ["github%.com/[%a%d%-%_%.]+/[%a%d%-%_%.]+/tree/[%a%d%-%_%.]+%/?$"] = {
+        --- github.com/<user>/<repo>/tree/<branch>
+
+        icon = " ",
+        hl = "MarkviewPalette0Fg"
+    },
+    ["github%.com/[%a%d%-%_%.]+/[%a%d%-%_%.]+/commits/[%a%d%-%_%.]+%/?$"] = {
+        --- github.com/<user>/<repo>/commits/<branch>
+
+        icon = " ",
+        hl = "MarkviewPalette0Fg"
+    },
+
+    ["github%.com/[%a%d%-%_%.]+/[%a%d%-%_%.]+%/releases$"] = {
+        --- github.com/<user>/<repo>/releases
+
+        icon = " ",
+        hl = "MarkviewPalette0Fg"
+    },
+    ["github%.com/[%a%d%-%_%.]+/[%a%d%-%_%.]+%/tags$"] = {
+        --- github.com/<user>/<repo>/tags
+
+        icon = " ",
+        hl = "MarkviewPalette0Fg"
+    },
+    ["github%.com/[%a%d%-%_%.]+/[%a%d%-%_%.]+%/issues$"] = {
+        --- github.com/<user>/<repo>/issues
+
+        icon = " ",
+        hl = "MarkviewPalette0Fg"
+    },
+    ["github%.com/[%a%d%-%_%.]+/[%a%d%-%_%.]+%/pulls$"] = {
+        --- github.com/<user>/<repo>/pulls
+
+        icon = " ",
+        hl = "MarkviewPalette0Fg"
+    },
+
+    ["github%.com/[%a%d%-%_%.]+/[%a%d%-%_%.]+%/wiki$"] = {
+        --- github.com/<user>/<repo>/wiki
+
+        icon = " ",
+        hl = "MarkviewPalette0Fg"
+    },
+
+    ["developer%.mozilla%.org"] = {
+        priority = -9999,
+
+        icon = "󰖟 ",
+        hl = "MarkviewPalette5Fg"
+    },
+
+    ["w3schools%.com"] = {
+        priority = -9999,
+
+        icon = " ",
+        hl = "MarkviewPalette4Fg"
+    },
+
+    ["stackoverflow%.com"] = {
+        priority = -9999,
+
+        icon = "󰓌 ",
+        hl = "MarkviewPalette2Fg"
+    },
+
+    ["reddit%.com"] = {
+        priority = -9999,
+
+        icon = " ",
+        hl = "MarkviewPalette2Fg"
+    },
+
+    ["github%.com"] = {
+        priority = -9999,
+
+        icon = " ",
+        hl = "MarkviewPalette6Fg"
+    },
+
+    ["gitlab%.com"] = {
+        priority = -9999,
+
+        icon = "󰮠 ",
+        hl = "MarkviewPalette2Fg"
+    },
+
+    ["dev%.to"] = {
+        priority = -9999,
+
+        icon = "󱁴 ",
+        hl = "MarkviewPalette0Fg"
+    },
+
+    ["codepen%.io"] = {
+        priority = -9999,
+
+        icon = " ",
+        hl = "MarkviewPalette6Fg"
+    },
+
+    ["replit%.com"] = {
+        priority = -9999,
+
+        icon = " ",
+        hl = "MarkviewPalette2Fg"
+    },
+
+    ["jsfiddle%.net"] = {
+        priority = -9999,
+
+        icon = " ",
+        hl = "MarkviewPalette5Fg"
+    },
+
+    ["npmjs%.com"] = {
+        priority = -9999,
+
+        icon = " ",
+        hl = "MarkviewPalette0Fg"
+    },
+
+    ["pypi%.org"] = {
+        priority = -9999,
+
+        icon = "󰆦 ",
+        hl = "MarkviewPalette0Fg"
+    },
+
+    ["mvnrepository%.com"] = {
+        priority = -9999,
+
+        icon = " ",
+        hl = "MarkviewPalette1Fg"
+    },
+
+    ["medium%.com"] = {
+        priority = -9999,
+
+        icon = " ",
+        hl = "MarkviewPalette6Fg"
+    },
+
+    ["linkedin%.com"] = {
+        priority = -9999,
+
+        icon = "󰌻 ",
+        hl = "MarkviewPalette5Fg"
+    },
+
+    ["news%.ycombinator%.com"] = {
+        priority = -9999,
+
+        icon = " ",
+        hl = "MarkviewPalette2Fg"
+    },
+},
+```
+
+Each link type has the following options.
+
+```lua from: ../lua/markview/types/markview.lua class: markview.config.__inline
+---@class markview.config.__inline
+---
+---@field enable? boolean Only valid if it's a top level option, Used for disabling previews.
+---
+---@field corner_left? string Left corner.
+---@field corner_left_hl? string Highlight group for the left corner.
+---
+---@field padding_left? string Left padding(added after `corner_left`).
+---@field padding_left_hl? string Highlight group for the left padding.
+---
+---@field icon? string Icon(added after `padding_left`).
+---@field icon_hl? string Highlight group for the icon.
+---
+---@field hl? string Default highlight group(used by `*_hl` options when they are not set).
+---
+---@field padding_right? string Right padding.
+---@field padding_right_hl? string Highlight group for the right padding.
+---
+---@field corner_right? string Right corner(added after `padding_right`).
+---@field corner_right_hl? string Highlight group for the right corner.
+---
+---
+---
+---@field block_hl? string Only for `block_references`, highlight group for the block name.
+---@field file_hl? string Only for `block_references`, highlight group for the file name.
+```
+
+## tables
+
+```lua from: ../lua/markview/types/renderers/markdown.lua class: markview.config.markdown.tables
+--- Configuration for tables.
+---@class markview.config.markdown.tables
+---
+---@field enable boolean
+---@field strict boolean When `true`, leading & trailing whitespaces are not considered part of the cell.
+---
+---@field block_decorator boolean Whether to draw top & bottom border.
+---@field use_virt_lines boolean Whether to use virtual lines for the borders.
+---
+---@field hl markview.config.markdown.tables.parts Highlight groups for the parts.
+---@field parts markview.config.markdown.tables.parts Parts for the table.
+```
+
+Changes how tables are shown.
+
+```lua
+tables = {
+    enable = true,
+    strict = false,
+
+    block_decorator = true,
+    use_virt_lines = false,
+
+    parts = {
+        top = { "╭", "─", "╮", "┬" },
+        header = { "│", "│", "│" },
+        separator = { "├", "─", "┤", "┼" },
+        row = { "│", "│", "│" },
+        bottom = { "╰", "─", "╯", "┴" },
+
+        overlap = { "┝", "━", "┥", "┿" },
+
+        align_left = "╼",
+        align_right = "╾",
+        align_center = { "╴", "╶" }
+    },
+
+    hl = {
+        top = { "MarkviewTableHeader", "MarkviewTableHeader", "MarkviewTableHeader", "MarkviewTableHeader" },
+        header = { "MarkviewTableHeader", "MarkviewTableHeader", "MarkviewTableHeader" },
+        separator = { "MarkviewTableHeader", "MarkviewTableHeader", "MarkviewTableHeader", "MarkviewTableHeader" },
+        row = { "MarkviewTableBorder", "MarkviewTableBorder", "MarkviewTableBorder" },
+        bottom = { "MarkviewTableBorder", "MarkviewTableBorder", "MarkviewTableBorder", "MarkviewTableBorder" },
+
+        overlap = { "MarkviewTableBorder", "MarkviewTableBorder", "MarkviewTableBorder", "MarkviewTableBorder" },
+
+        align_left = "MarkviewTableAlignLeft",
+        align_right = "MarkviewTableAlignRight",
+        align_center = { "MarkviewTableAlignCenter", "MarkviewTableAlignCenter" }
+    }
+},
+```
+
+`parts` & `hl` have the following options.
+
+```lua from: ../lua/markview/types/renderers/markdown.lua class: markview.config.markdown.tables.parts
+--- Parts that make the previewed table.
+---@class markview.config.markdown.tables.parts
+---
+---@field align_center [ string, string ]
+---@field align_left string
+---@field align_right string
+---
+---@field top string[]
+---@field header string[]
+---@field separator string[]
+---@field row string[]
+---@field bottom string[]
+---
+---@field overlap string[]
+```
+

@@ -1,0 +1,180 @@
+<!--markdoc
+    {
+        "generic": {
+            "filename": "../doc/markview.nvim-yaml.txt",
+            "force_write": true,
+            "header": {
+                "desc": "🧩 Experimental options for `markview.nvim`",
+                "tag": "markview.nvim-yaml"
+            }
+        },
+        "markdown": {
+            "heading_ratio": [ 26, 54 ],
+            "list_items": {
+                "marker_minus": "◆",
+                "marker_plus": "◇"
+            },
+            "tags": {
+                "enable": [ "markview.nvim-yaml.enable" ],
+                "properties": [ "markview.nvim-yaml.properties" ]
+            }
+        }
+    }
+-->
+<!--markdoc_ignore_start-->
+# 🧩 YAML
+<!--markdoc_ignore_end-->
+
+```lua from: ../lua/markview/types/renderers/yaml.lua class: markview.config.yaml
+--- Configuration for YAML.
+---@class markview.config.yaml
+---
+---@field enable boolean Enable rendering of YAML.
+---@field properties markview.config.yaml.properties
+```
+
+## enable
+
+```lua
+enable = true
+```
+
+## properties
+
+```lua from: ../lua/markview/types/renderers/yaml.lua class: markview.config.yaml.properties
+--- Configuration for YAML properties.
+---@class markview.config.yaml.properties
+---
+---@field enable boolean Enable rendering of YAML properties.
+---
+---@field data_types table<string, markview.config.yaml.properties.opts> Configuration for various data types.
+---
+---@field default markview.config.yaml.properties.opts Default configuration for properties.
+---@field [string] markview.config.yaml.properties.opts Configuration for properties whose name matches `string`.
+```
+
+Changes how YAML properties are shown.
+
+```lua
+properties = {
+    enable = true,
+
+    data_types = {
+        ["text"] = {
+            text = "󰗊 ", hl = "MarkviewIcon4"
+        },
+        ["list"] = {
+            text = "󰝖 ", hl = "MarkviewIcon5"
+        },
+        ["number"] = {
+            text = " ", hl = "MarkviewIcon6"
+        },
+        ["checkbox"] = {
+            ---@diagnostic disable
+            text = function (_, item)
+                return item.value == "true" and "󰄲 " or "󰄱 "
+            end,
+            ---@diagnostic enable
+            hl = "MarkviewIcon6"
+        },
+        ["date"] = {
+            text = "󰃭 ", hl = "MarkviewIcon2"
+        },
+        ["date_&_time"] = {
+            text = "󰥔 ", hl = "MarkviewIcon3"
+        }
+    },
+
+    default = {
+        use_types = true,
+
+        border_top = nil,
+        border_middle = nil,
+        border_bottom = nil,
+
+        border_hl = nil,
+    },
+
+    ["^tags$"] = {
+        use_types = false,
+
+        text = "󰓹 ",
+        hl = "MarkviewIcon0"
+    },
+    ["^aliases$"] = {
+        match_string = "^aliases$",
+        use_types = false,
+
+        text = "󱞫 ",
+        hl = "MarkviewIcon2"
+    },
+    ["^cssclasses$"] = {
+        match_string = "^cssclasses$",
+        use_types = false,
+
+        text = " ",
+        hl = "MarkviewIcon3"
+    },
+
+
+    ["^publish$"] = {
+        match_string = "^publish$",
+        use_types = false,
+
+        text = "󰅧 ",
+        hl = "MarkviewIcon5"
+    },
+    ["^permalink$"] = {
+        match_string = "^permalink$",
+        use_types = false,
+
+        text = " ",
+        hl = "MarkviewIcon2"
+    },
+    ["^description$"] = {
+        match_string = "^description$",
+        use_types = false,
+
+        text = "󰋼 ",
+        hl = "MarkviewIcon0"
+    },
+    ["^image$"] = {
+        match_string = "^image$",
+        use_types = false,
+
+        text = "󰋫 ",
+        hl = "MarkviewIcon4"
+    },
+    ["^cover$"] = {
+        match_string = "^cover$",
+        use_types = false,
+
+        text = "󰹉 ",
+        hl = "MarkviewIcon2"
+    }
+}
+```
+
+Each type of YAML properties have the following options.
+
+```lua from: ../lua/markview/types/renderers/yaml.lua class: markview.config.yaml.properties.opts
+--- Configuration for specific YAML property type.
+---@class markview.config.yaml.properties.opts
+---
+---@field border_bottom? string Scope guide border bottom.
+---@field border_bottom_hl? string
+---
+---@field border_hl? string
+---
+---@field border_middle? string Scope guide border middle.
+---@field border_middle_hl? string
+---
+---@field border_top? string Scope guide border top.
+---@field border_top_hl? string
+---
+---@field hl? string
+---@field text? string
+---
+---@field use_types? boolean When `true`, the configuration table merges with the value's data type configuration.
+```
+

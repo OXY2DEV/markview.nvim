@@ -5,7 +5,19 @@
             "force_write": true,
             "header": {
                 "desc": "🔩 Configuring `markview`",
-                "tag": "markview.nvim-config.txt"
+                "tag": "markview.nvim-config"
+            },
+            "toc": {
+                "entries": [
+                    { "text": "Experimental", "tag": "markview.nvim-experimental" },
+                    { "text": "HTML", "tag": "markview.nvim-html" },
+                    { "text": "LaTeX", "tag": "markview.nvim-latex" },
+                    { "text": "Markdown", "tag": "markview.nvim-markdown" },
+                    { "text": "Markdown inline", "tag": "markview.nvim-markdown_inline" },
+                    { "text": "Preview", "tag": "markview.nvim-preview" },
+                    { "text": "Typst", "tag": "markview.nvim-typst" },
+                    { "text": "YAML", "tag": "markview.nvim-yaml" }
+                ]
             }
         },
         "markdown": {
@@ -29,20 +41,24 @@ Configuration options for `markview.nvim`.
 > spec.config = vim.deepcopy(spec.default);
 > ```
 
+<TOC/>
+
+<!--markdoc_ignore_start-->
 ## 🧩 Options
 
-- [🧩 Experimental]()
-- [🧩 HTML]()
-- [🧩 LaTeX]()
-- [🧩 Markdown]()
-- [🧩 Markdown inline]()
-- [🧩 Preview]()
-- [🧩 Typst]()
-- [🧩 YAML]()
-
+- [🧩 Experimental](https://github.com/OXY2DEV/markview.nvim/wiki/Experimental)
+- [🧩 HTML](https://github.com/OXY2DEV/markview.nvim/wiki/HTML)
+- [🧩 LaTeX](https://github.com/OXY2DEV/markview.nvim/wiki/LaTeX)
+- [🧩 Markdown](https://github.com/OXY2DEV/markview.nvim/wiki/Markdown)
+- [🧩 Markdown inline](https://github.com/OXY2DEV/markview.nvim/wiki/Markdown-inline)
+- [🧩 Preview](https://github.com/OXY2DEV/markview.nvim/wiki/Preview)
+- [🧩 Typst](https://github.com/OXY2DEV/markview.nvim/wiki/Typst)
+- [🧩 YAML](https://github.com/OXY2DEV/markview.nvim/wiki/YAML)
+<!--markdoc_ignore_end-->
 Type definition for the configuration table,
 
 ```lua from: ../lua/markview/types/markview.lua class: markview.config
+--- Configuration options for `markview.nvim`.
 ---@class markview.config
 ---
 ---@field experimental? markview.config.experimental
