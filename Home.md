@@ -19,7 +19,7 @@
 - [🎨 Highlight groups]()
 - [🎇 Integrations]()
 - [💡 Presets]()
-- Usage
+- [🪄 Usage]()
 
 ------
 
