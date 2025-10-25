@@ -3,9 +3,6 @@
 --- Experimental options.
 ---@class markview.config.experimental
 ---
----@field check_rtp boolean Whether to scan the `runtimepath` for errors & potentially fixing them.
----@field check_rtp_message boolean Whether to shoe message if `nvim-treesitter` gets loaded before `markview.nvim`.
----
 ---@field date_formats string[] List of lua patterns for detecting date in YAML.
 ---@field date_time_formats string[] List of lua patterns for detecting date & time in YAML.
 ---

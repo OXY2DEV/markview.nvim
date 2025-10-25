@@ -9,9 +9,6 @@ local spec = {};
 ---@type markview.config
 spec.default = {
 	experimental = {
-		check_rtp = true,
-		check_rtp_message = true,
-
 		date_formats = {
 			"^%d%d%d%d%-%d%d%-%d%d$",      --- YYYY-MM-DD
 			"^%d%d%-%d%d%-%d%d%d%d$",      --- DD-MM-YYYY, MM-DD-YYYY
@@ -41,7 +38,6 @@ spec.default = {
 		list_empty_line_tolerance = 3,
 
 		read_chunk_size = 1024,
-
 
 		linewise_ignore_org_indent = false
 	};
