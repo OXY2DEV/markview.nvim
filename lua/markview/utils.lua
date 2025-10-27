@@ -398,4 +398,19 @@ utils.str_contains = function (str, chars)
 	return string.match(tmp, "^%s*$") ~= nil;
 end
 
+--- Soft wrapper for `nvim_buf_set_extmark()`.
+---@param buffer integer
+---@param ns integer
+---@param row_start integer
+---@param col_start integer
+---@param opts vim.api.keyset.set_extmark
+utils.set_extmark = function (buffer, ns, row_start, col_start, opts)
+	vim.api.nvim_buf_set_extmark(buffer, ns, row_start, col_start, vim.tbl_extend("force", {
+		undo_restore = false, invalidate = true,
+
+		virt_text_pos = "inline",
+		hl_mode = "combine"
+	}, opts));
+end
+
 return utils;

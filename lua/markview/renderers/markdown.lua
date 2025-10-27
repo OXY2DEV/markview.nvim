@@ -1054,11 +1054,15 @@ markdown.atx_heading = function (buffer, item)
 	end
 
 	if config.style == "simple" then
+		---@cast config markview.config.markdown.headings.atx.simple
+
 		vim.api.nvim_buf_set_extmark(buffer, markdown.ns, range.row_start, range.col_start, {
 			undo_restore = false, invalidate = true,
 			line_hl_group = utils.set_hl(config.hl)
 		});
 	elseif config.style == "label" then
+		---@cast config markview.config.markdown.headings.atx.label
+
 		local space = "";
 		local win = vim.fn.win_findbuf(buffer)[1];
 
@@ -1124,20 +1128,21 @@ markdown.atx_heading = function (buffer, item)
 			}
 		});
 	elseif config.style == "icon" then
-		vim.api.nvim_buf_set_extmark(buffer, markdown.ns, range.row_start, range.col_start, {
-			undo_restore = false, invalidate = true,
+		---@cast config markview.config.markdown.headings.atx.icon
+
+		utils.set_extmark(buffer, markdown.ns, range.row_start, range.col_start, {
+			-- Remove `#+%s*` amount of characters.
 			end_col = range.col_start + #item.marker + (#item.text[1] > #item.marker and 1 or 0),
 			conceal = "",
-			sign_text = config.sign and tostring(config.sign) or nil,
+
+			sign_text = tostring(config.sign or ""),
 			sign_hl_group = utils.set_hl(config.sign_hl),
-			virt_text_pos = "inline",
+
 			virt_text = {
 				{ string.rep(" ", (#item.marker - 1) * shift_width) },
-				{ icon, utils.set_hl(config.icon_hl or config.hl) },
+				{ icon, config.icon_hl or config.hl },
 			},
 			line_hl_group = utils.set_hl(config.hl),
-
-			hl_mode = "combine"
 		});
 	end
 end
@@ -2400,6 +2405,8 @@ markdown.setext_heading = function (buffer, item)
 	local range = item.range;
 
 	if config.style == "simple" then
+		---@cast config markview.config.markdown.headings.setext.simple
+
 		vim.api.nvim_buf_set_extmark(buffer, markdown.ns, range.row_start, range.col_start, {
 			undo_restore = false, invalidate = true,
 
@@ -2412,6 +2419,8 @@ markdown.setext_heading = function (buffer, item)
 			line_hl_group = utils.set_hl(config.hl)
 		});
 	elseif config.style == "decorated" then
+		---@cast config markview.config.markdown.headings.setext.decorated
+
 		if config.icon then
 			for l = 1, (range.row_end - range.row_start) - 1 do
 				local line = item.text[l];

@@ -3,7 +3,7 @@
 --- Configuration for markdown.
 ---@class markview.config.markdown
 ---
----@field enable boolean
+---@field enable boolean Enable **markdown** rendering.
 ---
 ---@field block_quotes markview.config.markdown.block_quotes Block quote configuration.
 ---@field code_blocks markview.config.markdown.code_blocks Fenced code block configuration.
@@ -20,57 +20,72 @@
 --- Configuration for block quotes.
 ---@class markview.config.markdown.block_quotes
 ---
----@field enable boolean
+---@field enable boolean Enable rendering of block quotes.
 ---@field wrap? boolean Enables text wrap support.
 ---
----@field default markview.config.markdown.block_quotes.opts
----@field [string] markview.config.markdown.block_quotes.opts
+---@field default markview.config.markdown.block_quotes.opts Default configuration.
+---@field [string] markview.config.markdown.block_quotes.opts Configuration for `>[!string]` callout. Name is **case-insensitive**.
 
 
 --- Static configuration options for various types of block quotes.
 ---@class markview.config.markdown.block_quotes.opts
 ---
----@field border? string | string[] Text for the border.
----@field border_hl? string | string[] Highlight group for the border.
+---@field border? string | string[] Text for the border. Use an array to apply different border *per line*.
+---@field border_hl? string | string[] Highlight group for the border. Use an array to apply different highlights *per line*.
+---
 ---@field hl? string Base highlight group for the block quote.
+---
 ---@field icon? string Icon to show before the block quote title.
 ---@field icon_hl? string Highlight group for the icon.
----@field preview? string Callout/Alert preview string(shown where >[!{string}] was).
+---
+---@field preview? string Callout/Alert preview string(shown where `>[!string]` was).
 ---@field preview_hl? string Highlight group for the preview.
----@field title? boolean Whether the block quote can have a title or not.
+---
+---@field title? boolean Should this callout allow titles(`>[!string] <Title>`)? Disabled by default.
 
 ------------------------------------------------------------------------------
 
 --- Configuration for code blocks.
 ---@class markview.config.markdown.code_blocks
 ---
----@field enable boolean
+---@field enable boolean Enable rendering of code blocks.
 ---
----@field border_hl? string
----@field info_hl? string
----@field label_direction? "left" | "right"
----@field label_hl? string
----@field min_width? integer
----@field pad_amount? integer
----@field pad_char? string
----@field sign? boolean
----@field sign_hl? string
----@field style "simple" | "block"
+---@field border_hl? string Highlight group for borders.
+---@field info_hl? string Highlight group for the info string.
+---
+---@field label_direction? "left" | "right" Position of the language & icon.
+---@field label_hl? string Highlight group for the label.
+---
+---@field min_width? integer Minimum width of the code block.
+---@field pad_amount? integer Number of `pad_char`s to add on the left & right side of the code block.
+---@field pad_char? string Character used as padding.
+---
+---@field sign? boolean Enables signs for the code block?
+---@field sign_hl? string Highlight group for the sign.
+---
+---@field style
+---| "simple" Only highlights the line. Enabled when `wrap` is enabled.
+---| "block" Creates a block around the code block. Disabled when `wrap` is enabled.
 ---
 ---@field default markview.config.markdown.code_blocks.opts
 ---@field [string] markview.config.markdown.code_blocks.opts
 
---- Configuration for highlighting a line inside a code block.
+--[[ Configuration for highlighting `lines` inside a code block. ]]
 ---@class markview.config.markdown.code_blocks.opts
 ---
----@field block_hl string | fun(buffer: integer, line: string): string? Highlight group for the background of the line.
----@field pad_hl string | fun(buffer: integer, line: string): string? Highlight group for the padding of the line.
+---@field block_hl
+---| string Highlight group for the background of the line.
+---| fun(buffer: integer, line: string): string? Takes `line` & the `buffer` containing it and returns a highlight group for the line.
+---@field pad_hl
+---| string Highlight group for the padding of the line.
+---| fun(buffer: integer, line: string): string? Takes `line` & the `buffer` containing it and returns a highlight group for the padding..
 
 ------------------------------------------------------------------------------
 
+--- Configuration for ATX & Setext headings.
 ---@class markview.config.markdown.headings
 ---
----@field enable boolean
+---@field enable boolean Enable rendering of headings.
 ---
 ---@field heading_1 markview.config.markdown.headings.atx
 ---@field heading_2 markview.config.markdown.headings.atx
@@ -82,42 +97,82 @@
 ---@field setext_1 markview.config.markdown.headings.setext
 ---@field setext_2 markview.config.markdown.headings.setext
 ---
----@field shift_width integer Amount of spaces to add before the heading(per level).
+---@field shift_width integer Amount of spaces to add before the text for teach heading level.
 ---
----@field org_indent? boolean Whether to enable org-mode like section indentation.
----@field org_shift_width? integer Shift width for org indents.
----@field org_shift_char? string Shift char for org indent.
----@field org_indent_wrap? boolean Whether to enable wrap support. May have severe performance issues!
+---@field org_indent? boolean Enables `Org mode` like section indentation. Disabled by default.
+---@field org_shift_width? integer Amount of `org_shift_char` to add per heading level.
+---@field org_shift_char? string Character used for indenting/shifting the sections.
+---
+---@field org_indent_wrap? boolean Enable wrap support for sections. Enabled by default
 
 
----@class markview.config.markdown.headings.atx
+---@alias markview.config.markdown.headings.atx
+---| markview.config.markdown.headings.atx.simple
+---| markview.config.markdown.headings.atx.label
+---| markview.config.markdown.headings.atx.icon
+
+
+---@class markview.config.markdown.headings.atx.simple
 ---
+---@field style "simple" Heading style.
+---@field hl? string Base Highlight group.
+
+
+---@class markview.config.markdown.headings.atx.label
+---
+---@field style "label" Heading style.
 ---@field align? "left" | "center" | "right" Label alignment.
 ---
----@field corner_left? string Left corner.
+---@field corner_left? string Text for left corner.
 ---@field corner_left_hl? string Highlight group for left corner.
 ---
----@field corner_right? string Right corner.
+---@field corner_right? string Text for right corner.
 ---@field corner_right_hl? string Highlight group for right corner.
 ---
----@field hl? string Base Highlight group.
+---@field hl? string Base Highlight group. Used by other `*_hl` options as default value.
 ---
 ---@field icon? string Text to use for the icon(use `%d` to add heading number).
 ---@field icon_hl? string Highlight group for icon.
 ---
----@field padding_left? string Left padding.
+---@field padding_left? string Text for left padding.
 ---@field padding_left_hl? string Highlight group for left padding.
 ---
----@field padding_right? string Right padding.
+---@field padding_right? string Text for right padding.
 ---@field padding_right_hl? string Highlight group for right padding.
 ---
 ---@field sign? string Text to show on the sign column.
 ---@field sign_hl? string Highlight group for the sign.
+
+
+---@class markview.config.markdown.headings.atx.icon
 ---
----@field style "simple" | "label" | "icon" Preview style.
+---@field style "icon" Heading style.
+---@field hl? string Base Highlight group. Used by other `*_hl` options as default value.
+---
+---@field icon? string Text to use for the icon(use `%d` to add heading number).
+---@field icon_hl? string Highlight group for icon.
+---
+---@field sign? string Text to show on the sign column.
+---@field sign_hl? string Highlight group for the sign.
 
 
----@class markview.config.markdown.headings.setext
+---@alias markview.config.markdown.headings.setext
+---| markview.config.markdown.headings.setext.simple
+---| markview.config.markdown.headings.setext.decorated
+
+
+---@class markview.config.markdown.headings.setext.simple
+---
+---@field style "simple" Preview style.
+---@field hl? string Base highlight group.
+---
+---@field sign? string Text to show in the sign column.
+---@field sign_hl? string Highlight group for the sign.
+
+
+---@class markview.config.markdown.headings.setext.decorated
+---
+---@field style "decorated" Preview style.
 ---
 ---@field border string Text to use for the preview border.
 ---@field border_hl? string Highlight group for the border.
@@ -129,15 +184,13 @@
 ---
 ---@field sign? string Text to show in the sign column.
 ---@field sign_hl? string Highlight group for the sign.
----
----@field style "simple" | "decorated" Preview style.
 
 ------------------------------------------------------------------------------
 
 --- Configuration for horizontal rules.
 ---@class markview.config.markdown.hr
 ---
----@field enable boolean Enables preview of horizontal rules.
+---@field enable boolean Enable preview of horizontal rules.
 ---@field parts markview.config.markdown.hr.part[] Parts for the horizontal rules.
 
 
