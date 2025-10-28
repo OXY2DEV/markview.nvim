@@ -46,7 +46,31 @@
 ------------------------------------------------------------------------------
 
 --- Configuration for code blocks.
----@class markview.config.markdown.code_blocks
+---@alias markview.config.markdown.code_blocks
+---| markview.config.markdown.code_blocks.simple
+---| markview.config.markdown.code_blocks.block
+
+
+---@class markview.config.markdown.code_blocks.simple
+---
+---@field enable boolean Enable rendering of code blocks.
+---
+---@field border_hl? string Highlight group for borders.
+---@field info_hl? string Highlight group for the info string.
+---
+---@field label_direction? "left" | "right" Position of the language & icon.
+---@field label_hl? string Highlight group for the label.
+---
+---@field sign? boolean Enables signs for the code block?
+---@field sign_hl? string Highlight group for the sign.
+---
+---@field style "simple" Only highlights the line. Enabled when `wrap` is enabled.
+---
+---@field default markview.config.markdown.code_blocks.opts
+---@field [string] markview.config.markdown.code_blocks.opts
+
+
+---@class markview.config.markdown.code_blocks.block
 ---
 ---@field enable boolean Enable rendering of code blocks.
 ---
@@ -63,12 +87,11 @@
 ---@field sign? boolean Enables signs for the code block?
 ---@field sign_hl? string Highlight group for the sign.
 ---
----@field style
----| "simple" Only highlights the line. Enabled when `wrap` is enabled.
----| "block" Creates a block around the code block. Disabled when `wrap` is enabled.
+---@field style "block" Creates a block around the code block. Disabled when `wrap` is enabled.
 ---
 ---@field default markview.config.markdown.code_blocks.opts
 ---@field [string] markview.config.markdown.code_blocks.opts
+
 
 --[[ Configuration for highlighting `lines` inside a code block. ]]
 ---@class markview.config.markdown.code_blocks.opts

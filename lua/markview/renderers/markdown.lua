@@ -1363,6 +1363,8 @@ markdown.code_block = function (buffer, item)
 	local function render_simple()
 		---|fS
 
+		---@cast config markview.config.markdown.code_blocks.simple
+
 		local conceal_from = range.start_delim[2] + #string.match(item.delimiters[1], "^%s*");
 		local conceal_to = lang_conceal_to();
 
@@ -1436,6 +1438,8 @@ markdown.code_block = function (buffer, item)
 	--- Renders block style code blocks.
 	local function render_block ()
 		---|fS
+
+		---@cast config markview.config.markdown.code_blocks.block
 
 		---|fS "chunk: Calculate various widths"
 
@@ -1762,14 +1766,16 @@ markdown.indented_code_block = function (buffer, item)
 	local function render_block ()
 		---|fS
 
+		---@cast config markview.config.markdown.code_blocks.block
+
 		---|fS "chunk: Calculate various widths"
 
 		local text = vim.api.nvim_buf_get_lines(buffer, range.row_start, range.row_end, false);
 
-		local pad_amount = config.pad_amount or 0;
-		local block_width = config.min_width or 60;
+		local pad_amount = config.pad_amount --[[@as integer]] or 0;
+		local block_width = config.min_width --[[@as integer]] or 60;
 
-		local pad_char = config.pad_char or " ";
+		local pad_char = config.pad_char --[[@as string]] or " ";
 		local label_width = utils.virt_len({ label });
 
 		local pad_width = vim.fn.strdisplaywidth(
