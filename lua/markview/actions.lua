@@ -155,7 +155,7 @@ actions.render = function (_buffer, _state, _config)
 	if L <= line_limit then
 		local content, _ = parser.parse(buffer, 0, -1, true);
 
-		if H then
+		if H and buf_state.hybrid_mode then
 			actions.handle_hybrid_mode(LH, buffer, L, vim.fn.win_findbuf(buffer), content);
 		else
 			renderer.render(buffer, content);
@@ -169,7 +169,7 @@ actions.render = function (_buffer, _state, _config)
 
 			local content, _ = parser.parse(buffer, R[1], R[2], true);
 
-			if H then
+			if H and buf_state.hybrid_mode then
 				actions.handle_hybrid_mode(LH, buffer, L, { win }, content);
 			else
 				renderer.render(buffer, content);
@@ -529,6 +529,7 @@ end
 
 actions.enable = function (buffer)
 	---|fS
+
 	---@type integer
 	buffer = buffer or vim.api.nvim_get_current_buf();
 
@@ -577,8 +578,10 @@ actions.enable = function (buffer)
 	actions.render(buffer);
 	actions.autocmd("on_enable", buffer, vim.fn.win_findbuf(buffer))
 
+	local buf_state = state.get_buffer_state(buffer) --[[@as markview.state.buf]];
+
 	if actions.in_hybrid_mode() then
-		actions.autocmd("on_hybrid_enable", buffer, vim.fn.win_findbuf(buffer))
+		actions.autocmd(buf_state.hybrid_mode and "on_hybrid_enable" or "on_hybrid_disable", buffer, vim.fn.win_findbuf(buffer))
 	end
 
 	-- health.__child_indent_de();
@@ -676,7 +679,7 @@ actions.hybridEnable = function (buffer)
 		return;
 	end
 
-	old_state.enable = true;
+	old_state.hybrid_mode = true;
 	state.set_buffer_state(buffer, old_state);
 
 	if old_state.enable == false then
@@ -711,7 +714,7 @@ actions.hybridDisable = function (buffer)
 		return;
 	end
 
-	old_state.enable = false;
+	old_state.hybrid_mode = false;
 	state.set_buffer_state(buffer, old_state);
 
 	if old_state.enable == false then
@@ -722,7 +725,7 @@ actions.hybridDisable = function (buffer)
 
 
 	if actions.in_hybrid_mode() then
-		actions.autocmd("on_hybrid_enable", buffer, vim.fn.win_findbuf(buffer))
+		actions.autocmd("on_hybrid_disable", buffer, vim.fn.win_findbuf(buffer))
 	end
 
 	actions.render(buffer);
