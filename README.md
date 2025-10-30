@@ -40,7 +40,9 @@
 <!--markdoc_ignore_end-->
 
 <div align="center">
-    <img src="https://github.com/OXY2DEV/markview.nvim/blob/images/v25/repo/markdown-catppuccin_mocha.png">
+    <img src="https://github.com/OXY2DEV/markview.nvim/blob/images/v27/markview.nvim-splitview.png">
+    <img src="https://github.com/OXY2DEV/markview.nvim/blob/images/v27/markview.nvim-splitview_2.png">
+    <img src="https://github.com/OXY2DEV/markview.nvim/blob/images/v27/markview.nvim-hybrid_mode.png">
 </div>
 
 <div align="center">
