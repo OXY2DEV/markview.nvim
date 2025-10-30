@@ -60,6 +60,19 @@ Core features,
 + `Callout`, `checkbox` completions for `blink.cmp` & `nvim-cmp`.
 
 <!--markdoc_ignore_start-->
+## 📚 Table of contents
+
+- [📚 Requirements](#-requirements)
+- [📐 Installation](#-installation)
+- [🎇 Commands](#-commands)
+
+Also see,
+
+- [📚 Wiki]()
+- [🧭 Usage]()
+- [🧩 Extras]()
+- [📦 Presets]()
+
 ### 📜 Complete feature-list
 
 <details>
