@@ -329,7 +329,7 @@ Fonts,
 Add this to your plugin list.
 
 ```vim
-Plug "OXY2DEV/markview.nvim"
+Plug 'OXY2DEV/markview.nvim'
 ```
 
 ### 💤 Lazy.nvim
