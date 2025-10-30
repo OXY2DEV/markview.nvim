@@ -5,7 +5,7 @@
             "force_write": true,
             "header": {
                 "desc": "🧩 Markdown inline options for `markview.nvim`",
-                "tag": "markview.nvim-experimental"
+                "tag": "markview.nvim-markdown_inline"
             }
         },
         "markdown": {

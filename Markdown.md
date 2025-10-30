@@ -17,7 +17,7 @@
             "tags": {
                 "enable": [ "markview.nvim-markdown.enable" ],
                 "block_quotes": [ "markview.nvim-markdown.block_quotes" ],
-                "code_blocks": [ "markview.nvim-markdown.code_blocks" ],
+                "code_blocks$": [ "markview.nvim-markdown.code_blocks" ],
                 "headings": [ "markview.nvim-markdown.headings" ],
                 "horizontal_rules": [ "markview.nvim-markdown.horizontal_rules", "markview.nvim-markdown.hr" ],
                 "list_items": [ "markview.nvim-markdown.list_items" ],
