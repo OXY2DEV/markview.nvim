@@ -1,4 +1,4 @@
-*markview.nvim-config.txt*                             🔩 Configuring `markview`
+*markview.nvim-config*                                 🔩 Configuring `markview`
 
 Configuration options for `markview.nvim`.
 
@@ -10,20 +10,21 @@ Configuration options for `markview.nvim`.
 <
 
 --------------------------------------------------------------------------------
-🧩 Options
+Table of contents
 
-◆ [🧩 Experimental]()
-◆ [🧩 HTML]()
-◆ [🧩 LaTeX]()
-◆ [🧩 Markdown]()
-◆ [🧩 Markdown inline]()
-◆ [🧩 Preview]()
-◆ [🧩 Typst]()
-◆ [🧩 YAML]()
+Experimental ...................................... |markview.nvim-experimental|
+HTML ...................................................... |markview.nvim-html|
+LaTeX .................................................... |markview.nvim-latex|
+Markdown .............................................. |markview.nvim-markdown|
+Markdown inline ................................ |markview.nvim-markdown_inline|
+Preview ................................................ |markview.nvim-preview|
+Typst .................................................... |markview.nvim-typst|
+YAML ...................................................... |markview.nvim-yaml|
 
 Type definition for the configuration table,
 
 >lua
+	--- Configuration options for `markview.nvim`.
 	---@class markview.config
 	---
 	---@field experimental? markview.config.experimental
@@ -177,5 +178,4 @@ The configuration table has the following structure,
 	}
 <
 
-
-vim:ft=vimdoc:textwidth=80:tabstop=4:noexpandtab:
+vim:ft=help:textwidth=80:tabstop=4:noexpandtab:

@@ -1,175 +1,111 @@
-*markview.nvim-experimental*                           🌋 Experimental options
-
-▌ 💡 Tip
-▌ Type definitions are available in definitions/experimental.lua[^1].
-
-Options that don’t belong in other groups or needs to be tested are added
-here,
+*markview.nvim-experimental*         🧩 Experimental options for `markview.nvim`
 
 >lua
-    ---@type markview.config.experimental
-    experimental = {
-        date_formats = {
-            "^%d%d%d%d%-%d%d%-%d%d$",      --- YYYY-MM-DD
-            "^%d%d%-%d%d%-%d%d%d%d$",      --- DD-MM-YYYY, MM-DD-YYYY
-            "^%d%d%-%d%d%-%d%d$",          --- DD-MM-YY, MM-DD-YY, YY-MM-DD
-
-            "^%d%d%d%d%/%d%d%/%d%d$",      --- YYYY/MM/DD
-            "^%d%d%/%d%d%/%d%d%d%d$",      --- DD/MM/YYYY, MM/DD/YYYY
-
-            "^%d%d%d%d%.%d%d%.%d%d$",      --- YYYY.MM.DD
-            "^%d%d%.%d%d%.%d%d%d%d$",      --- DD.MM.YYYY, MM.DD.YYYY
-
-            "^%d%d %a+ %d%d%d%d$",         --- DD Month YYYY
-            "^%a+ %d%d %d%d%d%d$",         --- Month DD, YYYY
-            "^%d%d%d%d %a+ %d%d$",         --- YYYY Month DD
-
-            "^%a+%, %a+ %d%d%, %d%d%d%d$", --- Day, Month DD, YYYY
-        },
-
-        date_time_formats = {
-            "^%a%a%a %a%a%a %d%d %d%d%:%d%d%:%d%d ... %d%d%d%d$", --- UNIX date time
-            "^%d%d%d%d%-%d%d%-%d%dT%d%d%:%d%d%:%d%dZ$",           --- ISO 8601
-        },
-
-        prefer_nvim = false,
-        file_open_command = "tabnew",
-
-        list_empty_line_tolerance = 3,
-
-        read_chunk_size = 1024,
-
-        linewise_ignore_org_indent = false,
-    }
+	--- Experimental options.
+	---@class markview.config.experimental
+	---
+	---@field date_formats string[] List of lua patterns for detecting date in YAML.
+	---@field date_time_formats string[] List of lua patterns for detecting date & time in YAML.
+	---
+	---@field prefer_nvim boolean Opens text file inside Neovim.
+	---@field file_open_command string Command used to open files inside Neovim.
+	---
+	---@field list_empty_line_tolerance integer Maximum number of empty lines that can stay between text of a list item.
+	---
+	---@field read_chunk_size integer Number of `bytes` to check before opening a link. Used for detecting when to open files inside Neovim.
+	---
+	---@field linewise_ignore_org_indent? boolean Prevents indentation of sections from being cleared in `linewise_hybrid_mode`.
 <
 
-------------------------------------------------------------------------------
-check_rtp
+--------------------------------------------------------------------------------
+date_formats                           *markview.nvim-experimental.date_formats*
 
-  • type: `boolean`
-    default: `true`
+A list of date string formats(used for detecting YAML properties).
 
-Checks the `runtimepath` to see if `nvim-treesitter` is getting loaded before
-`markview.nvim`. If it's being loaded `markview.nvim` will be added before
-`nvim-treesitter` and an error message will be shown.
+>lua
+	date_formats = {
+	    "^%d%d%d%d%-%d%d%-%d%d$",      --- YYYY-MM-DD
+	    "^%d%d%-%d%d%-%d%d%d%d$",      --- DD-MM-YYYY, MM-DD-YYYY
+	    "^%d%d%-%d%d%-%d%d$",          --- DD-MM-YY, MM-DD-YY, YY-MM-DD
+	
+	    "^%d%d%d%d%/%d%d%/%d%d$",      --- YYYY/MM/DD
+	    "^%d%d%/%d%d%/%d%d%d%d$",      --- DD/MM/YYYY, MM/DD/YYYY
+	
+	    "^%d%d%d%d%.%d%d%.%d%d$",      --- YYYY.MM.DD
+	    "^%d%d%.%d%d%.%d%d%d%d$",      --- DD.MM.YYYY, MM.DD.YYYY
+	
+	    "^%d%d %a+ %d%d%d%d$",         --- DD Month YYYY
+	    "^%a+ %d%d %d%d%d%d$",         --- Month DD, YYYY
+	    "^%d%d%d%d %a+ %d%d$",         --- YYYY Month DD
+	
+	    "^%a+%, %a+ %d%d%, %d%d%d%d$", --- Day, Month DD, YYYY
+	},
+<
 
-▌ 🧩 Important
-▌ This assumes the directory/folder name matches the plugin name!
+--------------------------------------------------------------------------------
+date_time_formats                 *markview.nvim-experimental.date_time_formats*
 
-------------------------------------------------------------------------------
-check_rtp_message
+A list of date & time string formats(used for detecting YAML properties).
 
-  • type: `boolean`
-    default: `true`
+>lua
+	date_formats = {
+	    "^%a%a%a %a%a%a %d%d %d%d%:%d%d%:%d%d ... %d%d%d%d$", --- UNIX date time
+	    "^%d%d%d%d%-%d%d%-%d%dT%d%d%:%d%d%:%d%dZ$",           --- ISO 8601
+	},
+<
 
-Whether to show the error message when `nvim-treesitter` gets loaded before
-`markview.nvim`.
+--------------------------------------------------------------------------------
+prefer_nvim                             *markview.nvim-experimental.prefer_nvim*
 
-------------------------------------------------------------------------------
-date_formats
+When `true`, opens text files inside of Neovim using
+[experimental.file_open_command]().
 
-  • type: `string[]`
-    default[^2]
+>lua
+	prefer_nvim = false,
+<
 
-Attributes,
+--------------------------------------------------------------------------------
+file_open_command                 *markview.nvim-experimental.file_open_command*
 
-  • `YAML` preview.
+The command used to open new files inside Neovim. [experimental.prefer_nvim]()
+must be enabled to use this.
 
-A list of `lua patterns` to detect date strings in YAML.
+>lua
+	file_open_command = "tabnew",
+<
 
-------------------------------------------------------------------------------
-date_time_formats
+--------------------------------------------------------------------------------
+list_empty_line_tolerance *markview.nvim-experimental.list_empty_line_tolerance*
 
-  • type: `string[]`
-    default[^3]
 
-Attributes,
+The maximum number of empty lines a list item can contain. Any more empty lines
+will cause the list item to end there.
 
-  • `YAML` preview.
+>lua
+	list_empty_line_tolerance = 3,
+<
 
-A list of `lua patterns` to detect date & time strings in YAML.
+--------------------------------------------------------------------------------
+read_chunk_size                     *markview.nvim-experimental.read_chunk_size*
 
-------------------------------------------------------------------------------
-prefer_nvim
+Number of bytes to read from a file to check if it's a `text file`
+.[experimental.prefer_nvim]() must be enabled to use this.
 
-  • type: `boolean`
-    default: `false`
+>lua
+	read_chunk_size = 1024,
+<
 
-Attributes,
-
-  • `gx`, see map_gx[^4].
-
-Whether to prefer `Neovim` for opening text files.
-
-------------------------------------------------------------------------------
-file_open_command
-
-  • type: `boolean`
-    default: `tabnew`
-
-Attributes,
-
-  • `gx`, see map_gx[^5].
-
-Command used for opening text files in Neovim(it will used as
-`<command> + file_name`.
-
-------------------------------------------------------------------------------
-list_empty_line_tolerance
-
-  • type: `integer`
-    default: `3`
-
-Attributes,
-
-  • `markdown` preview, see list_items[^6].
-
-Maximum number of repeating empty lines a list item can have inside it.
-
-▌ 📜 Note
-▌ The markdown parser will consider any number of lines(before another node)
-▌ part of the list.
-▌ This is meant to prevent indentation issues caused by this.
-
-------------------------------------------------------------------------------
-read_chunk_size
-
-  • type: `integer`
-    default: `1024`
-
-Attributes,
-
-  • `gx`, see map_gx[^7].
-
-Number of `bytes` to read from a link’s file to check if it’s a text file.
-
-▌ 📜 Note
-▌ This has no effect if `prefer_nvim` is set to `false`.
-
-------------------------------------------------------------------------------
+--------------------------------------------------------------------------------
 linewise_ignore_org_indent
+                          *markview.nvim-experimental.linewise_ignore_org_indent*
 
-  • type: `boolean`
-    default: `false`
 
-Attributes,
+Prevents section indentations to be removed when using
+[markdown.headings.org_indent]().
 
-  • `org_indent`, see org_indent[^8].
+>lua
+	linewise_ignore_org_indent = false
+<
 
-Prevents indentations added by `org_indent` from being removed when using
-`linewise_hybrid_mode`.
 
-------------------------------------------------------------------------------
-
-Link references ~
-
- 1: https://github.com/OXY2DEV/markview.nvim/blob/c00870e544f81a0eecd89c1144cdf77458cf1f97/lua/definitions/experimental.lua
- 2: https://github.com/OXY2DEV/markview.nvim/blob/main/lua/markview/spec.lua#L114-L130
- 3: https://github.com/OXY2DEV/markview.nvim/blob/main/lua/markview/spec.lua#L132-L135
- 4: https://github.com/OXY2DEV/markview.nvim/wiki/Previews#map_gx
- 5: https://github.com/OXY2DEV/markview.nvim/wiki/Previews#map_gx
- 6: https://github.com/OXY2DEV/markview.nvim/wiki/Markdown#list_items
- 7: https://github.com/OXY2DEV/markview.nvim/wiki/Previews#map_gx
- 8: https://github.com/OXY2DEV/markview.nvim/wiki/Markdown#org_indent
-
-vim:ft=help:tw=78:ts=4:
+vim:ft=help:textwidth=80:tabstop=4:noexpandtab:

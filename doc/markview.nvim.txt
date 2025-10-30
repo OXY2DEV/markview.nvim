@@ -309,7 +309,7 @@ Fonts,
 --------------------------------------------------------------------------------
 📐 Installation
 
-VIM-PLUG
+🧩 Vim-plug ~
 
 Add this to your plugin list.
 
@@ -317,7 +317,7 @@ Add this to your plugin list.
 	Plug "OXY2DEV/markview.nvim"
 <
 
-LAZY.NVIM
+💤 Lazy.nvim ~
 
 ▋  Warning
 ▋ Do not lazy load this plugin as it is already lazy-loaded. Lazy-loading may
@@ -348,7 +348,7 @@ highlight groups are used.
 	},
 <
 
-MINI.DEPS
+🦠 Mini.deps ~
 
 >lua
 	local MiniDeps = require("mini.deps");
@@ -361,7 +361,7 @@ MINI.DEPS
 	});
 <
 
-ROCKS.NVIM
+🌒 Rocks.nvim ~
 
 ▋  Warning
 ▋ `luarocks package` may sometimes be a bit behind `main`.
@@ -370,7 +370,7 @@ ROCKS.NVIM
 	:Rocks install markview.nvim
 <
 
-GITHUB RELEASE
+📥 GitHub release ~
 
 Tagged releases can be found in the release page {6}.
 
@@ -530,7 +530,8 @@ link group wouldn't work for this.
 ^2: The value of `MarkviewCode` is used for the background. So, changing either
 of the linked group wouldn't affect these.
 
-Images ~
+Links ~
+
 1: |markview.nvim-presets|
 2: |markview.nvim-extras|
 3: https://github.com/OXY2DEV/markview.nvim/wiki/Home
@@ -538,5 +539,17 @@ Images ~
 5: https://github.com/nvim-tree/nvim-web-devicons
 6: https://github.com/OXY2DEV/markview.nvim/releases
 
+Images ~
 
-vim:ft=vimdoc:textwidth=80:tabstop=4:noexpandtab:
+1: https://github.com/OXY2DEV/markview.nvim/blob/images/v25/repo/markdown-catppuccin_mocha.png
+2: https://github.com/OXY2DEV/markview.nvim/blob/images/v25/repo/html-tokyonight_night.png
+3: https://github.com/OXY2DEV/markview.nvim/blob/images/v25/repo/latex-cyberdream.png
+4: https://github.com/OXY2DEV/markview.nvim/blob/images/v25/repo/markdown-catppuccin_mocha.png
+5: https://github.com/OXY2DEV/markview.nvim/blob/images/v25/repo/markdown_inline-nightfly.png
+6: https://github.com/OXY2DEV/markview.nvim/blob/images/v25/repo/typst-kanagawa_wave.png
+7: https://github.com/OXY2DEV/markview.nvim/blob/images/v25/repo/yaml-material_palenight.png
+8: https://github.com/OXY2DEV/markview.nvim/blob/images/v25/wiki/hybrid_mode.png
+9: https://github.com/OXY2DEV/markview.nvim/blob/images/v25/wiki/linewise_hybrid_mode.png
+10: https://github.com/OXY2DEV/markview.nvim/blob/images/v25/repo/traceback.png
+
+vim:ft=help:textwidth=80:tabstop=4:noexpandtab:

@@ -14,7 +14,7 @@ An interactive mode is also provided if you want to visually change the state.
 
 Features,
 
-USAGE
+📚 Usage ~
 
 Load the module first,
 
@@ -50,7 +50,7 @@ Load the module first,
 	})
 <
 
-COMMANDS
+📚 Commands ~
 
 You can run the `:Checkbox` command to use this module.
 
@@ -89,13 +89,13 @@ Allows changing heading levels. Supports both `ATX headings` & `Setext headings`
 ▋ 󰋽 Note
 ▋ As this is tree-sitter based it doesn't support `visual mode`.
 
-USAGE
+📚 Usage ~
 
 >lua
 	require("markview.extras.headings").setup();
 <
 
-COMMANDS
+📚 Commands ~
 
 You will get access to the `:Headings` command.
 
@@ -120,13 +120,13 @@ If you have LSP for the language then this will enable them.
 
 It will work for nested code blocks too!
 
-USAGE
+📚 Usage ~
 
 >lua
 	require("markview.extras.editor").setup();
 <
 
-COMMANDS
+📚 Commands ~
 
 You will get access to the `:Editor` command.
 
@@ -142,5 +142,4 @@ It has the following sub-commands,
 ◆ `edit`
   Edits the code block under the cursor.
 
-
-vim:ft=vimdoc:textwidth=80:tabstop=4:noexpandtab:
+vim:ft=help:textwidth=80:tabstop=4:noexpandtab:

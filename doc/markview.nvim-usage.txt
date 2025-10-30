@@ -1,0 +1,46 @@
+*markview.nvim-usage*                      🪄 Usage examples for `markview.nvim`
+
+Various usage recipes for `markview.nvim`.
+
+--------------------------------------------------------------------------------
+🎹 Toggling preview
+
+Only show previews on demand.
+
+>lua
+	-- Disable automatic previews.
+	require("markview").setup({
+	    preview = { enable = false }
+	});
+	
+	vim.api.nvim_set_keymap("n", "<leader>m", "<CMD>Markview<CR>", { desc = "Toggles `markview` previews globally." });
+<
+
+--------------------------------------------------------------------------------
+🎹 Toggling hybrid mode
+
+Toggle `Hybrid mode` if you use it in `insert mode`.
+
+>lua
+	vim.api.nvim_set_keymap("i", "<Ctrl-m>", "<CMD>Markview HybridToggle<CR>", { desc = "Toggles `hybrid mode` globally." });
+<
+
+--------------------------------------------------------------------------------
+🎹 Switch between
+`line-wise` & `node-wise`
+hybrid mode
+
+>lua
+	vim.api.nvim_set_keymap("n", "<leader>s", "<CMD>Markview linewiseToggle<CR>", { desc = "Toggles `line-wise` hybrid mode." });
+<
+
+--------------------------------------------------------------------------------
+🎹 Toggled splitview
+
+Toggle current buffer in splitview.
+
+>lua
+	vim.api.nvim_set_keymap("n", "<leader>s", "<CMD>Markview splitToggle<CR>", { desc = "Toggles `splitview` for current buffer." });
+<
+
+vim:ft=help:textwidth=80:tabstop=4:noexpandtab:

@@ -37,7 +37,7 @@ This is a collection of `configs` that,
 
 4. Set `foldtext`(see `:h 'foldtext'`) to `""`.
 
-CUSTOM HEADER TEXT
+✨ Custom header text ~
 
 Not implemented yet!
 
@@ -228,12 +228,9 @@ Example `config`,
 	});
 <
 
+
 Images ~
-1: https://github.com/OXY2DEV/markview.nvim/issues/265
-2: https://github.com/OXY2DEV/markview.nvim/issues/283
-3: https://github.com/OXY2DEV/markview.nvim/issues/350
-4: https://github.com/OXY2DEV/markview.nvim/issues/371
-5: https://github.com/OXY2DEV/markview.nvim/wiki/Markdown#atx_icon
 
+1: https://github.com/OXY2DEV/markview.nvim/blob/images/v25/wiki/advanced-heading_levels.png
 
-vim:ft=vimdoc:textwidth=80:tabstop=4:noexpandtab:
+vim:ft=help:textwidth=80:tabstop=4:noexpandtab:

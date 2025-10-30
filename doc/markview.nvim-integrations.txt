@@ -1,0 +1,49 @@
+*markview.nvim-integrations*                 🎇 Integrations for `markview.nvim`
+
+`markview.nvim` provides integrations with the following plugins. You find these
+in [markview/integrations.lua]().
+
+--------------------------------------------------------------------------------
+📦 blink.cmp                              *markview.nvim-integrations.blink-cmp*
+
+Completion for Checkbox states & Callouts are provided.
+
+You can disable this by running the following before loading `markview`.
+
+>lua
+	vim.g.markview_blink_loaded = true;
+<
+
+--------------------------------------------------------------------------------
+📦 nvim                                          *markview.nvim-integrations.gx*
+
+Modified `gx` mapping that can,
+
+◆ Go to heading based on Github-flavored/Gitlab-flavored links(e.g.
+  `#-integrations` for `🎇 Integrations`).
+◆ Open files inside Neovim using some command(e.g. `:tabnew`). Requires
+  [experimental.use_nvim]() to `true`.
+
+--------------------------------------------------------------------------------
+📦 nvim-cmp
+
+Completion for Checkbox states & Callouts are provided.
+
+You can disable this by running the following before loading `markview`.
+
+>lua
+	vim.g.markview_cmp_loaded = true;
+<
+
+--------------------------------------------------------------------------------
+📦 Diagnostics
+
+You can use `markview.nvim` to prettify the LSP hover window.
+
+You can see an example here {1}.
+
+Links ~
+
+1: https://gist.github.com/OXY2DEV/645c90df32095a8a397735d0be646452
+
+vim:ft=help:textwidth=80:tabstop=4:noexpandtab:

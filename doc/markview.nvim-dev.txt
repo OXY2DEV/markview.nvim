@@ -5,7 +5,7 @@
 
 You can use `markview` to render markdown & other filetypes in your plugins.
 
-HIGH-LEVEL API
+🧭 High-level API ~
 
 This is the recommended way to use `markview` within external plugins.
 
@@ -38,8 +38,7 @@ You can clear a buffer like so,
 
 💡 Using custom states ~
 
-If you don't need stuff like `hybrid mode` in your preview you can disable them
-like so,
+If you don't need stuff like `hybrid mode` in your preview you can disable them like so,
 
 >lua
 	local render = require("markview").strict_render;
@@ -73,7 +72,7 @@ If you want the preview looking a certain way you can do so with this,
 
 Configuration table is the same as `setup()`.
 
-LOW-LEVEL API
+🧭 Low-level API ~
 
 ▋ 󰋽 Note
 ▋ This will not set `concealcursor`, `conceallevel` etc., you will need to set
@@ -139,5 +138,4 @@ of parsed nodes.
 	---@field yaml? markview.parsed.yaml_sorted
 <
 
-
-vim:ft=vimdoc:textwidth=80:tabstop=4:noexpandtab:
+vim:ft=help:textwidth=80:tabstop=4:noexpandtab:

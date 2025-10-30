@@ -1,1554 +1,784 @@
-*markview.nvim-typst.txt*                                     💻 Typst options
-
-▌ 💡 Tip
-▌ You can find type definitions in `definitions/renderers/typst.lua`[^1].
-
-Options that affect how typst is shown in previews are part of this. You can
-find the default values here[^2].
+*markview.nvim-typst*                       🧩 Typst options for `markview.nvim`
 
 >lua
-    ---@type markview.config.typst
-    typst = {
-        enable = true,
-
-        code_blocks = {
-            enable = true,
-
-            style = "block",
-            text_direction = "right",
-
-            min_width = 60,
-            pad_amount = 3,
-            pad_char = " ",
-
-            text = "󰣖 Code",
-
-            hl = "MarkviewCode",
-            text_hl = "MarkviewIcon5"
-        },
-
-        code_spans = {
-            enable = true,
-
-            padding_left = " ",
-            padding_right = " ",
-
-            hl = "MarkviewCode"
-        },
-
-        escapes = {
-            enable = true
-        },
-
-        headings = {
-            enable = true,
-            shift_width = 1,
-
-            heading_1 = {
-                style = "icon",
-                sign = "󰌕 ", sign_hl = "MarkviewHeading1Sign",
-
-                icon = "󰼏  ", hl = "MarkviewHeading1",
-            },
-            heading_2 = {
-                style = "icon",
-                sign = "󰌖 ", sign_hl = "MarkviewHeading2Sign",
-
-                icon = "󰎨  ", hl = "MarkviewHeading2",
-            },
-            heading_3 = {
-                style = "icon",
-
-                icon = "󰼑  ", hl = "MarkviewHeading3",
-            },
-            heading_4 = {
-                style = "icon",
-
-                icon = "󰎲  ", hl = "MarkviewHeading4",
-            },
-            heading_5 = {
-                style = "icon",
-
-                icon = "󰼓  ", hl = "MarkviewHeading5",
-            },
-            heading_6 = {
-                style = "icon",
-
-                icon = "󰎴  ", hl = "MarkviewHeading6",
-            }
-        },
-
-        labels = {
-            enable = true,
-
-            default = {
-                hl = "MarkviewInlineCode",
-                padding_left = " ",
-                icon = " ",
-                padding_right = " "
-            }
-        },
-
-        list_items = {
-            enable = true,
-
-            indent_size = function (buffer)
-                if type(buffer) ~= "number" then
-                    return vim.bo.shiftwidth or 4;
-                end
-
-                --- Use 'shiftwidth' value.
-                return vim.bo[buffer].shiftwidth or 4;
-            end,
-            shift_width = 4,
-
-            marker_minus = {
-                add_padding = true,
-
-                text = "●",
-                hl = "MarkviewListItemMinus"
-            },
-
-            marker_plus = {
-                add_padding = true,
-
-                text = "%d)",
-                hl = "MarkviewListItemPlus"
-            },
-
-            marker_dot = {
-                add_padding = true,
-            }
-        },
-
-        math_blocks = {
-            enable = true,
-
-            text = " 󰪚 Math ",
-            pad_amount = 3,
-            pad_char = " ",
-
-            hl = "MarkviewCode",
-            text_hl = "MarkviewCodeInfo"
-        },
-
-        math_spans = {
-            enable = true,
-
-            padding_left = " ",
-            padding_right = " ",
-
-            hl = "MarkviewInlineCode"
-        },
-
-        raw_blocks = {
-            enable = true,
-
-            style = "block",
-            label_direction = "right",
-
-            sign = true,
-
-            min_width = 60,
-            pad_amount = 3,
-            pad_char = " ",
-
-            border_hl = "MarkviewCode",
-
-            default = {
-                block_hl = "MarkviewCode",
-                pad_hl = "MarkviewCode"
-            },
-
-            ["diff"] = {
-                block_hl = function (_, line)
-                    if line:match("^%+") then
-                        return "MarkviewPalette4";
-                    elseif line:match("^%-") then
-                        return "MarkviewPalette1";
-                    else
-                        return "MarkviewCode";
-                    end
-                end,
-                pad_hl = "MarkviewCode"
-            }
-        },
-
-        raw_spans = {
-            enable = true,
-
-            padding_left = " ",
-            padding_right = " ",
-
-            hl = "MarkviewInlineCode"
-        },
-
-        reference_links = {
-            enable = true,
-
-            default = {
-                icon = " ",
-                hl = "MarkviewHyperlink"
-            },
-        },
-
-        subscripts = {
-            enable = true,
-
-            hl = "MarkviewSubscript"
-        },
-
-        superscripts = {
-            enable = true,
-
-            hl = "MarkviewSuperscript"
-        },
-
-        symbols = {
-            enable = true,
-
-            hl = "Special"
-        },
-
-        terms = {
-            enable = true,
-
-            default = {
-                text = " ",
-                hl = "MarkviewPalette6Fg"
-            },
-        },
-
-        url_links = {
-            enable = true,
-
-            default = {
-                icon = " ",
-                hl = "MarkviewEmail"
-            },
-
-            ["github%.com/[%a%d%-%_%.]+%/?$"] = {
-                --- github.com/<user>
-
-                icon = " ",
-                hl = "MarkviewPalette0Fg"
-            },
-            ["github%.com/[%a%d%-%_%.]+/[%a%d%-%_%.]+%/?$"] = {
-                --- github.com/<user>/<repo>
-
-                icon = " ",
-                hl = "MarkviewPalette0Fg"
-            },
-            ["github%.com/[%a%d%-%_%.]+/[%a%d%-%_%.]+/tree/[%a%d%-%_%.]+%/?$"] = {
-                --- github.com/<user>/<repo>/tree/<branch>
-
-                icon = " ",
-                hl = "MarkviewPalette0Fg"
-            },
-            ["github%.com/[%a%d%-%_%.]+/[%a%d%-%_%.]+/commits/[%a%d%-%_%.]+%/?$"] = {
-                --- github.com/<user>/<repo>/commits/<branch>
-
-                icon = " ",
-                hl = "MarkviewPalette0Fg"
-            },
-
-            ["github%.com/[%a%d%-%_%.]+/[%a%d%-%_%.]+%/releases$"] = {
-                --- github.com/<user>/<repo>/releases
-
-                icon = " ",
-                hl = "MarkviewPalette0Fg"
-            },
-            ["github%.com/[%a%d%-%_%.]+/[%a%d%-%_%.]+%/tags$"] = {
-                --- github.com/<user>/<repo>/tags
-
-                icon = " ",
-                hl = "MarkviewPalette0Fg"
-            },
-            ["github%.com/[%a%d%-%_%.]+/[%a%d%-%_%.]+%/issues$"] = {
-                --- github.com/<user>/<repo>/issues
-
-                icon = " ",
-                hl = "MarkviewPalette0Fg"
-            },
-            ["github%.com/[%a%d%-%_%.]+/[%a%d%-%_%.]+%/pulls$"] = {
-                --- github.com/<user>/<repo>/pulls
-
-                icon = " ",
-                hl = "MarkviewPalette0Fg"
-            },
-
-            ["github%.com/[%a%d%-%_%.]+/[%a%d%-%_%.]+%/wiki$"] = {
-                --- github.com/<user>/<repo>/wiki
-
-                icon = " ",
-                hl = "MarkviewPalette0Fg"
-            },
-
-            ["developer%.mozilla%.org"] = {
-                priority = -9999,
-
-                icon = "󰖟 ",
-                hl = "MarkviewPalette5Fg"
-            },
-
-            ["w3schools%.com"] = {
-                priority = -9999,
-
-                icon = " ",
-                hl = "MarkviewPalette4Fg"
-            },
-
-            ["stackoverflow%.com"] = {
-                priority = -9999,
-
-                icon = "󰓌 ",
-                hl = "MarkviewPalette2Fg"
-            },
-
-            ["reddit%.com"] = {
-                priority = -9999,
-
-                icon = " ",
-                hl = "MarkviewPalette2Fg"
-            },
-
-            ["github%.com"] = {
-                priority = -9999,
-
-                icon = " ",
-                hl = "MarkviewPalette6Fg"
-            },
-
-            ["gitlab%.com"] = {
-                priority = -9999,
-
-                icon = " ",
-                hl = "MarkviewPalette2Fg"
-            },
-
-            ["dev%.to"] = {
-                priority = -9999,
-
-                icon = "󱁴 ",
-                hl = "MarkviewPalette0Fg"
-            },
-
-            ["codepen%.io"] = {
-                priority = -9999,
-
-                icon = " ",
-                hl = "MarkviewPalette6Fg"
-            },
-
-            ["replit%.com"] = {
-                priority = -9999,
-
-                icon = " ",
-                hl = "MarkviewPalette2Fg"
-            },
-
-            ["jsfiddle%.net"] = {
-                priority = -9999,
-
-                icon = " ",
-                hl = "MarkviewPalette5Fg"
-            },
-
-            ["npmjs%.com"] = {
-                priority = -9999,
-
-                icon = " ",
-                hl = "MarkviewPalette0Fg"
-            },
-
-            ["pypi%.org"] = {
-                priority = -9999,
-
-                icon = "󰆦 ",
-                hl = "MarkviewPalette0Fg"
-            },
-
-            ["mvnrepository%.com"] = {
-                priority = -9999,
-
-                icon = " ",
-                hl = "MarkviewPalette1Fg"
-            },
-
-            ["medium%.com"] = {
-                priority = -9999,
-
-                icon = " ",
-                hl = "MarkviewPalette6Fg"
-            },
-
-            ["linkedin%.com"] = {
-                priority = -9999,
-
-                icon = "󰌻 ",
-                hl = "MarkviewPalette5Fg"
-            },
-
-            ["news%.ycombinator%.com"] = {
-                priority = -9999,
-
-                icon = " ",
-                hl = "MarkviewPalette2Fg"
-            },
-        }
-    },
+	--- Configuration for Typst.
+	---@class markview.config.typst
+	---
+	---@field enable boolean Enable **Typst** rendering.
+	---
+	---@field code_blocks markview.config.typst.code_blocks Configuration for block of typst code.
+	---@field code_spans markview.config.typst.code_spans Configuration for inline typst code.
+	---@field escapes markview.config.typst.escapes Configuration for escaped characters.
+	---@field headings markview.config.typst.headings Configuration for headings.
+	---@field labels markview.config.typst.labels Configuration for labels.
+	---@field list_items markview.config.typst.list_items Configuration for list items
+	---@field math_blocks markview.config.typst.math_blocks Configuration for blocks of math code.
+	---@field math_spans markview.config.typst.math_spans Configuration for inline math code.
+	---@field raw_blocks markview.config.typst.raw_blocks Configuration for raw blocks.
+	---@field raw_spans markview.config.typst.raw_spans Configuration for raw spans.
+	---@field reference_links markview.config.typst.reference_links Configuration for reference links.
+	---@field subscripts markview.config.typst.subscripts Configuration for subscript texts.
+	---@field superscripts markview.config.typst.subscripts Configuration for superscript texts.
+	---@field symbols markview.config.typst.symbols Configuration for typst symbols.
+	---@field terms markview.config.typst.terms Configuration for terms.
+	---@field url_links markview.config.typst.url_links Configuration for URL links.
 <
 
-------------------------------------------------------------------------------
+--------------------------------------------------------------------------------
 enable
 
-  • type: `boolean`
-    default: `true`
-
-Allows viewing typst in preview.
-
-------------------------------------------------------------------------------
-code_blocks
-
-  • type: `markview.config.typst.code_blocks`[^3]
-    default[^4]
-
-Changes how code blocks look.
-
 >lua
-    ---@type markview.config.typst.code_blocks
-    code_blocks = {
-        enable = true,
-
-        hl = "MarkviewCode",
-
-        min_width = 60,
-        pad_amount = 3,
-        pad_char = " ",
-
-        style = "block",
-
-        text = "󰣖 Code",
-        text_direction = "right",
-        text_hl = "MarkviewIcon5"
-    },
+	enable = true
 <
 
-enable ~
-
-  • type: `boolean`
-    default: `true`
-
-Self-explanatory.
-
-hl ~
-
-  • type: `string`
-    default: `"MarkviewCode"`
-
-Highlight group used for the background.
-
-min_width ~
-
-  • type: `integer`
-    default: `60`
-
-Minimum width of code blocks.
-
-pad_amount ~
-
-  • type: `integer`
-    default: `2`
-
-Width of the left & right border/padding.
-
-pad_char ~
-
-  • type: `string`
-    default: `" "`
-
-Character used for the borders/paddings.
-sign
-  • type: `string`
-
-Text to show in the signcolumn.
-
-sign_hl ~
-
-  • type: `string`
-
-Highlight group used for the `sign`.
-
-style ~
-
-  • type: `"simple" | "block"` default: `"block"`
-
-Changes how code blocks are shown. Supported values are,
-
-  • `"simple"` Entire line is highlighted. Useful when `wrap` is enabled.
-  • `"block"` A block is created around the code block and paddings are added
-    before & after each line.
-text
-
-  • type: `string`
-    default: `"󰣖 Code"`
-
-Text to show on the top-left/top-right side of the code block.
-
-text_direction ~
-
-  • type: `"left" | "right"`
-    default: `"right"`
-
-Changes which side `text` should be shown on.
-
-text_hl ~
-
-  • type: `string`
-
-Highlight group used for `text`.
-
-------------------------------------------------------------------------------
-code_spans
-
-  • type: `markview.config.typst.code_spans`[^8]
-    default[^9]
-
-Changes how code spans look. See how inline elements are configured[^10].
-
-------------------------------------------------------------------------------
-escapes
-
-  • type: `{ enable: boolean }`
-    default: `{ enable = true }`
-
-Allows showing the escaped characters in previews.
-
-enable ~
-
-  • type: `boolean`
-    default: `true`
-
-Self-explanatory.
-
-------------------------------------------------------------------------------
-headings
-
-  • type: `markview.config.typst.headings`[^11]
-    default[^12]
-
-Changes how different headings look like.
+--------------------------------------------------------------------------------
+code_blocks                                    *markview.nvim-typst.code_blocks*
 
 >lua
-    ---@type markview.config.typst.headings
-    headings = {
-        enable = true,
-        shift_width = 1,
-
-        heading_1 = {
-            style = "icon",
-            sign = "󰌕 ", sign_hl = "MarkviewHeading1Sign",
-
-            icon = "󰼏  ", hl = "MarkviewHeading1",
-        },
-        heading_2 = {
-            style = "icon",
-            sign = "󰌖 ", sign_hl = "MarkviewHeading2Sign",
-
-            icon = "󰎨  ", hl = "MarkviewHeading2",
-        },
-        heading_3 = {
-            style = "icon",
-
-            icon = "󰼑  ", hl = "MarkviewHeading3",
-        },
-        heading_4 = {
-            style = "icon",
-
-            icon = "󰎲  ", hl = "MarkviewHeading4",
-        },
-        heading_5 = {
-            style = "icon",
-
-            icon = "󰼓  ", hl = "MarkviewHeading5",
-        },
-        heading_6 = {
-            style = "icon",
-
-            icon = "󰎴  ", hl = "MarkviewHeading6",
-        }
-    },
+	--- Configuration for code blocks.
+	---@class markview.config.typst.code_blocks
+	---
+	---@field enable boolean Enable rendering of code blocks.
+	---
+	---@field hl? string Highlight group.
+	---@field min_width integer Minimum width of code blocks.
+	---@field pad_amount integer Number of paddings added around the text.
+	---@field pad_char? string Character to use for padding.
+	---@field sign? string Sign for the code block.
+	---@field sign_hl? string Highlight group for the sign.
+	---@field style
+	---| "simple" Only highlights the lines inside this block.
+	---| "block" Creates a box around the code block.
+	---@field text string Text to use as the label.
+	---@field text_direction
+	---| "left" Shows label on the top-left side of the block
+	---| "right" Shows label on the top-right side of the block
+	---@field text_hl? string Highlight group for the label
 <
 
-enable ~
+Changes how code blocks are shown.
 
-  • type: `boolean`
-    default: `true`
+>lua
+	code_blocks = {
+	    enable = true,
+	
+	    hl = "MarkviewCode",
+	
+	    min_width = 60,
+	    pad_amount = 3,
+	    pad_char = " ",
+	
+	    style = "block",
+	
+	    text = "󰣖 Code",
+	    text_direction = "right",
+	    text_hl = "MarkviewIcon5"
+	},
+<
 
-Self-explanatory.
+--------------------------------------------------------------------------------
+code_spans                                      *markview.nvim-typst.code_spans*
 
-shift_width ~
+>lua
+	--- Configuration for code spans.
+	---@class markview.config.typst.code_spans
+	---
+	---@field enable boolean Enable rendering of code spans.
+	---
+	---@field corner_left? string Left corner.
+	---@field corner_left_hl? string Highlight group for left corner.
+	---@field corner_right? string Right corner.
+	---@field corner_right_hl? string Highlight group for right corner.
+	---@field hl? string Base Highlight group.
+	---@field padding_left? string Left padding.
+	---@field padding_left_hl? string Highlight group for left padding.
+	---@field padding_right? string Right padding.
+	---@field padding_right_hl? string Highlight group for right padding.
+<
 
-  • type: `integer`
-    default: `1`
+Changes how code spans are shown.
 
-Number of spaces to add before the heading per level.
+>lua
+	code_spans = {
+	    enable = true,
+	
+	    padding_left = " ",
+	    padding_right = " ",
+	
+	    hl = "MarkviewCode"
+	},
+<
 
-heading_[n] ~
+--------------------------------------------------------------------------------
+escapes                                            *markview.nvim-typst.escapes*
 
-  • type: `markview.config.typst.headings.typst`[^13]
+>lua
+	---@class markview.config.typst.escapes
+	---
+	---@field enable boolean Enable rendering of escaped characters.
+<
 
-Configuration for level `n` headings.
+Changes how escaped characters are shown.
 
-HL
+>lua
+	escapes = {
+	    enable = true
+	},
+<
 
-  • type: `string`
+--------------------------------------------------------------------------------
+headings                                          *markview.nvim-typst.headings*
 
-Highlight group for the heading.
-icon
+>lua
+	--- Configuration for Typst headings.
+	---@class markview.config.typst.headings
+	---
+	---@field enable boolean Enable rendering of Headings.
+	---
+	---@field shift_width integer Amount of spaces to shift per heading level.
+	---@field [string] headings.typst Heading level configuration(name format: "heading_%d", %d = heading level).
+<
 
-▌ 📜 Note
-▌ This has no effect if `style` is set to `simple`.
+Changes how headings are shown.
 
-  • type: `string`
+>lua
+	headings = {
+	    enable = true,
+	    shift_width = 1,
+	
+	    heading_1 = {
+	        style = "icon",
+	        sign = "󰌕 ", sign_hl = "MarkviewHeading1Sign",
+	
+	        icon = "󰼏  ", hl = "MarkviewHeading1",
+	    },
+	    heading_2 = {
+	        style = "icon",
+	        sign = "󰌖 ", sign_hl = "MarkviewHeading2Sign",
+	
+	        icon = "󰎨  ", hl = "MarkviewHeading2",
+	    },
+	    heading_3 = {
+	        style = "icon",
+	
+	        icon = "󰼑  ", hl = "MarkviewHeading3",
+	    },
+	    heading_4 = {
+	        style = "icon",
+	
+	        icon = "󰎲  ", hl = "MarkviewHeading4",
+	    },
+	    heading_5 = {
+	        style = "icon",
+	
+	        icon = "󰼓  ", hl = "MarkviewHeading5",
+	    },
+	    heading_6 = {
+	        style = "icon",
+	
+	        icon = "󰎴  ", hl = "MarkviewHeading6",
+	    }
+	},
+<
 
-Text to add as icon before the heading text.
+Each heading has the following options.
 
-ICON_HL
+>lua
+	--- Configuration options for each typst heading level.
+	---@class headings.typst
+	---
+	---@field hl? string Highlight group.
+	---@field icon? string
+	---@field icon_hl? string
+	---@field sign? string
+	---@field sign_hl? string
+	---@field style "simple" | "icon"
+<
 
-▌ 📜 Note
-▌ This has no effect if `style` is set to `simple`.
+--------------------------------------------------------------------------------
+labels                                              *markview.nvim-typst.labels*
 
-  • type: `string`
-
-Highlight group for icon[^16].
-sign
-
-▌ 📜 Note
-▌ This has no effect if `style` is set to `simple`.
-
-  • type: `string`
-
-Text to show in the signcolumn.
-
-SIGN_HL
-
-▌ 📜 Note
-▌ This has no effect if `style` is set to `simple`.
-
-  • type: `string`
-
-Highlight group for `sign`.
-
-STYLE
-
-  • type: `"simple" | "icon"`
-
-Heading preview style. Possible values are,
-
-  • `"simple"`,
-    Only Highlight the line.
-
-  • `"icon"`,
-    Icons & signs with highlight.
-
-------------------------------------------------------------------------------
-labels
-
-  • type: `markview.config.typst.labels`[^20]
-    default[^21]
+>lua
+	--- Configuration for typst labels.
+	---@class markview.config.typst.labels
+	---
+	---@field enable boolean Enable rendering of labels.
+	---
+	---@field default markview.config.typst.labels.opts Default configuration for labels.
+	---@field [string] markview.config.typst.labels.opts Configuration for labels whose text matches `string`.
+<
 
 Changes how labels are shown.
 
 >lua
-    ---@type markview.config.typst.labels
-    labels = {
-        enable = true,
-
-        default = {
-            hl = "MarkviewInlineCode",
-            padding_left = " ",
-            icon = " ",
-            padding_right = " "
-        }
-    },
+	labels = {
+	    enable = true,
+	
+	    default = {
+	        hl = "MarkviewInlineCode",
+	        padding_left = " ",
+	        icon = " ",
+	        padding_right = " "
+	    }
+	},
 <
 
-enable ~
+--------------------------------------------------------------------------------
+list_items                                      *markview.nvim-typst.list_items*
 
-  • type: `boolean`
-    default: `true`
-
-Self-explanatory.
-default
-
-  • type: `markview.config.__inline`[^22]
-    default[^23]
-
-Default configuration for labels. See how inline elements are configured[^24].
-[string]
-
-  • type: `markview.config.__inline`[^25]
-
-Configuration for labels whose text matches `string`. See how inline elements
-are configured[^26].
-
-▌ 📜 Note
-
-  The structure for labels is `<<text>>`.
-
-------------------------------------------------------------------------------
-list_items
-
-  • type: `markview.config.markdown.list_items`[^27]
-    default[^28]
+>lua
+	--- Configuration for list items.
+	---@class markview.config.typst.list_items
+	---
+	---@field enable boolean Enable rendering of list items.
+	---
+	---@field indent_size integer | fun(buffer: integer, item: markview.parsed.typst.list_items): integer Indentation size for list items.
+	---@field shift_width integer | fun(buffer: integer, item: markview.parsed.typst.list_items): integer Preview indentation size for list items.
+	---
+	---@field marker_dot markview.config.typst.list_items.typst Configuration for `n.` list items.
+	---@field marker_minus markview.config.typst.list_items.typst Configuration for `-` list items.
+	---@field marker_plus markview.config.typst.list_items.typst Configuration for `+` list items.
+<
 
 Changes how list items are shown.
 
 >lua
-    ---@type markview.config.markdown.list_items
-    list_items = {
-        enable = true,
-
-        indent_size = function (buffer)
-            if type(buffer) ~= "number" then
-                return vim.bo.shiftwidth or 4;
-            end
-
-            --- Use 'shiftwidth' value.
-            return vim.bo[buffer].shiftwidth or 4;
-        end,
-        shift_width = 4,
-
-        marker_minus = {
-            add_padding = true,
-
-            text = "●",
-            hl = "MarkviewListItemMinus"
-        },
-
-        marker_plus = {
-            add_padding = true,
-
-            text = "%d)",
-            hl = "MarkviewListItemPlus"
-        },
-
-        marker_dot = {
-            add_padding = true,
-        }
-    },
+	list_items = {
+	    enable = true,
+	
+	    indent_size = function (buffer)
+	        if type(buffer) ~= "number" then
+	            return vim.bo.shiftwidth or 4;
+	        end
+	
+	        --- Use 'shiftwidth' value.
+	        return vim.bo[buffer].shiftwidth or 4;
+	    end,
+	    shift_width = 4,
+	
+	    marker_minus = {
+	        add_padding = true,
+	
+	        text = "●",
+	        hl = "MarkviewListItemMinus"
+	    },
+	
+	    marker_plus = {
+	        add_padding = true,
+	
+	        text = "%d)",
+	        hl = "MarkviewListItemPlus"
+	    },
+	
+	    marker_dot = {
+	        add_padding = true,
+	
+	        text = "%d.",
+	        hl = "MarkviewListItemStar"
+	    }
+	},
 <
 
-enable ~
-
-  • type: `boolean`
-    default: `true`
-
-Self-explanatory.
-
-indent_size ~
-
-  • type: `integer | fun(bufnr: integer): integer`
-
-Indentation size in list items.
-
-▌ 🧩 Important
-▌ Using tabs for indentation can cause incorrect indent to show up!
-
-shift_size ~
-
-  • type: `integer | fun(bufnr: integer): integer`
-    default: `4`
-
-Number of spaces to add per indent level of a list item.
-
-marker_dot ~
-
-  • type: `markview.config.markdown.list_items.typst`[^29]
-    default[^30]
-
-Configuration for `N.` list items.
+Each list type has the following options.
 
 >lua
-    ---@type markview.config.markdown.list_items.typst
-    marker_dot = {
-        enable = true,
-        add_padding = true,
-
-        text = "%d.",
-        hl = "MarkviewListItemStar"
-    }
+	---@class markview.config.typst.list_items.typst
+	---
+	---@field enable? boolean Enable rendering of this list item type.
+	---
+	---@field add_padding boolean
+	---@field hl? string Highlight group.
+	---@field text string
 <
 
-ENABLE
-
-  • type: `boolean`
-    default: `true`
-
-Self-explanatory.
-
-ADD_PADDING
-
-  • type: `boolean`
-    default: `true`
-
-Enables indentation in preview for this type of list items.
-text
-
-  • type: `string`
-    default: `"%d."`
-
-Format string used for the preview of list item(should have `%d` in it).
-
-HL
-
-  • type: `string`
-    default: `"MarkviewListItemMinus"`
-
-Highlight group for `text`.
-
-marker_minus ~
-
-  • type: `markview.config.markdown.list_items.typst`[^32]
-    default[^33]
-
-Configuration for `-` list items.
+--------------------------------------------------------------------------------
+math_blocks                                    *markview.nvim-typst.math_blocks*
 
 >lua
-    ---@type markview.config.markdown.list_items.typst
-    marker_minus = {
-        enable = true,
-        add_padding = true,
-
-        text = "●",
-        hl = "MarkviewListItemMinus"
-    }
+	--- Configuration for math blocks.
+	---@class markview.config.typst.math_blocks
+	---
+	---@field enable boolean Enable rendering of math blocks.
+	---
+	---@field hl? string Highlight group.
+	---@field pad_amount integer Number of `pad_char` to add before the lines.
+	---@field pad_char string Text used as padding.
+	---@field text string
+	---@field text_hl? string
 <
 
-ENABLE
-
-  • type: `boolean`
-    default: `true`
-
-Self-explanatory.
-
-ADD_PADDING
-
-  • type: `boolean`
-    default: `true`
-
-Enables indentation in preview for this type of list items.
-text
-
-  • type: `string`
-    default: `"●"`
-
-Text used as the marker in preview.
-
-HL
-
-  • type: `string`
-    default: `"MarkviewListItemMinus"`
-
-Highlight group for `text`.
-
-marker_plus ~
-
-  • type: `markview.config.markdown.list_items.typst`[^35]
-    default[^36]
-
-Configuration for `+` list items. Same as `marker_minus`.
-
-------------------------------------------------------------------------------
-math_blocks
-
-  • type: `markview.config.typst.math_blocks`[^38]
-    default[^39]
-
-Changes how math block are shown.
+Changes how math blocks are shown.
 
 >lua
-    ---@type markview.config.typst.math_blocks
-    math_blocks = {
-        enable = true,
-
-        text = " 󰪚 Math ",
-        pad_amount = 3,
-        pad_char = " ",
-
-        hl = "MarkviewCode",
-        text_hl = "MarkviewCodeInfo"
-    },
+	math_blocks = {
+	    enable = true,
+	
+	    text = " 󰪚 Math ",
+	    pad_amount = 3,
+	    pad_char = " ",
+	
+	    hl = "MarkviewCode",
+	    text_hl = "MarkviewCodeInfo"
+	},
 <
 
-enable ~
-
-  • type: `boolean`
-    default: `true`
-
-Self-explanatory.
-
-hl ~
-
-  • type: `string`
-    default: `"MarkviewCode"`
-
-Highlight group used for the background.
-
-pad_amount ~
-
-  • type: `integer`
-    default: `2`
-
-Width of the left & right border/padding.
-
-pad_char ~
-
-  • type: `string`
-    default: `" "`
-
-Character used for the borders/paddings.
-text
-  • type: `string`
-
-Text to show in the signcolumn.
-
-text_hl ~
-
-  • type: `string`
-
-Highlight group used for the `text`.
-
-------------------------------------------------------------------------------
-math_spans
-
-  • type: `markview.config.__inline`[^41] default[^42]
-
-Changes how inline maths are shown. See how inline elements are
-configured[^43].
-
-------------------------------------------------------------------------------
-raw_blocks
-
-  • type: `markview.config.typst.raw_blocks`[^44] default[^45]
-
-See also,
-
-  • icon_provider[^46], for disabling icons.
-
-Changes how raw blocks look.
+--------------------------------------------------------------------------------
+math_spans                                      *markview.nvim-typst.math_spans*
 
 >lua
-    ---@type markview.config.typst.raw_blocks
-    raw_blocks = {
-        enable = true,
-
-        style = "block",
-        label_direction = "right",
-
-        sign = true,
-
-        min_width = 60,
-        pad_amount = 3,
-        pad_char = " ",
-
-        border_hl = "MarkviewCode",
-
-        default = {
-            block_hl = "MarkviewCode",
-            pad_hl = "MarkviewCode"
-        },
-
-        ["diff"] = {
-            block_hl = function (_, line)
-                if line:match("^%+") then
-                    return "MarkviewPalette4";
-                elseif line:match("^%-") then
-                    return "MarkviewPalette1";
-                else
-                    return "MarkviewCode";
-                end
-            end,
-            pad_hl = "MarkviewCode"
-        }
-    },
+	---@alias markview.config.typst.math_spans markview.config.__inline
 <
 
-enable ~
-
-  • type: `boolean` default: `true`
-
-Self-explanatory.
-
-border_hl ~
-
-  • type: `string` default: `"MarkviewCode"`
-
-Highlight group used for the top & bottom part of the code block.
-
-info_hl ~
-
-  • type: `string` default: `"MarkviewCodeInfo"`
-
-Highlight group used for the info string.
-
-label_direction ~
-
-  • type: `"left" | "right"` default: `"right"`
-
-Which side the language name & icon should be shown on.
-
-label_hl ~
-
-  • type: `string`
-
-Highlight group used for the language name & icon.
-
-▌ This can be used to overwrite the highlight group set by the
-▌ icon_provider[^47]!
-
-min_width ~
-
-  • type: `integer` default: `60`
-
-Minimum width of code blocks.
-
-pad_amount ~
-
-  • type: `integer` default: `2`
-
-Width of the left & right border/padding.
-
-pad_char ~
-
-  • type: `string` default: `" "`
-
-Character used for the borders/paddings.
-
-default ~
-
-  • type: `markview.config.typst.code_blocks.opts`[^48] default[^49]
-
-Default configuration for highlighting a line of the code block.
+Changes how math spans are shown.
 
 >lua
-    ---@type markview.config.typst.code_blocks.opts
-    default = {
-        block_hl = "MarkviewCode",
-        pad_hl = "MarkviewCode"
-    },
+	math_spans = {
+	    enable = true,
+	
+	    padding_left = " ",
+	    padding_right = " ",
+	
+	    hl = "MarkviewInlineCode"
+	},
 <
 
-BLOCK_HL
-
-  • type: `string` default: `"MarkviewCode"`
-
-Highlight group for the text of a line.
-
-PAD_HL
-
-  • type: `string` default: `"MarkviewCode"`
-
-Highlight group for the padding around the line.
-
-[string] ~
-
-  • type: `markview.config.markdown.code_blocks.opts`[^50]
-
-Configuration for code blocks whose language is `string`.
+--------------------------------------------------------------------------------
+raw_blocks                                      *markview.nvim-typst.raw_blocks*
 
 >lua
-    ---@type markview.config.typst.code_blocks.opts
-    ["string"] = {
-        block_hl = nil,
-        pad_hl = nil
-    },
+	---@class markview.config.typst.raw_blocks
+	---
+	---@field enable boolean Enable rendering of raw blocks.
+	---
+	---@field border_hl? string Highlight group for top & bottom border of raw blocks.
+	---@field label_direction? "left" | "right" Changes where the label is shown.
+	---@field label_hl? string Highlight group for the label
+	---@field min_width? integer Minimum width of the code block.
+	---@field pad_amount? integer Left & right padding size.
+	---@field pad_char? string Character to use for the padding.
+	---@field sign? boolean Whether to show signs for the code blocks.
+	---@field sign_hl? string Highlight group for the signs.
+	---@field style "simple" | "block" Preview style for code blocks.
+	---
+	---@field default markview.config.typst.raw_blocks.opts Default line configuration for the raw block.
+	---@field [string] markview.config.typst.raw_blocks.opts Line configuration for the raw block whose `language` matches `string`
 <
 
-▌ You can use this for making stuff like `diff` prettier!
+Changes how raw blocks are shown.
 
-BLOCK_HL
+>lua
+	raw_blocks = {
+	    enable = true,
+	
+	    style = "block",
+	    label_direction = "right",
+	
+	    sign = true,
+	
+	    min_width = 60,
+	    pad_amount = 3,
+	    pad_char = " ",
+	
+	    border_hl = "MarkviewCode",
+	
+	    default = {
+	        block_hl = "MarkviewCode",
+	        pad_hl = "MarkviewCode"
+	    },
+	
+	    ["diff"] = {
+	        block_hl = function (_, line)
+	            if line:match("^%+") then
+	                return "MarkviewPalette4";
+	            elseif line:match("^%-") then
+	                return "MarkviewPalette1";
+	            else
+	                return "MarkviewCode";
+	            end
+	        end,
+	        pad_hl = "MarkviewCode"
+	    }
+	},
+<
 
-  • type: `string | fun(bufnr: integer, line: string): string`
+You can also add line specific styles for different languages. Such as this one
+for diff files.
 
-Highlight group for the text of a line.
+>lua
+	    ["diff"] = {
+	        block_hl = function (_, line)
+	            if line:match("^%+") then
+	                return "MarkviewPalette4";
+	            elseif line:match("^%-") then
+	                return "MarkviewPalette1";
+	            else
+	                return "MarkviewCode";
+	            end
+	        end,
+	        pad_hl = "MarkviewCode"
+	    },
+<
 
-PAD_HL
+--------------------------------------------------------------------------------
+raw_spans                                        *markview.nvim-typst.raw_spans*
 
-  • type: `string | fun(bufnr: integer, line: string): string`
+>lua
+	---@alias markview.config.typst.raw_spans markview.config.__inline
+<
 
-Highlight group for the padding around the line.
+Changes how raw spans are shown.
 
-style ~
+>lua
+	raw_spans = {
+	    enable = true,
+	
+	    padding_left = " ",
+	    padding_right = " ",
+	
+	    hl = "MarkviewInlineCode"
+	},
+<
 
-  • type: `"simple" | "block"` default: `"block"`
+--------------------------------------------------------------------------------
+reference_links                            *markview.nvim-typst.reference_links*
 
-Changes how code blocks are shown. Supported values are,
-
-  • `"simple"` Entire line is highlighted. Useful when `wrap` is enabled.
-  • `"block"` A block is created around the code block and paddings are added
-    before & after each line.
-
-sign ~
-
-  • type: `boolean` default: `true`
-
-Enables language icon in the signcolumn.
-
-------------------------------------------------------------------------------
-reference_links
-
-  • type: `markview.config.types.link_ref`[^51] default[^52]
+>lua
+	--- Configuration for reference links.
+	---@class markview.config.typst.reference_links
+	---
+	---@field enable boolean Enable rendering of reference links.
+	---
+	---@field default markview.config.typst.reference_links.opts Default configuration for reference links.
+	---@field [string] markview.config.typst.reference_links.opts Configuration for reference links whose label matches `string`.
+<
 
 Changes how reference links are shown.
 
 >lua
-    ---@type markview.config.types.link_ref
-    reference_links = {
-        enable = true,
-
-        default = {
-            icon = " ",
-            hl = "MarkviewHyperlink"
-        },
-    },
+	reference_links = {
+	    enable = true,
+	
+	    default = {
+	        icon = " ",
+	        hl = "MarkviewHyperlink"
+	    },
+	},
 <
 
-enable ~
-
-  • type: `boolean` default: `true`
-
-Self-explanatory.
-
-default ~
-
-  • type: `markview.config.__inline`[^53] default[^54]
-
-Default configuration. See how inline elements are configured[^55].
-
-[string] ~
-
-  • type: `markview.config.__inline`[^56]
-
-Configuration for reference links whose destination matches `string`. See how
-inline elements are configured[^57].
-
-▌ The structure for reference links is `@<destination>`.
-
-------------------------------------------------------------------------------
-subscripts
-
-  • type: `markview.config.typst.subscripts`[^58] default[^59]
-
-Configuration for subscript texts.
+Each link type has the following options.
 
 >lua
-    ---@type markview.config.typst.subscripts
-    subscripts = {
-        enable = true,
-
-        hl = "MarkviewSubscript",
-        marker_left = nil,
-        marker_right = nil,
-    },
+	--- Configuration for a specific reference link type.
+	---@alias markview.config.typst.reference_links.opts markview.config.__inline
 <
 
-enable ~
-
-  • type: `boolean` default: `true`
-
-Self-explanatory.
-
-hl ~
-
-  • type: `string` default: `"MarkviewSubscript"`
-
-Highlight group.
-
-marker_left ~
-
-  • type: `string`
-
-Marker to show before subscript text.
-
-▌ This only shows up if the text can’t be shown as subscripted text.
-
-marker_right ~
-
-  • type: `string`
-
-Marker to show after subscript text.
-
-▌ This only shows up if the text can’t be shown as subscripted text.
-
-------------------------------------------------------------------------------
-superscripts
-
-  • type: `markview.config.typst.superscripts`[^60]
-    default[^61]
-
-Configuration for superscript texts. Same as `subscripts`.
+--------------------------------------------------------------------------------
+subscripts                                      *markview.nvim-typst.subscripts*
 
 >lua
-    ---@type markview.config.typst.superscripts
-    superscripts = {
-        enable = true,
-
-        hl = "MarkviewSuperscript",
-        marker_left = nil,
-        marker_right = nil,
-    },
+	--- Configuration for subscript text.
+	---@class markview.config.typst.subscripts
+	---
+	---@field enable boolean Enable rendering of subscript text.
+	---@field fake_preview? boolean Use Unicode characters to mimic subscript text.
+	---
+	---@field hl? string | string[] Highlight group. Use a list to change nested subscript text color.
+	---@field marker_left? string
+	---@field marker_right? string
 <
 
-------------------------------------------------------------------------------
-symbols
-
-  • type: `markview.config.typst.symbols`[^63]
-    default[^64]
-
-Configuration for symbols.
+Changes how subscripts are shown.
 
 >lua
-    ---@type markview.config.typst.symbols
-    superscripts = {
-        enable = true,
-
-        hl = "Special",
-        marker_left = nil,
-        marker_right = nil,
-    },
+	subscripts = {
+	    enable = true,
+	
+	    hl = "MarkviewSubscript"
+	},
 <
 
-enable ~
-
-  • type: `boolean` default: `true`
-
-Self-explanatory.
-
-hl ~
-
-  • type: `string` default: `"Special"`
-
-Highlight group.
-
-------------------------------------------------------------------------------
-reference_links
-
-  • type: `markview.config.types.link_ref`[^65]
-    default[^66]
-
-Changes how reference links are shown.
+--------------------------------------------------------------------------------
+superscripts                                  *markview.nvim-typst.superscripts*
 
 >lua
-    ---@type markview.config.types.link_ref
-    terms = {
-        enable = true,
-
-        default = {
-            text = " ",
-            hl = "MarkviewPalette6Fg"
-        },
-    },
+	--- Configuration for superscript text.
+	---@class markview.config.typst.superscripts
+	---
+	---@field enable boolean Enable rendering of superscript text.
+	---@field fake_preview? boolean Use Unicode characters to mimic superscript text.
+	---
+	---@field hl? string | string[] Highlight group. Use a list to change nested subscript text color.
+	---@field marker_left? string
+	---@field marker_right? string
 <
 
-enable ~
-
-  • type: `boolean` default: `true`
-
-Self-explanatory.
-
-default ~
-
-  • type: `markview.config.__inline`[^67]
-    default[^68]
-
-Default configuration. See how inline elements are configured[^69].
-
-[string] ~
-
-  • type: `markview.config.__inline`[^70]
-
-Configuration for terms whose label matches `string`. See how inline elements
-are configured[^71].
-
-▌ The structure for terms is `/<label>: @<destination>`.
-
-------------------------------------------------------------------------------
-url_links
-
-  • type: `markview.config.typst.url_links`[^72]
-    default[^73]
-
-Changes how uri autolinks are shown.
+Changes how superscripts are shown.
 
 >lua
-    ---@type markview.config.typst.url_links
-    url_links = {
-        enable = true,
-
-        default = {
-            icon = "󰌷 ",
-            hl = "MarkviewHyperlink",
-        },
-
-        ["github%.com/[%a%d%-%_%.]+%/?$"] = {
-            --- github.com/<user>
-
-            icon = " ",
-            hl = "MarkviewPalette0Fg"
-        },
-        ["github%.com/[%a%d%-%_%.]+/[%a%d%-%_%.]+%/?$"] = {
-            --- github.com/<user>/<repo>
-
-            icon = " ",
-            hl = "MarkviewPalette0Fg"
-        },
-        ["github%.com/[%a%d%-%_%.]+/[%a%d%-%_%.]+/tree/[%a%d%-%_%.]+%/?$"] = {
-            --- github.com/<user>/<repo>/tree/<branch>
-
-            icon = " ",
-            hl = "MarkviewPalette0Fg"
-        },
-        ["github%.com/[%a%d%-%_%.]+/[%a%d%-%_%.]+/commits/[%a%d%-%_%.]+%/?$"] = {
-            --- github.com/<user>/<repo>/commits/<branch>
-
-            icon = " ",
-            hl = "MarkviewPalette0Fg"
-        },
-
-        ["github%.com/[%a%d%-%_%.]+/[%a%d%-%_%.]+%/releases$"] = {
-            --- github.com/<user>/<repo>/releases
-
-            icon = " ",
-            hl = "MarkviewPalette0Fg"
-        },
-        ["github%.com/[%a%d%-%_%.]+/[%a%d%-%_%.]+%/tags$"] = {
-            --- github.com/<user>/<repo>/tags
-
-            icon = " ",
-            hl = "MarkviewPalette0Fg"
-        },
-        ["github%.com/[%a%d%-%_%.]+/[%a%d%-%_%.]+%/issues$"] = {
-            --- github.com/<user>/<repo>/issues
-
-            icon = " ",
-            hl = "MarkviewPalette0Fg"
-        },
-        ["github%.com/[%a%d%-%_%.]+/[%a%d%-%_%.]+%/pulls$"] = {
-            --- github.com/<user>/<repo>/pulls
-
-            icon = " ",
-            hl = "MarkviewPalette0Fg"
-        },
-
-        ["github%.com/[%a%d%-%_%.]+/[%a%d%-%_%.]+%/wiki$"] = {
-            --- github.com/<user>/<repo>/wiki
-
-            icon = " ",
-            hl = "MarkviewPalette0Fg"
-        },
-
-        ["developer%.mozilla%.org"] = {
-            priority = -9999,
-
-            icon = "󰖟 ",
-            hl = "MarkviewPalette5Fg"
-        },
-
-        ["w3schools%.com"] = {
-            priority = -9999,
-
-            icon = " ",
-            hl = "MarkviewPalette4Fg"
-        },
-
-        ["stackoverflow%.com"] = {
-            priority = -9999,
-
-            icon = "󰓌 ",
-            hl = "MarkviewPalette2Fg"
-        },
-
-        ["reddit%.com"] = {
-            priority = -9999,
-
-            icon = " ",
-            hl = "MarkviewPalette2Fg"
-        },
-
-        ["github%.com"] = {
-            priority = -9999,
-
-            icon = " ",
-            hl = "MarkviewPalette6Fg"
-        },
-
-        ["gitlab%.com"] = {
-            priority = -9999,
-
-            icon = " ",
-            hl = "MarkviewPalette2Fg"
-        },
-
-        ["dev%.to"] = {
-            priority = -9999,
-
-            icon = "󱁴 ",
-            hl = "MarkviewPalette0Fg"
-        },
-
-        ["codepen%.io"] = {
-            priority = -9999,
-
-            icon = " ",
-            hl = "MarkviewPalette6Fg"
-        },
-
-        ["replit%.com"] = {
-            priority = -9999,
-
-            icon = " ",
-            hl = "MarkviewPalette2Fg"
-        },
-
-        ["jsfiddle%.net"] = {
-            priority = -9999,
-
-            icon = " ",
-            hl = "MarkviewPalette5Fg"
-        },
-
-        ["npmjs%.com"] = {
-            priority = -9999,
-
-            icon = " ",
-            hl = "MarkviewPalette0Fg"
-        },
-
-        ["pypi%.org"] = {
-            priority = -9999,
-
-            icon = "󰆦 ",
-            hl = "MarkviewPalette0Fg"
-        },
-
-        ["mvnrepository%.com"] = {
-            priority = -9999,
-
-            icon = " ",
-            hl = "MarkviewPalette1Fg"
-        },
-
-        ["medium%.com"] = {
-            priority = -9999,
-
-            icon = " ",
-            hl = "MarkviewPalette6Fg"
-        },
-
-        ["linkedin%.com"] = {
-            priority = -9999,
-
-            icon = "󰌻 ",
-            hl = "MarkviewPalette5Fg"
-        },
-
-        ["news%.ycombinator%.com"] = {
-            priority = -9999,
-
-            icon = " ",
-            hl = "MarkviewPalette2Fg"
-        },
-    },
+	superscripts = {
+	    enable = true,
+	
+	    hl = "MarkviewSuperscript"
+	},
 <
 
-enable ~
+--------------------------------------------------------------------------------
+symbols                                            *markview.nvim-typst.symbols*
 
-  • type: `boolean` default: `true`
+>lua
+	--- Configuration for symbols in typst.
+	---@class markview.config.typst.symbols
+	---
+	---@field enable boolean Enable rendering of math symbols.
+	---@field hl? string Highlight group.
+<
 
-Self-explanatory.
-default
+Changes how math symbols are shown.
 
-  • type: `markview.config.__inline`[^74]
-    default[^75]
+>lua
+	symbols = {
+	    enable = true,
+	
+	    hl = "Special"
+	},
+<
 
-Default configuration for URI autolinks. See how inline elements are
-configured[^76].
-[string]
+--------------------------------------------------------------------------------
+terms                                                *markview.nvim-typst.terms*
 
-  • type: `markview.config.__inline`[^77]
+>lua
+	--- Configuration for terms.
+	---@class markview.config.typst.terms
+	---
+	---@field enable boolean Enable rendering of terms.
+	---
+	---@field default markview.config.typst.terms.opts Default configuration for terms.
+	---@field [string] markview.config.typst.terms.opts Configuration for terms whose label matches `string`.
+<
 
-Configuration for URL links whose text matches `string`. See how inline
-elements are configured[^78].
+Changes how terms are shown.
 
-------------------------------------------------------------------------------
+>lua
+	terms = {
+	    enable = true,
+	
+	    default = {
+	        text = " ",
+	        hl = "MarkviewPalette6Fg"
+	    },
+	},
+<
 
-Link references ~
+Each term type has the following options.
 
-  1: https://github.com/OXY2DEV/markview.nvim/blob/99d9a091915b994b378c4a9cc3553b3cbbe4bad5/lua/definitions/renderers/typst.lua
-  2: https://github.com/OXY2DEV/markview.nvim/blob/a803117f272cc47733b67ebbaf1acb91095da276/lua/markview/spec.lua#L1881-L2269
-  3: https://github.com/OXY2DEV/markview.nvim/blob/99d9a091915b994b378c4a9cc3553b3cbbe4bad5/lua/definitions/renderers/typst.lua#L29-L47
-  4: https://github.com/OXY2DEV/markview.nvim/blob/a803117f272cc47733b67ebbaf1acb91095da276/lua/markview/spec.lua#L1884-L1898
-  8: https://github.com/OXY2DEV/markview.nvim/blob/99d9a091915b994b378c4a9cc3553b3cbbe4bad5/lua/definitions/renderers/typst.lua#L51-L64
-  9: https://github.com/OXY2DEV/markview.nvim/blob/a803117f272cc47733b67ebbaf1acb91095da276/lua/markview/spec.lua#L1900-L1907
- 10: https://github.com/OXY2DEV/markview.nvim/wiki/Configuration#-inline-elements
- 11: https://github.com/OXY2DEV/markview.nvim/blob/99d9a091915b994b378c4a9cc3553b3cbbe4bad5/lua/definitions/renderers/typst.lua#L72-L88
- 12: https://github.com/OXY2DEV/markview.nvim/blob/a803117f272cc47733b67ebbaf1acb91095da276/lua/markview/spec.lua#L1913-L1949
- 13: https://github.com/OXY2DEV/markview.nvim/blob/99d9a091915b994b378c4a9cc3553b3cbbe4bad5/lua/definitions/renderers/typst.lua#L80-L88
- 20: https://github.com/OXY2DEV/markview.nvim/blob/99d9a091915b994b378c4a9cc3553b3cbbe4bad5/lua/definitions/renderers/typst.lua#L92-L98
- 21: https://github.com/OXY2DEV/markview.nvim/blob/a803117f272cc47733b67ebbaf1acb91095da276/lua/markview/spec.lua#L1951-L1960
- 22: https://github.com/OXY2DEV/markview.nvim/blob/99d9a091915b994b378c4a9cc3553b3cbbe4bad5/lua/definitions/markview.lua#L70-L94
- 23: https://github.com/OXY2DEV/markview.nvim/blob/a803117f272cc47733b67ebbaf1acb91095da276/lua/markview/spec.lua#L1954-L1959
- 24: https://github.com/OXY2DEV/markview.nvim/wiki/Configuration#-inline-elements
- 25: https://github.com/OXY2DEV/markview.nvim/blob/99d9a091915b994b378c4a9cc3553b3cbbe4bad5/lua/definitions/markview.lua#L70-L94
- 26: https://github.com/OXY2DEV/markview.nvim/wiki/Configuration#-inline-elements
- 27: https://github.com/OXY2DEV/markview.nvim/blob/99d9a091915b994b378c4a9cc3553b3cbbe4bad5/lua/definitions/renderers/typst.lua#L102-L121
- 28: https://github.com/OXY2DEV/markview.nvim/blob/a803117f272cc47733b67ebbaf1acb91095da276/lua/markview/spec.lua#L1962-L1992
- 29: https://github.com/OXY2DEV/markview.nvim/blob/99d9a091915b994b378c4a9cc3553b3cbbe4bad5/lua/definitions/renderers/typst.lua#L115-L121
- 30: https://github.com/OXY2DEV/markview.nvim/blob/99d9a091915b994b378c4a9cc3553b3cbbe4bad5/lua/markview/spec.lua#L1992-L1997
- 32: https://github.com/OXY2DEV/markview.nvim/blob/99d9a091915b994b378c4a9cc3553b3cbbe4bad5/lua/definitions/renderers/typst.lua#L115-L121
- 33: https://github.com/OXY2DEV/markview.nvim/blob/99d9a091915b994b378c4a9cc3553b3cbbe4bad5/lua/markview/spec.lua#L1978-L1983
- 35: https://github.com/OXY2DEV/markview.nvim/blob/99d9a091915b994b378c4a9cc3553b3cbbe4bad5/lua/definitions/renderers/typst.lua#L115-L121
- 36: https://github.com/OXY2DEV/markview.nvim/blob/99d9a091915b994b378c4a9cc3553b3cbbe4bad5/lua/markview/spec.lua#L1985-L1990
- 38: https://github.com/OXY2DEV/markview.nvim/blob/99d9a091915b994b378c4a9cc3553b3cbbe4bad5/lua/definitions/renderers/typst.lua#L125-L134
- 39: https://github.com/OXY2DEV/markview.nvim/blob/99d9a091915b994b378c4a9cc3553b3cbbe4bad5/lua/markview/spec.lua#L2000-L2009
- 41: https://github.com/OXY2DEV/markview.nvim/blob/99d9a091915b994b378c4a9cc3553b3cbbe4bad5/lua/definitions/markview.lua#L70-L94
- 42: https://github.com/OXY2DEV/markview.nvim/blob/99d9a091915b994b378c4a9cc3553b3cbbe4bad5/lua/markview/spec.lua#L2011-L2018
- 43: https://github.com/OXY2DEV/markview.nvim/wiki/Configuration#-inline-elements
- 44: https://github.com/OXY2DEV/markview.nvim/blob/99d9a091915b994b378c4a9cc3553b3cbbe4bad5/lua/definitions/renderers/typst.lua#L142-L164
- 45: https://github.com/OXY2DEV/markview.nvim/blob/99d9a091915b994b378c4a9cc3553b3cbbe4bad5/lua/markview/spec.lua#L2020-L2051
- 46: https://github.com/OXY2DEV/markview.nvim/wiki/Preview#icon_provider
- 47: https://github.com/OXY2DEV/markview.nvim/wiki/Preview#icon_provider
- 48: https://github.com/OXY2DEV/markview.nvim/blob/99d9a091915b994b378c4a9cc3553b3cbbe4bad5/lua/definitions/renderers/typst.lua#L160-L164
- 49: https://github.com/OXY2DEV/markview.nvim/blob/99d9a091915b994b378c4a9cc3553b3cbbe4bad5/lua/markview/spec.lua#L2034-L2037
- 50: https://github.com/OXY2DEV/markview.nvim/blob/99d9a091915b994b378c4a9cc3553b3cbbe4bad5/lua/definitions/renderers/typst.lua#L160-L164
- 51: https://github.com/OXY2DEV/markview.nvim/blob/99d9a091915b994b378c4a9cc3553b3cbbe4bad5/lua/definitions/renderers/typst.lua#L172-L177
- 52: https://github.com/OXY2DEV/markview.nvim/blob/99d9a091915b994b378c4a9cc3553b3cbbe4bad5/lua/markview/spec.lua#L2062-L2069
- 53: https://github.com/OXY2DEV/markview.nvim/blob/99d9a091915b994b378c4a9cc3553b3cbbe4bad5/lua/definitions/markview.lua#L70-L94
- 54: https://github.com/OXY2DEV/markview.nvim/blob/99d9a091915b994b378c4a9cc3553b3cbbe4bad5/lua/markview/spec.lua#L2065-L2068
- 55: https://github.com/OXY2DEV/markview.nvim/wiki/Configuration#-inline-elements
- 56: https://github.com/OXY2DEV/markview.nvim/blob/99d9a091915b994b378c4a9cc3553b3cbbe4bad5/lua/definitions/markview.lua#L70-L94
- 57: https://github.com/OXY2DEV/markview.nvim/wiki/Configuration#-inline-elements
- 58: https://github.com/OXY2DEV/markview.nvim/blob/99d9a091915b994b378c4a9cc3553b3cbbe4bad5/lua/definitions/renderers/typst.lua#L181-L189
- 59: https://github.com/OXY2DEV/markview.nvim/blob/99d9a091915b994b378c4a9cc3553b3cbbe4bad5/lua/markview/spec.lua#L2071-L2075
- 60: https://github.com/OXY2DEV/markview.nvim/blob/99d9a091915b994b378c4a9cc3553b3cbbe4bad5/lua/definitions/renderers/typst.lua#L193-L201
- 61: https://github.com/OXY2DEV/markview.nvim/blob/99d9a091915b994b378c4a9cc3553b3cbbe4bad5/lua/markview/spec.lua#L2077-L2081
- 63: https://github.com/OXY2DEV/markview.nvim/blob/99d9a091915b994b378c4a9cc3553b3cbbe4bad5/lua/definitions/renderers/typst.lua#L205-L209
- 64: https://github.com/OXY2DEV/markview.nvim/blob/99d9a091915b994b378c4a9cc3553b3cbbe4bad5/lua/markview/spec.lua#L2083-L2087
- 65: https://github.com/OXY2DEV/markview.nvim/blob/99d9a091915b994b378c4a9cc3553b3cbbe4bad5/lua/definitions/renderers/typst.lua#L220-L231
- 66: https://github.com/OXY2DEV/markview.nvim/blob/99d9a091915b994b378c4a9cc3553b3cbbe4bad5/lua/markview/spec.lua#L2089-L2096
- 67: https://github.com/OXY2DEV/markview.nvim/blob/99d9a091915b994b378c4a9cc3553b3cbbe4bad5/lua/definitions/markview.lua#L70-L94
- 68: https://github.com/OXY2DEV/markview.nvim/blob/99d9a091915b994b378c4a9cc3553b3cbbe4bad5/lua/markview/spec.lua#L2092-L2095
- 69: https://github.com/OXY2DEV/markview.nvim/wiki/Configuration#-inline-elements
- 70: https://github.com/OXY2DEV/markview.nvim/blob/99d9a091915b994b378c4a9cc3553b3cbbe4bad5/lua/definitions/markview.lua#L70-L94
- 71: https://github.com/OXY2DEV/markview.nvim/wiki/Configuration#-inline-elements
- 72: https://github.com/OXY2DEV/markview.nvim/blob/99d9a091915b994b378c4a9cc3553b3cbbe4bad5/lua/definitions/renderers/typst.lua#L235-L241
- 73: https://github.com/OXY2DEV/markview.nvim/blob/99d9a091915b994b378c4a9cc3553b3cbbe4bad5/lua/markview/spec.lua#L2098-2275
- 74: https://github.com/OXY2DEV/markview.nvim/blob/99d9a091915b994b378c4a9cc3553b3cbbe4bad5/lua/definitions/markview.lua#L70-L94
- 75: https://github.com/OXY2DEV/markview.nvim/blob/99d9a091915b994b378c4a9cc3553b3cbbe4bad5/lua/markview/spec.lua#L2101-L2104
- 76: https://github.com/OXY2DEV/markview.nvim/wiki/Configuration#-inline-elements
- 77: https://github.com/OXY2DEV/markview.nvim/blob/99d9a091915b994b378c4a9cc3553b3cbbe4bad5/lua/definitions/markview.lua#L70-L94
- 78: https://github.com/OXY2DEV/markview.nvim/wiki/Configuration#-inline-elements
+>lua
+	--- Configuration for a specific term type.
+	---@class markview.config.typst.terms.opts
+	---
+	---@field text string
+	---@field hl? string Highlight group.
+<
 
-vim:ft=help:tw=78:ts=4:
+--------------------------------------------------------------------------------
+url_links                                        *markview.nvim-typst.url_links*
+
+>lua
+	--- Configuration for URL links.
+	---@class markview.config.typst.url_links
+	---
+	---@field enable boolean Enable rendering of URL links.
+	---
+	---@field default markview.config.typst.url_links.opts Default configuration for URL links.
+	---@field [string] markview.config.typst.url_links.opts Configuration for URL links whose label matches `string`.
+<
+
+Changes how url links are shown.
+
+>lua
+	url_links = {
+	    enable = true,
+	
+	    default = {
+	        icon = " ",
+	        hl = "MarkviewEmail"
+	    },
+	
+	    ["github%.com/[%a%d%-%_%.]+%/?$"] = {
+	        --- github.com/<user>
+	
+	        icon = " ",
+	        hl = "MarkviewPalette0Fg"
+	    },
+	    ["github%.com/[%a%d%-%_%.]+/[%a%d%-%_%.]+%/?$"] = {
+	        --- github.com/<user>/<repo>
+	
+	        icon = " ",
+	        hl = "MarkviewPalette0Fg"
+	    },
+	    ["github%.com/[%a%d%-%_%.]+/[%a%d%-%_%.]+/tree/[%a%d%-%_%.]+%/?$"] = {
+	        --- github.com/<user>/<repo>/tree/<branch>
+	
+	        icon = " ",
+	        hl = "MarkviewPalette0Fg"
+	    },
+	    ["github%.com/[%a%d%-%_%.]+/[%a%d%-%_%.]+/commits/[%a%d%-%_%.]+%/?$"] = {
+	        --- github.com/<user>/<repo>/commits/<branch>
+	
+	        icon = " ",
+	        hl = "MarkviewPalette0Fg"
+	    },
+	
+	    ["github%.com/[%a%d%-%_%.]+/[%a%d%-%_%.]+%/releases$"] = {
+	        --- github.com/<user>/<repo>/releases
+	
+	        icon = " ",
+	        hl = "MarkviewPalette0Fg"
+	    },
+	    ["github%.com/[%a%d%-%_%.]+/[%a%d%-%_%.]+%/tags$"] = {
+	        --- github.com/<user>/<repo>/tags
+	
+	        icon = " ",
+	        hl = "MarkviewPalette0Fg"
+	    },
+	    ["github%.com/[%a%d%-%_%.]+/[%a%d%-%_%.]+%/issues$"] = {
+	        --- github.com/<user>/<repo>/issues
+	
+	        icon = " ",
+	        hl = "MarkviewPalette0Fg"
+	    },
+	    ["github%.com/[%a%d%-%_%.]+/[%a%d%-%_%.]+%/pulls$"] = {
+	        --- github.com/<user>/<repo>/pulls
+	
+	        icon = " ",
+	        hl = "MarkviewPalette0Fg"
+	    },
+	
+	    ["github%.com/[%a%d%-%_%.]+/[%a%d%-%_%.]+%/wiki$"] = {
+	        --- github.com/<user>/<repo>/wiki
+	
+	        icon = " ",
+	        hl = "MarkviewPalette0Fg"
+	    },
+	
+	    ["developer%.mozilla%.org"] = {
+	        priority = -9999,
+	
+	        icon = "󰖟 ",
+	        hl = "MarkviewPalette5Fg"
+	    },
+	
+	    ["w3schools%.com"] = {
+	        priority = -9999,
+	
+	        icon = " ",
+	        hl = "MarkviewPalette4Fg"
+	    },
+	
+	    ["stackoverflow%.com"] = {
+	        priority = -9999,
+	
+	        icon = "󰓌 ",
+	        hl = "MarkviewPalette2Fg"
+	    },
+	
+	    ["reddit%.com"] = {
+	        priority = -9999,
+	
+	        icon = " ",
+	        hl = "MarkviewPalette2Fg"
+	    },
+	
+	    ["github%.com"] = {
+	        priority = -9999,
+	
+	        icon = " ",
+	        hl = "MarkviewPalette6Fg"
+	    },
+	
+	    ["gitlab%.com"] = {
+	        priority = -9999,
+	
+	        icon = "󰮠 ",
+	        hl = "MarkviewPalette2Fg"
+	    },
+	
+	    ["dev%.to"] = {
+	        priority = -9999,
+	
+	        icon = "󱁴 ",
+	        hl = "MarkviewPalette0Fg"
+	    },
+	
+	    ["codepen%.io"] = {
+	        priority = -9999,
+	
+	        icon = " ",
+	        hl = "MarkviewPalette6Fg"
+	    },
+	
+	    ["replit%.com"] = {
+	        priority = -9999,
+	
+	        icon = " ",
+	        hl = "MarkviewPalette2Fg"
+	    },
+	
+	    ["jsfiddle%.net"] = {
+	        priority = -9999,
+	
+	        icon = " ",
+	        hl = "MarkviewPalette5Fg"
+	    },
+	
+	    ["npmjs%.com"] = {
+	        priority = -9999,
+	
+	        icon = " ",
+	        hl = "MarkviewPalette0Fg"
+	    },
+	
+	    ["pypi%.org"] = {
+	        priority = -9999,
+	
+	        icon = "󰆦 ",
+	        hl = "MarkviewPalette0Fg"
+	    },
+	
+	    ["mvnrepository%.com"] = {
+	        priority = -9999,
+	
+	        icon = " ",
+	        hl = "MarkviewPalette1Fg"
+	    },
+	
+	    ["medium%.com"] = {
+	        priority = -9999,
+	
+	        icon = " ",
+	        hl = "MarkviewPalette6Fg"
+	    },
+	
+	    ["linkedin%.com"] = {
+	        priority = -9999,
+	
+	        icon = "󰌻 ",
+	        hl = "MarkviewPalette5Fg"
+	    },
+	
+	    ["news%.ycombinator%.com"] = {
+	        priority = -9999,
+	
+	        icon = " ",
+	        hl = "MarkviewPalette2Fg"
+	    },
+	}
+<
+
+Each url links type has the following options.
+
+>lua
+	--- Configuration for a specific URL type.
+	---@alias markview.config.typst.url_links.opts markview.config.__inline
+<
+
+vim:ft=help:textwidth=80:tabstop=4:noexpandtab:

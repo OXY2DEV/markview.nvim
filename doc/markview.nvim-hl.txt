@@ -5,7 +5,7 @@ These highlight groups are created by the plugin,
 ▋ 󰋽 Note
 ▋ The value of these groups are updated when changing the colorscheme!
 
-PRIMARY GROUPS
+🎨 Primary groups ~
 
 These groups will be updated to match the colorscheme whenever the `ColorScheme`
 update is detected,
@@ -64,7 +64,7 @@ update is detected,
 ◆ `MarkviewGradient8`
 ◆ `MarkviewGradient9`
 
-SECONDARY GROUPS
+🎨 Secondary groups ~
 
 These are typically linked to one of the above group,
 
@@ -126,4 +126,4 @@ link group wouldn't work for this.
 ^2: The value of `MarkviewCode` is used for the background. So, changing either
 of the linked group wouldn't affect these.
 
-vim:ft=vimdoc:textwidth=80:tabstop=4:noexpandtab:
+vim:ft=help:textwidth=80:tabstop=4:noexpandtab:

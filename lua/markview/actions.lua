@@ -547,6 +547,7 @@ actions.enable = function (buffer)
 	-- });
 	-- health.__child_indent_in();
 	actions.set_query(buffer);
+	---@diagnostic disable-next-line: assign-type-mismatch
 	state.set_buffer_state(buffer, { enable = true, hybrid_mode = nil });
 
 	local mode = vim.api.nvim_get_mode().mode;
@@ -607,6 +608,7 @@ actions.disable = function (buffer)
 	-- health.__child_indent_in();
 
 	actions.reset_query(buffer);
+	---@diagnostic disable-next-line: assign-type-mismatch
 	state.set_buffer_state(buffer, { enable = false, hybrid_mode = nil });
 
 	--[[

@@ -3,7 +3,7 @@
 --- Configuration for LaTeX.
 ---@class markview.config.latex
 ---
----@field enable boolean
+---@field enable boolean Enable **LaTeX** rendering.
 ---
 ---@field blocks? markview.config.latex.blocks LaTeX blocks configuration(typically made with `$$...$$`).
 ---@field commands? markview.config.latex.commands LaTeX commands configuration(e.g. `\frac{x}{y}`).
@@ -21,24 +21,25 @@
 --- Configuration table for latex math blocks.
 ---@class markview.config.latex.blocks
 ---
----@field enable boolean
+---@field enable boolean Enable rendering of `LaTeX blocks`.
 ---
----@field hl? string
----@field pad_amount integer
----@field pad_char string
+---@field hl? string Highlight group for the block.
+---@field pad_amount integer Number of `pad_char`s to add before each line.
+---@field pad_char string Character to use as padding.
 ---
----@field text string
----@field text_hl? string
+---@field text string Label text shown on the top right side.
+---@field text_hl? string Highlight group for the label.
 
 ------------------------------------------------------------------------------
 
 --- Configuration for LaTeX commands.
 ---@class markview.config.latex.commands
 ---
----@field enable boolean
----@field [string] markview.config.latex.commands.opts
+---@field enable boolean Enables rendering of LaTeX commands.
+---@field [string] markview.config.latex.commands.opts Options for `\string` command.
 
 
+--- Options for LaTeX command.
 ---@class markview.config.latex.commands.opts
 ---
 ---@field condition? fun(item: markview.parsed.latex.commands): boolean Condition used to determine if a command is valid.
@@ -62,7 +63,7 @@
 --- Configuration table for latex escaped characters.
 ---@class markview.config.latex.escapes
 ---
----@field enable boolean Enables escaped character preview.
+---@field enable boolean Enable rendering of **escaped character**.
 ---@field hl? string Highlight group for the escaped character.
 
 ------------------------------------------------------------------------------
@@ -70,17 +71,19 @@
 --- Configuration table for latex math fonts.
 ---@class markview.config.latex.fonts
 ---
----@field enable boolean
+---@field enable boolean Enable rendering of math fonts.
 ---
----@field default markview.config.latex.fonts.opts
----@field [string] markview.config.latex.fonts.opts
+---@field default markview.config.latex.fonts.opts Options for the default font.
+---@field [string] markview.config.latex.fonts.opts Options for `string` font.
 
 
---- Configuration for a specific fonts.
+--- Configuration options for a specific math font.
 ---@class markview.config.latex.fonts.opts
 ---
----@field enable? boolean Whether to enable this font.
----@field hl? string | fun(buffer: integer, item: markview.parsed.latex.fonts): string? Highlight group for this font.
+---@field enable? boolean Enable rendering of this font.
+---@field hl?
+---| string Highlight group for this font.
+---| fun(buffer: integer, item: markview.parsed.latex.fonts): string? Use the buffer & item data and return a group for this font.
 
 ------------------------------------------------------------------------------
 
@@ -101,8 +104,10 @@
 
 ------------------------------------------------------------------------------
 
---- Configuration table for {}.
----@alias markview.config.latex.parenthesis { enable: boolean }
+--- Configuration table for parenthesis.
+---@class markview.config.latex.parenthesis
+---
+---@field enable boolean Enable rendering of parenthesis.
 
 ------------------------------------------------------------------------------
 
@@ -110,7 +115,8 @@
 ---@class markview.config.latex.subscripts
 ---
 ---@field enable boolean Enables preview of subscript text.
----@field fake_preview? boolean When `true`, subscript characters are *faked*.
+---
+---@field fake_preview? boolean Use Unicode characters to mimic subscript text.
 ---@field hl? string | string[] Highlight group for the subscript text. Can be a list to use different hl for nested subscripts.
 
 ------------------------------------------------------------------------------
@@ -119,7 +125,8 @@
 ---@class markview.config.latex.superscripts
 ---
 ---@field enable boolean Enables preview of superscript text.
----@field fake_preview? boolean When `true`, superscript characters are *faked*.
+---
+---@field fake_preview? boolean Use Unicode characters to mimic superscript text.
 ---@field hl? string | string[] Highlight group for the superscript text. Can be a list to use different hl for nested superscripts.
 
 ------------------------------------------------------------------------------
@@ -127,11 +134,14 @@
 --- Configuration table for TeX math symbols.
 ---@class markview.config.latex.symbols
 ---
----@field enable boolean
+---@field enable boolean Enable rendering of Math symbols.
+---
 ---@field hl? string Highlight group for the symbols.
 
 ------------------------------------------------------------------------------
 
---- Configuration table for text.
----@alias markview.config.latex.texts { enable: boolean }
+--[[ Configuration table for `\text{}`. ]]
+---@class markview.config.latex.texts
+---
+---@field enable boolean Enable rendering of text blocks.
 
