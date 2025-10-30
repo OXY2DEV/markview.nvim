@@ -56,7 +56,7 @@ renderer.option_maps = {
 		embed_files = { "inline_embed_files" },
 		emails = { "inline_link_email" },
 		hyperlinks = { "inline_link_hyperlink", "inline_link_shortcut" },
-		images = { "inline_link_hyperlink" },
+		images = { "inline_link_image" },
 		uri_autolinks = { "inline_link_uri_autolink" },
 		internal_links = { "inline_link_internal" },
 	},
@@ -86,131 +86,82 @@ renderer.option_maps = {
 };
 
 
---- Creates node class filters for hybrid mode.
+--[[
+Creates a list of node classes that should be shown as *raw text*.
+
+Algorithm,
+
+1. Apply negation/exclusion rules.
+2. Apply inclusion rules.
+
+Example,
+
+```
+Rule: { !e, !b }
+
+a b c d e f <-- !e
+a b c d • f <-- !b
+a • c d • f
+```
+
+>[!IMPORTANT]
+> Filters such as `{ "!tables", "atx_headings" }` are considered **invalid**.
+> 
+> A valid filter should contain only `exclusion` or `inclusion` rules.
+]]
 ---@param filter? markview.config.preview.raw
----@return markview.renderer.option_map}
-local create_filter = function (filter)
+---@return markview.renderer.option_map
+local _filter = function (filter)
 	---|fS
 
-	local spec = require("markview.spec");
+	filter = filter or require("markview.spec").get({ "preview", "raw_previews" }, { fallback = {}, ignore_enable = true });
 
-	--- Ignore queries.
-	---@type markview.config.preview.raw
-	local filters = filter or spec.get({ "preview", "raw_previews" }, { fallback = {} });
+	local valid = {};
 
-	--- To save time, do not recalculate node filters
-	--- if the configuration hasn't changed!
-	if vim.deep_equal(renderer.__filter_cache.config, filters) == true then
-		return renderer.__filter_cache.result;
-	end
+	for language --[[@as string]], map --[[@as string[] ]] in pairs(renderer.option_maps) do
+		local lang_filter = filter[language] or {};
+		local has_inclusions = false;
 
-	--- Resulting filter.
-	local _f = {};
-
-	--- Checks if a value is valid by matching all
-	--- the provided queries against it.
-	---@param value string
-	---@param queries string[]
-	---@return boolean
-	local is_valid = function (value, queries)
-		---|fS
-
-		for q, query in ipairs(queries or {}) do
-			--- Queries that were already passed.
-			local passed = vim.list_slice(queries, 0, q - 1);
-
-			if string.match(query, "^%!") then
-				if value == string.sub(query, 2) then
-					-- Part of negation query.
-					return false;
-				elseif vim.list_contains(passed, value) then
-					-- Already part of the query.
-					return true;
-				end
-			elseif value == query then
-				return true;
+		for _, rule in ipairs(lang_filter) do
+			if string.match(rule, "^[^!]") then
+				has_inclusions = true;
+				break;
 			else
-				-- Invalid value.
+			end
+		end
+
+		local kinds = vim.tbl_filter(function (item)
+			for _, rule in ipairs(lang_filter) do
+				if string.match(rule, "^!") and string.match(rule, "^!(.+)") == item then
+					return false;
+				end
+			end
+
+			return true;
+		end, vim.tbl_keys(map));
+
+		if has_inclusions then
+			kinds = vim.tbl_filter(function (item)
+				for _, rule in ipairs(lang_filter) do
+					if rule == item then
+						return true;
+					end
+				end
+
 				return false;
-			end
+			end, kinds);
 		end
 
-		return true;
+		local nodes = {};
 
-		---|fE
+		for _, kind in ipairs(kinds) do
+			nodes = vim.list_extend(nodes, map[kind] or {});
+		end
+
+		valid[language] = nodes;
 	end
 
-	--- Creates a list of valid options for {language}.
-	---@param language string
-	---@param options string[]
-	---@return string[]
-	local function language_filter (language, options)
-		---|fS
-
-		---@type string[] Filters for this language.
-		local queries = filters[language];
-
-		if vim.islist(queries) == false then
-			--- Filter is invalid.
-			return options;
-		elseif #queries == 0 then
-			--- Filter is empty.
-			return {};
-		end
-
-		---@type string[] Valid options.
-		local _m = {};
-
-		for _, item in ipairs(options) do
-			if is_valid(item, queries) == true then
-				table.insert(_m, item);
-			end
-		end
-
-		return _m;
-
-		---|fE
-	end
-
-	--- Registers a new entry to {language}.
-	---@param language string
-	---@param classes string[]
-	local function register (language, classes)
-		---|fS
-
-		if vim.islist(_f[language]) == false then
-			_f[language] = {};
-		end
-
-		for _, class in ipairs(classes or {}) do
-			if type(class) == "string" and vim.list_contains(_f[language], class) == false then
-				table.insert(_f[language], class);
-			end
-		end
-
-		---|fE
-	end
-
-	for language, maps in pairs(renderer.option_maps) do
-		--- Copy the values as we don't want to
-		--- accidentally modify the mapping table.
-		local valid_options = language_filter(language, vim.tbl_keys(maps));
-
-		if vim.islist(_f[language]) == false then
-			_f[language] = {};
-		end
-
-		for _, option in ipairs(valid_options) do
-			local nodes = maps[option];
-			register(language, nodes);
-		end
-	end
-
-	--- Cache values.
-	renderer.__filter_cache.config = filters;
-	renderer.__filter_cache.result = _f;
-
-	return _f;
+	return valid;
 
 	---|fE
 end
@@ -338,7 +289,7 @@ renderer.filter = function (content, filter, clear)
 
 	--- Node filters.
 	---@type markview.config.preview.raw
-	local result_filters = create_filter(filter);
+	local result_filters = _filter(filter);
 
 	---@type { [string]: table }
 	local indexes = {};
