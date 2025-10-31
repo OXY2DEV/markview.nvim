@@ -6,6 +6,16 @@
             "header": {
                 "desc": "☄️ A hackable `Markdown`, `LaTeX`, `Typst` etc. previewer.",
                 "tag": "markview.nvim"
+            },
+            "toc": {
+                "entries": [
+                    { "text": "📚 Requirements", "tag": "markview.nvim-requirements" },
+                    { "text": "🎇 Commands", "tag": "markview.nvim-commands" },
+                    { "text": "💡 Configuration", "tag": "markview.nvim-config" },
+                    { "text": "🧭 Usage", "tag": "markview.nvim-usage" },
+                    { "text": "🧩 Extras", "tag": "markview.nvim-extras" },
+                    { "text": "📦 Presets", "tag": "markview.nvim-presets" }
+                ]
             }
         },
         "markdown": {
@@ -18,8 +28,8 @@
                 "marker_plus": "◇"
             },
             "tags": {
-                "Features$": [ "markview.nvim-feature" ],
-                "Configuration$": [ "markview.nvim-config" ],
+                "Features$": [ "markview.nvim-features" ],
+                "Requirements$": [ "markview.nvim-requirements" ],
                 "Commands$": [ "markview.nvim-commands" ],
                 "Autocmds$": [ "markview.nvim-autocmds" ],
                 "Highlight groups$": [ "markview.nvim-hl", "markview.nvim-highlights" ],
@@ -46,7 +56,7 @@
 </div>
 
 <div align="center">
-    <a href="https://github.com/OXY2DEV/markview.nvim/wiki/Home">📚 Wiki</a> | <a href="#-extra-modules">🧩 Extras</a> | <a href="#-presets">📦 Presets</a>
+    <a href="https://github.com/OXY2DEV/markview.nvim/wiki/Home">📚 Wiki</a> | <a href="https://github.com/OXY2DEV/markview.nvim/wiki/Extras">🧩 Extras</a> | <a href="https://github.com/OXY2DEV/markview.nvim/wiki/Presets">📦 Presets</a>
 </div>
 
 ## ✨ Features
@@ -61,6 +71,8 @@ Core features,
 + Dynamic `highlight groups` that automatically updates with the colorscheme!
 + `Callout`, `checkbox` completions for `blink.cmp` & `nvim-cmp`.
 
+<TOC/>
+
 <!--markdoc_ignore_start-->
 ## 📚 Table of contents
 
@@ -70,10 +82,11 @@ Core features,
 
 Also see,
 
-- [📚 Wiki]()
-- [🧭 Usage]()
-- [🧩 Extras]()
-- [📦 Presets]()
+- [📚 Wiki](https://github.com/OXY2DEV/markview.nvim/wiki/Home)
+- [💡 Configuration](https://github.com/OXY2DEV/markview.nvim/wiki/Configuration)
+- [🧭 Usage](https://github.com/OXY2DEV/markview.nvim/wiki/Usage)
+- [🧩 Extras](https://github.com/OXY2DEV/markview.nvim/wiki/Extras)
+- [📦 Presets](https://github.com/OXY2DEV/markview.nvim/wiki/Presets)
 
 ### 📜 Complete feature-list
 
@@ -369,7 +382,7 @@ Fonts,
 Add this to your plugin list.
 
 ```vim
-Plug "OXY2DEV/markview.nvim"
+Plug 'OXY2DEV/markview.nvim'
 ```
 
 ### 💤 Lazy.nvim

@@ -18,7 +18,7 @@ markview.nvim-extras.checkbox	markview.nvim-extras.txt	/*markview.nvim-extras.ch
 markview.nvim-extras.editor	markview.nvim-extras.txt	/*markview.nvim-extras.editor*
 markview.nvim-extras.headings	markview.nvim-extras.txt	/*markview.nvim-extras.headings*
 markview.nvim-extras.txt	markview.nvim-extras.txt	/*markview.nvim-extras.txt*
-markview.nvim-feature	markview.nvim.txt	/*markview.nvim-feature*
+markview.nvim-features	markview.nvim.txt	/*markview.nvim-features*
 markview.nvim-hl.txt	markview.nvim-hl.txt	/*markview.nvim-hl.txt*
 markview.nvim-html	markview.nvim-html.txt	/*markview.nvim-html*
 markview.nvim-html.container_elements	markview.nvim-html.txt	/*markview.nvim-html.container_elements*
@@ -85,6 +85,7 @@ markview.nvim-preview.max_buf_lines	markview.nvim-preview.txt	/*markview.nvim-pr
 markview.nvim-preview.modes	markview.nvim-preview.txt	/*markview.nvim-preview.modes*
 markview.nvim-preview.raw_previews	markview.nvim-preview.txt	/*markview.nvim-preview.raw_previews*
 markview.nvim-preview.splitview_winopts	markview.nvim-preview.txt	/*markview.nvim-preview.splitview_winopts*
+markview.nvim-requirements	markview.nvim.txt	/*markview.nvim-requirements*
 markview.nvim-typst	markview.nvim-typst.txt	/*markview.nvim-typst*
 markview.nvim-typst.code_blocks	markview.nvim-typst.txt	/*markview.nvim-typst.code_blocks*
 markview.nvim-typst.code_spans	markview.nvim-typst.txt	/*markview.nvim-typst.code_spans*
