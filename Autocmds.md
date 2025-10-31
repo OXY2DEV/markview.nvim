@@ -10,8 +10,7 @@
         },
         "markdown": {
             "link_url_modifiers": [
-                [ "^#%-extra%-modules", "|markview.nvim-extras|" ],
-                [ "^#%-presets", "|markview.nvim-presets|" ]
+                [ "#callbacks$", "|markview.nvim-preview.callbacks|" ]
             ],
             "list_items": {
                 "marker_minus": "◆",
@@ -30,7 +29,6 @@
 vim.api.nvim_create_autocmd("User", {
     pattern = "MarkviewAttach",
     callback = function (event)
-        --## This will have all the data you need.
         local data = event.data;
 
         vim.print(data);
@@ -39,7 +37,7 @@ vim.api.nvim_create_autocmd("User", {
 ```
 
 >[!NOTE]
-> Autocmds are executed **after** callbacks!
+> Autocmds are executed **after** [callbacks](https://github.com/OXY2DEV/markview.nvim/wiki/Preview#callbacks)!
 
 Currently emitted autocmds are,
 
