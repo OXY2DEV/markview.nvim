@@ -27,6 +27,9 @@ local function gfm_link (buffer, heading)
 
 		if (cp > 0x1F60 and cp <= 0x1F64F) then
 			goto continue;
+		elseif cp == 0x1F9E9 then
+			-- 🧩
+			goto continue;
 		elseif (cp >= 0x1F680 and cp <= 0x1F6FF) then
 			goto continue;
 		elseif (cp >= 0x2600 and cp <= 0x26FF) then
