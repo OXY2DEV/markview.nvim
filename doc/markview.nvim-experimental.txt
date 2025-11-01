@@ -58,7 +58,7 @@ A list of date & time string formats(used for detecting YAML properties).
 prefer_nvim                             *markview.nvim-experimental.prefer_nvim*
 
 When `true`, opens text files inside of Neovim using
-[experimental.file_open_command]().
+experimental.file_open_command {1}.
 
 >lua
 	prefer_nvim = false,
@@ -67,7 +67,7 @@ When `true`, opens text files inside of Neovim using
 --------------------------------------------------------------------------------
 file_open_command                 *markview.nvim-experimental.file_open_command*
 
-The command used to open new files inside Neovim. [experimental.prefer_nvim]()
+The command used to open new files inside Neovim. experimental.prefer_nvim {2}
 must be enabled to use this.
 
 >lua
@@ -77,6 +77,7 @@ must be enabled to use this.
 --------------------------------------------------------------------------------
 list_empty_line_tolerance *markview.nvim-experimental.list_empty_line_tolerance*
 
+demo {img:1}
 
 The maximum number of empty lines a list item can contain. Any more empty lines
 will cause the list item to end there.
@@ -89,7 +90,7 @@ will cause the list item to end there.
 read_chunk_size                     *markview.nvim-experimental.read_chunk_size*
 
 Number of bytes to read from a file to check if it's a `text file`
-.[experimental.prefer_nvim]() must be enabled to use this.
+.experimental.prefer_nvim {3} must be enabled to use this.
 
 >lua
 	read_chunk_size = 1024,
@@ -107,5 +108,14 @@ Prevents section indentations to be removed when using
 	linewise_ignore_org_indent = false
 <
 
+Links ~
+
+1: https://github.com/OXY2DEV/markview.nvim/wiki/Experimental#file_open_command
+2: https://github.com/OXY2DEV/markview.nvim/wiki/Experimental#prefer_nvim
+3: https://github.com/OXY2DEV/markview.nvim/wiki/Experimental#prefer_nvim
+
+Images ~
+
+1: ./images/markview.nvim-experimental.list_empty_line_tolerance.png
 
 vim:ft=help:textwidth=80:tabstop=4:noexpandtab:
