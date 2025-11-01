@@ -57,7 +57,9 @@ You can disable this by running the following *before* loading `markview`.
 vim.g.markview_cmp_loaded = true;
 ```
 
-## 📦 Diagnostics
+## 📦 LSP hovers
+
+![Demo](./images/markview.nvim-lsp_hover.png)
 
 You can use `markview.nvim` to *prettify* the LSP hover window.
 
