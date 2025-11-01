@@ -73,6 +73,8 @@ enable = true
 
 Changes how block quotes are shown.
 
+![Demo](./images/markdown/markview.nvim-markdown.block_quotes.png)
+
 ```lua
 block_quotes = {
     enable = true,
@@ -306,6 +308,8 @@ Each block quote type(callout) has the following options.
 ```
 
 Changes how code blocks are shown.
+
+![Demo](./images/markdown/markview.nvim-markdown.code_blocks.png)
 
 ```lua
 code_blocks = {
@@ -1168,6 +1172,8 @@ Each link type has the following options.
 ```
 
 Changes how tables are shown.
+
+![Demo](./images/markdown/markview.nvim-markdown.tables.png)
 
 ```lua
 tables = {
