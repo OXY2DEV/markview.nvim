@@ -169,14 +169,14 @@ end
 
 
 commands.traceExport = function ()
-	-- actions.traceExport();
+	require("markview.actions").traceExport();
 end
 commands.traceShow = function (from, to)
-	-- if pcall(tonumber, from) and pcall(tonumber, to) then
-	-- 	health.trace_open(tonumber(from), tonumber(to));
-	-- else
-	-- 	health.trace_open();
-	-- end
+	if pcall(tonumber, from) and pcall(tonumber, to) then
+		require("markview.health").trace_open(tonumber(from), tonumber(to));
+	else
+		require("markview.health").trace_open();
+	end
 end
 
 commands.complete = function (_, cmd, cursorpos)
