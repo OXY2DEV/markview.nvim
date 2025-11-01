@@ -44,6 +44,8 @@
 enable = true
 ```
 
+Enable rendering of HTML elements.
+
 ## container_elements
 
 ```lua from: ../lua/markview/types/renderers/html.lua class: markview.config.html.container_elements
@@ -54,6 +56,8 @@ enable = true
 ```
 
 Changes how certain container elements look.
+
+![Demo](./images/html/markview.nvim-html.container_elements.png)
 
 ```lua
 container_elements = {
@@ -254,6 +258,12 @@ Each entry has the following structure,
 
 Changes how heading elements look. The configuration is directly passed to `nvim_buf_set_extmark()`.
 
+![Demo](./images/html/markview.nvim-html.headings.png)
+
+>[!NOTE]
+> By default, the background colors are *very subtle*(this is to prevent messing with the syntax highlighting).
+> You can change the highlight groups through your Colorscheme or through `:hi`.
+
 ```lua
 headings = {
     enable = true,
@@ -289,6 +299,8 @@ headings = {
 ```
 
 Changes how certain void elements look.
+
+![Demo](./images/html/markview.nvim-html.void_elements.png)
 
 ```lua
 void_elements = {
