@@ -103,7 +103,8 @@ actions.handle_hybrid_mode = function (linewise, buffer, line_count, wins, conte
 			local cursor = vim.api.nvim_win_get_cursor(win);
 			local R = actions.get_range(cursor[1] - 1, edit_range, line_count);
 
-			renderer.clear(buffer, R[1], R[2], true);
+			-- NOTE: We add 1 to the `row_end` because it is inclusive.
+			renderer.clear(buffer, R[1], R[2] + 1, true);
 		end
 	end
 
@@ -167,6 +168,7 @@ actions.render = function (_buffer, _state, _config)
 			local cursor = vim.api.nvim_win_get_cursor(win);
 			local R = actions.get_range(cursor[1], draw_range, L);
 
+			-- TODO: See if we need to `R[2] + 1`.
 			local content, _ = parser.parse(buffer, R[1], R[2], true);
 
 			if H and buf_state.hybrid_mode then
