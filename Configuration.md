@@ -15,6 +15,7 @@
                     { "text": "Markdown", "tag": "markview.nvim-markdown" },
                     { "text": "Markdown inline", "tag": "markview.nvim-markdown_inline" },
                     { "text": "Preview", "tag": "markview.nvim-preview" },
+                    { "text": "Renderers", "tag": "markview.nvim-renderers" },
                     { "text": "Typst", "tag": "markview.nvim-typst" },
                     { "text": "YAML", "tag": "markview.nvim-yaml" }
                 ]
