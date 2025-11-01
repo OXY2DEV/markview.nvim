@@ -20,6 +20,23 @@
 # 💻 Development
 <!--markdoc_ignore_end-->
 
+## ✨ Triggering sub-commands
+
+Normally, the sub-commands can be triggered with,
+
+```lua
+vim.cmd("Markview <sub-command>");
+```
+
+But they can also be triggered using pure Lua.
+
+```lua
+local sub_commands = require("markview.commands");
+sub_commands.Toggle();
+```
+
+The function name matches with the sub-command name(e.g. `sub_commands.splitToggle()` is the same as `:Markview splitToggle`).
+
 ## ✨ Using `markview.nvim` as a previewer
 
 You can use `markview` to render markdown & other filetypes in your plugins.
