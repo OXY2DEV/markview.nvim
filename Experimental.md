@@ -86,6 +86,16 @@ date_formats = {
 
 When `true`, opens **text files** inside of Neovim using [experimental.file_open_command](https://github.com/OXY2DEV/markview.nvim/wiki/Experimental#file_open_command).
 
+`prefer_nvim = true`
+
+https://github.com/user-attachments/assets/054a2a1e-56b3-480d-925c-5522b5dc793a
+
+`prefer_nvim = false`
+
+https://github.com/user-attachments/assets/619092da-06f3-40ba-a1ed-5d64ac54bbb8
+
+------
+
 ```lua
 prefer_nvim = false,
 ```
