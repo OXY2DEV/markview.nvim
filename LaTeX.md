@@ -76,6 +76,8 @@ enable = true
 
 Enables rendering of multiline LaTeX blocks.
 
+![Demo](./images/latex/markview.nvim-latex.math_blocks.png)
+
 ```lua
 blocks = {
     enable = true,
@@ -100,6 +102,8 @@ blocks = {
 ```
 
 Changes how LaTeX commands are shown.
+
+![Demo](./images/latex/markview.nvim-latex.commands.png)
 
 ```lua
 --- Creates a configuration table for a LaTeX command.
@@ -439,6 +443,8 @@ escapes = {
 
 Changes how various math fonts are shown.
 
+![Demo](./images/latex/markview.nvim-latex.fonts.png)
+
 ```lua
 fonts = {
     enable = true,
@@ -497,6 +503,8 @@ Each font has the following options.
 
 Changes how inline maths are shown.
 
+![Demo](./images/latex/markview.nvim-latex.inlines.png)
+
 ```lua
 inlines = {
     enable = true,
@@ -539,6 +547,8 @@ parenthesis = {
 
 Changes how subscript text looks.
 
+![Demo](./images/latex/markview.nvim-latex.subscript.png)
+
 >[!NOTE]
 > Rendering relies on Unicode character support(as there are no subscript character group).
 
@@ -564,6 +574,8 @@ subscripts = {
 
 Changes how superscript text looks.
 
+![Demo](./images/latex/markview.nvim-latex.superscript.png)
+
 >[!NOTE]
 > Rendering relies on Unicode character support(as there are no superscript character group).
 
@@ -588,6 +600,8 @@ superscripts = {
 
 Changes how math symbols are shown.
 
+![Demo](./images/latex/markview.nvim-latex.symbols.png)
+
 ```lua
 symbols = {
     enable = true,
@@ -596,7 +610,7 @@ symbols = {
 },
 ```
 
-## text
+## texts
 
 ```lua from: ../lua/markview/types/renderers/latex.lua class: markview.config.latex.texts
 ---@class markview.config.latex.texts
@@ -605,6 +619,8 @@ symbols = {
 ```
 
 Changes how math symbols are shown.
+
+![Demo](./images/latex/markview.nvim-latex.texts.png)
 
 ```lua
 texts = {
