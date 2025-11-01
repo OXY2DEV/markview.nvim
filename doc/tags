@@ -85,6 +85,7 @@ markview.nvim-preview.max_buf_lines	markview.nvim-preview.txt	/*markview.nvim-pr
 markview.nvim-preview.modes	markview.nvim-preview.txt	/*markview.nvim-preview.modes*
 markview.nvim-preview.raw_previews	markview.nvim-preview.txt	/*markview.nvim-preview.raw_previews*
 markview.nvim-preview.splitview_winopts	markview.nvim-preview.txt	/*markview.nvim-preview.splitview_winopts*
+markview.nvim-renderers	markview.nvim-renderers.txt	/*markview.nvim-renderers*
 markview.nvim-requirements	markview.nvim.txt	/*markview.nvim-requirements*
 markview.nvim-typst	markview.nvim-typst.txt	/*markview.nvim-typst*
 markview.nvim-typst.code_blocks	markview.nvim-typst.txt	/*markview.nvim-typst.code_blocks*
