@@ -17,6 +17,8 @@ You can disable this by running the following before loading `markview`.
 --------------------------------------------------------------------------------
 📦 nvim                                          *markview.nvim-integrations.gx*
 
+https://github.com/user-attachments/assets/2b8de549-e429-4be5-ba3a-f7f9a12ce5f2
+
 Modified `gx` mapping that can,
 
 ◆ Go to heading based on Github-flavored/Gitlab-flavored links(e.g.
@@ -36,7 +38,9 @@ You can disable this by running the following before loading `markview`.
 <
 
 --------------------------------------------------------------------------------
-📦 Diagnostics
+📦 LSP hovers
+
+Demo {img:1}
 
 You can use `markview.nvim` to prettify the LSP hover window.
 
@@ -45,5 +49,9 @@ You can see an example here {1}.
 Links ~
 
 1: https://gist.github.com/OXY2DEV/645c90df32095a8a397735d0be646452
+
+Images ~
+
+1: ./images/markview.nvim-lsp_hover.png
 
 vim:ft=help:textwidth=80:tabstop=4:noexpandtab:

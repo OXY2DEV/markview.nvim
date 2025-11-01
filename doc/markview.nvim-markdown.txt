@@ -42,6 +42,8 @@ block_quotes                               *markview.nvim-markdown.block_quotes*
 
 Changes how block quotes are shown.
 
+Demo {img:1}
+
 >lua
 	block_quotes = {
 	    enable = true,
@@ -276,6 +278,8 @@ code_blocks                                 *markview.nvim-markdown.code_blocks*
 <
 
 Changes how code blocks are shown.
+
+Demo {img:2}
 
 >lua
 	code_blocks = {
@@ -1153,6 +1157,8 @@ tables                                           *markview.nvim-markdown.tables*
 
 Changes how tables are shown.
 
+Demo {img:3}
+
 >lua
 	tables = {
 	    enable = true,
@@ -1209,5 +1215,11 @@ Changes how tables are shown.
 	---
 	---@field overlap string[]
 <
+
+Images ~
+
+1: ./images/markdown/markview.nvim-markdown.block_quotes.png
+2: ./images/markdown/markview.nvim-markdown.code_blocks.png
+3: ./images/markdown/markview.nvim-markdown.tables.png
 
 vim:ft=help:textwidth=80:tabstop=4:noexpandtab:

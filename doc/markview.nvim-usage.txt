@@ -44,7 +44,7 @@ Toggle current buffer in splitview.
 
   ╶────────────────────────────────────────────────────────────────────────────╴ 
 
-This is a collection of `configs` that,
+These examples are a bit more advanced as they,
 
 ◇ Implement new features.
 ◇ Extends existing features.

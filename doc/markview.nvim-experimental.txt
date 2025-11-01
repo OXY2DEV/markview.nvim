@@ -60,6 +60,16 @@ prefer_nvim                             *markview.nvim-experimental.prefer_nvim*
 When `true`, opens text files inside of Neovim using
 experimental.file_open_command {1}.
 
+`prefer_nvim = true`
+
+https://github.com/user-attachments/assets/054a2a1e-56b3-480d-925c-5522b5dc793a
+
+`prefer_nvim = false`
+
+https://github.com/user-attachments/assets/619092da-06f3-40ba-a1ed-5d64ac54bbb8
+
+  ╶────────────────────────────────────────────────────────────────────────────╴ 
+
 >lua
 	prefer_nvim = false,
 <
@@ -79,8 +89,8 @@ list_empty_line_tolerance *markview.nvim-experimental.list_empty_line_tolerance*
 
 demo {img:1}
 
-The maximum number of empty lines a list item can contain. Any more empty lines
-will cause the list item to end there.
+Number of repeating empty lines needed to terminate a list item. Any non empty
+lines after them will not be considered part of the list item.
 
 >lua
 	list_empty_line_tolerance = 3,
@@ -100,6 +110,9 @@ Number of bytes to read from a file to check if it's a `text file`
 linewise_ignore_org_indent
                           *markview.nvim-experimental.linewise_ignore_org_indent*
 
+▋ 󰳦 Caution
+▋ Deprecated.
+▋ I couldn't find use for this option and thus this was deprecated.
 
 Prevents section indentations to be removed when using
 [markdown.headings.org_indent]().

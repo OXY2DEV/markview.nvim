@@ -39,6 +39,7 @@ markview.nvim-latex.parenthesis	markview.nvim-latex.txt	/*markview.nvim-latex.pa
 markview.nvim-latex.subscripts	markview.nvim-latex.txt	/*markview.nvim-latex.subscripts*
 markview.nvim-latex.superscripts	markview.nvim-latex.txt	/*markview.nvim-latex.superscripts*
 markview.nvim-latex.symbols	markview.nvim-latex.txt	/*markview.nvim-latex.symbols*
+markview.nvim-latex.texts	markview.nvim-latex.txt	/*markview.nvim-latex.texts*
 markview.nvim-markdown	markview.nvim-markdown.txt	/*markview.nvim-markdown*
 markview.nvim-markdown.block_quotes	markview.nvim-markdown.txt	/*markview.nvim-markdown.block_quotes*
 markview.nvim-markdown.code_blocks	markview.nvim-markdown.txt	/*markview.nvim-markdown.code_blocks*

@@ -44,6 +44,8 @@ blocks                                              *markview.nvim-latex.blocks*
 
 Enables rendering of multiline LaTeX blocks.
 
+Demo {img:1}
+
 >lua
 	blocks = {
 	    enable = true,
@@ -69,6 +71,8 @@ commands                                          *markview.nvim-latex.commands*
 <
 
 Changes how LaTeX commands are shown.
+
+Demo {img:2}
 
 >lua
 	--- Creates a configuration table for a LaTeX command.
@@ -410,6 +414,8 @@ fonts                                                *markview.nvim-latex.fonts*
 
 Changes how various math fonts are shown.
 
+Demo {img:3}
+
 >lua
 	fonts = {
 	    enable = true,
@@ -469,6 +475,8 @@ inlines                                            *markview.nvim-latex.inlines*
 
 Changes how inline maths are shown.
 
+Demo {img:4}
+
 >lua
 	inlines = {
 	    enable = true,
@@ -513,6 +521,8 @@ subscripts                                      *markview.nvim-latex.subscripts*
 
 Changes how subscript text looks.
 
+Demo {img:5}
+
 ▋ 󰋽 Note
 ▋ Rendering relies on Unicode character support(as there are no subscript
 ▋ character group).
@@ -540,6 +550,8 @@ superscripts                                  *markview.nvim-latex.superscripts*
 
 Changes how superscript text looks.
 
+Demo {img:6}
+
 ▋ 󰋽 Note
 ▋ Rendering relies on Unicode character support(as there are no superscript
 ▋ character group).
@@ -566,6 +578,8 @@ symbols                                            *markview.nvim-latex.symbols*
 
 Changes how math symbols are shown.
 
+Demo {img:7}
+
 >lua
 	symbols = {
 	    enable = true,
@@ -575,7 +589,7 @@ Changes how math symbols are shown.
 <
 
 --------------------------------------------------------------------------------
-text
+texts                                                *markview.nvim-latex.texts*
 
 >lua
 	---@class markview.config.latex.texts
@@ -585,10 +599,23 @@ text
 
 Changes how math symbols are shown.
 
+Demo {img:8}
+
 >lua
 	texts = {
 	    enable = true
 	},
 <
+
+Images ~
+
+1: ./images/latex/markview.nvim-latex.math_blocks.png
+2: ./images/latex/markview.nvim-latex.commands.png
+3: ./images/latex/markview.nvim-latex.fonts.png
+4: ./images/latex/markview.nvim-latex.inlines.png
+5: ./images/latex/markview.nvim-latex.subscript.png
+6: ./images/latex/markview.nvim-latex.superscript.png
+7: ./images/latex/markview.nvim-latex.symbols.png
+8: ./images/latex/markview.nvim-latex.texts.png
 
 vim:ft=help:textwidth=80:tabstop=4:noexpandtab:

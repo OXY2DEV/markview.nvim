@@ -3,6 +3,9 @@
 `markview.nvim` emits various autocmd events during different parts of the
 rendering allowing users to extend the plugin's functionality.
 
+https://github.com/user-attachments/assets/724418d3-2ccd-4928-898d-dc9b961510cd
+
+
 >lua
 	vim.api.nvim_create_autocmd("User", {
 	    pattern = "MarkviewAttach",

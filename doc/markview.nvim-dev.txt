@@ -19,6 +19,9 @@ But they can also be triggered using pure Lua.
 The function name matches with the sub-command name(e.g.
 `sub_commands.splitToggle()` is the same as `:Markview splitToggle`).
 
+Functions/sub-commands that start with a small letter optionally take the
+`buffer` as a parameter.
+
 --------------------------------------------------------------------------------
 ✨ Using `markview.nvim` as a previewer
 
@@ -69,6 +72,7 @@ If you don't need stuff like `hybrid mode` in your preview you can disable them 
 Each buffer has the following states,
 
 >lua
+	--[[ Buffer state for `markview.nvim`. ]]
 	---@class markview.state.buf
 	---
 	---@field enable boolean Is the `preview` enabled?

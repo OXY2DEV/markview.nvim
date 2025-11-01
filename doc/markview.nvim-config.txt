@@ -18,6 +18,7 @@ LaTeX .................................................... |markview.nvim-latex|
 Markdown .............................................. |markview.nvim-markdown|
 Markdown inline ................................ |markview.nvim-markdown_inline|
 Preview ................................................ |markview.nvim-preview|
+Renderers ............................................ |markview.nvim-renderers|
 Typst .................................................... |markview.nvim-typst|
 YAML ...................................................... |markview.nvim-yaml|
 
@@ -177,5 +178,6 @@ The configuration table has the following structure,
 	    },
 	}
 <
+
 
 vim:ft=help:textwidth=80:tabstop=4:noexpandtab:
