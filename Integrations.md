@@ -40,6 +40,8 @@ vim.g.markview_blink_loaded = true;
 
 ## 📦 nvim
 
+https://github.com/user-attachments/assets/2b8de549-e429-4be5-ba3a-f7f9a12ce5f2
+
 Modified `gx` mapping that can,
 
 - Go to heading based on Github-flavored/Gitlab-flavored links(e.g. `#-integrations` for `🎇 Integrations`).
