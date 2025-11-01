@@ -273,20 +273,28 @@ actions.splitview_render = function ()
 
 	---@type integer, integer
 	local pre_buf, pre_win = state.get_splitview_buffer(), state.get_splitview_window();
+	local pre_cursor = vim.api.nvim_win_get_cursor(pre_win);
+	local pre_line_count = vim.api.nvim_buf_line_count(pre_buf);
 
-	local R = actions.get_range(cursor[1], { max_lines, max_lines + 1 }, line_count);
-	local lines = vim.api.nvim_buf_get_lines(buffer, R[1], R[2], false);
+	local BR  = actions.get_range(cursor[1], { max_lines, max_lines + 1 }, line_count);
+	local SR = actions.get_range(pre_cursor[1], { max_lines, max_lines + 1 }, pre_line_count);
+
+	local lines = vim.api.nvim_buf_get_lines(buffer, BR[1], BR[2], false);
 
 	--[[
-		BUG: Calling `nvim_buf_set_lines()` with mismatch line-count causes issues.
+		BUG: Mismatch line count between `source buffer` & `preview buffer`.
 
-		This happens because id we are replacing 7 lines with 6 lines of text the 7th line doesn't get deleted.
-		FIX: Clear lines first than apply the updated text.
+		When deleting lines from the source buffer the line count will be different between th `source buffer` & the `preview buffer`.
+		This causes lines to not updated correctly in splitview.
+
+		FIX: Use 2 ranges.
+
+		One range is used for getting the lines from the `source buffer`.
+		Another range is used for getting which lines to clear in the `preview buffer`.
 
 		See #408
 	]]
-	vim.api.nvim_buf_set_lines(pre_buf, R[1], R[2], false, {});
-	vim.api.nvim_buf_set_lines(pre_buf, R[1], R[1], false, lines);
+	vim.api.nvim_buf_set_lines(pre_buf, SR[1], SR[2], false, lines);
 
 	pcall(vim.api.nvim_win_set_cursor, pre_win, cursor);
 
