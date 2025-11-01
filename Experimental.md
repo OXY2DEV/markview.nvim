@@ -84,7 +84,7 @@ date_formats = {
 
 ## prefer_nvim
 
-When `true`, opens **text files** inside of Neovim using [experimental.file_open_command]().
+When `true`, opens **text files** inside of Neovim using [experimental.file_open_command](https://github.com/OXY2DEV/markview.nvim/wiki/Experimental#file_open_command).
 
 ```lua
 prefer_nvim = false,
@@ -92,7 +92,7 @@ prefer_nvim = false,
 
 ## file_open_command
 
-The command used to open new files inside Neovim. [experimental.prefer_nvim]() must be enabled to use this.
+The command used to open new files inside Neovim. [experimental.prefer_nvim](https://github.com/OXY2DEV/markview.nvim/wiki/Experimental#prefer_nvim) must be enabled to use this.
 
 ```lua
 file_open_command = "tabnew",
@@ -100,7 +100,7 @@ file_open_command = "tabnew",
 
 ## list_empty_line_tolerance
 
-<!--IMAGE-->
+![demo](./images/markview.nvim-experimental.list_empty_line_tolerance.png)
 
 The maximum number of empty lines a list item can contain. Any more empty lines will cause the list item to end there.
 
@@ -110,7 +110,7 @@ list_empty_line_tolerance = 3,
 
 ## read_chunk_size
 
-Number of **bytes** to read from a file to check if it's a `text file`.[experimental.prefer_nvim]() must be enabled to use this.
+Number of **bytes** to read from a file to check if it's a `text file`.[experimental.prefer_nvim](https://github.com/OXY2DEV/markview.nvim/wiki/Experimental#prefer_nvim) must be enabled to use this.
 
 ```lua
 read_chunk_size = 1024,
