@@ -102,7 +102,7 @@ file_open_command = "tabnew",
 
 ![demo](./images/markview.nvim-experimental.list_empty_line_tolerance.png)
 
-The maximum number of empty lines a list item can contain. Any more empty lines will cause the list item to end there.
+Number of repeating empty lines needed to terminate a list item. Any non empty lines after them will not be considered part of the list item.
 
 ```lua
 list_empty_line_tolerance = 3,
@@ -118,7 +118,9 @@ read_chunk_size = 1024,
 
 ## linewise_ignore_org_indent
 
-<!--IMAGE-->
+>[!CAUTION]
+> **Deprecated**.
+> I couldn't find use for this option and thus this was deprecated.
 
 Prevents section indentations to be removed when using [markdown.headings.org_indent]().
 
