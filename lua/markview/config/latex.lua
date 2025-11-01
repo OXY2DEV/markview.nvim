@@ -7,7 +7,7 @@
 local operator = function (name, text_pos, cmd_conceal, cmd_hl)
 	return {
 		condition = function (item)
-			return #item.args == 1;
+			return #item.args <= 1;
 		end,
 
 		on_command = function (item)

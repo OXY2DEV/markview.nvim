@@ -505,7 +505,7 @@ latex.parse = function (buffer, TSTree, from, to)
 		((generic_command
 			.
 			command: (command_name)
-			(curly_group)+
+			(curly_group)*
 			) @latex.command)
 
 		((generic_command
