@@ -37,6 +37,8 @@ sub_commands.Toggle();
 
 The function name matches with the sub-command name(e.g. `sub_commands.splitToggle()` is the same as `:Markview splitToggle`).
 
+Functions/sub-commands that start with a small letter optionally take the `buffer` as a parameter.
+
 ## ✨ Using `markview.nvim` as a previewer
 
 You can use `markview` to render markdown & other filetypes in your plugins.
@@ -85,6 +87,7 @@ render:render(buffer, {
 Each buffer has the following states,
 
 ```lua from: ../lua/markview/types/markview.lua class: markview.state.buf
+--[[ Buffer state for `markview.nvim`. ]]
 ---@class markview.state.buf
 ---
 ---@field enable boolean Is the `preview` enabled?
