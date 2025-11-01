@@ -53,6 +53,7 @@ Configuration options for `markview.nvim`.
 - [🧩 Markdown](https://github.com/OXY2DEV/markview.nvim/wiki/Markdown)
 - [🧩 Markdown inline](https://github.com/OXY2DEV/markview.nvim/wiki/Markdown-inline)
 - [🧩 Preview](https://github.com/OXY2DEV/markview.nvim/wiki/Preview)
+- [💻 Renderers](https://github.com/OXY2DEV/markview.nvim/wiki/Renderers)
 - [🧩 Typst](https://github.com/OXY2DEV/markview.nvim/wiki/Typst)
 - [🧩 YAML](https://github.com/OXY2DEV/markview.nvim/wiki/YAML)
 <!--markdoc_ignore_end-->
