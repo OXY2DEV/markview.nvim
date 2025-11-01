@@ -63,7 +63,7 @@ vim.api.nvim_set_keymap("n", "<leader>s", "<CMD>Markview splitToggle<CR>", { des
 
 ------
 
-This is a collection of `configs` that,
+These examples are a bit more advanced as they,
 
 + Implement new features.
 + Extends existing features.
