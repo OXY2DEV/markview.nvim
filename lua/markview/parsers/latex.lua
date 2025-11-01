@@ -417,6 +417,15 @@ latex.symbol = function (_, TSNode, text, range)
 	local node = TSNode;
 	local style;
 
+	local symbols = require("markview.symbols");
+	local name = text[1]:sub(2);
+
+	if not symbols.entries[name] then
+		-- NOTE: If the TSNode is not not a valid symbol, treat it like a command(with 0 args).
+		latex.command(_, TSNode, text, range);
+		return;
+	end
+
 	while node do
 		if node:type() == "text_mode" then
 			return;
@@ -430,7 +439,7 @@ latex.symbol = function (_, TSNode, text, range)
 
 	latex.insert({
 		class = "latex_symbol",
-		name = text[1]:sub(2),
+		name = name,
 		style = style,
 
 		text = text,
@@ -481,39 +490,36 @@ latex.parse = function (buffer, TSTree, from, to)
 	local scanned_queries = vim.treesitter.query.parse("latex", [[
 		((curly_group) @latex.parenthesis)
 
-		([(operator) (word)] @latex.word
-			(#match? @latex.word "^[^\\\\]+$"))
+		([
+			(operator)
+			(word)
+		] @latex.word
+			(#lua-match? @latex.word "^[^\\]+$"))
 
 		((generic_command
 			.
-			command: (
-				((command_name) @escaped.name)
-				(#match? @escaped.name "^\\\\.$")
-			)
+			((command_name) @escaped.name
+				(#lua-match? @escaped.name "^\\.$"))
 			.
 			) @latex.escaped)
 
 		((generic_command
 			.
-			command: (
-				((command_name) @symbol.name)
-				(#match? @symbol.name "^\\\\[a-zA-Z]+$")
-			)
+			((command_name) @escaped.name
+				(#lua-match? @escaped.name "^\\[a-zA-Z]+$"))
 			.
 			) @latex.symbol)
 
 		((generic_command
 			.
-			command: (command_name)
-			(curly_group)*
+			(command_name)
+			(curly_group)+
 			) @latex.command)
 
 		((generic_command
 			.
-			command: (
-				(command_name) @font.cmd
-				(#match? @font.cmd "^\\\\math")
-			)
+			command: ((command_name) @escaped.name
+				(#lua-match? @escaped.name "^\\math"))
 			arg: (curly_group)
 			.
 			) @latex.font)
