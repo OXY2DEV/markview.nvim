@@ -54,7 +54,6 @@ These examples are a bit more advanced as they,
 --------------------------------------------------------------------------------
 📂 Header folding
 
-
 ▋  Important
 ▋ By default, `treesitter` folds a lot of things other than headings. This
 ▋ modifies the folding behavior.

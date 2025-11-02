@@ -2,7 +2,7 @@
 
 `markview.nvim` comes with a few extra QOL modules to make certain tasks easier.
 
-You can find these in the [lua/markview/extras/]() directory.
+You can find these in the lua/markview/extras/ {1} directory.
 
 --------------------------------------------------------------------------------
 📦 Checkbox toggle                               *markview.nvim-extras.checkbox*
@@ -141,5 +141,9 @@ It has the following sub-commands,
 
 ◆ `edit`
   Edits the code block under the cursor.
+
+Links ~
+
+1: https://github.com/OXY2DEV/markview.nvim/tree/main/lua/markview/extras
 
 vim:ft=help:textwidth=80:tabstop=4:noexpandtab:

@@ -115,7 +115,7 @@ linewise_ignore_org_indent
 ▋ I couldn't find use for this option and thus this was deprecated.
 
 Prevents section indentations to be removed when using
-[markdown.headings.org_indent]().
+markdown.headings.org_indent {4}.
 
 >lua
 	linewise_ignore_org_indent = false
@@ -126,6 +126,7 @@ Links ~
 1: https://github.com/OXY2DEV/markview.nvim/wiki/Experimental#file_open_command
 2: https://github.com/OXY2DEV/markview.nvim/wiki/Experimental#prefer_nvim
 3: https://github.com/OXY2DEV/markview.nvim/wiki/Experimental#prefer_nvim
+4: https://github.com/OXY2DEV/markview.nvim/wiki/Markdown#headings
 
 Images ~
 

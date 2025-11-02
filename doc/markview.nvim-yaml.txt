@@ -93,7 +93,6 @@ Changes how YAML properties are shown.
 	        hl = "MarkviewIcon3"
 	    },
 	
-	
 	    ["^publish$"] = {
 	        match_string = "^publish$",
 	        use_types = false,

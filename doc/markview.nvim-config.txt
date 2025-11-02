@@ -179,5 +179,4 @@ The configuration table has the following structure,
 	}
 <
 
-
 vim:ft=help:textwidth=80:tabstop=4:noexpandtab:

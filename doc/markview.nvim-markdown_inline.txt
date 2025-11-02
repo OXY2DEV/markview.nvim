@@ -238,7 +238,7 @@ emoji_shorthands                *markview.nvim-markdown_inline.emoji_shorthands*
 	---@field hl? string Highlight group for the emoji.
 <
 
-Changes how [github emojis]() are shown.
+Changes how github emojis {1} are shown.
 
 >lua
 	emoji_shorthands = {
@@ -828,5 +828,9 @@ Each uri autolinks type has the following options.
 >lua
 	---@alias markview.config.markdown_inline.uri_autolinks.opts markview.config.__inline
 <
+
+Links ~
+
+1: https://github.com/ikatyang/emoji-cheat-sheet/blob/master/README.md
 
 vim:ft=help:textwidth=80:tabstop=4:noexpandtab:

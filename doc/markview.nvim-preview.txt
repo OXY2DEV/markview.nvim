@@ -151,7 +151,6 @@ ignore_buftypes                          *markview.nvim-preview.ignore_buftypes*
 Buffer types to ignore. Useful to disable previews in LSP hover
 window/Completion window.
 
-
 --------------------------------------------------------------------------------
 raw_previews                                *markview.nvim-preview.raw_previews*
 

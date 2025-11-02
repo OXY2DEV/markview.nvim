@@ -21,7 +21,8 @@
         "markdown": {
             "link_url_modifiers": [
                 [ "^#%-extra%-modules", "|markview.nvim-extras|" ],
-                [ "^#%-presets", "|markview.nvim-presets|" ]
+                [ "^#%-presets", "|markview.nvim-presets|" ],
+                [ "/Usage$", "|markview.nvim-usage|" ]
             ],
             "list_items": {
                 "marker_minus": "◆",
@@ -453,7 +454,7 @@ Tagged releases can be found in the [release page](https://github.com/OXY2DEV/ma
 
 ## 🧭 Usage
 
-You can find more recipes [here]().
+You can find more usage recipes [here](https://github.com/OXY2DEV/markview.nvim/wiki/Usage).
 
 ## 🎇 Commands
 

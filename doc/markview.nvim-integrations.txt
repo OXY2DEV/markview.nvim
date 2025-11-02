@@ -1,7 +1,7 @@
 *markview.nvim-integrations*                 🎇 Integrations for `markview.nvim`
 
 `markview.nvim` provides integrations with the following plugins. You find these
-in [markview/integrations.lua]().
+in markview/integrations.lua {1}.
 
 --------------------------------------------------------------------------------
 📦 blink.cmp                              *markview.nvim-integrations.blink-cmp*
@@ -24,7 +24,7 @@ Modified `gx` mapping that can,
 ◆ Go to heading based on Github-flavored/Gitlab-flavored links(e.g.
   `#-integrations` for `🎇 Integrations`).
 ◆ Open files inside Neovim using some command(e.g. `:tabnew`). Requires
-  [experimental.use_nvim]() to `true`.
+  experimental.prefer_nvim {2} to `true`.
 
 --------------------------------------------------------------------------------
 📦 nvim-cmp
@@ -44,11 +44,13 @@ Demo {img:1}
 
 You can use `markview.nvim` to prettify the LSP hover window.
 
-You can see an example here {1}.
+You can see an example here {3}.
 
 Links ~
 
-1: https://gist.github.com/OXY2DEV/645c90df32095a8a397735d0be646452
+1: https://github.com/OXY2DEV/markview.nvim/wiki/Integrations
+2: https://github.com/OXY2DEV/markview.nvim/wiki/Experimental#prefer_nvim
+3: https://gist.github.com/OXY2DEV/645c90df32095a8a397735d0be646452
 
 Images ~
 

@@ -68,6 +68,7 @@ markview.nvim-markdown_inline.images	markview.nvim-markdown_inline.txt	/*markvie
 markview.nvim-markdown_inline.inline_codes	markview.nvim-markdown_inline.txt	/*markview.nvim-markdown_inline.inline_codes*
 markview.nvim-markdown_inline.internal_links	markview.nvim-markdown_inline.txt	/*markview.nvim-markdown_inline.internal_links*
 markview.nvim-markdown_inline.uri_autolinks	markview.nvim-markdown_inline.txt	/*markview.nvim-markdown_inline.uri_autolinks*
+markview.nvim-presets	markview.nvim-presets.txt	/*markview.nvim-presets*
 markview.nvim-preview	markview.nvim-preview.txt	/*markview.nvim-preview*
 markview.nvim-preview.callbacks	markview.nvim-preview.txt	/*markview.nvim-preview.callbacks*
 markview.nvim-preview.condition	markview.nvim-preview.txt	/*markview.nvim-preview.condition*

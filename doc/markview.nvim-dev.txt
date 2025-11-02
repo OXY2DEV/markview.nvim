@@ -72,7 +72,6 @@ If you don't need stuff like `hybrid mode` in your preview you can disable them 
 Each buffer has the following states,
 
 >lua
-	--[[ Buffer state for `markview.nvim`. ]]
 	---@class markview.state.buf
 	---
 	---@field enable boolean Is the `preview` enabled?

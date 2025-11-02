@@ -1,0 +1,181 @@
+*markview.nvim-presets*                           💡 Presets for `markview.nvim`
+
+Pre-defined configurations to take inspiration from.
+
+--------------------------------------------------------------------------------
+🔩 Usage
+
+>lua
+	local presets = require("markview.presets");
+	
+	require("markview").setup({
+	    markdown = {
+	        headings = presets.headings.glow
+	    }
+	});
+	
+	--- You can again call `setup()` to modify
+	--- the options without changing the preset.
+	require("markview").setup({
+	    markdown = {
+	        headings = { shift_width = 1 }
+	    }
+	});
+<
+
+--------------------------------------------------------------------------------
+🔖 Heading presets
+
+📚 Usage: ~
+
+>lua
+	local presets = require("markview.presets").headings;
+	
+	require("markview").setup({
+	    markdown = {
+	        headings = presets.glow
+	    }
+	});
+<
+
+🌟 Showcase: ~
+
+◆ glow
+
+Image {img:1}
+
+◆ glow_center
+
+Image {img:2}
+
+◆ slanted
+
+Image {img:3}
+
+◆ arrowed
+
+Image {img:4}
+
+◆ simple
+
+Image {img:5}
+
+◆ marker
+
+Image {img:6}
+
+--------------------------------------------------------------------------------
+🔖 Horizontal rules presets
+
+📚 Usage: ~
+
+>lua
+	local presets = require("markview.horizontal_rules").horizontal_rules;
+	
+	require("markview").setup({
+	    markdown = {
+	        horizontal_rules = presets.arrowed
+	    }
+	});
+<
+
+🌟 Showcase: ~
+
+◆ thin
+
+Image {img:7}
+
+◆ thick
+
+Image {img:8}
+
+◆ double
+
+Image {img:9}
+
+◆ dashed
+
+Image {img:10}
+
+◆ dotted
+
+Image {img:11}
+
+◆ solid
+
+Image {img:12}
+
+◆ arrowed
+
+Image {img:13}
+
+--------------------------------------------------------------------------------
+🔖 Tables presets
+
+📚 Usage: ~
+
+>lua
+	local presets = require("markview.presets").tables;
+	
+	require("markview").setup({
+	    markdown = {
+	        tables = presets.none
+	    }
+	});
+<
+
+🌟 Showcase: ~
+
+◆ none
+
+Image {img:14}
+
+◆ single
+
+Image {img:15}
+
+◆ double
+
+Image {img:16}
+
+◆ rounded
+
+Image {img:17}
+
+◆ solid
+
+Image {img:18}
+
+--------------------------------------------------------------------------------
+🔖 No nerd fonts presets
+
+📚 Usage: ~
+
+>lua
+	local presets = require("markview.presets");
+	
+	require("markview").setup(presets.no_nerd_fonts);
+<
+
+Images ~
+
+1: https://github.com/OXY2DEV/markview.nvim/blob/images/v25/wiki/presets-headings.glow.png
+2: https://github.com/OXY2DEV/markview.nvim/blob/images/v25/wiki/presets-headings.glow_center.png
+3: https://github.com/OXY2DEV/markview.nvim/blob/images/v25/wiki/presets-headings.slanted.png
+4: https://github.com/OXY2DEV/markview.nvim/blob/images/v25/wiki/presets-headings.arrowed.png
+5: https://github.com/OXY2DEV/markview.nvim/blob/images/v25/wiki/presets-headings.simple.png
+6: https://github.com/OXY2DEV/markview.nvim/blob/images/v25/wiki/presets-headings.marker.png
+7: https://github.com/OXY2DEV/markview.nvim/blob/images/v25/wiki/presets-hr.thin.png
+8: https://github.com/OXY2DEV/markview.nvim/blob/images/v25/wiki/presets-hr.thick.png
+9: https://github.com/OXY2DEV/markview.nvim/blob/images/v25/wiki/presets-hr.double.png
+10: https://github.com/OXY2DEV/markview.nvim/blob/images/v25/wiki/presets-hr.dashed.png
+11: https://github.com/OXY2DEV/markview.nvim/blob/images/v25/wiki/presets-hr.dotted.png
+12: https://github.com/OXY2DEV/markview.nvim/blob/images/v25/wiki/presets-hr.solid.png
+13: https://github.com/OXY2DEV/markview.nvim/blob/images/v25/wiki/presets-hr.arrowed.png
+14: https://github.com/OXY2DEV/markview.nvim/blob/images/v25/wiki/presets-tables.none.png
+15: https://github.com/OXY2DEV/markview.nvim/blob/images/v25/wiki/presets-tables.single.png
+16: https://github.com/OXY2DEV/markview.nvim/blob/images/v25/wiki/presets-tables.double.png
+17: https://github.com/OXY2DEV/markview.nvim/blob/images/v25/wiki/presets-tables.rounded.png
+18: https://github.com/OXY2DEV/markview.nvim/blob/images/v25/wiki/presets-tables.solid.png
+
+vim:ft=help:textwidth=80:tabstop=4:noexpandtab:

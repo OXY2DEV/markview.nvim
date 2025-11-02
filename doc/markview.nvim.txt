@@ -399,7 +399,7 @@ Tagged releases can be found in the release page {6}.
 --------------------------------------------------------------------------------
 🧭 Usage
 
-You can find more recipes [here]().
+You can find more usage recipes here {7}.
 
 --------------------------------------------------------------------------------
 🎇 Commands                                             *markview.nvim-commands*
@@ -543,6 +543,7 @@ Links ~
 4: https://github.com/nvim-mini/mini.icons
 5: https://github.com/nvim-tree/nvim-web-devicons
 6: https://github.com/OXY2DEV/markview.nvim/releases
+7: |markview.nvim-usage|
 
 Images ~
 
