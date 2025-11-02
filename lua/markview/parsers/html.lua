@@ -117,7 +117,7 @@ html.parse = function (buffer, TSTree, from, to)
 			(start_tag
 				(
 					((tag_name) @heading.name)
-					(#match? @heading.name "^[hH][0-6]$")
+					(#lua-match? @heading.name "^[hH][0-6]$")
 				) @heading.start)
 			(end_tag
 				(

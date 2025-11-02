@@ -130,7 +130,6 @@ inline.emojis = function (_, TSNode, text, range)
 		parent = parent:parent();
 	end
 
-	local utils = require("markview.utils");
 	local lines = text;
 
 	for l, line in ipairs(lines) do
@@ -222,7 +221,6 @@ inline.highlights = function (_, TSNode, text, range)
 		parent = parent:parent();
 	end
 
-	local utils = require("markview.utils");
 	local lines = text;
 
 	for l, line in ipairs(lines) do
@@ -520,7 +518,7 @@ inline.parse = function (buffer, TSTree, from, to)
 	local pre_queries = vim.treesitter.query.parse("markdown_inline", [[
 		(
 			(shortcut_link) @markdown_inline.checkbox
-			(#match? @markdown_inline.checkbox "^\\[.\\]$")) ; Fix the match pattern to match literal [ & ]
+			(#lua-match? @markdown_inline.checkbox "^%[.%]$")) ; Fix the match pattern to match literal [ & ]
 	]]);
 
 	for capture_id, capture_node, _, _ in pre_queries:iter_captures(TSTree:root(), buffer, from, to) do
@@ -540,10 +538,10 @@ inline.parse = function (buffer, TSTree, from, to)
 
 	local scanned_queries = vim.treesitter.query.parse("markdown_inline", [[
 		((inline) @markdown_inline.highlights
-			(#match? @markdown_inline.highlights "\\=\\=.+\\=\\="))
+			(#lua-match? @markdown_inline.highlights "==.+=="))
 
 		((inline) @markdown_inline.emojis
-			(#match? @markdown_inline.emojis "\\:.+\\:"))
+			(#lua-match? @markdown_inline.emojis ":.+:"))
 
 		((email_autolink) @markdown_inline.email)
 
@@ -559,7 +557,7 @@ inline.parse = function (buffer, TSTree, from, to)
 
 		((shortcut_link
 			(link_text) @footnote.text
-			(#match? @footnote.text "^\\^")) @markdown_inline.footnote)
+			(#lua-match? @footnote.text "^%^")) @markdown_inline.footnote)
 
 		((shortcut_link) @markdown_inline.shortcut_link)
 
