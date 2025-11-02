@@ -301,13 +301,8 @@ spec.get = function (keys, opts)
 			return val;
 		end
 
-		args = args or {};
-
-		if pcall(val, unpack(args)) then
-			return val(unpack(args));
-		else
-			return nil;
-		end
+		local ok, res = pcall(val, unpack(args or {}));
+		return ok and res or nil;
 	end
 
 	---@param index integer | string
