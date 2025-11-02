@@ -164,6 +164,12 @@ require("markview").setup({
 
 ## 🔖 No nerd fonts presets
 
+
+| Nerd fonts | No nerd fonts |
+|------------|---------------|
+| ![nerd fonts](./images/markview.nvim-nerd_fonts.png) | ![no nerd fonts](./images/markview.nvim-no_nerd_fonts.png) |
+
+
 ### 📚 Usage:
 
 ```lua
