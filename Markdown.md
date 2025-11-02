@@ -430,6 +430,7 @@ You can also add line specific styles for different languages. Such as this one 
 Each language has the following options.
 
 ```lua from: ../lua/markview/types/renderers/markdown.lua class: markview.config.markdown.code_blocks.opts
+--[[ Configuration for highlighting `lines` inside a code block. ]]
 ---@class markview.config.markdown.code_blocks.opts
 ---
 ---@field block_hl
@@ -1174,6 +1175,16 @@ Each link type has the following options.
 Changes how tables are shown.
 
 ![Demo](./images/markdown/markview.nvim-markdown.tables.png)
+
+>{!IMPORTANT]
+> When using `wrap`, tables are partially rendered to prevent text wrapping issues.
+> This is not a bug.
+
+
+| `wrap = true` | `wrap = false` |
+|---------------|----------------|
+| ![wrap](https://github.com/OXY2DEV/markview.nvim/blob/images/v27/markview.nvim-wrap.png) | ![nowrap](https://github.com/OXY2DEV/markview.nvim/blob/images/v27/markview.nvim-nowrap.png) |
+
 
 ```lua
 tables = {
