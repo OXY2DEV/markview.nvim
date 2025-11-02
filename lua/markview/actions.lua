@@ -610,7 +610,6 @@ actions.disable = function (buffer)
 	if state.buf_attached(buffer) == false then
 		return;
 	elseif state.get_splitview_source() == buffer then
-		state.enable(false);
 		return;
 	end
 
