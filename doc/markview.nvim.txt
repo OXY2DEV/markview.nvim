@@ -1,6 +1,14 @@
 *markview.nvim*       ☄️ A hackable `Markdown`, `LaTeX`, `Typst` etc. previewer.
 
-                    Image {img:3} Image {img:2} Image {img:1}                   
+                                  Image {img:1}                                 
+
+╭─────────────────┬──────────────────╮
+│ `:set wrap`     │ `:set nowrap`    │
+├─────────────────┼──────────────────┤
+│ wrap {img:2}    │ nowrap {img:3}   │
+╰─────────────────┴──────────────────╯
+
+                           Image {img:5} Image {img:4}                          
 
                   📚 Wiki {3} | 🧩 Extras {2} | 📦 Presets {1}                  
 
@@ -30,7 +38,7 @@ Table of contents
 
 HTML, ~
 
-Image {img:4}
+Image {img:6}
 
 ◇ Customizable previews for `container` & `void` elements.
 ◇ Supports the following container elements out of the box,
@@ -54,7 +62,7 @@ Image {img:4}
 
 LaTeX, ~
 
-Image {img:5}
+Image {img:7}
 
 ◇ Supports basic LaTeX syntax,
     ◇ Math blocks(typically `$$...$$`) & inline math(typically `$...$`).
@@ -124,7 +132,7 @@ Image {img:5}
 
 Markdown, ~
 
-Image {img:6}
+Image {img:8}
 
 ◇ Supports basic markdown(Github-flavored) syntax,
     ◇ Block quotes(with support for `callouts` & titles).
@@ -153,7 +161,7 @@ Image {img:6}
 
 ◇ `Org-mode` like indentation for headings.
 
-Image {img:7}
+Image {img:9}
 
 ◇ Obsidian/PKM extended syntax support,
     ◇ Block reference links.
@@ -169,7 +177,7 @@ Image {img:7}
 
 Typst, ~
 
-Image {img:8}
+Image {img:10}
 
 ◇ Supports the following items,
     ◇ Code blocks.
@@ -197,7 +205,7 @@ Image {img:8}
 
 YAML, ~
 
-Image {img:9}
+Image {img:11}
 
 ◇ Custom property icons.
 ◇ Custom property scope decorations.
@@ -220,8 +228,8 @@ Hybrid mode ~
 ╭──────────────────────┬──────────────────────╮
 │ Normal hybrid mode   │ Linewise hybrid mode │
 ├──────────────────────┼──────────────────────┤
-│ hybrid_mode {img:10} │ linewise_hybrid_mode │
-│                      │ {img:11}             │
+│ hybrid_mode {img:12} │ linewise_hybrid_mode │
+│                      │ {img:13}             │
 ╰──────────────────────┴──────────────────────╯
 
 ◇ Node-based edit range(default).
@@ -245,7 +253,7 @@ Internal Icon provider features,
 ◇ 708 different filetype configuration.
 ◇ Dynamic highlight groups for matching the colorscheme.
 
-Image {img:12}
+Image {img:14}
 
 ◇ You can use `:Markview traceShow` to see what the plugin has been
   doing(including how long some of them took).
@@ -547,17 +555,19 @@ Links ~
 
 Images ~
 
-1: https://github.com/OXY2DEV/markview.nvim/blob/images/v27/markview.nvim-hybrid_mode.png
-2: https://github.com/OXY2DEV/markview.nvim/blob/images/v27/markview.nvim-splitview_2.png
-3: https://github.com/OXY2DEV/markview.nvim/blob/images/v27/markview.nvim-splitview.png
-4: https://github.com/OXY2DEV/markview.nvim/blob/images/v25/repo/html-tokyonight_night.png
-5: https://github.com/OXY2DEV/markview.nvim/blob/images/v25/repo/latex-cyberdream.png
-6: https://github.com/OXY2DEV/markview.nvim/blob/images/v25/repo/markdown-catppuccin_mocha.png
-7: https://github.com/OXY2DEV/markview.nvim/blob/images/v25/repo/markdown_inline-nightfly.png
-8: https://github.com/OXY2DEV/markview.nvim/blob/images/v25/repo/typst-kanagawa_wave.png
-9: https://github.com/OXY2DEV/markview.nvim/blob/images/v25/repo/yaml-material_palenight.png
-10: https://github.com/OXY2DEV/markview.nvim/blob/images/v25/wiki/hybrid_mode.png
-11: https://github.com/OXY2DEV/markview.nvim/blob/images/v25/wiki/linewise_hybrid_mode.png
-12: https://github.com/OXY2DEV/markview.nvim/blob/images/v25/repo/traceback.png
+1: https://github.com/OXY2DEV/markview.nvim/blob/images/v27/markview.nvim-splitview.png
+2: https://github.com/OXY2DEV/markview.nvim/blob/images/v27/markview.nvim-wrap.png
+3: https://github.com/OXY2DEV/markview.nvim/blob/images/v27/markview.nvim-nowrap.png
+4: https://github.com/OXY2DEV/markview.nvim/blob/images/v27/markview.nvim-hybrid_mode.png
+5: https://github.com/OXY2DEV/markview.nvim/blob/images/v27/markview.nvim-splitview_2.png
+6: https://github.com/OXY2DEV/markview.nvim/blob/images/v25/repo/html-tokyonight_night.png
+7: https://github.com/OXY2DEV/markview.nvim/blob/images/v25/repo/latex-cyberdream.png
+8: https://github.com/OXY2DEV/markview.nvim/blob/images/v25/repo/markdown-catppuccin_mocha.png
+9: https://github.com/OXY2DEV/markview.nvim/blob/images/v25/repo/markdown_inline-nightfly.png
+10: https://github.com/OXY2DEV/markview.nvim/blob/images/v25/repo/typst-kanagawa_wave.png
+11: https://github.com/OXY2DEV/markview.nvim/blob/images/v25/repo/yaml-material_palenight.png
+12: https://github.com/OXY2DEV/markview.nvim/blob/images/v25/wiki/hybrid_mode.png
+13: https://github.com/OXY2DEV/markview.nvim/blob/images/v25/wiki/linewise_hybrid_mode.png
+14: https://github.com/OXY2DEV/markview.nvim/blob/images/v25/repo/traceback.png
 
 vim:ft=help:textwidth=80:tabstop=4:noexpandtab:

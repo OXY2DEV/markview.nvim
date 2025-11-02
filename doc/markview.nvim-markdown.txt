@@ -401,6 +401,7 @@ for diff files.
 Each language has the following options.
 
 >lua
+	--[[ Configuration for highlighting `lines` inside a code block. ]]
 	---@class markview.config.markdown.code_blocks.opts
 	---
 	---@field block_hl
@@ -1159,6 +1160,16 @@ Changes how tables are shown.
 
 Demo {img:3}
 
+▋{!IMPORTANT]
+▋ When using `wrap`, tables are partially rendered to prevent text wrapping issues.
+▋ This is not a bug.
+
+╭─────────────────┬──────────────────╮
+│ `wrap = true`   │ `wrap = false`   │
+├─────────────────┼──────────────────┤
+│ wrap {img:4}    │ nowrap {img:5}   │
+╰─────────────────┴──────────────────╯
+
 >lua
 	tables = {
 	    enable = true,
@@ -1221,5 +1232,7 @@ Images ~
 1: ./images/markdown/markview.nvim-markdown.block_quotes.png
 2: ./images/markdown/markview.nvim-markdown.code_blocks.png
 3: ./images/markdown/markview.nvim-markdown.tables.png
+4: https://github.com/OXY2DEV/markview.nvim/blob/images/v27/markview.nvim-wrap.png
+5: https://github.com/OXY2DEV/markview.nvim/blob/images/v27/markview.nvim-nowrap.png
 
 vim:ft=help:textwidth=80:tabstop=4:noexpandtab:

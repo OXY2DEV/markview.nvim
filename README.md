@@ -55,7 +55,7 @@
 </div>
 
 
-| `:set wrap = true` | `:set wrap = false` |
+| `:set wrap` | `:set nowrap` |
 |---------------|----------------|
 | ![wrap](https://github.com/OXY2DEV/markview.nvim/blob/images/v27/markview.nvim-wrap.png) | ![nowrap](https://github.com/OXY2DEV/markview.nvim/blob/images/v27/markview.nvim-nowrap.png) |
 
