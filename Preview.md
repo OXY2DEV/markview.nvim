@@ -234,6 +234,10 @@ Modes where `hybrid mode` will be shown.
 >[!IMPORTANT]
 > The mode must also be preset in [modes](#modes) for this to take effect!
 
+| `hybrid_modes = { "n" }` | `hybrid_modes = {}` |
+|--------------------------|----------------------|
+| ![hybrid_modes](./images/preview/markview.nvim-preview.hybrid_modes.png) | ![no hybrid_modess](./images/preview/markview.nvim-preview.nohybrid_modes.png) |
+
 ## linewise_hybrid_mode
 
 ```lua
