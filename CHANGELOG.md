@@ -1,5 +1,76 @@
 # Changelog
 
+## [27.0.0](https://github.com/OXY2DEV/markview.nvim/compare/v26.0.1...v27.0.0) (2025-11-02)
+
+
+### ⚠ BREAKING CHANGES
+
+* **commands:** Migrated `commands` to their own sub-module
+* Moved `plugin/markview.lua` into separate sub-modules
+* Removed deprecated `commands`
+
+### Features
+
+* **config, html:** Added support for `<kbd></kbd>` ([22c1c8e](https://github.com/OXY2DEV/markview.nvim/commit/22c1c8ef1422b00360273722ad305a747bd4369b)), closes [#402](https://github.com/OXY2DEV/markview.nvim/issues/402)
+* **html:** Added more tag support ([77d07ca](https://github.com/OXY2DEV/markview.nvim/commit/77d07ca5669836fa3e43d308b2b33d7e613fc331))
+* **latex, commands:** Allow LTeX commands to optionally have 0 args ([86857db](https://github.com/OXY2DEV/markview.nvim/commit/86857db3ef74b2b4af50aafd0c0ea5f50b43f2e2))
+* **latex:** 0 arg commamds support added ([b3e7b53](https://github.com/OXY2DEV/markview.nvim/commit/b3e7b53f3bbf1f903899142e5b85dabf8b605e86))
+* **links:** Added ability to switch to sections in another file ([a56331c](https://github.com/OXY2DEV/markview.nvim/commit/a56331cb95360208de7505b9ab09f9be8cd5ce91)), closes [#410](https://github.com/OXY2DEV/markview.nvim/issues/410)
+* **links:** Added basic link parser ([a9f471c](https://github.com/OXY2DEV/markview.nvim/commit/a9f471cb926156c457db86b7cac0a043f04109a8)), closes [#410](https://github.com/OXY2DEV/markview.nvim/issues/410)
+* **links:** Added Github styled heading link(section link) support ([a17a33a](https://github.com/OXY2DEV/markview.nvim/commit/a17a33a86fcfdcdc285444ce1db55afd99f33e4d)), closes [#410](https://github.com/OXY2DEV/markview.nvim/issues/410)
+* **links:** Fragment links now update the `jumplist` ([79f1049](https://github.com/OXY2DEV/markview.nvim/commit/79f1049f2de5735c217406efd42e40041b2d9e19)), closes [#410](https://github.com/OXY2DEV/markview.nvim/issues/410)
+* **markdown:** Added basic support indented code blocks ([3720ca2](https://github.com/OXY2DEV/markview.nvim/commit/3720ca20375f1aca4519df0863343d610bbcac57))
+* **presets:** Added new heading presets ([6569360](https://github.com/OXY2DEV/markview.nvim/commit/6569360b4c888c4bdca7fbb4acc5aa5cb4f264c4))
+* **renderer_markdown:** Added `org_indent` support for `setext_headings` ([18a6a87](https://github.com/OXY2DEV/markview.nvim/commit/18a6a87fe91b476141ae9c96b3a3404fcaf76e78)), closes [#409](https://github.com/OXY2DEV/markview.nvim/issues/409)
+* **renderer_markdown:** Added custom text support for numbered list items ([c18fa7a](https://github.com/OXY2DEV/markview.nvim/commit/c18fa7af2cb42aee4b371af7daa5b25e0b33a0ab)), closes [#412](https://github.com/OXY2DEV/markview.nvim/issues/412)
+* **renderer_markdown:** Added support for `shift_width` in ([18a6a87](https://github.com/OXY2DEV/markview.nvim/commit/18a6a87fe91b476141ae9c96b3a3404fcaf76e78))
+
+
+### Bug Fixes
+
+* **actions, splitview:** Splitview preview buffer is now correctly updated ([cba2ff7](https://github.com/OXY2DEV/markview.nvim/commit/cba2ff7ca63287fa415cbe25129ec79064fe008b))
+* **actions:** Fixed filetype for splitview buffer ([0344b6a](https://github.com/OXY2DEV/markview.nvim/commit/0344b6a24771accb8ba40ef627b53a9d06e6875f))
+* **actions:** Hybrid mode is now handled correctly ([c3be7ad](https://github.com/OXY2DEV/markview.nvim/commit/c3be7ad20526fd28e9e77f4fc97988723c051928))
+* **actions:** Splitview source is now correctly removed ([a3c536e](https://github.com/OXY2DEV/markview.nvim/commit/a3c536e55999cbb6b423628366d19bee441798ef))
+* **core:** Fixed how `clean()` works ([eb8c8a1](https://github.com/OXY2DEV/markview.nvim/commit/eb8c8a1fe4499b4fe0bdce30c926e60680ab2d28))
+* **core:** Update queries when filw is changed outside of Neovim ([c93ea99](https://github.com/OXY2DEV/markview.nvim/commit/c93ea99d96b4bfda5b7c7d0dfca9c26edf6e78f0)), closes [#419](https://github.com/OXY2DEV/markview.nvim/issues/419)
+* **filetypes:** Fixed an issue with internal icon provider ([b2a1a0a](https://github.com/OXY2DEV/markview.nvim/commit/b2a1a0abe36a9a82b974dedba2e4a45314919e27))
+* Fixed incorrect `org_indent` amount ([2374bc2](https://github.com/OXY2DEV/markview.nvim/commit/2374bc2d92dc8ba63b9981410766493e66085042)), closes [#409](https://github.com/OXY2DEV/markview.nvim/issues/409)
+* **gx, links:** `🧩` is removed from fragment links ([fd3320f](https://github.com/OXY2DEV/markview.nvim/commit/fd3320f483c325474202de8ec51223f886c6ae49))
+* **highlights:** Added background to `MarkviewInlineCode` highlight group ([2438138](https://github.com/OXY2DEV/markview.nvim/commit/243813809e07a44beef34f900fec29fa36b9317f))
+* **highlights:** Fixed highlight for `MarkviewCodeInfo` ([2ddad87](https://github.com/OXY2DEV/markview.nvim/commit/2ddad873796139c131e306f28534cc4f34416a77)), closes [#416](https://github.com/OXY2DEV/markview.nvim/issues/416)
+* **hybrid_mode:** Fixed how `raw_previews` is parsed ([34787bc](https://github.com/OXY2DEV/markview.nvim/commit/34787bc913f2448aacf9739df479724e662f899d))
+* **lazy:** Fixed an issue with lazy-loading ([de79a76](https://github.com/OXY2DEV/markview.nvim/commit/de79a7626d54d7785436105ef72f37ee8fe8fa16)), closes [#403](https://github.com/OXY2DEV/markview.nvim/issues/403)
+* **lazy:** Fixed logic for detecting lazy-loading ([1c57e6a](https://github.com/OXY2DEV/markview.nvim/commit/1c57e6af9482e7fe839c7bdc2e6a06259dbc4c75))
+* **links:** Fixed mismatch types ([4a460b3](https://github.com/OXY2DEV/markview.nvim/commit/4a460b31fa7014c055e9533dce150af594d75306)), closes [#410](https://github.com/OXY2DEV/markview.nvim/issues/410)
+* **links:** Various improvements to link parsing ([a56331c](https://github.com/OXY2DEV/markview.nvim/commit/a56331cb95360208de7505b9ab09f9be8cd5ce91))
+* **org_indent:** Fixed incorrect range issues with `setext_heading`s ([89405b5](https://github.com/OXY2DEV/markview.nvim/commit/89405b50375795202163400c4a04ad2fde81698d)), closes [#407](https://github.com/OXY2DEV/markview.nvim/issues/407)
+* **org_indent:** Tweaked section range calculation for `setext_heading` ([a3c43a2](https://github.com/OXY2DEV/markview.nvim/commit/a3c43a2b8413313c24bb2ae603b715fee37b2efb)), closes [#407](https://github.com/OXY2DEV/markview.nvim/issues/407)
+* **parswr_markdown:** Fixed a bug causing incorrect conceal for code block delimiters ([2f5d568](https://github.com/OXY2DEV/markview.nvim/commit/2f5d568937111968ea9d8aa9d77640979a84792d)), closes [#417](https://github.com/OXY2DEV/markview.nvim/issues/417)
+* **renderer_markdown:** Fixed a bug with incorrect highlight range for `code_blocks` ([8c6d294](https://github.com/OXY2DEV/markview.nvim/commit/8c6d294d3d6a59f892c131d76f699b0696a25467)), closes [#413](https://github.com/OXY2DEV/markview.nvim/issues/413)
+* **renderer_markdown:** Fixed highlight issues with tables ([6616796](https://github.com/OXY2DEV/markview.nvim/commit/6616796739c1a3ee002281b4980593158e81f30e)), closes [#407](https://github.com/OXY2DEV/markview.nvim/issues/407)
+* **renderer_markdown:** Fixed incorrect shift amount & org_indent in renders ([7fb8978](https://github.com/OXY2DEV/markview.nvim/commit/7fb897845c88f61fda9ce014af916d2a55466d8b))
+* **spec:** Fixed icon for anchor tags ([d8b1ba4](https://github.com/OXY2DEV/markview.nvim/commit/d8b1ba41c40d35727b279233a3d16a41ccd11c49))
+* **splitview:** `list` & `winhl` are now disabled in `splitview` ([6cdbe74](https://github.com/OXY2DEV/markview.nvim/commit/6cdbe7455886520d9113753599052fec1c4548f8))
+* **splitview:** Disabled `number` & `relativenumber` for splutview ([587005b](https://github.com/OXY2DEV/markview.nvim/commit/587005bb987f01467aa46f14c12911f81d23364e))
+* **splitview:** Fixed an issue with queries not being applied to splitview window ([587005b](https://github.com/OXY2DEV/markview.nvim/commit/587005bb987f01467aa46f14c12911f81d23364e))
+* **splitview:** Fixed incorrect text updating ([7acfc92](https://github.com/OXY2DEV/markview.nvim/commit/7acfc92e693601579207456eb89e30753b179e6d)), closes [#408](https://github.com/OXY2DEV/markview.nvim/issues/408)
+* **state:** `enable()` now works correctly ([7e6b408](https://github.com/OXY2DEV/markview.nvim/commit/7e6b408fd3984aff0385c92b53499c25d47cc687))
+* **state:** Fixed a bug causing stack overflow ([7c162d3](https://github.com/OXY2DEV/markview.nvim/commit/7c162d3374756b4f5986e76ce903732f2d665ceb))
+* **wrap:** Fixed incorrect wrapping when called on non-current window ([2b04e70](https://github.com/OXY2DEV/markview.nvim/commit/2b04e707524c2a9eee17ba652c479610551e894a))
+
+
+### Reverts
+
+* **actions:** Reverted action name changes ([30f1e33](https://github.com/OXY2DEV/markview.nvim/commit/30f1e33e9f24510487ff27ecf6797bc360bfb623))
+
+
+### Code Refactoring
+
+* **commands:** Migrated `commands` to their own sub-module ([c3ce771](https://github.com/OXY2DEV/markview.nvim/commit/c3ce7719d7ec8c76a119bd05c01b2c4b1b4a6d65))
+* Moved `plugin/markview.lua` into separate sub-modules ([1401a85](https://github.com/OXY2DEV/markview.nvim/commit/1401a85d28fe3eb516739b2a85b2a7eac603214d))
+* Removed deprecated `commands` ([6d8c009](https://github.com/OXY2DEV/markview.nvim/commit/6d8c0098402b0db79a4879b7b56678db2cd7ad25))
+
 ## [26.0.1](https://github.com/OXY2DEV/markview.nvim/compare/v26.0.0...v26.0.1) (2025-09-30)
 
 
