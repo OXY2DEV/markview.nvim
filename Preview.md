@@ -246,6 +246,10 @@ linewise_hybrid_mode = false,
 
 Enables `linewise` hybrid mode. [edit_range](#edit_range) is used to control the number of lines to clear around each cursor.
 
+| `linewise_hybrid_mode = true` | `linewise_hybrid_mode = false` |
+|--------------------------|----------------------|
+| ![linewise_hybrid_mode](./images/preview/markview.nvim-preview.linewise_hybrid_mode.png) | ![no linewise_hybrid_mode](./images/preview/markview.nvim-preview.hybrid_modes.png) |
+
 ## max_buf_lines
 
 ```lua
