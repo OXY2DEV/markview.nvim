@@ -1,4 +1,24 @@
+<!--markdoc
+    {
+        "generic": {
+            "filename": "../doc/markview.nvim-presets.txt",
+            "force_write": true,
+            "header": {
+                "desc": "💡 Presets for `markview.nvim`",
+                "tag": "markview.nvim-presets"
+            }
+        },
+        "markdown": {
+            "list_items": {
+                "marker_minus": "◆",
+                "marker_plus": "◇"
+            }
+        }
+    }
+-->
+<!--markdoc_ignore_start-->
 # 💡 Presets
+<!--markdoc_ignore_end-->
 
 Pre-defined configurations to take inspiration from.
 

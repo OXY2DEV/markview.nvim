@@ -26,7 +26,7 @@
 # 🎇 Integrations
 <!--markdoc_ignore_end-->
 
-`markview.nvim` provides integrations with the following plugins. You find these in [markview/integrations.lua]().
+`markview.nvim` provides integrations with the following plugins. You find these in [markview/integrations.lua](https://github.com/OXY2DEV/markview.nvim/wiki/Integrations).
 
 ## 📦 blink.cmp
 
@@ -45,7 +45,7 @@ https://github.com/user-attachments/assets/2b8de549-e429-4be5-ba3a-f7f9a12ce5f2
 Modified `gx` mapping that can,
 
 - Go to heading based on Github-flavored/Gitlab-flavored links(e.g. `#-integrations` for `🎇 Integrations`).
-- Open files inside Neovim using some command(e.g. `:tabnew`). Requires [experimental.use_nvim]() to `true`.
+- Open files inside Neovim using some command(e.g. `:tabnew`). Requires [experimental.prefer_nvim](https://github.com/OXY2DEV/markview.nvim/wiki/Experimental#prefer_nvim) to `true`.
 
 ## 📦 nvim-cmp
 

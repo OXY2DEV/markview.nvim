@@ -269,7 +269,7 @@ Each embed file types have these options.
 ---@field hl? string Highlight group for the emoji.
 ```
 
-Changes how [github emojis]() are shown.
+Changes how [github emojis](https://github.com/ikatyang/emoji-cheat-sheet/blob/master/README.md) are shown.
 
 ```lua
 emoji_shorthands = {

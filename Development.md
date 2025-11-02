@@ -87,7 +87,6 @@ render:render(buffer, {
 Each buffer has the following states,
 
 ```lua from: ../lua/markview/types/markview.lua class: markview.state.buf
---[[ Buffer state for `markview.nvim`. ]]
 ---@class markview.state.buf
 ---
 ---@field enable boolean Is the `preview` enabled?

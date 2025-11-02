@@ -27,7 +27,7 @@
 
 `markview.nvim` comes with a few *extra* QOL modules to make certain tasks easier.
 
-You can find these in the [lua/markview/extras/]() directory.
+You can find these in the [lua/markview/extras/](https://github.com/OXY2DEV/markview.nvim/tree/main/lua/markview/extras) directory.
 
 ## 📦 Checkbox toggle
 

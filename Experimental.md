@@ -132,7 +132,7 @@ read_chunk_size = 1024,
 > **Deprecated**.
 > I couldn't find use for this option and thus this was deprecated.
 
-Prevents section indentations to be removed when using [markdown.headings.org_indent]().
+Prevents section indentations to be removed when using [markdown.headings.org_indent](https://github.com/OXY2DEV/markview.nvim/wiki/Markdown#headings).
 
 ```lua
 linewise_ignore_org_indent = false
