@@ -52,6 +52,15 @@
 
 <div align="center">
     <img src="https://github.com/OXY2DEV/markview.nvim/blob/images/v27/markview.nvim-splitview.png">
+</div>
+
+
+| `:set wrap = true` | `:set wrap = false` |
+|---------------|----------------|
+| ![wrap](https://github.com/OXY2DEV/markview.nvim/blob/images/v27/markview.nvim-wrap.png) | ![nowrap](https://github.com/OXY2DEV/markview.nvim/blob/images/v27/markview.nvim-nowrap.png) |
+
+
+<div align="center">
     <img src="https://github.com/OXY2DEV/markview.nvim/blob/images/v27/markview.nvim-splitview_2.png">
     <img src="https://github.com/OXY2DEV/markview.nvim/blob/images/v27/markview.nvim-hybrid_mode.png">
 </div>
