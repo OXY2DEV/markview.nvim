@@ -1,7 +1,7 @@
 local autocmds = {};
 
 autocmds.did_enter = false;
-autocmds.vim_entered = false;
+autocmds.pased_vimenter = false;
 
 ---@param buffer integer
 ---@param event_name string
@@ -271,6 +271,21 @@ autocmds.file_changed = function (args)
 	actions.set_query(args.buf);
 end
 
+autocmds.lazy_loaded = function ()
+	require("markview.highlights").setup();
+	require("markview.integrations").setup();
+
+	autocmds.bufHandle({
+		buf = vim.api.nvim_get_current_buf(),
+
+		event = "BufEnter",
+		file = vim.api.nvim_buf_get_name(0),
+
+		id = -1,
+		match = ""
+	});
+end
+
 autocmds.setup = function ()
 	if autocmds.did_enter then
 		return;
@@ -312,36 +327,15 @@ autocmds.setup = function ()
 			require("markview.highlights").setup();
 
 			if args.event == "VimEnter" then
-				autocmds.vim_entered = true;
+				autocmds.pased_vimenter = true;
 				require("markview.integrations").setup();
 			end
 		end
 	});
 
-		if autocmds.vim_entered then
-			return;
-		end
-
-	vim.schedule(function ()
-		if autocmds.vim_entered then
-			return;
-		end
-
-		require("markview.highlights").setup();
-		require("markview.integrations").setup();
-
-		autocmds.bufHandle({
-			buf = vim.api.nvim_get_current_buf(),
-
-			event = "BufEnter",
-			file = vim.api.nvim_buf_get_name(0),
-
-			id = -1,
-			match = ""
-		});
-
-		autocmds.vim_entered = true;
-	end)
+	if vim.v.vim_did_enter == 1 and autocmds.pased_vimenter == false then
+		autocmds.lazy_loaded();
+	end
 end
 
 return autocmds;
