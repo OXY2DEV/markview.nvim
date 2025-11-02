@@ -148,7 +148,7 @@ Set the icon provider for the code block labels.
 debounce = 150
 ```
 
-Delay(in milliseconds) between refreshing the preview.
+Delay(in milliseconds) between refreshing the preview. Also changes how often the `splitview` window is updated.
 
 >[!NOTE]
 > In some cases(e.g. switching between 2 modes(e.g. `n`, `c`) that have preview enabled) the refresh is **skipped**.
@@ -193,6 +193,10 @@ Buffer types to ignore. Useful to disable previews in LSP hover window/Completio
 Changes what gets shown as raw text in `hybrid mode`. [hybrid_modes](#hybrid_modes) must be set for this to work.
 
 It is a map of language names & a list of inclusion/exclusion rules.
+
+| `raw_previews = { ... }` | `raw_previews = nil` |
+|--------------------------|----------------------|
+| ![raw_peviews](./images/preview/markview.nvim-preview.raw_previews.png) | ![no raw_previews](./images/preview/markview.nvim-preview.noraw_previews.png) |
 
 You would use something like this to only show everything other then `block quotes` & `tables` as raw text.
 
