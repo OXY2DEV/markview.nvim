@@ -301,8 +301,8 @@ spec.get = function (keys, opts)
 			return val;
 		end
 
-		local ok, res = pcall(val, unpack(args or {}))
-		  return ok and res or nil
+		local ok, res = pcall(val, unpack(args or {}));
+		return ok and res or nil;
 	end
 
 	---@param index integer | string
