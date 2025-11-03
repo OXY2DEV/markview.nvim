@@ -633,9 +633,7 @@ actions.disable = function (buffer)
 		vim.wo[win].breakindent = vim.w[win].__mkv_cached_breakindet;
 	end
 
-	state.enable(false);
 	actions.clear(buffer);
-
 	actions.autocmd("on_disable", buffer, vim.fn.win_findbuf(buffer))
 
 	if actions.in_hybrid_mode() then
