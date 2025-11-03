@@ -275,6 +275,12 @@ autocmds.lazy_loaded = function ()
 	require("markview.highlights").setup();
 	require("markview.integrations").setup();
 
+	--[[
+	BUG: Do not attempt to attach to buffers.
+
+	When lazy loading, this is run before `setup()`.
+
+	```lua
 	autocmds.bufHandle({
 		buf = vim.api.nvim_get_current_buf(),
 
@@ -284,6 +290,8 @@ autocmds.lazy_loaded = function ()
 		id = -1,
 		match = ""
 	});
+	```
+	]]
 end
 
 autocmds.setup = function ()
