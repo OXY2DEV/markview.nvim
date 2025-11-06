@@ -127,6 +127,9 @@ utils.get_cursor_range = function (buffer, window)
 	return math.max(0, cursor[1] - 1), math.min(lines, cursor[1]);
 end
 
+--- Gets display width of virtual texts.
+---@param virt_texts [ string, string? ][]
+---@return integer
 utils.virt_len = function (virt_texts)
 	if not virt_texts then
 		return 0;
