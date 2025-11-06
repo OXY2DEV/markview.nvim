@@ -21,7 +21,8 @@ Core features,
 ◇ Hybrid editing mode! Allowing editing & previewing at the same time.
 ◇ Splitview! Allows editing & previewing side-by-side.
 ◇ `Wrap` support(markdown only, at the moment)! Allows using text wrapping while
-  not losing most rendering features!
+  not losing most rendering features! See intefrations#wrap {4} for fixing visual
+  glitches.
 ◇ Highly customisable! You can change almost anything using the config!
 ◇ Dynamic `highlight groups` that automatically updates with the colorscheme!
 ◇ `Callout`, `checkbox` completions for `blink.cmp` & `nvim-cmp`.
@@ -289,8 +290,8 @@ External icon providers,
 	}
 <
 
-◆ mini.icons {4}
-◆ nvim-web-devicons {5}
+◆ mini.icons {5}
+◆ nvim-web-devicons {6}
 
 Parsers,
 
@@ -339,7 +340,7 @@ Add this to your plugin list.
 ▋ cause more time for the previews to load when starting Neovim!
 
 The plugin should be loaded after your colorscheme to ensure the correct
-highlight groups are used. See integrations.transparent_colorschemes {6} if you
+highlight groups are used. See integrations.transparent_colorschemes {7} if you
 use a transparent colorscheme and the colors don't look right.
 
 >lua
@@ -388,7 +389,7 @@ use a transparent colorscheme and the colors don't look right.
 
 📥 GitHub release ~
 
-Tagged releases can be found in the release page {7}.
+Tagged releases can be found in the release page {8}.
 
 ▋ 󰋽 Note
 ▋ `Github releases` may sometimes be slightly behind `main`.
@@ -408,7 +409,7 @@ Tagged releases can be found in the release page {7}.
 --------------------------------------------------------------------------------
 🧭 Usage
 
-You can find more usage recipes here {8}.
+You can find more usage recipes here {9}.
 
 --------------------------------------------------------------------------------
 🎇 Commands                                             *markview.nvim-commands*
@@ -525,8 +526,7 @@ Sub-commands for `bug report`,
 <
 
 --------------------------------------------------------------------------------
-✅ Contributing to the                                *markview.nvim-contribute*
-projects
+✅ Contributing to the projects                       *markview.nvim-contribute*
 
 If you have time and want to make this project better, consider helping me fix
 any of these issues,
@@ -550,11 +550,12 @@ Links ~
 1: https://github.com/OXY2DEV/markview.nvim/wiki/Presets
 2: https://github.com/OXY2DEV/markview.nvim/wiki/Extras
 3: https://github.com/OXY2DEV/markview.nvim/wiki/Home
-4: https://github.com/nvim-mini/mini.icons
-5: https://github.com/nvim-tree/nvim-web-devicons
-6: https://github.com/OXY2DEV/markview.nvim/wiki/Integrations#-transparent-colorschemes
-7: https://github.com/OXY2DEV/markview.nvim/releases
-8: |markview.nvim-usage|
+4: https://github.com/OXY2DEV/markview.nvim/wiki/Integrations#-wrap
+5: https://github.com/nvim-mini/mini.icons
+6: https://github.com/nvim-tree/nvim-web-devicons
+7: https://github.com/OXY2DEV/markview.nvim/wiki/Integrations#-transparent-colorschemes
+8: https://github.com/OXY2DEV/markview.nvim/releases
+9: |markview.nvim-usage|
 
 Images ~
 

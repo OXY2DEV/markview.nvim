@@ -76,7 +76,7 @@ Core features,
 + Preview `Markdown`, <code>HTML</code>, $LaTeX$, `Typst` & `YAML` within Neovim.
 + *Hybrid* editing mode! Allowing *editing* & *previewing* at the same time.
 + *Splitview*! Allows editing & previewing *side-by-side*.
-+ `Wrap` support(markdown only, at the moment)! Allows using text wrapping while not losing *most* rendering features!
++ `Wrap` support(markdown only, at the moment)! Allows using text wrapping while not losing *most* rendering features! See [integrations#wrap](https://github.com/OXY2DEV/markview.nvim/wiki/Integrations#-wrap) for fixing visual glitches.
 + Highly customisable! You can change almost anything using the config!
 + Dynamic `highlight groups` that automatically updates with the colorscheme!
 + `Callout`, `checkbox` completions for `blink.cmp` & `nvim-cmp`.

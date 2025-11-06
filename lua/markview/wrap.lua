@@ -141,6 +141,32 @@ wrap.huristic_wrap = function (buffer, win, row, ns, indent)
 	---|fE
 end
 
+--[[ Gets the assumed width of the 'signcolumn' ]]
+---@param buffer integer
+---@param ns integer
+---@return integer
+wrap.sign_width = function (buffer, ns)
+	---|fS
+
+	local signs = vim.api.nvim_buf_get_extmarks(buffer, ns, 0, -1, {
+		details = true,
+		type = "sign"
+	});
+	local W = 0;
+
+	for _, sign in ipairs(signs) do
+		local details = sign[4];
+
+		if details then
+			W = math.max(W, vim.fn.strdisplaywidth(details.sign_text));
+		end
+	end
+
+	return W;
+
+	---|fE
+end
+
 --[[
 Based on the answer from @zeertzjq in neovim/neovim#35964.
 ]]
@@ -153,14 +179,36 @@ wrap.fine_wrap = function (buffer, win, row, ns, indent)
 	---|fS
 
 	local wininfo = vim.fn.getwininfo(win)[1];
-	local win_width = wininfo.width - wininfo.textoff;
-	local end_vcol = vim.fn.virtcol({row + 1, "$"}) - 1;
+	local textoff = vim.g.markview_textoff or wininfo.textoff;
+
+	local statuscolumn = vim.wo[win].statuscolumn;
+	local signcolumn = vim.wo[win].signcolumn;
+
+	--[[
+		ISSUE: Default statuscolumn with signcolumn gives incorrect `textoff`
+
+		The signs have probably not been registered yet.
+
+		See: #434
+	]]
+	if textoff == 0 and (statuscolumn == "" and signcolumn ~= "no" and signcolumn ~= "number") then
+		--[[
+			FIX: At least 2 columns should be reserved in the statuscolumn.
+
+			This is the minimal amount of space the signs of this plugin take by default.
+			TODO: Find a way to check the number of columns that will be taken with signs.
+		]]
+		textoff = vim.g.markview_sign_width or 2;
+	end
+
+	local win_width = wininfo.width - textoff;
+	local end_vcol = vim.fn.virtcol({ row + 1, "$" }) - 1;
 
 	if end_vcol <= win_width then
 		return;
 	end
 
-	for vcol = win_width + 1, vim.fn.virtcol({ row + 1, "$" }) - 1, win_width do
+	for vcol = win_width + 1, end_vcol, win_width do
 		local wrapcol = vim.fn.virtcol2col(0, row + 1, vcol);
 
 		local indent_opts = {

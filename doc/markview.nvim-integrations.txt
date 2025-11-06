@@ -27,6 +27,24 @@ Modified `gx` mapping that can,
   experimental.prefer_nvim {2} to `true`.
 
 --------------------------------------------------------------------------------
+📦 wrap                                        *markview.nvim-integrations.wrap*
+
+▋  Tip
+▋ You can enable/disable wrap support per node-type by setting the `wrwp` option
+▋ in them.
+▋ These options are as follows,
+▋
+▋ ◆ markdown.block_quotes.wrap {3}
+▋ ◆ markdown.headings.org_indent_wrap {4}
+▋ ◆ markdown.list_items.wrap {5}
+
+Applies text wrapping effects to certain preview elements.
+
+Sometimes the wrapping can look off(and/or be miscalculated). You can set
+`vim.g.markview_textoff` to tell the plugin how many columns are taken by the UI
+elements(that affect text wrapping).
+
+--------------------------------------------------------------------------------
 📦 Transparent             *markview.nvim-integrations.transparent_colorschemes*
 colorschemes
 
@@ -60,13 +78,16 @@ Demo {img:1}
 
 You can use `markview.nvim` to prettify the LSP hover window.
 
-You can see an example here {3}.
+You can see an example here {6}.
 
 Links ~
 
 1: https://github.com/OXY2DEV/markview.nvim/wiki/Integrations
-2: https://github.com/OXY2DEV/markview.nvim/wiki/Experimental#prefer_nvim
-3: https://gist.github.com/OXY2DEV/645c90df32095a8a397735d0be646452
+2: `markview.nvim-experimental.prefer_nvim`
+3: `markview.nvim-markdown.block_quotes`
+4: `markview.nvim-markdown.headings`
+5: `markview.nvim-markdown.list_items`
+6: https://gist.github.com/OXY2DEV/645c90df32095a8a397735d0be646452
 
 Images ~
 

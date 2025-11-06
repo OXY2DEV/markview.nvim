@@ -3737,6 +3737,7 @@ end
 ---@param content markview.parsed.markdown[]
 markdown.post_render = function (buffer, content)
 	local custom = spec.get({ "renderers" }, { fallback = {} });
+	vim.g.markview_sign_width = require("markview.wrap").sign_width(buffer, markdown.ns);
 
 	for _, item in ipairs(content or {}) do
 		local success, err;
