@@ -1,23 +1,3 @@
-
----@class markview.hl
----
----@field group_name? string
----@field value? table
-
----@class markview.hl.rgb
----
----@field r integer
----@field g integer
----@field b integer
-
----@class markview.hl.Lab
----
----@field L integer
----@field a integer
----@field b integer
-
-------------------------------------------------------------------------------
-
 --[[
 *Dynamic* highlights for `markview.nvim` to match the current `colorscheme`.
 
@@ -29,6 +9,9 @@ require("markview.highlights").setup();
 ]]
 local highlights = {};
 
+--- Clamps a value between 0 & 255.
+---@param c integer
+---@return integer
 local function clamp (c)
 	return math.min(
 		math.max(
@@ -42,47 +25,19 @@ end
 --[[ Turns given color into **RGB** color value. ]]
 ---@param input string | number
 ---@return markview.hl.rgb
+---@return boolean invalid_value Was the given value invalid?
 highlights.rgb = function (input)
-	---@type table<string, string> Common *color name* to `hex` color code mappings.
-	local lookup = {
-		["red"] = "#FF0000",        ["lightred"] = "#FFBBBB",      ["darkred"] = "#8B0000",
-		["green"] = "#00FF00",      ["lightgreen"] = "#90EE90",    ["darkgreen"] = "#006400",    ["seagreen"] = "#2E8B57",
-		["blue"] = "#0000FF",       ["lightblue"] = "#ADD8E6",     ["darkblue"] = "#00008B",     ["slateblue"] = "#6A5ACD",
-		["cyan"] = "#00FFFF",       ["lightcyan"] = "#E0FFFF",     ["darkcyan"] = "#008B8B",
-		["magenta"] = "#FF00FF",    ["lightmagenta"] = "#FFBBFF",  ["darkmagenta"] = "#8B008B",
-		["yellow"] = "#FFFF00",     ["lightyellow"] = "#FFFFE0",   ["darkyellow"] = "#BBBB00",   ["brown"] = "#A52A2A",
-		["grey"] = "#808080",       ["lightgrey"] = "#D3D3D3",     ["darkgrey"] = "#A9A9A9",
-		["gray"] = "#808080",       ["lightgray"] = "#D3D3D3",     ["darkgray"] = "#A9A9A9",
-		["black"] = "#000000",      ["white"] = "#FFFFFF",
-		["orange"] = "#FFA500",     ["purple"] = "#800080",        ["violet"] = "#EE82EE"
-	};
+	---|fS
 
-	---@type table<string, string> Neovim *color name* to `hex` color code mappings.
-	local lookup_nvim = {
-		["nvimdarkblue"] = "#004C73",    ["nvimlightblue"] = "#A6DBFF",
-		["nvimdarkcyan"] = "#007373",    ["nvimlightcyan"] = "#8CF8F7",
-		["nvimdarkgray1"] = "#07080D",   ["nvimlightgray1"] = "#EEF1F8",
-		["nvimdarkgray2"] = "#14161B",   ["nvimlightgray2"] = "#E0E2EA",
-		["nvimdarkgray3"] = "#2C2E33",   ["nvimlightgray3"] = "#C4C6CD",
-		["nvimdarkgray4"] = "#4F5258",   ["nvimlightgray4"] = "#9B9EA4",
-		["nvimdarkgrey1"] = "#07080D",   ["nvimlightgrey1"] = "#EEF1F8",
-		["nvimdarkgrey2"] = "#14161B",   ["nvimlightgrey2"] = "#E0E2EA",
-		["nvimdarkgrey3"] = "#2C2E33",   ["nvimlightgrey3"] = "#C4C6CD",
-		["nvimdarkgrey4"] = "#4F5258",   ["nvimlightgrey4"] = "#9B9EA4",
-		["nvimdarkgreen"] = "#005523",   ["nvimlightgreen"] = "#B3F6C0",
-		["nvimdarkmagenta"] = "#470045", ["nvimlightmagenta"] = "#FFCAFF",
-		["nvimdarkred"] = "#590008",     ["nvimlightred"] = "#FFC0B9",
-		["nvimdarkyellow"] = "#6B5300",  ["nvimlightyellow"] = "#FCE094",
-	};
-
+	local lookup = vim.api.nvim_get_color_map();
 	local hex;
 
-	if type(input) == "string" and (lookup_nvim[input] or lookup[input]) then
-		hex = lookup_nvim[input] or lookup[input];
+	if type(input) == "string" and (lookup[input]) then
+		hex = string.format("#%06x", lookup[input]);
 	elseif type(input) == "number" then
 		hex = string.format("#%06x", input);
 	else
-		hex = type(input) == "string" and input or "#FFFFFD";
+		hex = type(input) == "string" and input or "#FFFFFF";
 	end
 
 	return {
@@ -98,7 +53,9 @@ highlights.rgb = function (input)
 			string.sub(hex, 6, 7),
 			16
 		),
-	};
+	}, type(input) ~= "string" and type(input) ~= "number";
+
+	---|fE
 end
 
 --[[ Simple RGB color mixer. ]]
@@ -108,6 +65,8 @@ end
 ---@param p2 number
 ---@return markview.hl.rgb | markview.hl.Lab
 highlights.mix = function (c1, c2, p1, p2)
+	---|fS
+
 	local out = {};
 
 	for k, v in pairs(c1) do
@@ -119,6 +78,8 @@ highlights.mix = function (c1, c2, p1, p2)
 	end
 
 	return out;
+
+	---|fE
 end
 
 --[[ `RGB` to `hex color code` converter. ]]
@@ -182,17 +143,25 @@ highlights.oklab_to_srgb = function (c)
     };
 end
 
+---|fE
+
 --- Wrapper function for `nvim_set_hl()`.
 ---@param name string
 ---@param value table
 highlights.set_hl = function (name, value)
-	local found, v = pcall(vim.api.nvim_get_hl, 0, { name = name, create = false, link = false });
+	---|fS
 
-	if found and vim.tbl_isempty(v) == false then
+	local found, v = pcall(vim.api.nvim_get_hl, 0, { name = name, create = false, link = false });
+	local is_empty = vim.deep_equal(v, vim.empty_dict());
+
+	if found and not is_empty then
+		-- ISSUE: Old highlight group values are stored as `vim.empty_dict()`. These should be overwritten.
+		-- BUG(no-regression): No way to remove any of markview's highlight group entirely.
 		return;
 	end
 
-	value.default = true;
+	-- NOTE: `default = true` will skip empty highlight groups.
+	value.default = not is_empty;
 	local success, err = pcall(vim.api.nvim_set_hl, 0, name, value);
 
 	if success == false and err then
@@ -203,11 +172,15 @@ highlights.set_hl = function (name, value)
 			message = err
 		});
 	end
+
+	---|fE
 end
 
 --- Creates highlight groups from an array of tables
----@param array { [string]: markview.hl | fun(): markview.hl }
+---@param array table<string, markview.hl>
 highlights.create = function (array)
+	---|fS
+
 	if type(array) == "string" then
 		if not highlights[array] then
 			return;
@@ -249,6 +222,8 @@ highlights.create = function (array)
 			highlights.set_hl(hl, value);
 		end
 	end
+
+	---|fE
 end
 
 --- Is the background "dark"?
@@ -268,6 +243,8 @@ end
 ---@return any
 ---@private
 highlights.get_property = function (property, groups, light, dark)
+	---|fS
+
 	local val;
 
 	for _, item in ipairs(groups) do
@@ -282,19 +259,26 @@ highlights.get_property = function (property, groups, light, dark)
 	local fallback = is_dark(light, dark);
 
 	if property == "fg" or property == "bg" or property == "sp" then
-		if val then
-			return highlights.rgb(val);
-		else
-			return fallback;
-		end
+		local converted, as_fallback = highlights.rgb(val or fallback);
+		return as_fallback == false and converted or nil;
 	else
-		return val ~= nil and val or fallback;
+		return val or fallback;
 	end
+
+	---|fE
 end
 
 ------------------------------------------------------------------------------
 
+--- Creates a palette(a collection of common highlight groups).
+---@param n integer
+---@param src string[]
+---@param light any
+---@param dark any
+---@return table[]
 highlights.create_pallete = function (n, src, light, dark)
+	---|fS
+
 	---@type markview.hl.rgb
 	local nr = highlights.get_property(
 		"bg",
@@ -302,12 +286,11 @@ highlights.create_pallete = function (n, src, light, dark)
 		nil,
 		nil
 	);
-
 	local bg = highlights.srgb_to_oklab(highlights.get_property(
 		"bg",
 		{ "Normal" },
-		"#EFF1F5",
-		"#1E1E2E"
+		vim.g.markview_light_bg or "#EFF1F5",
+		vim.g.markview_dark_bg or "#1E1E2E"
 	));
 	local fg = highlights.srgb_to_oklab(highlights.get_property(
 		"fg",
@@ -361,9 +344,18 @@ highlights.create_pallete = function (n, src, light, dark)
 			}
 		},
 	};
+
+	---|fE
 end
 
+--- Creates a highlight group options by inheriting options from `from`.
+---@param from string
+---@param with vim.api.keyset.highlight
+---@param properties? string[]
+---@return vim.api.keyset.highlight
 highlights.inherit = function (from, with, properties)
+	---|fS
+
 	local _from = vim.api.nvim_get_hl(0, { name = from, link = false, create = false }) or {};
 	local output = {};
 
@@ -376,8 +368,13 @@ highlights.inherit = function (from, with, properties)
 	end
 
 	return vim.tbl_extend("force", output, with);
+
+	---|fE
 end
 
+--- Creates highlight groups for code block icons.
+---@param n integer
+---@return vim.api.keyset.highlight
 highlights.icon_hl = function (n)
 	return highlights.inherit(
 		"MarkviewCode",
@@ -391,7 +388,10 @@ highlights.icon_hl = function (n)
 end
 
 
+---@type table<string, markview.hl>
 highlights.groups = {
+	---|fS
+
 	["0"] = function ()
 		return highlights.create_pallete(
 			0,
@@ -655,10 +655,11 @@ highlights.groups = {
 	["TableAlignLeft"] = { link = "@markup.heading" },
 	["TableAlignCenter"] = { link = "@markup.heading" },
 	["TableAlignRight"] = { link = "@markup.heading" },
+
+	---|fE
 };
 
---- Setup function.
----@param opt { [string]: markview.hl }?
+---@param opt? table<string, markview.hl>
 highlights.setup = function (opt)
 	if type(opt) == "table" then
 		highlights.groups = vim.tbl_extend("force", highlights.groups, opt);
@@ -668,4 +669,3 @@ highlights.setup = function (opt)
 end
 
 return highlights;
---- vim:foldmethod=indent:

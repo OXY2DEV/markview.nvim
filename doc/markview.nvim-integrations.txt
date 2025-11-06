@@ -15,7 +15,7 @@ You can disable this by running the following before loading `markview`.
 <
 
 --------------------------------------------------------------------------------
-📦 nvim                                          *markview.nvim-integrations.gx*
+📦 gx                                            *markview.nvim-integrations.gx*
 
 https://github.com/user-attachments/assets/2b8de549-e429-4be5-ba3a-f7f9a12ce5f2
 
@@ -25,6 +25,22 @@ Modified `gx` mapping that can,
   `#-integrations` for `🎇 Integrations`).
 ◆ Open files inside Neovim using some command(e.g. `:tabnew`). Requires
   experimental.prefer_nvim {2} to `true`.
+
+--------------------------------------------------------------------------------
+📦 Transparent             *markview.nvim-integrations.transparent_colorschemes*
+colorschemes
+
+Markview provides dynamic highlight groups for colorschemes. However, this may
+not look right when using `transparent` colorschemes.
+
+You can change what color is used for blending by setting these variables,
+
+◆ `vim.g.markview_light_bg`, used when `background` is `"light"`(default).
+◆ `vim.g.markview_dark_bg`, used when `background` is `"dark"`.
+
+▋  Important
+▋ These values will not be used if `Normal` highlight group has a background
+▋ color.
 
 --------------------------------------------------------------------------------
 📦 nvim-cmp

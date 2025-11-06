@@ -400,7 +400,7 @@ Plug 'OXY2DEV/markview.nvim'
 >[!WARNING]
 > Do *not* lazy load this plugin as it is already lazy-loaded. Lazy-loading may cause **more time** for the previews to load when starting Neovim!
 
-The plugin should be loaded *after* your colorscheme to ensure the correct highlight groups are used.
+The plugin should be loaded *after* your colorscheme to ensure the correct highlight groups are used. See [integrations.transparent_colorschemes](https://github.com/OXY2DEV/markview.nvim/wiki/Integrations#-transparent-colorschemes) if you use a transparent colorscheme and the colors don't look right.
 
 ```lua
 -- For `plugins/markview.lua` users.

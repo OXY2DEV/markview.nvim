@@ -28,6 +28,7 @@ markview.nvim-html.void_elements	markview.nvim-html.txt	/*markview.nvim-html.voi
 markview.nvim-integrations	markview.nvim-integrations.txt	/*markview.nvim-integrations*
 markview.nvim-integrations.blink-cmp	markview.nvim-integrations.txt	/*markview.nvim-integrations.blink-cmp*
 markview.nvim-integrations.gx	markview.nvim-integrations.txt	/*markview.nvim-integrations.gx*
+markview.nvim-integrations.transparent_colorschemes	markview.nvim-integrations.txt	/*markview.nvim-integrations.transparent_colorschemes*
 markview.nvim-latex	markview.nvim-latex.txt	/*markview.nvim-latex*
 markview.nvim-latex.blocks	markview.nvim-latex.txt	/*markview.nvim-latex.blocks*
 markview.nvim-latex.commands	markview.nvim-latex.txt	/*markview.nvim-latex.commands*
