@@ -23,7 +23,7 @@
 These highlight groups are created by the plugin,
 
 >[!NOTE]
-> The value of these groups are updated when changing the colorscheme!
+> The value of these groups are updated when changing the colorscheme! See [integrations.transparent_colorschemes](https://github.com/OXY2DEV/markview.nvim/wiki/Integrations#-transparent-colorschemes)
 
 ### 🎨 Primary groups
 

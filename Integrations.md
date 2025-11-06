@@ -16,7 +16,8 @@
             },
             "tags": {
                 "blink.cmp": [ "markview.nvim-integrations.blink-cmp" ],
-                "nvim$": [ "markview.nvim-integrations.gx" ],
+                "gx$": [ "markview.nvim-integrations.gx" ],
+                "colorschemes$": [ "markview.nvim-integrations.transparent_colorschemes" ],
                 "nvim-cmp": [ "markview.nvim-integrations.nvim-cmp" ]
             }
         }
@@ -38,7 +39,7 @@ You can disable this by running the following *before* loading `markview`.
 vim.g.markview_blink_loaded = true;
 ```
 
-## 📦 nvim
+## 📦 gx
 
 https://github.com/user-attachments/assets/2b8de549-e429-4be5-ba3a-f7f9a12ce5f2
 
@@ -46,6 +47,18 @@ Modified `gx` mapping that can,
 
 - Go to heading based on Github-flavored/Gitlab-flavored links(e.g. `#-integrations` for `🎇 Integrations`).
 - Open files inside Neovim using some command(e.g. `:tabnew`). Requires [experimental.prefer_nvim](https://github.com/OXY2DEV/markview.nvim/wiki/Experimental#prefer_nvim) to `true`.
+
+## 📦 Transparent colorschemes
+
+Markview provides dynamic highlight groups for colorschemes. However, this may not look right when using `transparent` colorschemes.
+
+You can change what color is used for blending by setting these variables,
+
+- `vim.g.markview_light_bg`, used when `background` is `"dark"`(default).
+- `vim.g.markview_dark_bg`, used when `background` is `"light"`.
+
+>[!IMPORTANT]
+> These values will not be used if `Normal` highlight group has a background color.
 
 ## 📦 nvim-cmp
 
