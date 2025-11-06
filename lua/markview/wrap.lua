@@ -208,14 +208,17 @@ wrap.fine_wrap = function (buffer, win, row, ns, indent)
 		return;
 	end
 
+	local reallen = vim.fn.strdisplaywidth(
+		vim.api.nvim_buf_get_lines(buffer, row, row + 1, false)[1] or ""
+	);
 	local virtlen = require("markview.utils").virt_len(indent);
 	local wraps = math.ceil(end_vcol / win_width);
 
 	for w = 1, wraps, 1 do
-		local wrapcol = vim.fn.virtcol2col(0, row + 1, (win_width * w) + 1);
+		local wrapcol = vim.fn.virtcol2col(win, row + 1, (win_width * w) + 1);
 
-		if wrapcol >= end_vcol then
-			-- Out of bounds.
+		if wrapcol >= end_vcol or wrapcol >= reallen then
+			-- Out of bounds.Or at end of line.
 			break;
 		elseif wrapcol + virtlen >= end_vcol then
 			-- No enough text after indent.
@@ -224,7 +227,7 @@ wrap.fine_wrap = function (buffer, win, row, ns, indent)
 
 		local indent_opts = {
 			undo_restore = false, invalidate = true,
-			right_gravity = true,
+			right_gravity = false,
 
 			virt_text_pos = "inline",
 
