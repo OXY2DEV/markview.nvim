@@ -54,8 +54,8 @@ Markview provides dynamic highlight groups for colorschemes. However, this may n
 
 You can change what color is used for blending by setting these variables,
 
-- `vim.g.markview_light_bg`, used when `background` is `"dark"`(default).
-- `vim.g.markview_dark_bg`, used when `background` is `"light"`.
+- `vim.g.markview_light_bg`, used when `background` is `"light"`(default).
+- `vim.g.markview_dark_bg`, used when `background` is `"dark"`.
 
 >[!IMPORTANT]
 > These values will not be used if `Normal` highlight group has a background color.
