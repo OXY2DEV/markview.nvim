@@ -17,9 +17,16 @@
             "tags": {
                 "blink.cmp": [ "markview.nvim-integrations.blink-cmp" ],
                 "gx$": [ "markview.nvim-integrations.gx" ],
+                "wrap$": [ "markview.nvim-integrations.wrap" ],
                 "colorschemes$": [ "markview.nvim-integrations.transparent_colorschemes" ],
                 "nvim-cmp": [ "markview.nvim-integrations.nvim-cmp" ]
-            }
+            },
+            "link_url_modifiers": [
+                [ "#prefer_nvim$", "`markview.nvim-experimental.prefer_nvim`" ],
+                [ "#block_quotes$", "`markview.nvim-markdown.block_quotes`" ],
+                [ "#headings$", "`markview.nvim-markdown.headings`" ],
+                [ "#list_items$", "`markview.nvim-markdown.list_items`" ]
+            ]
         }
     }
 -->
@@ -47,6 +54,20 @@ Modified `gx` mapping that can,
 
 - Go to heading based on Github-flavored/Gitlab-flavored links(e.g. `#-integrations` for `🎇 Integrations`).
 - Open files inside Neovim using some command(e.g. `:tabnew`). Requires [experimental.prefer_nvim](https://github.com/OXY2DEV/markview.nvim/wiki/Experimental#prefer_nvim) to `true`.
+
+## 📦 wrap
+
+>[!TIP]
+> You can enable/disable wrap support per node-type by setting the `wrwp` option in them.
+> These options are as follows,
+>
+> - [markdown.block_quotes.wrap](https://github.com/OXY2DEV/markview.nvim/wiki/Markdown#block_quotes)
+> - [markdown.headings.org_indent_wrap](https://github.com/OXY2DEV/markview.nvim/wiki/Markdown#headings)
+> - [markdown.list_items.wrap](https://github.com/OXY2DEV/markview.nvim/wiki/Markdown#list_items)
+
+Applies text wrapping effects to certain preview elements.
+
+Sometimes the wrapping can look off(and/or be miscalculated). You can set `vim.g.markview_textoff` to tell the plugin how many columns are taken by the UI elements(that affect text wrapping).
 
 ## 📦 Transparent colorschemes
 
