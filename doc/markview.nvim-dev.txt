@@ -67,15 +67,6 @@ If you don't want to render the preview on a large buffer(e.g. due to performanc
 	render:render(buffer, 1000);
 <
 
-Each buffer has the following states,
-
->lua
-	---@class markview.state.buf
-	---
-	---@field enable boolean Is the `preview` enabled?
-	---@field hybrid_mode boolean Is `hybrid_mode` enabled?
-<
-
 💡 Using custom configuration ~
 
 If you want the preview looking a certain way you can do so with this,
@@ -107,6 +98,31 @@ To use it add the following code to your plugin,
 	end
 <
 
+💡 Custom state ~
+
+If you don't want to have things like `hybrid mode` be present in previews you can disable them in the preview.
+
+>lua
+	if package.loaded["markview"] then
+	    -- `buffer` is where you want to render in.
+	    require("markview").render(buffer, {
+	        enable = true,
+	        hybrid_mode = false
+	    });
+	end
+<
+
+Each buffer has the following states,
+
+>lua
+	---@class markview.state.buf
+	---
+	---@field enable boolean Is the `preview` enabled?
+	---@field hybrid_mode boolean Is `hybrid_mode` enabled?
+<
+
+ ╶────────────────────────────────────────────────────────────────────────────╴ 
+
 To clear previews use,
 
 >lua
@@ -121,8 +137,7 @@ To clear previews use,
 
 You can use `markview` to parse files.
 
-This is useful if you have extended syntax or simply don't want to build a
-parser yourself.
+This is useful if you have extended syntax or simply don't want to build a parser yourself.
 
 >lua
 	local parser = require("markview.parser");
@@ -144,8 +159,7 @@ parser yourself.
 	---@field yaml? markview.parsed.yaml[]
 <
 
-`sorted` is a map between the language & another map between node names & a list
-of parsed nodes.
+`sorted` is a map between the language & another map between node names & a list of parsed nodes.
 
 >lua
 	---@class markview.parsed_sorted
