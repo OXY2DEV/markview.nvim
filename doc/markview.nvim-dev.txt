@@ -86,7 +86,7 @@ If you want the preview looking a certain way you can do so with this,
 	local render = require("markview").strict_render;
 	render:render(buffer, nil, {
 	    markdown = {
-	        heading = { enable = false }
+	        headings = { enable = false }
 	    },
 	    -- ...
 	});
