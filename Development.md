@@ -73,24 +73,13 @@ if package.loaded["markview"] then
 end
 ```
 
-#### 💡 Using custom states
+#### 💡 Disable previews if the buffer is too long
 
-If you don't need stuff like `hybrid mode` in your preview you can disable them like so,
+If you don't want to render the preview on a large buffer(e.g. due to performance issues). You can disable it if the buffer is more or equal to a certain line count.
 
 ```lua
 local render = require("markview").strict_render;
-render:render(buffer, {
-    hybrid_mode = false
-});
-```
-
-Each buffer has the following states,
-
-```lua from: ../lua/markview/types/markview.lua class: markview.state.buf
----@class markview.state.buf
----
----@field enable boolean Is the `preview` enabled?
----@field hybrid_mode boolean Is `hybrid_mode` enabled?
+render:render(buffer, 1000);
 ```
 
 #### 💡 Using custom configuration
@@ -122,6 +111,31 @@ if package.loaded["markview"] then
     require("markview").render(buffer);
 end
 ```
+
+#### 💡 Using custom state
+
+If you don't want to have things like `hybrid mode` be present in previews you can disable them in the preview.
+
+```lua
+if package.loaded["markview"] then
+    -- `buffer` is where you want to render in.
+    require("markview").render(buffer, {
+        enable = true,
+        hybrid_mode = false
+    });
+end
+```
+
+Each buffer has the following states,
+
+```lua from: ../lua/markview/types/markview.lua class: markview.state.buf
+---@class markview.state.buf
+---
+---@field enable boolean Is the `preview` enabled?
+---@field hybrid_mode boolean Is `hybrid_mode` enabled?
+```
+
+------
 
 To clear previews use,
 
