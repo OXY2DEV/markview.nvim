@@ -87,9 +87,10 @@ markview.strict_render = {
 
 	--[[ Renders `buffer` and prevents redrawing until `:clear()` is called. ]]
 	---@param self table
-	---@param buffer? integer?
+	---@param buffer? integer
 	---@param max_lines? integer
-	render = function (self, buffer, max_lines)
+	---@param config? markview.config
+	render = function (self, buffer, max_lines, config)
 		---|fS
 
 		buffer = buffer or vim.api.nvim_get_current_buf();
@@ -111,7 +112,7 @@ markview.strict_render = {
 		---|fE
 
 		actions.clear(buffer);
-		actions.render(buffer, { enable = true, hybrid_mode = false });
+		actions.render(buffer, { enable = true, hybrid_mode = false }, config);
 
 		table.insert(self.on, buffer);
 
