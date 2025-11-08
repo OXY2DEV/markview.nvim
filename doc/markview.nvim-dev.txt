@@ -58,15 +58,13 @@ You can clear a buffer like so,
 	end
 <
 
-💡 Using custom states ~
+💡 Disable previews if the buffer is too long ~
 
-If you don't need stuff like `hybrid mode` in your preview you can disable them like so,
+If you don't want to render the preview on a large buffer(e.g. due to performance issues). You can disable it if the buffer is more or equal to a certain line count.
 
 >lua
 	local render = require("markview").strict_render;
-	render:render(buffer, {
-	    hybrid_mode = false
-	});
+	render:render(buffer, 1000);
 <
 
 Each buffer has the following states,
