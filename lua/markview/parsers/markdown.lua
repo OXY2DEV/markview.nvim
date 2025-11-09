@@ -541,7 +541,6 @@ markdown.list_item = function (buffer, TSNode, _, range)
 				break;
 			end
 
-			-- vim.print(item)
 			table.remove(candidates);
 		end
 	end
@@ -985,6 +984,8 @@ markdown.parse = function (buffer, TSTree, from, to)
 
 		if success == false then
 			require("markview.health").print({
+				kind = "ERR",
+
 				from = "parsers/markdown.lua",
 				fn = "parse()",
 

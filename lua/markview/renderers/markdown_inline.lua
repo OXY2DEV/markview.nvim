@@ -1021,6 +1021,8 @@ inline.render = function (buffer, content)
 
 		if success == false then
 			require("markview.health").print({
+				kind = "ERR",
+
 				from = "renderers/markdown_inline.lua",
 				fn = "post_render() -> " .. item.class,
 

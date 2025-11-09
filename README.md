@@ -532,10 +532,10 @@ Sub-commands for manual `preview` updates,
 
 Sub-commands for `bug report`,
 
-| Sub-command      | Arguments           | Description                              |
-|------------------|---------------------|------------------------------------------|
-| `traceExport`    | none                | Exports trace logs to `trace.txt`.       |
-| `traceShow`      | none                | Shows trace logs in a window.            |
+| Sub-command      | Arguments           | Description                               |
+|------------------|---------------------|-------------------------------------------|
+| `traceExport`    | none                | Exports trace logs to `markview_log.txt`. |
+| `traceShow`      | none                | Shows trace logs in a window.             |
 
 <!--markdoc_ignore_start-->
 </details>

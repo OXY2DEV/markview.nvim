@@ -176,6 +176,50 @@ health.view = function ()
 	end
 end
 
+health.export = function ()
+	local function center (text, w)
+		local B = math.floor((w - vim.fn.strdisplaywidth(text)) / 2);
+		local A = math.ceil((w - vim.fn.strdisplaywidth(text)) / 2);
+
+		return string.rep(" ", B) .. text .. string.rep(" ", A);
+	end
+
+	local context = {};
+	local WC = 0;
+
+	for _, item in ipairs(health.history) do
+		local text = (item.from and (item.from .. " => ") or "") .. (item.fn and item.fn or "fn()");
+		table.insert(context, text)
+
+		WC = math.max(WC, vim.fn.strdisplaywidth(text));
+	end
+
+	local lines = {};
+
+	for i, item in ipairs(health.history) do
+		local text = health.virt_text(item.depth, item.message);
+
+		table.insert(
+			lines,
+			string.upper(item.kind) ..
+			" | " ..
+			center(context[i], WC) ..
+			" | " ..
+			text
+		);
+	end
+
+	local trace_file = io.open("markview_log.txt", "w");
+
+	if not trace_file then
+		return;
+	end
+
+	trace_file:write(table.concat(lines, "\n"));
+	trace_file:close();
+
+	vim.print("Exported logs to `markview_log.txt`!")
+end
 
 ------------------------------------------------------------------------------
 

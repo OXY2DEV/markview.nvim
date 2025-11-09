@@ -608,6 +608,8 @@ inline.parse = function (buffer, TSTree, from, to)
 
 		if success == false then
 			require("markview.health").print({
+				kind = "ERR",
+
 				from = "parsers/markdown_inline.lua",
 				fn = "parse()",
 

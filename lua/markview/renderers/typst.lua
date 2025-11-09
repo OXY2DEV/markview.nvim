@@ -1589,6 +1589,8 @@ typst.render = function (buffer, content)
 
 		if success == false then
 			require("markview.health").print({
+				kind = "ERR",
+
 				from = "renderers/typst.lua",
 				fn = item.class .. "()",
 

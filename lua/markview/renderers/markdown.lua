@@ -3718,6 +3718,8 @@ markdown.render = function (buffer, content)
 
 		if success == false then
 			require("markview.health").print({
+				kind = "ERR",
+
 				from = "renderers/markdown.lua",
 				fn = "render() -> " .. item.class,
 
@@ -3749,6 +3751,8 @@ markdown.post_render = function (buffer, content)
 
 		if success == false then
 			require("markview.health").print({
+				kind = "ERR",
+
 				from = "renderers/markdown.lua",
 				fn = "post_render() -> " .. item.class,
 

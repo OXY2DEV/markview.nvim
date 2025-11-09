@@ -169,7 +169,7 @@ end
 
 
 commands.traceExport = function ()
-	require("markview.actions").traceExport();
+	require("markview.health").export();
 end
 commands.traceShow = function ()
 	require("markview.health").view();
