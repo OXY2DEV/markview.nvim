@@ -334,7 +334,6 @@ renderer.filter = function (content, filter, clear)
 
 		for _, ref in ipairs(references) do
 			local range = ref[2];
-			-- vim.print(range.row_start .. ":" .. range.row_end)
 
 			if range.row_start >= clear_range[1] and range.row_end <= clear_range[2] then
 				table.remove(content[lang], ref[1] - removed);
@@ -372,11 +371,13 @@ renderer.render = function (buffer, parsed_content)
 	---@type integer
 	local start = vim.uv.hrtime();
 
-	health.notify("trace", {
-		level = 1,
-		message = string.format("Rendering(main): %d", buffer)
+	health.print({
+		from = "renderer.lua",
+		fn = "render()",
+
+		message = string.format("Rendering: %d", buffer),
+		nest = true
 	});
-	health.__child_indent_in();
 
 	---|fE
 
@@ -401,8 +402,10 @@ renderer.render = function (buffer, parsed_content)
 
 	local post = vim.uv.hrtime();
 
-	health.notify("trace", {
-		level = 3,
+	health.print({
+		from = "renderer.lua",
+		fn = "render()",
+
 		message = string.format("Render(main): %dms", (post - start) / 1e6)
 	});
 
@@ -417,16 +420,18 @@ renderer.render = function (buffer, parsed_content)
 	---|fS "chore: Announce end of rendering"
 	local now = vim.uv.hrtime();
 
-	--- Announce end of post rendering.
-	health.notify("trace", {
-		level = 3,
+	health.print({
+		from = "renderer.lua",
+		fn = "render()",
+
 		message = string.format("Render(post): %dms", (now - post) / 1e6)
 	});
+	health.print({
+		from = "renderer.lua",
+		fn = "render()",
 
-	health.__child_indent_de();
-	health.notify("trace", {
-		level = 3,
-		message = string.format("Rendering(end, %dms): %d", (now - start) / 1e6, buffer)
+		message = string.format("Rendering total(%d): %dms", buffer, (now - start) / 1e6),
+		back = true
 	});
 
 	---|fE
@@ -456,11 +461,13 @@ renderer.clear = function (buffer, from, to, hybrid_mode)
 
 	---|fS "chore: Announce start of clearing"
 
-	health.notify("trace", {
-		level = 1,
-		message = string.format("Clearing: %d", buffer)
+	health.print({
+		from = "renderer.lua",
+		fn = "clear()",
+
+		message = string.format("Clearing: %d", buffer),
+		nest = true
 	});
-	health.__child_indent_in();
 
 	---|fE
 
@@ -474,10 +481,12 @@ renderer.clear = function (buffer, from, to, hybrid_mode)
 
 	local now = vim.uv.hrtime();
 
-	health.__child_indent_de();
-	health.notify("trace", {
-		level = 3,
-		message = string.format("Clearing(end, %dms): %d", (now - start) / 1e6, buffer)
+	health.print({
+		from = "renderer.lua",
+		fn = "clear()",
+
+		message = string.format("Clearing total(%d): %dms", buffer, (now - start) / 1e6),
+		back = true
 	});
 
 	---|fE

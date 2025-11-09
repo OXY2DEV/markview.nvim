@@ -591,7 +591,7 @@ inline.parse = function (buffer, TSTree, from, to)
 		local lines = vim.split(capture_text, "\n", {});
 
 		---@type boolean, string
-		local success, error = pcall(
+		local success, err = pcall(
 			inline[capture_name:gsub("^markdown_inline%.", "")],
 			buffer,
 			capture_node,
@@ -607,9 +607,13 @@ inline.parse = function (buffer, TSTree, from, to)
 		);
 
 		if success == false then
-			require("markview.health").notify("trace", {
-				level = 4,
-				message = error
+			require("markview.health").print({
+				from = "parsers/markdown_inline.lua",
+				fn = "parse()",
+
+				message = {
+					{ tostring(err), "DiagnosticError" }
+				}
 			});
 		end
 

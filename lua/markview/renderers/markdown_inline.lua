@@ -1020,13 +1020,12 @@ inline.render = function (buffer, content)
 		end
 
 		if success == false then
-			require("markview.health").notify("trace", {
-				level = 4,
+			require("markview.health").print({
+				from = "renderers/markdown_inline.lua",
+				fn = "post_render() -> " .. item.class,
+
 				message = {
-					{ " r/markdown_inline.lua: ", "DiagnosticVirtualTextInfo" },
-					{ string.format(" %s ", item.class), "DiagnosticVirtualTextHint" },
-					{ " " },
-					{ err, "DiagnosticError" }
+					{ tostring(err), "DiagnosticError" }
 				}
 			});
 		end

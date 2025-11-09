@@ -165,11 +165,17 @@ highlights.set_hl = function (name, value)
 	local success, err = pcall(vim.api.nvim_set_hl, 0, name, value);
 
 	if success == false and err then
-		require("markview.health").notify("hl", {
-			group = name,
-			value = value,
+		require("markview.health").print({
+			kind = "hl",
 
-			message = err
+			from = "highlights.lua",
+			fn = "set_hl() -> " .. tostring(name),
+
+			name = name,
+			value = value,
+			message = {
+				{ tostring(err), "DiagnosticError" }
+			}
 		});
 	end
 

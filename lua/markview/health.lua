@@ -1,135 +1,35 @@
 local health = {};
 
---- Logs for health check
----@type markview.health.log[]
-health.log = {};
+health.depth = 0;
 
-health.ns = vim.api.nvim_create_namespace("markview/health");
-health.buffer = nil;
-health.window = nil;
+---@type table[]
+health.history = {};
 
---- Fixed version of deprecated options.
-health.fixed_config = nil;
+--- Print log messages.
+---@param msg table
+health.print = function (msg)
+	msg.depth = health.depth;
 
-health.child_indent = 0;
-
---- Increases indent level of child messages.
-health.__child_indent_in = function ()
-	health.child_indent = health.child_indent + 1;
-end
-
---- Decreases indent level of child messages.
-health.__child_indent_de = function ()
-	health.child_indent = math.max(0, health.child_indent - 1);
-end
-
---- Fancy print()
----@param handler string | nil
----@param opts markview.notify.opts
-health.notify = function (handler, opts)
-	--- Wrapper for tostring()
-	---@param value string | [ string, string? ][]
-	---@return string
-	local function to_string(value)
-		if vim.islist(value --[[ @as table ]]) == false then
-			return tostring(value);
-		end
-
-		local _t = "";
-
-		for _, item in ipairs(value --[[ @as table ]]) do
-			if type(item[1]) == "string" then
-				if type(item[2]) == "string" and item[2]:match("VirtualText") then
-					_t = _t .. item[1]:gsub("^%s", "{"):gsub("%s$", "}");
-				else
-					_t = _t .. item[1];
-				end
-			end
-		end
-
-		return _t;
+	if msg.nest then
+		health.depth = health.depth + 1;
+	elseif msg.back then
+		health.depth = health.depth - 1;
 	end
 
-	if handler == "deprecation" then
-		---@cast opts markview.notify.deprecation
+	if msg.kind == "skip" then
+		return;
+	end
 
-		local chunks = {
-			{ "  markview.nvim ", "MarkviewPalette1" },
-			{ ": ", "@comment" },
-			{ string.format(" %s ", opts.option), "DiagnosticVirtualTextError" },
-			{ " is deprecated. ", "@comment" },
-		};
+	msg.kind = msg.kind or "log";
+	msg.show = msg.show == true;
 
-		if opts.alter then
-			chunks = vim.list_extend(chunks, {
-				{ "Use ", "@comment" },
-				{ string.format(" %s ", opts.alter), "DiagnosticVirtualTextHint" },
-				{ " instead.", "@comment" },
-			});
-		end
+	table.insert(health.history, msg);
 
-		if vim.islist(opts.tip --[[ @as table ]]) then
-			chunks = vim.list_extend(chunks, {
-				{ "\n" },
-				{ "  Tip: ", "DiagnosticVirtualTextWarn" },
-				{ " " },
-			});
-			chunks = vim.list_extend(chunks, opts.tip --[[ @as table ]]);
-		end
-
-		---  markview.nvim :  foo  is deprecated. Use  bar  instead.
-		vim.api.nvim_echo(chunks, true, {});
-
-		table.insert(health.log, {
-			kind = "deprecation",
-			name = opts.option,
-			ignore = opts.ignore,
-
-			alternative = opts.alter,
-			tip = opts.tip and to_string(opts.tip) or nil
-		});
-	elseif handler == "type" then
-		---@cast opts markview.notify.type_mismatch
-
-		local article_1 = "a ";
-		local article_2 = "a ";
-
-		if string.match(opts.uses, "^[aeiou]") then
-			article_1 = "an ";
-		elseif string.match(opts.uses, "^%A") then
-			article_1 = "";
-		end
-
-		if string.match(opts.got, "^[aeiou]") then
-			article_2 = "an ";
-		elseif string.match(opts.got, "^%A") then
-			article_2 = "";
-		end
-
-		---  markview.nvim :  foo  is a  bar , not a  baz .
-		vim.api.nvim_echo({
-			{ "  markview.nvim ", "MarkviewPalette3" },
-			{ ": ", "@comment" },
-			{ string.format(" %s ", opts.option), "DiagnosticVirtualTextInfo" },
-			{ " is " .. article_1, "@comment" },
-			{ string.format(" %s ", opts.uses), "DiagnosticVirtualTextHint" },
-			{ ", not " .. article_2, "@comment" },
-			{ string.format(" %s ", opts.got), "DiagnosticVirtualTextError" },
-			{ ".", "@comment" }
-		}, true, {});
-
-		table.insert(health.log, {
-			kind = "type_error",
-			option = opts.option,
-
-			requires = opts.uses,
-			received = opts.got
-		});
-	elseif handler == "hl" then
-		---@cast opts markview.notify.hl
+	if msg.kind == "hl" then
+		---|fS "feat: Show highlight group errors"
 
 		local text = vim.split(
-			vim.inspect(opts.value) or "",
+			vim.inspect(msg.value) or "",
 			"\n",
 			{ trimempty = true }
 		);
@@ -137,7 +37,7 @@ health.notify = function (handler, opts)
 
 		for l, line in ipairs(text) do
 			lines = vim.list_extend(lines, {
-				{ string.format("% " .. #text .. "d ", l), "LineNr" },
+				{ string.format("%" .. #text .. "d ", l), "LineNr" },
 				{ line, "@comment" },
 
 				{ "\n" },
@@ -145,106 +45,30 @@ health.notify = function (handler, opts)
 		end
 
 		vim.api.nvim_echo(vim.list_extend({
-			{ "  markview.nvim ", "MarkviewPalette5" },
+			{ " 󰏘 markview.nvim ", "DiagnosticVirtualTextError" },
 			{ ": ", "@comment" },
 			{ "Failed to set ", "@comment" },
-			{ string.format(" %s ", opts.group), "DiagnosticVirtualTextInfo" },
+			{ string.format(" %s ", msg.name ), "DiagnosticVirtualTextHint" },
 			{ ",", "@comment" }
 		}, lines), true, {});
 
-		table.insert(health.log, {
-			kind = "hl",
-
-			group = opts.group,
-			value = opts.value,
-
-			message = opts.message
-		});
-	elseif handler == "trace" then
-		---@cast opts markview.notify.trace
-
-		local config = {
-			{ "", "DiagnosticOk" },
-			{ "", "DiagnosticWarn" },
-			{ "", "DiagnosticOk" },
-
-			{ "", "DiagnosticError" },
-			{ "", "DiagnosticInfo" },
-
-			{ " ", "DiagnosticHint" },
-			{ " ", "DiagnosticWarn" },
-
-			{ " ", "DiagnosticOk" },
-			{ " ", "DiagnosticError" },
-		};
-
-		local icon, hl = config[opts.level or 5][1], config[opts.level or 5][2];
-		local indent = string.rep("  ", opts.indent or health.child_indent or 0);
-
-		local notif;
-
-		if vim.islist(opts.message --[[ @as table ]]) then
-			notif = vim.list_extend({
-				{ string.format("%s%s ", indent, icon), hl },
-				{ os.date("%H:%m"), "Comment" },
-				{ " │ ", "@comment" },
-			}, opts.message --[[ @as table ]]);
-		else
-			notif = {
-				{ string.format("%s%s ", indent, icon), hl },
-				{ os.date("%H:%m"), "Comment" },
-				{ " │ ", "Comment" },
-				{ opts.message or "", hl }
-			};
-		end
-
-		if vim.g.__mkv_dev == true then
-			vim.api.nvim_echo(notif, true, { verbose = true });
-		end
-
-		if opts.child_indent then
-			health.child_indent = opts.child_indent;
-		end
-
-		table.insert(health.log, {
-			kind = "trace",
-			ignore = true,
-			indent = opts.indent or health.child_indent,
-
-			timestamp = os.date("%k:%M:%S"),
-			message = to_string(opts.message),
-			notification = notif or {},
-			level = opts.level
-		})
-	else
-		---@cast opts { message: [ string, string? ][] }
-
+		---|fE
+	elseif msg.show then
 		vim.api.nvim_echo(
-			vim.list_extend(
-				{
-					{ "  markview.nvim ", "MarkviewPalette6" },
-					{ ": ", "@comment" },
-				},
-				opts.message
-			),
+			type(msg.message) == "string" and { { msg.message, "@comment" } } or msg.message,
 			true,
 			{}
-		);
+		)
 	end
 end
 
---- Sets up the buffer & window for trace-view
-local function trace_view_setup ()
-	if not health.buffer then
-		health.buffer = vim.api.nvim_create_buf(false, true);
+health.buffer = nil;
+health.window = nil;
 
-		vim.api.nvim_create_autocmd({ "BufLeave" }, {
-			buffer = health.buffer,
-			callback = function ()
-				pcall(vim.api.nvim_win_close, health.window, true);
-			end
-		});
-	elseif vim.api.nvim_buf_is_valid(health.buffer) == false then
+health.ns = vim.api.nvim_create_namespace("markview.health");
+
+health.view_setup = function ()
+	if not health.buffer or vim.api.nvim_buf_is_valid(health.buffer) == false then
 		health.buffer = vim.api.nvim_create_buf(false, true);
 
 		vim.api.nvim_create_autocmd({ "BufLeave" }, {
@@ -255,42 +79,10 @@ local function trace_view_setup ()
 		});
 	end
 
-	local w = math.floor(vim.o.columns * 0.75);
-	local h = math.floor(vim.o.lines * 0.5);
-
-	if not health.window then
+	if not health.window or vim.api.nvim_win_is_valid(health.window) == false then
 		health.window = vim.api.nvim_open_win(health.buffer, true, {
-			relative = "editor",
-
-			row = math.ceil((vim.o.lines - h) / 2),
-			col = math.ceil((vim.o.columns - w) / 2),
-
-			width = w,
-			height = h,
-
-			style = "minimal",
-		});
-	elseif vim.api.nvim_win_is_valid(health.window) == false then
-		health.window = vim.api.nvim_open_win(health.buffer, true, {
-			relative = "editor",
-
-			row = math.ceil((vim.o.lines - h) / 2),
-			col = math.ceil((vim.o.columns - w) / 2),
-
-			width = w,
-			height = h,
-
-			style = "minimal"
-		});
-	else
-		vim.api.nvim_win_set_config(health.window, {
-			relative = "editor",
-
-			row = math.ceil((vim.o.lines - h) / 2),
-			col = math.ceil((vim.o.columns - w) / 2),
-
-			width = w,
-			height = h
+			height = 10,
+			split = "below"
 		});
 	end
 
@@ -305,128 +97,87 @@ local function trace_view_setup ()
 	});
 end
 
---- Creates a new entry inside the trace-view buffer.
----@param l integer
-local function create_entry(l)
-	if not health.log[l] then
-		return;
+health.virt_text = function (depth, text)
+	local indent = string.rep("  ", depth);
+
+	if type(text) == "string" then
+		return indent .. text, {
+			{
+				from = 0, to = #(indent .. text),
+				group = "@comment"
+			}
+		};
 	end
 
-	local highlights = {};
-	local text = "";
+	local hl = {};
+	local col = #indent;
 
-	for _, entry in ipairs(health.log[l].notification or {}) do
-		local before = #text;
-		text = text .. entry[1];
+	local buf_text = indent;
 
-		if entry[2] then
-			table.insert(highlights, { before, #text, entry[2] });
+	for _, piece in ipairs(text) do
+		buf_text = buf_text .. (piece[1] or "");
+
+		if piece[2] then
+			table.insert(hl, {
+				from = col, to = col + #(piece[1] or ""),
+				group = piece[2]
+			});
 		end
+
+		col = col + #(piece[1] or "");
 	end
 
-	vim.api.nvim_buf_set_lines(health.buffer, -1, -1, false, { text });
-	local lnum = vim.api.nvim_buf_line_count(health.buffer) - 1;
+	return buf_text, hl;
+end
 
-	for _, hl in ipairs(highlights) do
-		vim.api.nvim_buf_set_extmark(health.buffer, health.ns, lnum, hl[1], {
-			end_col = hl[2],
-			hl_group = hl[3]
+health.view = function ()
+	health.view_setup();
+
+	local lines = {};
+	local hls = {};
+
+	for _, entry in ipairs(health.history) do
+		local txt, hl = health.virt_text(entry.depth, entry.message);
+
+		table.insert(lines, txt);
+		table.insert(hls, hl);
+	end
+
+	vim.api.nvim_buf_set_lines(health.buffer, 0, -1, false, lines);
+
+	for e, entry in ipairs(health.history) do
+		for _, hl in ipairs(hls[e]) do
+			vim.api.nvim_buf_set_extmark(health.buffer, health.ns, e - 1, hl.from, {
+				end_col = hl.to,
+				hl_group = hl.group
+			});
+		end
+
+		local virt_text = {};
+
+		if entry.from then
+			table.insert(virt_text, { " ", "Constant" })
+			table.insert(virt_text, { entry.from, "Constant" })
+		end
+
+		if entry.fn then
+			if #virt_text > 0 then
+				table.insert(virt_text, { " => " })
+			end
+
+			table.insert(virt_text, { "󰡱 ", "Function" })
+			table.insert(virt_text, { entry.fn, "Function" })
+		end
+
+		vim.api.nvim_buf_set_extmark(health.buffer, health.ns, e - 1, 0, {
+			virt_text_pos = "right_align",
+			virt_text = virt_text
 		});
 	end
 end
 
---- Opens trace-view window.
-health.trace_open = function (from, to)
-	trace_view_setup();
-	vim.api.nvim_win_set_config(health.window, {
-		border = {
-			---@diagnostic disable: assign-type-mismatch
-			{ "╭", "MarkviewPalette7Fg" },
-			{ "─", "MarkviewPalette7Fg" },
-			{ "╮", "MarkviewPalette7Fg" },
-			{ "│", "MarkviewPalette7Fg" },
-			{ "╯", "MarkviewPalette7Fg" },
-			{ "─", "MarkviewPalette7Fg" },
-			{ "╰", "MarkviewPalette7Fg" },
-			{ "│", "MarkviewPalette7Fg" },
-			---@diagnostic enable: assign-type-mismatch
-		},
 
-		title = {
-			(type(from) == "number" and type(to) == "number") and {
-				string.format("  Markview: Traceback(%s-%s) ", from, to), "MarkviewPalette7"
-			} or {
-				"  Markview: Traceback ", "MarkviewPalette7"
-			}
-		},
-		title_pos = "right",
-
-		footer = {
-			{ " " },
-			{ "[q]", "MarkviewPalette5" },
-			{ "uit, ", "Comment" },
-			{ "[r]", "MarkviewPalette5" },
-			{ "eload, ", "Comment" },
-			{ "[E]", "MarkviewPalette5" },
-			{ "xport ", "Comment" },
-		},
-		footer_pos = "right",
-	});
-
-	vim.bo[health.buffer].modifiable = true;
-	vim.api.nvim_buf_set_lines(health.buffer, 0, -1, false, {});
-
-	local logs = health.log;
-
-	if type(from) == "number" and type(to) == "number" then
-		logs = vim.list_slice(health.log, from - 1, to - 1);
-	end
-
-	for l, log in ipairs(logs) do
-		if log.kind ~= "trace" then
-			goto continue
-		end
-
-		create_entry(l);
-
-		::continue::
-	end
-
-	vim.api.nvim_buf_set_lines(health.buffer, 0, 1, false, {});
-	vim.bo[health.buffer].modifiable = false;
-
-	vim.api.nvim_buf_set_keymap(health.buffer, "n", "r", "", {
-		callback = function ()
-			vim.bo[health.buffer].modifiable = true;
-			vim.api.nvim_buf_set_lines(health.buffer, 0, -1, false, {});
-
-			for l, log in ipairs(health.log) do
-				if log.kind ~= "trace" then
-					goto continue
-				end
-
-				create_entry(l);
-
-				::continue::
-			end
-
-			vim.api.nvim_buf_set_lines(health.buffer, 0, 1, false, {});
-			vim.bo[health.buffer].modifiable = false;
-		end
-	});
-	vim.api.nvim_buf_set_keymap(health.buffer, "n", "E", "<CMD>Markview traceExport<CR>", {
-		callback = function ()
-			health.notify("msg", {
-				message = {
-					{ "Exported logs to " },
-					{ " trace.txt ", "DiagnosticVirtualTextHint" },
-					{ "."}
-				}
-			});
-			vim.cmd("Markview traceExport");
-		end
-	});
-end
+------------------------------------------------------------------------------
 
 --- Holds icons for different filetypes.
 ---@type { [string]: string }

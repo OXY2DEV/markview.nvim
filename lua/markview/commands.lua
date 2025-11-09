@@ -171,12 +171,8 @@ end
 commands.traceExport = function ()
 	require("markview.actions").traceExport();
 end
-commands.traceShow = function (from, to)
-	if pcall(tonumber, from) and pcall(tonumber, to) then
-		require("markview.health").trace_open(tonumber(from), tonumber(to));
-	else
-		require("markview.health").trace_open();
-	end
+commands.traceShow = function ()
+	require("markview.health").view();
 end
 
 commands.complete = function (_, cmd, cursorpos)

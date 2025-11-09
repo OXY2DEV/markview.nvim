@@ -147,6 +147,14 @@ actions.render = function (_buffer, _state, _config)
 		return;
 	end
 
+	require("markview.health").print({
+		from = "markview/actions.lua",
+		fn = "render()",
+
+		message = "Rendering preview.",
+		nest = true
+	});
+
 	---@type integer Number of lines a buffer can have to be fully rendered.
 	local line_limit = spec.get({ "preview", "max_buf_lines" }, { fallback = 1000, ignore_enable = true });
 
@@ -180,6 +188,7 @@ actions.render = function (_buffer, _state, _config)
 	end
 
 	spec.tmp_reset();
+	require("markview.health").print({ kind = "skip", back = true });
 
 	---|fE
 end
@@ -243,6 +252,13 @@ actions.splitview_cursor = function ()
 	local sp_win = state.get_splitview_window({}, false);
 
 	if sp_win then
+		require("markview.health").print({
+			from = "markview/actions.lua",
+			fn = "splitview_cursor()",
+
+			message = "Updated cursor(splitview).",
+		});
+
 		local cursor = vim.api.nvim_win_get_cursor(window);
 		pcall(vim.api.nvim_win_set_cursor, sp_win, cursor);
 	end
@@ -260,6 +276,14 @@ actions.splitview_render = function ()
 		pcall(actions.splitClose);
 		return;
 	end
+
+	require("markview.health").print({
+		from = "markview/actions.lua",
+		fn = "splitview_render()",
+
+		message = "Rendering splitview.",
+		nest = true
+	});
 
 	local spec =require("markview.spec");
 
@@ -302,6 +326,7 @@ actions.splitview_render = function ()
 		enable = true,
 		hybrid_mode = false
 	});
+	require("markview.health").print({ kind = "skip", back = true });
 
 	---|fE
 end
@@ -336,13 +361,12 @@ actions.autocmd = function (autocmd, ...)
 	pcall(callbacks[autocmd], ...);
 	vim.api.nvim_exec_autocmds("User", { pattern = map[autocmd][1], data = map[autocmd][2] });
 
-	-- health.notify("trace", {
-	-- 	level = 1,
-	-- 	message = {
-	-- 		{ "Callback: ", "Special" },
-	-- 		{ " " .. autocmd .. " ", "DiagnosticVirtualTextInfo" }
-	-- 	}
-	-- });
+	require("markview.health").print({
+		from = "markview/actions.lua",
+		fn = "autocmd() -> " .. autocmd,
+
+		message = "Fired " .. autocmd .. " & " .. map[autocmd][1] .. ".",
+	});
 
 	---|fE
 end
@@ -360,6 +384,8 @@ end
 
 ------------------------------------------------------------------------------
 
+--[[ Sets custom `tree-sitter` queries. ]]
+---@param buffer integer
 actions.set_query = function (buffer)
 	---|fS
 
@@ -368,6 +394,13 @@ actions.set_query = function (buffer)
 	if not default_path then
 		return;
 	end
+
+	require("markview.health").print({
+		from = "markview/actions.lua",
+		fn = "set_query()",
+
+		message = "Set tree-sitter queries for " .. buffer .. ".",
+	});
 
 	local default = table.concat(
 		vim.fn.readfile(default_path),
@@ -409,12 +442,21 @@ actions.set_query = function (buffer)
 	---|fE
 end
 
+--[[ Resets custom `tree-sitter` queries. ]]
+---@param buffer integer
 actions.reset_query = function (buffer)
 	---|fS
 
 	if not vim.g.__markdown_default_hl_query then
 		return;
 	end
+
+	require("markview.health").print({
+		from = "markview/actions.lua",
+		fn = "reset_query()",
+
+		message = "Reset tree-sitter queries for " .. buffer .. ".",
+	});
 
 	vim.treesitter.query.set("markdown", "highlights", vim.g.__markdown_default_hl_query);
 
@@ -426,6 +468,9 @@ end
 
 ------------------------------------------------------------------------------
 
+--[[ Attaches to `buffer`, optionally with a `state`. ]]
+---@param buffer? integer
+---@param _state markview.state.buf
 actions.attach = function (buffer, _state)
 	---|fS
 
@@ -439,11 +484,13 @@ actions.attach = function (buffer, _state)
 		return;
 	end
 
-	-- health.notify("trace", {
-	-- 	level = 8,
-	-- 	message = string.format("Attached: %d", buffer)
-	-- });
-	-- health.__child_indent_in();
+	require("markview.health").print({
+		from = "markview/actions.lua",
+		fn = "attach()",
+
+		message = "Attached to " .. buffer .. ".",
+		nest = true,
+	});
 
 	state.attach(buffer, _state);
 
@@ -477,22 +524,26 @@ actions.attach = function (buffer, _state)
 		actions.autocmd("on_disable", buffer, vim.fn.win_findbuf(buffer))
 	end
 
-	-- health.__child_indent_de();
+	require("markview.health").print({ kind = "skip", back = true });
 
 	---|fE
 end
 
+--[[ Detaches from `buffer`. ]]
+---@param buffer? integer
 actions.detach = function (buffer)
 	---|fS
 
 	---@type integer
 	buffer = buffer or vim.api.nvim_get_current_buf();
 
-	-- health.notify("trace", {
-	-- 	level = 9,
-	-- 	message = string.format("Detached: %d", buffer)
-	-- });
-	-- health.__child_indent_in();
+	require("markview.health").print({
+		from = "markview/actions.lua",
+		fn = "detach()",
+
+		message = "Detached from " .. buffer .. ".",
+		nest = true,
+	});
 
 	actions.autocmd("on_detach", buffer, vim.fn.win_findbuf(buffer))
 
@@ -503,7 +554,7 @@ actions.detach = function (buffer)
 	]]
 	require("markview.state").detach(buffer, false);
 	actions.clear(buffer);
-	-- health.__child_indent_de()
+	require("markview.health").print({ kind = "skip", back = true });
 
 	---|fE
 end
@@ -552,11 +603,14 @@ actions.enable = function (buffer)
 		return;
 	end
 
-	-- health.notify("trace", {
-	-- 	level = 6,
-	-- 	message = string.format("Enabled: %d", buffer)
-	-- });
-	-- health.__child_indent_in();
+	require("markview.health").print({
+		from = "markview/actions.lua",
+		fn = "enable()",
+
+		message = "Enabled preview for " .. buffer .. ".",
+		nest = true,
+	});
+
 	actions.set_query(buffer);
 	---@diagnostic disable-next-line: assign-type-mismatch
 	state.set_buffer_state(buffer, { enable = true, hybrid_mode = nil });
@@ -566,7 +620,7 @@ actions.enable = function (buffer)
 	local prev_modes = spec.get({ "preview", "modes" }, { fallback = {}, ignore_enable = true });
 
 	if vim.list_contains(prev_modes, mode) == false then
-		-- health.__child_indent_de();
+		require("markview.health").print({ kind = "skip", back = true });
 		return;
 	end
 
@@ -594,7 +648,7 @@ actions.enable = function (buffer)
 		actions.autocmd(buf_state.hybrid_mode and "on_hybrid_enable" or "on_hybrid_disable", buffer, vim.fn.win_findbuf(buffer))
 	end
 
-	-- health.__child_indent_de();
+	require("markview.health").print({ kind = "skip", back = true });
 
 	---|fE
 end
@@ -613,11 +667,13 @@ actions.disable = function (buffer)
 		return;
 	end
 
-	-- health.notify("trace", {
-	-- 	level = 7,
-	-- 	message = string.format("Disabled: %d", buffer)
-	-- });
-	-- health.__child_indent_in();
+	require("markview.health").print({
+		from = "markview/actions.lua",
+		fn = "enable()",
+
+		message = "Disabled preview for " .. buffer .. ".",
+		nest = true,
+	});
 
 	actions.reset_query(buffer);
 	---@diagnostic disable-next-line: assign-type-mismatch
@@ -640,7 +696,7 @@ actions.disable = function (buffer)
 		actions.autocmd("on_hybrid_disable", buffer, vim.fn.win_findbuf(buffer))
 	end
 
-	-- health.__child_indent_de();
+	require("markview.health").print({ kind = "skip", back = true });
 
 	---|fE
 end
@@ -695,12 +751,20 @@ actions.hybridEnable = function (buffer)
 		return;
 	end
 
+	require("markview.health").print({
+		from = "markview/actions.lua",
+		fn = "hybridEnable()",
+
+		message = "Enabled hybrid mode for " .. buffer .. ".",
+		nest = true,
+	});
 
 	if actions.in_hybrid_mode() then
 		actions.autocmd("on_hybrid_enable", buffer, vim.fn.win_findbuf(buffer))
 	end
 
 	actions.render(buffer);
+	require("markview.health").print({ kind = "skip", back = true });
 
 	---|fE
 end
@@ -730,12 +794,20 @@ actions.hybridDisable = function (buffer)
 		return;
 	end
 
+	require("markview.health").print({
+		from = "markview/actions.lua",
+		fn = "hybridDisable()",
+
+		message = "Disabled hybrid mode for " .. buffer .. ".",
+		nest = true,
+	});
 
 	if actions.in_hybrid_mode() then
 		actions.autocmd("on_hybrid_disable", buffer, vim.fn.win_findbuf(buffer))
 	end
 
 	actions.render(buffer);
+	require("markview.health").print({ kind = "skip", back = true });
 
 	---|fE
 end
@@ -766,6 +838,13 @@ actions.splitOpen = function (buffer)
 	if state.buf_safe(buffer) == false then
 		return;
 	end
+
+	require("markview.health").print({
+		from = "markview/actions.lua",
+		fn = "splitOpen()",
+
+		message = "Opened splitview for " .. buffer .. ".",
+	});
 
 	actions.splitClose();
 
@@ -809,6 +888,13 @@ actions.splitClose = function ()
 		actions.clear(sp_buf);
 		vim.api.nvim_buf_set_lines(sp_buf, 0, -1, false, {});
 	end
+
+	require("markview.health").print({
+		from = "markview/actions.lua",
+		fn = "splitClose()",
+
+		message = "Closed splitview.",
+	});
 
 	if state.buf_safe(src) == false then
 		return;

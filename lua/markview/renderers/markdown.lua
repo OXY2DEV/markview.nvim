@@ -3716,14 +3716,13 @@ markdown.render = function (buffer, content)
 			success, err = pcall(markdown[item.class:gsub("^markdown_", "")], buffer, item);
 		end
 
-
 		if success == false then
-			require("markview.health").notify("trace", {
-				level = 4,
+			require("markview.health").print({
+				from = "renderers/markdown.lua",
+				fn = "render() -> " .. item.class,
+
 				message = {
-					{ " r/markdown.lua: ", "DiagnosticVirtualTextInfo" },
-					{ " " },
-					{ err, "DiagnosticError" }
+					{ tostring(err), "DiagnosticError" }
 				}
 			});
 		end
@@ -3749,13 +3748,12 @@ markdown.post_render = function (buffer, content)
 		end
 
 		if success == false then
-			require("markview.health").notify("trace", {
-				level = 4,
+			require("markview.health").print({
+				from = "renderers/markdown.lua",
+				fn = "post_render() -> " .. item.class,
+
 				message = {
-					{ " r/markdown.lua: ", "DiagnosticVirtualTextInfo" },
-					{ string.format(" %s ", item.class), "DiagnosticVirtualTextHint" },
-					{ " " },
-					{ err, "DiagnosticError" }
+					{ tostring(err), "DiagnosticError" }
 				}
 			});
 		end

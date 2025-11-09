@@ -567,7 +567,7 @@ latex.parse = function (buffer, TSTree, from, to)
 		end
 
 		---@type boolean, string
-		local success, error = pcall(
+		local success, err = pcall(
 			latex[capture_name:gsub("^latex%.", "")],
 
 			buffer,
@@ -583,9 +583,13 @@ latex.parse = function (buffer, TSTree, from, to)
 		);
 
 		if success == false then
-			require("markview.health").notify("trace", {
-				level = 4,
-				message = error
+			require("markview.health").print({
+				from = "parsers/latex.lua",
+				fn = "parse()",
+
+				message = {
+					{ tostring(err), "DiagnosticError" }
+				}
 			});
 		end
 

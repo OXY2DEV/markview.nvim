@@ -9,6 +9,8 @@ autocmds.pased_vimenter = false;
 ---@return boolean delay
 ---@return boolean | nil ignore
 autocmds.use_delay = function (buffer, event_name, args)
+	---|fS
+
 	local noimmediate_autocmds = { "TextChanged", "TextChangedI" };
 
 	if vim.list_contains(noimmediate_autocmds, event_name) then
@@ -57,10 +59,15 @@ autocmds.use_delay = function (buffer, event_name, args)
 	end
 
 	return true, true;
+
+	---|fE
 end
 
 ---@param args vim.api.keyset.create_autocmd.callback_args
+---@return boolean
 autocmds.should_detach = function (args)
+	---|fS
+
 	local state = require("markview.state");
 
 	if not args.buf or not state.enabled() or not state.buf_attached(args.buf) then
@@ -86,12 +93,18 @@ autocmds.should_detach = function (args)
 	elseif condition == false then
 		return true;
 	end
+
+	return false;
+
+	---|fE
 end
 
 ------------------------------------------------------------------------------
 
 ---@param args vim.api.keyset.create_autocmd.callback_args
 autocmds.modeChanged = function (args)
+	---|fS
+
 	local state = require("markview.state");
 
 	if not args.buf or not state.enabled() or not state.buf_attached(args.buf) then
@@ -107,6 +120,14 @@ autocmds.modeChanged = function (args)
 	end
 
 	local function action ()
+		require("markview.health").print({
+			from = "markview/autocmds.lua",
+			fn = "modeChanged() -> action()",
+
+			message = "Mode changed process.",
+			nest = true,
+		});
+
 		local actions = require("markview.actions");
 		local p_now = actions.in_preview_mode();
 
@@ -117,6 +138,8 @@ autocmds.modeChanged = function (args)
 		else
 			actions.clear(args.buf);
 		end
+
+		require("markview.health").print({ kind = "skip", back = true });
 	end
 
 	if use_delay then
@@ -124,10 +147,15 @@ autocmds.modeChanged = function (args)
 	else
 		action();
 	end
+
+	---|fE
 end
 
+--[[ Handle buffer state changes(e.g. buffer became invalid). ]]
 ---@param args vim.api.keyset.create_autocmd.callback_args
 autocmds.bufHandle = function (args)
+	---|fS
+
 	local state = require("markview.state");
 
 	if not state.enabled() then
@@ -156,13 +184,34 @@ autocmds.bufHandle = function (args)
 		return;
 	end
 
+	require("markview.health").print({
+		from = "markview/autocmds.lua",
+		fn = "bufHandle() -> " .. (args.match or "???"),
+
+		message = string.format("Buffer state changed.", args.buf),
+	});
+
 	require("markview.actions").attach(args.buf);
+
+	---|fE
 end
 
+--[[ Option changed. ]]
 ---@param args vim.api.keyset.create_autocmd.callback_args
 autocmds.optionSet = function (args)
+	---|fS
+
 	if vim.v.option_old == vim.v.option_new then
 		return;
+	end
+
+	if vim.list_contains({ "filetype", "buftype", "wrap", "linebreak" }, args.match) then
+		require("markview.health").print({
+			from = "markview/autocmds.lua",
+			fn = "optionSet() -> " .. (args.match or "???") ,
+
+			message = "Option changed."
+		});
 	end
 
 	if vim.list_contains({ "filetype", "buftype" }, args.match) then
@@ -189,12 +238,18 @@ autocmds.optionSet = function (args)
 			end
 		end
 	end
+
+	---|fE
 end
 
+---@diagnostic disable-next-line: undefined-field
 autocmds.cursor_timer = vim.uv.new_timer();
 
+--[[ Cursor moved. ]]
 ---@param args vim.api.keyset.create_autocmd.callback_args
 autocmds.cursor = function (args)
+	---|fS
+
 	local state = require("markview.state");
 	local actions = require("markview.actions");
 
@@ -222,6 +277,14 @@ autocmds.cursor = function (args)
 	end
 
 	local function action ()
+		require("markview.health").print({
+			from = "markview/autocmds.lua",
+			fn = "cursor() -> action()",
+
+			message = "Cursor movement process.",
+			nest = true,
+		});
+
 		local p_now = actions.in_preview_mode();
 
 		if args.buf == state.get_splitview_source() then
@@ -231,6 +294,8 @@ autocmds.cursor = function (args)
 		else
 			actions.clear(args.buf);
 		end
+
+		require("markview.health").print({ kind = "skip", back = true });
 	end
 
 	local delay = require("markview.spec").get({ "preview", "debounce" }, { fallback = 25, ignore_enable = true });
@@ -240,10 +305,23 @@ autocmds.cursor = function (args)
 	else
 		action();
 	end
+
+	---|fE
 end
 
+--- If the file is changed by some other program. Tree-sitter queries need to be set again.
 ---@param args vim.api.keyset.create_autocmd.callback_args
 autocmds.file_changed = function (args)
+	---|fS
+
+	require("markview.health").print({
+		from = "markview/autocmds.lua",
+		fn = "file_changed()",
+
+		message = "File change detected.",
+		nest = true,
+	});
+
 	local state = require("markview.state");
 	local actions = require("markview.actions");
 
@@ -269,9 +347,23 @@ autocmds.file_changed = function (args)
 	end
 
 	actions.set_query(args.buf);
+	require("markview.health").print({ kind = "skip", back = true });
+
+	---|fE
 end
 
+--[[ Calls necessary functions that got skipped by *lazy-loading*. ]]
 autocmds.lazy_loaded = function ()
+	---|fS
+
+	require("markview.health").print({
+		from = "markview/autocmds.lua",
+		fn = "lazy_loaded()",
+
+		message = "Lazy load hook fired.",
+		nest = true,
+	});
+
 	require("markview.highlights").setup();
 	require("markview.integrations").setup();
 
@@ -292,10 +384,22 @@ autocmds.lazy_loaded = function ()
 	});
 	```
 	]]
+	require("markview.health").print({ kind = "skip", back = true });
+
+	---|fE
 end
 
+--[[ Set up necessary `autocmds`.]]
 autocmds.setup = function ()
+	---|fS
+
 	if autocmds.did_enter then
+		require("markview.health").print({
+			from = "markview/autocmds.lua",
+			fn = "setup()",
+
+			message = "Autocmds already set!"
+		});
 		return;
 	end
 
@@ -344,6 +448,8 @@ autocmds.setup = function ()
 	if vim.v.vim_did_enter == 1 and autocmds.pased_vimenter == false then
 		autocmds.lazy_loaded();
 	end
+
+	---|fE
 end
 
 return autocmds;

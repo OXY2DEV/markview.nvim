@@ -62,9 +62,11 @@ integrations.register_blink_source = function ()
 	end
 
 	vim.g.markview_blink_loaded = true;
-	require("markview.health").notify("trace", {
-		level = 5,
-		message = "Registered source for blink.cmp."
+	require("markview.health").print({
+		message = {
+			{ "Registered integration: ", "Comment" },
+			{ " blink.cmp ", "DiagnosticVirtualLinesHint" }
+		}
 	});
 
 	---|fE
@@ -100,9 +102,11 @@ integrations.register_cmp_source = function ()
     ---|fE
 
 	vim.g.markview_cmp_loaded = true;
-	require("markview.health").notify("trace", {
-		level = 5,
-		message = "Registered source for nvim-cmp."
+	require("markview.health").print({
+		message = {
+			{ "Registered integration: ", "Comment" },
+			{ " nvim-cmp ", "DiagnosticVirtualLinesHint" }
+		}
 	});
 
 	---|fE

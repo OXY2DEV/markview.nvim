@@ -262,10 +262,14 @@ links.__to_fragment = function (buffer, fragment)
 	if
 		not links.reference[buffer] or not links.reference[buffer][fragment]
 	then
-		health.notify("msg", {
+		health.print({
+			kind = "msg",
+			from = "markview/links.lua",
+			fn = "__to_fragment()",
+
 			message = {
 				{ "Couldn't find ", "Comment" },
-				{ " ID ", "DiagnosticVirtualTextHint" },
+				{ string.format(" ID(%s) ", fragment), "DiagnosticVirtualTextHint" },
 				{ " in document! ", "Comment" },
 			}
 		});
@@ -314,8 +318,17 @@ links.__open = function (buffer, address)
 		if cmd then
 			cmd:wait();
 		elseif err then
-			health.notify("msg", {
-				message = { { err, "DiagnosticError" } }
+			health.print({
+				kind = "msg",
+				from = "markview/links.lua",
+				fn = "__open()",
+
+				message = {
+					{ "Couldn't open: ", "Comment" },
+					{ string.format(" %s ", path), "DiagnosticVirtualTextHint" },
+					{ "; ", "Comment" },
+					{ tostring(err), "DiagnosticVirtualTextHint" },
+				}
 			});
 		end
 	end
@@ -404,7 +417,11 @@ links.open = function ()
 		--- Use tree-sitter based link detector.
 		links.treesitter(buffer);
 	else
-		health.notify("msg", {
+		health.print({
+			kind = "msg",
+			from = "markview/links.lua",
+			fn = "__open()",
+
 			message = {
 				{ " tree-sitter parsers ", "DiagnosticVirtualTextHint" },
 				{ " not found! Using " },

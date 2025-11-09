@@ -178,9 +178,13 @@ html.parse = function (buffer, TSTree, from, to)
 		);
 
 		if success == false then
-			require("markview.health").notify("trace", {
-				level = 4,
-				message = error
+			require("markview.health").print({
+				from = "parsers/html.lua",
+				fn = "parse()",
+
+				message = {
+					{ tostring(error), "DiagnosticError" }
+				}
 			});
 		end
 

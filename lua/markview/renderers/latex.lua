@@ -865,12 +865,12 @@ latex.render = function (buffer, content)
 			end
 
 			if success == false then
-				require("markview.health").notify("trace", {
-					level = 4,
+				require("markview.health").print({
+					from = "renderers/latex.lua",
+					fn = "render() -> " .. item.class,
+
 					message = {
-						{ " r/latex.lua: ", "DiagnosticVirtualTextInfo" },
-						{ " " },
-						{ err, "DiagnosticError" }
+						{ tostring(err), "DiagnosticError" }
 					}
 				});
 			end
@@ -887,13 +887,12 @@ latex.render = function (buffer, content)
 		end
 
 		if success == false then
-			require("markview.health").notify("trace", {
-				level = 4,
+			require("markview.health").print({
+				from = "renderers/latex.lua",
+				fn = "render() -> " .. item.class .. "(post)",
+
 				message = {
-					{ " r/latex.lua: ", "DiagnosticVirtualTextInfo" },
-					{ string.format(" %s ", item.class), "DiagnosticVirtualTextHint" },
-					{ " " },
-					{ err, "DiagnosticError" }
+					{ tostring(err), "DiagnosticError" }
 				}
 			});
 		end

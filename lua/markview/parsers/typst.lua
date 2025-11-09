@@ -549,7 +549,7 @@ typst.parse = function (buffer, TSTree, from, to)
 			table.insert(lines, line);
 		end
 
-		local success, error = pcall(
+		local success, err = pcall(
 			typst[capture_name:gsub("^typst%.", "")],
 
 			buffer,
@@ -565,9 +565,13 @@ typst.parse = function (buffer, TSTree, from, to)
 		);
 
 		if success == false then
-			require("markview.health").notify("trace", {
-				level = 4,
-				message = error
+			require("markview.health").print({
+				from = "parsers/typst.lua",
+				fn = "parse()",
+
+				message = {
+					{ tostring(err), "DiagnosticError" }
+				}
 			});
 		end
 

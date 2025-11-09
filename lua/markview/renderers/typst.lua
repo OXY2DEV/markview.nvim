@@ -1588,13 +1588,12 @@ typst.render = function (buffer, content)
 		end
 
 		if success == false then
-			require("markview.health").notify("trace", {
-				level = 4,
+			require("markview.health").print({
+				from = "renderers/typst.lua",
+				fn = item.class .. "()",
+
 				message = {
-					{ " r/typst.lua: ", "DiagnosticVirtualTextInfo" },
-					{ string.format(" %s ", item.class), "DiagnosticVirtualTextHint" },
-					{ " " },
-					{ err, "DiagnosticError" }
+					{ tostring(err), "DiagnosticError" }
 				}
 			});
 		end

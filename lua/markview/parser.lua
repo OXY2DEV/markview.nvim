@@ -129,11 +129,14 @@ parser.init = function (buffer, from, to, cache)
 	---@type integer Start time
 	local start = vim.uv.hrtime();
 
-	health.notify("trace", {
-		level = 1,
-		message = string.format("Parsing(start): %d", buffer)
+	health.print({
+		from = "parsers.lua",
+		fn = "init()",
+
+		message = string.format("Parsing(start): %d", buffer),
+		nest = true,
 	});
-	health.__child_indent_in();
+
 	---|fE
 
 	root_parser:for_each_tree(function (TSTree, language_tree)
@@ -159,11 +162,11 @@ parser.init = function (buffer, from, to, cache)
 	---@type integer End time
 	local now = vim.uv.hrtime();
 
-	health.__child_indent_de();
-	health.notify("trace", {
-		level = 3,
-		message = string.format("Parsing(end, %dms): %d", (now - start) / 1e6, buffer)
+	health.print({
+		message = string.format("Parsing total(%d): %dms", buffer, (now - start) / 1e6),
+		back = true,
 	});
+
 	---|fE
 
 	return parser.content, parser.sorted;
@@ -210,11 +213,14 @@ parser.parse_links = function (buffer)
 	---@type integer Start time
 	local start = vim.uv.hrtime();
 
-	health.notify("trace", {
-		level = 1,
-		message = string.format("Link parsing(start): %d", buffer)
+	health.print({
+		from = "parsers.lua",
+		fn = "init()",
+
+		message = string.format("Parsing links: %d", buffer),
+		nest = true,
 	});
-	health.__child_indent_in();
+
 	---|fE
 
 	root_parser:for_each_tree(function (TSTree, language_tree)
@@ -231,11 +237,14 @@ parser.parse_links = function (buffer)
 	---@type integer End time
 	local now = vim.uv.hrtime();
 
-	health.__child_indent_de();
-	health.notify("trace", {
-		level = 3,
-		message = string.format("Link parsing(end, %dms): %d", (now - start) / 1e6, buffer)
+	health.print({
+		from = "parsers.lua",
+		fn = "init()",
+
+		message = string.format("Parsing links total(%d): %dms", buffer, (now - start) / 1e6),
+		back = true,
 	});
+
 	---|fE
 
 	---|fE
