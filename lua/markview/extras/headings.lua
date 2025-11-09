@@ -175,28 +175,6 @@ end, {
 	end
 });
 
-vim.api.nvim_create_user_command("HeadingIncrease", function ()
-	require("markview.health").notify("deprecation", {
-		ignore = true,
-
-		option = ":HeadingIncrease",
-		alter = ":Heading increase"
-	});
-
-	headings.increase();
-end, {});
-
-vim.api.nvim_create_user_command("HeadingDecrease", function ()
-	require("markview.health").notify("deprecation", {
-		ignore = true,
-
-		option = ":HeadingDecrease",
-		alter = ":Heading decrease"
-	});
-
-	headings.decrease()
-end, {});
-
 headings.setup = function ()
 end
 

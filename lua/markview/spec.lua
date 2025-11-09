@@ -2,7 +2,6 @@
 --- for `markview.nvim`.
 ---
 --- It has the following tasks,
----    • Maintain backwards compatibility
 ---    • Check for issues with config
 local spec = {};
 
@@ -222,46 +221,6 @@ spec.__external_config = {
 spec.config = vim.deepcopy(spec.default);
 spec.tmp_config = nil;
 
----@type string[] Old configuration options.
-spec.old_options = {
-	"checkboxes",
-	"render_distance",
-	"split_conf",
-	"buf_ignore",
-	"horizontal_rules",
-	"block_quotes",
-	"injections",
-	"footnotes",
-	"links",
-	"filetypes",
-	"callbacks",
-	"headings",
-	"preview",
-	"inline_codes",
-	"hybrid_modes",
-	"modes",
-	"debounce",
-	"list_items",
-	"ignore_nodes",
-	"max_file_length",
-	"initial_state",
-	"tables",
-	"code_blocks"
-};
-
---[[ Does the *config* use the old `spec`? ]]
----@param config table?
----@return boolean
-spec.should_fix_config = function (config)
-	for k, _ in pairs(config or {}) do
-		if vim.list_contains(spec.old_options, k) then
-			return true;
-		end
-	end
-
-	return false;
-end
-
 ---@param config markview.config?
 spec.tmp_setup = function (config)
 	spec.tmp_config = config;
@@ -274,10 +233,6 @@ end
 --- Setup function for markview.
 ---@param config markview.config?
 spec.setup = function (config)
-	if spec.should_fix_config(config) then
-		config = require("markview.compat").fix_config(config);
-	end
-
 	spec.config = vim.tbl_deep_extend("force", spec.config, config or {});
 end
 

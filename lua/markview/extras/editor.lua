@@ -744,30 +744,6 @@ end, {
 	end
 });
 
----+${lua, v24 commands}
-vim.api.nvim_create_user_command("CodeCreate", function ()
-	require("markview.health").notify("deprecation" , {
-		ignore = true,
-
-		option = ":CodeCreate",
-		alter = ":Editor create"
-	});
-
-	editor.actions.create();
-end, {});
-
-vim.api.nvim_create_user_command("CodeEdit", function ()
-	require("markview.health").notify("deprecation" , {
-		ignore = true,
-
-		option = ":CodeEdit",
-		alter = ":Editor edit"
-	});
-
-	editor.actions.edit();
-end, {});
----_
-
 editor.setup = function (config)
 	editor.config = vim.tbl_deep_extend("force", editor.config, config or {});
 end
