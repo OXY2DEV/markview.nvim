@@ -19,6 +19,7 @@
                 "gx$": [ "markview.nvim-integrations.gx" ],
                 "wrap$": [ "markview.nvim-integrations.wrap" ],
                 "colorschemes$": [ "markview.nvim-integrations.transparent_colorschemes" ],
+                "blending$": [ "markview.nvim-integrations.color_blending" ],
                 "nvim-cmp": [ "markview.nvim-integrations.nvim-cmp" ]
             },
             "link_url_modifiers": [
@@ -80,6 +81,17 @@ You can change what color is used for blending by setting these variables,
 
 >[!IMPORTANT]
 > These values will not be used if `Normal` highlight group has a background color.
+
+### 💡 Color blending
+
+Color blending is used to create dynamic background colors for various elements. You can control this behavior if the background becomes too dim/bright.
+
+>[!TIP]
+> This also works for non transparent colorschemes.
+
+You can also change the blending via the `vim.g.markview_alpha` variable. This can be used to make background color more visible.
+
+By default, it is set to `0.15` for dark background & `0.25` for light background.
 
 ## 📦 nvim-cmp
 

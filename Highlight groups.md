@@ -25,6 +25,9 @@ These highlight groups are created by the plugin,
 >[!NOTE]
 > The value of these groups are updated when changing the colorscheme! See [integrations.transparent_colorschemes](https://github.com/OXY2DEV/markview.nvim/wiki/Integrations#-transparent-colorschemes)
 
+>[!TIP]
+> Background colors not colorful enough for you? See [integrations#color_blending](https://github.com/OXY2DEV/markview.nvim/wiki/Integrations#-color-blending).
+
 ### 🎨 Primary groups
 
 These groups will be updated to match the colorscheme whenever the `ColorScheme` update is detected,
