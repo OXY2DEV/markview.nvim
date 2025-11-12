@@ -6,6 +6,10 @@ These highlight groups are created by the plugin,
 ▋ The value of these groups are updated when changing the colorscheme! See
 ▋ integrations.transparent_colorschemes {1}
 
+▋  Tip
+▋ Background colors not colorful enough for you? See integrations#color_blending
+▋ {2}.
+
 🎨 Primary groups ~
 
 These groups will be updated to match the colorscheme whenever the `ColorScheme`
@@ -130,5 +134,6 @@ of the linked group wouldn't affect these.
 Links ~
 
 1: https://github.com/OXY2DEV/markview.nvim/wiki/Integrations#-transparent-colorschemes
+2: https://github.com/OXY2DEV/markview.nvim/wiki/Integrations#-color-blending
 
 vim:ft=help:textwidth=80:tabstop=4:noexpandtab:
