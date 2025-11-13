@@ -4,6 +4,7 @@ health.depth = 0;
 
 ---@type table[]
 health.history = {};
+health.log = {};
 
 --- Print log messages.
 ---@param msg table
