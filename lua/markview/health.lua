@@ -244,11 +244,11 @@ health.check = function ()
 
 	------------------------------------------------------------------------------------------ 
 
-	vim.health.start("💻 Neovim:")
+	vim.health.start("💻 Neovim version:")
 
 	if vim.fn.has("nvim-0.10.1") == 1 then
 		vim.health.ok(
-			"Version: " .. string.format( "`%d.%d.%d`", ver.major, ver.minor, ver.patch )
+			string.format( "`v%d.%d.%d`", ver.major, ver.minor, ver.patch )
 		);
 	elseif ver.major == 0 and ver.minor == 10 and ver.patch == 0 then
 		vim.health.warn(
@@ -262,29 +262,7 @@ health.check = function ()
 
 	------------------------------------------------------------------------------------------ 
 
-	vim.health.start("📂 Runtime path:")
-
-	if _G.__mkv_has_rtp_error == true then
-		vim.health.error(
-			"Runtime: `nvim-treesitter` is loaded before `markview.nvim`! It is recommened to change their load order!"
-		);
-
-		vim.health.info(
-			"NOTE: This can lead to incorrect `tree-sitter` query files being loaded, syntax highlighting may look odd!"
-		);
-	else
-		vim.health.ok(
-			"Runtime: `nvim-treesitter` isn't loaded before `markview.nvim`."
-		);
-
-		vim.health.info(
-			"NOTE: If you have changed the directory name of `nvim-treesitter` or `markview.nvim`, the result will be inaccurate!"
-		);
-	end
-
-	------------------------------------------------------------------------------------------ 
-
-	vim.health.start("💡 Parsers:")
+	vim.health.start("📦 Parsers:")
 
 	if pcall(require, "nvim-treesitter") then
 		vim.health.ok("`nvim-treesitter/nvim-treesitter` found.");
@@ -292,74 +270,36 @@ health.check = function ()
 		vim.health.warn("`nvim-treesitter/nvim-treesitter` wasn't found.");
 	end
 
-	for parser, icon in pairs(health.supported_languages) do
+	for parser, _ in pairs(health.supported_languages) do
 		if utils.parser_installed(parser) then
-			vim.health.ok("`" .. icon .. parser .. "`" .. " parser was found.");
+			vim.health.ok("Parser: `" .. parser .. "`" );
 		else
-			vim.health.warn("`" .. icon .. parser .. "`" .. " parser wasn't found.");
+			vim.health.warn("Parser: `" .. parser .. "`" );
 		end
 	end
 
 	---------------------------------------------------------------------------------------- 
 
 	vim.health.start("✨ Icon providers:");
+	vim.health.info("NOTE: You don't need these by default.")
 
 	if pcall(require, "nvim-web-devicons") then
 		vim.health.ok("`nvim-tree/nvim-web-devicons` found.");
 	else
-		vim.health.info("`nvim-tree/nvim-web-devicons` not found.");
+		vim.health.info("⬛ Ok `nvim-tree/nvim-web-devicons` not found.");
 	end
 
 	if pcall(require, "mini.icons") then
 		vim.health.ok("`echasnovski/mini.icons` found.");
 	else
-		vim.health.info("`echasnovski/mini.icons` not found.");
-	end
-
-	------------------------------------------------------------------------------------------ 
-
-	vim.health.start("🚧 Configuration:");
-	local errors = false;
-
-	for _, entry in ipairs(health.log) do
-		if entry.kind == "trace" or entry.ignore == true then
-			goto continue;
-		end
-
-		errors = true;
-
-		if entry.kind == "deprecation" then
-			local text = string.format("`%s` is deprecated!", entry.name);
-
-			if entry.alternative then
-				text = text .. string.format(" Use `%s` instead.", entry.alternative);
-			end
-
-			vim.health.warn(text);
-
-			if entry.tip then
-				vim.health.info(string.format("Tip: %s", entry.tip));
-			end
-		elseif entry.kind == "type_error" then
-			vim.health.warn(string.format("%s expects `%s`, not `%s`.", entry.option, entry.requires, entry.received));
-		elseif entry.kind == "hl" then
-			vim.health.warn(string.format("Failed to set highlight: `%s`. Error: %s.", entry.group, entry.message));
-		end
-
-	    ::continue::
-	end
-
-
-	if health.fixed_config then
-		vim.health.info("A patched version of your config is available below:\n" .. vim.inspect(health.fixed_config));
-	elseif errors == false then
-		vim.health.ok("No errors found!")
+		vim.health.info("⬛ Ok `echasnovski/mini.icons` not found.");
 	end
 
 	------------------------------------------------------------------------------------------ 
 
 	vim.health.start("💬 Symbols:")
-	vim.health.info("📖 If any of the symbols aren't showing up then your font doesn't support it! You may want to `update your font`!");
+	vim.health.info("NOTE: See if the symbols are showing up correctly!");
+	vim.health.info("NOTE: If they aren't you may need to update your nerd font!");
 
 	vim.health.start("📐 LaTeX math symbols:");
 
@@ -380,11 +320,13 @@ health.check = function ()
 	end
 
 	vim.health.start("🔤 Text styles:");
+	vim.health.info("NOTE: A modern Unicode font is required for these to show up correctly!");
 
 	vim.health.info("`Subscript`         " .. symbols.tostring("subscripts", "ABCDEFGHIJKLMNOPQRSTUVWXYZ abcdefghijklmnopqrstuvwxyz 0123456789 + () ="));
 	vim.health.info("`Superscript`       " .. symbols.tostring("superscripts", "ABCDEFGHIJKLMNOPQRSTUVWXYZ abcdefghijklmnopqrstuvwxyz 0123456789 + () ="));
 
 	vim.health.start("🔢 Math fonts:");
+	vim.health.info("NOTE: These won't show up correctly if your font doesn't supoort math fonts!");
 
 	for font, _ in pairs(symbols.fonts) do
 		vim.health.info(string.format("%-20s" , "`" .. font .. "`") .. symbols.tostring(font, "ABCDEFGHIJKLMNOPQRSTUVWXYZ abcdefghijklmnopqrstuvwxyz 0123456789"));
@@ -392,4 +334,3 @@ health.check = function ()
 end
 
 return health;
---- vim:foldmethod=indent:
