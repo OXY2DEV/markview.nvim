@@ -666,22 +666,35 @@ local function overlap (row_start)
 	return top_border, border_overlap;
 end
 
---- LPeg-based parser for markdown table rows.
+--[[
+LPeg grammar for markdown table rows.
+
+Rules,
+1. A row **must** have 1 `init_col` followed by 0 or more `end_col`.
+2. `init_col` consists of a `pipe`, `content` & another `pipe`.
+3. `end_col` consists of a `content` & another `pipe`.
+4. `content` consists of 1 or more `\|`(escaped_pipe) or anything that is not a `|`.
+]]
 ---@param line string
 ---@return table[]
 local function lpeg_processor(line)
 	---|fS
 
 	line = line:gsub("^%s*", "");
-	line = line:gsub("\\|", "  ");
+	-- line = line:gsub("\\|", "  ");
 
 	local pipe = vim.lpeg.C("|");
-	local cont = vim.lpeg.C(vim.re.compile("[^|]+"))
+	local not_pipe = vim.lpeg.P(1) - vim.lpeg.P("|");
+	local esc_pipe = vim.lpeg.P("\\|");
 
-	local init_cell = vim.lpeg.P(pipe^-1 * cont * pipe)
-	local end_cell = vim.lpeg.P(cont * pipe^-1)
+	local cont = vim.lpeg.C(
+		( esc_pipe + not_pipe )^1
+	)
 
-	local ROW = vim.lpeg.Ct( init_cell * end_cell ^ 0 );
+	local init_col = pipe * cont * pipe;
+	local end_col = cont * pipe^-1;
+
+	local ROW = vim.lpeg.Ct( init_col * end_col^0 );
 
 	local RESULT = ROW:match(line);
 	local _o = {};
@@ -699,7 +712,8 @@ local function lpeg_processor(line)
 				col_start = y,
 				col_end = y + #j,
 			});
-		else
+		elseif string.match(j, "%S") then
+			-- NOTE: A column must have at least 1 non-whitespace character.
 			table.insert(_o, {
 				class = "column",
 
