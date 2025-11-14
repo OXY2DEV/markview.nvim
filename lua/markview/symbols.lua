@@ -2504,6 +2504,7 @@ symbols.entries = {
 	["leftarrow"] = "←",
 	["uparrow"] = "↑",
 	["rightarrow"] = "→",
+	["to"] = "→",
 	["downarrow"] = "↓",
 	["leftrightarrow"] = "↔",
 	["updownarrow"] = "↕",
