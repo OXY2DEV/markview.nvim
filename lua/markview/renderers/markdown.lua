@@ -2942,7 +2942,7 @@ markdown.table = function (buffer, item)
 
 			if is_wrapped == true then
 				if left > 0 then
-					vim.api.nvim_buf_set_extmark(buffer, markdown.ns, x, (range.col_start + sep.col_end) - 2, {
+					vim.api.nvim_buf_set_extmark(buffer, markdown.ns, x, (range.col_start + sep.col_end) - 1, {
 						undo_restore = false, invalidate = true,
 
 						virt_text_pos = "inline",
