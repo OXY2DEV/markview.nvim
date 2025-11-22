@@ -84,6 +84,12 @@ return {
 				output.on_node.hl_group = hl;
 				output.on_node.virt_text = { { " 󰘵 ", hl } };
 				output.on_closing_tag.virt_text = { { " ", hl } };
+			elseif string.match(key, "^%<D") or string.match(key, "SUPER") then
+				hl = "MarkviewPalette5";
+
+				output.on_node.hl_group = hl;
+				output.on_node.virt_text = { { " 󰌽 ", hl } };
+				output.on_closing_tag.virt_text = { { " ", hl } };
 			elseif string.match(key, "CMD") or string.match(key, "COMMAND") then
 				hl = "MarkviewPalette5";
 
