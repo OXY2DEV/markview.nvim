@@ -160,7 +160,16 @@ autocmds.bufHandle = function (args)
 
 	if not state.enabled() then
 		return;
-	elseif not state.buf_safe(args.buf) or state.buf_attached(args.buf) then
+	elseif not state.buf_safe(args.buf) then
+		return;
+	elseif state.buf_attached(args.buf) then
+		local buf_state = state.get_buffer_state(args.buf);
+
+		if buf_state and buf_state.enable then
+			-- NOTE: Re-entering a buffer resets the queries.
+			require("markview.actions").set_query(args.buf);
+		end
+
 		return;
 	end
 
