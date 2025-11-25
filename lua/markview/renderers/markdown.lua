@@ -2459,6 +2459,7 @@ markdown.setext_heading = function (buffer, item)
 
 						line_hl_group = utils.set_hl(config.hl),
 
+						right_gravity = true,
 						virt_text_pos = "inline",
 						virt_text = {
 							{
@@ -2479,6 +2480,7 @@ markdown.setext_heading = function (buffer, item)
 
 						line_hl_group = utils.set_hl(config.hl),
 
+						right_gravity = true,
 						virt_text_pos = "inline",
 						virt_text = {
 							{
