@@ -45,6 +45,25 @@ Sometimes the wrapping can look off(and/or be miscalculated). You can set
 elements(that affect text wrapping).
 
 --------------------------------------------------------------------------------
+📦 nowrap                                    *markview.nvim-integrations.nowrap*
+
+If you don't like having wrap support, you can disable it by setting these in
+your config.
+
+>lua
+	require("markview").setup({
+	    markdown = {
+	        block_quotes = { wrap = false },
+	        headings = { org_indent_wrap = false },
+	        list_items = { wrap = false },
+	    }
+	})
+<
+
+▋ 󰋽 Note
+▋ This will prevent `markview.nvim` from disabling `breakindent`.
+
+--------------------------------------------------------------------------------
 📦 Transparent             *markview.nvim-integrations.transparent_colorschemes*
 colorschemes
 
