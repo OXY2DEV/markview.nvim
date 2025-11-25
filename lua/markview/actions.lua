@@ -111,6 +111,15 @@ actions.handle_hybrid_mode = function (linewise, buffer, line_count, wins, conte
 	---|fE
 end
 
+actions.uses_wrap_support = function ()
+	local spec = require("markview.spec");
+
+	return spec.get({ "markdown", "block_quotes", "wrap" }, { fallback = true }) or
+	spec.get({ "markdown", "headings", "org_indent_wrap" }, { fallback = true }) or
+	spec.get({ "markdown", "list_items", "wrap" }, { fallback = true })
+	;
+end
+
 ---|fE
 
 --- Wrapper to clear decorations from a buffer
@@ -266,6 +275,7 @@ actions.splitview_cursor = function ()
 	---|fE
 end
 
+---@return boolean uses_wrap Does the user use wrap support?
 actions.splitview_render = function ()
 	---|fS
 
@@ -632,9 +642,11 @@ actions.enable = function (buffer)
 		This is to prevent `text wrap support` from being broken due to `breakindent` changing where wrapped text is shown.
 	]]
 
-	for _, win in ipairs(vim.fn.win_findbuf(buffer)) do
-		vim.w[win].__mkv_cached_breakindet = vim.wo[win].breakindent;
-		vim.wo[win].breakindent = false;
+	if actions.uses_wrap_support() then
+		for _, win in ipairs(vim.fn.win_findbuf(buffer)) do
+			vim.w[win].__mkv_cached_breakindet = vim.wo[win].breakindent;
+			vim.wo[win].breakindent = false;
+		end
 	end
 
 	---|fE
@@ -685,8 +697,10 @@ actions.disable = function (buffer)
 		We need to *restore* the original value of `breakindent` to respect user preference(we need to check if a cached value exists first).
 	]]
 
-	for _, win in ipairs(vim.fn.win_findbuf(buffer)) do
-		vim.wo[win].breakindent = vim.w[win].__mkv_cached_breakindet;
+	if actions.uses_wrap_support() then
+		for _, win in ipairs(vim.fn.win_findbuf(buffer)) do
+			vim.wo[win].breakindent = vim.w[win].__mkv_cached_breakindet;
+		end
 	end
 
 	actions.clear(buffer);

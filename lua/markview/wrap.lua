@@ -243,27 +243,6 @@ wrap.fine_wrap = function (buffer, win, row, ns, indent)
 		);
 	end
 
-	-- for vcol = win_width + 1, end_vcol, win_width do
-	-- 	local wrapcol = vim.fn.virtcol2col(0, row + 1, vcol);
-	--
-	-- 	local indent_opts = {
-	-- 		undo_restore = false, invalidate = true,
-	-- 		right_gravity = true,
-	--
-	-- 		virt_text_pos = "inline",
-	--
-	-- 		virt_text = indent;
-	-- 	};
-	--
-	-- 	vim.api.nvim_buf_set_extmark(
-	-- 		buffer,
-	-- 		ns,
-	-- 		row,
-	-- 		wrapcol - 1,
-	-- 		indent_opts
-	-- 	);
-	-- end
-
 	---|fE
 end
 
