@@ -91,6 +91,8 @@ markdown.output = function (str, buffer)
 			return true;
 		elseif str:match("([%*]+)(.-)([%*]+)") then
 			return true;
+		elseif str:match("%_(.-)%_") then
+			return true;
 		elseif str:match("%~%~(.-)%~%~") or str:match("%~(.-)%~") then
 			return true;
 		elseif str:match("%&([%d%a%#]+);") then
@@ -237,6 +239,20 @@ markdown.output = function (str, buffer)
 		);
 
 	    ::continue::
+	end
+
+	for italic in str:gmatch("%_(.-)%_") do
+		str = str:gsub(
+			concat({
+				"_",
+				italic,
+				"_"
+			}),
+			concat({
+				italic
+			}),
+			1
+		);
 	end
 
 	for striked in str:gmatch("%~%~(.-)%~%~") do
@@ -2443,7 +2459,6 @@ markdown.setext_heading = function (buffer, item)
 
 						line_hl_group = utils.set_hl(config.hl),
 
-						right_gravity = false,
 						virt_text_pos = "inline",
 						virt_text = {
 							{
@@ -2464,7 +2479,6 @@ markdown.setext_heading = function (buffer, item)
 
 						line_hl_group = utils.set_hl(config.hl),
 
-						right_gravity = false,
 						virt_text_pos = "inline",
 						virt_text = {
 							{
