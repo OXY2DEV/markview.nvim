@@ -49,7 +49,7 @@ end
 --- Render inline codes.
 ---@param buffer integer
 ---@param item markview.parsed.markdown_inline.inline_codes
-inline.code_span = function (buffer, item)
+inline.code_span = function (buffer, item, heading_lines)
 	---@type markview.config.__inline?
 	local config = spec.get({ "markdown_inline", "inline_codes" }, { fallback = nil, eval_args = { buffer, item } });
 	local range = item.range;
@@ -72,12 +72,30 @@ inline.code_span = function (buffer, item)
 		hl_mode = "combine"
 	});
 
-	vim.api.nvim_buf_set_extmark(buffer, inline.ns, range.row_start, range.col_start + 1, {
-		undo_restore = false, invalidate = true,
-		end_row = range.row_end,
-		end_col = range.col_end - 1,
-		hl_group = utils.set_hl(config.hl)
-	});
+	if heading_lines then
+		local text = item.text[1] or "";
+
+		text = string.gsub(text, "^`", "");
+		text = string.gsub(text, "`$", "");
+
+		vim.api.nvim_buf_set_extmark(buffer, inline.ns, range.row_start, range.col_start + 1, {
+			undo_restore = false, invalidate = true,
+			end_row = range.row_end,
+			end_col = range.col_end - 1,
+
+			virt_text_pos = "overlay",
+			virt_text = {
+				{ text, utils.set_hl(config.hl) }
+			}
+		});
+	else
+		vim.api.nvim_buf_set_extmark(buffer, inline.ns, range.row_start, range.col_start + 1, {
+			undo_restore = false, invalidate = true,
+			end_row = range.row_end,
+			end_col = range.col_end - 1,
+			hl_group = utils.set_hl(config.hl)
+		});
+	end
 
 	vim.api.nvim_buf_set_extmark(buffer, inline.ns, range.row_end, range.col_end - 1, {
 		undo_restore = false, invalidate = true,
@@ -1007,16 +1025,16 @@ end
 --- Renders inline markdown.
 ---@param buffer integer
 ---@param content markview.parsed.markdown_inline[]
-inline.render = function (buffer, content)
+inline.render = function (buffer, content, heading_lines)
 	local custom = spec.get({ "renderers" }, { fallback = {} });
 
 	for _, item in ipairs(content or {}) do
 		local success, err;
 
 		if custom[item.class] then
-			success, err = pcall(custom[item.class], inline.ns, buffer, item);
+			success, err = pcall(custom[item.class], inline.ns, buffer, item, heading_lines);
 		else
-			success, err = pcall(inline[item.class:gsub("^inline_", "")], buffer, item);
+			success, err = pcall(inline[item.class:gsub("^inline_", "")], buffer, item, heading_lines);
 		end
 
 		if success == false then

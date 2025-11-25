@@ -366,6 +366,17 @@ renderer.render = function (buffer, parsed_content)
 
 	renderer.cache = {};
 
+	---@type table<integer, boolean>
+	local heading_ranges = {};
+
+	for _, entry in ipairs(parsed_content.markdown or {}) do
+		if entry.class == "markdown_atx_heading" or entry.class == "markdown_setext_heading" then
+			for r = entry.range.row_start, entry.range.row_end, 1 do
+				heading_ranges[r] = true;
+			end
+		end
+	end
+
 	---|fS, "chore, Announce start of rendering"
 
 	---@type integer
@@ -393,7 +404,7 @@ renderer.render = function (buffer, parsed_content)
 		---| markview.parsed.yaml[]
 
 		if _renderers[lang] then
-			local c = _renderers[lang].render(buffer, content);
+			local c = _renderers[lang].render(buffer, content, lang == "markdown_inline" and heading_ranges or nil);
 			renderer.cache = vim.tbl_extend("force", renderer.cache, c or {});
 		end
 	end
