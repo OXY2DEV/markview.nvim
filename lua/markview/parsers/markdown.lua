@@ -700,31 +700,36 @@ local function lpeg_processor(line)
 	local _o = {};
 	local y = 0;
 
-	for _, j in ipairs(RESULT or {}) do
+	for _, col in ipairs(RESULT or {}) do
 		---|fS
 
-		if j == "|" then
+		if col == "|" then
 			table.insert(_o, {
 				class = "separator",
 
-				text = j,
+				text = col,
 
 				col_start = y,
-				col_end = y + #j,
+				col_end = y + #col,
 			});
-		elseif string.match(j, "%S") then
-			-- NOTE: A column must have at least 1 non-whitespace character.
+		elseif string.match(col, "%S") or string.match(col, "%s%s+") then
+			--[[
+				NOTE: A column must have at least 1 non-whitespace character or 2 or more spaces.
+
+				See: #439 for the first case.
+				See: #450 for the second case.
+			]]
 			table.insert(_o, {
 				class = "column",
 
-				text = j,
+				text = col,
 
 				col_start = y,
-				col_end = y + #j,
+				col_end = y + #col,
 			});
 		end
 
-		y = y + #j;
+		y = y + #col;
 
 		---|fE
 	end
