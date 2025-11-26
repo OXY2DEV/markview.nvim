@@ -58,9 +58,12 @@ inline.code_span = function (buffer, item, heading_lines)
 		return;
 	end
 
+	local delim_start = #(string.match(item.text[1] or "", "^`+") or "");
+	local delim_end = #(string.match(item.text[#item.text] or "", "`+$") or "");
+
 	vim.api.nvim_buf_set_extmark(buffer, inline.ns, range.row_start, range.col_start, {
 		undo_restore = false, invalidate = true,
-		end_col = range.col_start + 1,
+		end_col = range.col_start + delim_start,
 		conceal = "",
 
 		virt_text_pos = "inline",
@@ -72,32 +75,32 @@ inline.code_span = function (buffer, item, heading_lines)
 		hl_mode = "combine"
 	});
 
-	if heading_lines then
+	if heading_lines[range.row_start] then
 		local text = item.text[1] or "";
 
 		text = string.gsub(text, "^`", "");
 		text = string.gsub(text, "`$", "");
 
-		vim.api.nvim_buf_set_extmark(buffer, inline.ns, range.row_start, range.col_start + 1, {
+		vim.api.nvim_buf_set_extmark(buffer, inline.ns, range.row_start, range.col_start + delim_start, {
 			undo_restore = false, invalidate = true,
 			end_row = range.row_end,
-			end_col = range.col_end - 1,
+			end_col = range.col_end - delim_end,
 
 			virt_text_pos = "overlay",
 			virt_text = {
-				{ text, utils.set_hl(config.hl) }
+				{ string.gsub(text, "^`+", ""):gsub("`+$", ""), utils.set_hl(config.hl) }
 			}
 		});
 	else
-		vim.api.nvim_buf_set_extmark(buffer, inline.ns, range.row_start, range.col_start + 1, {
+		vim.api.nvim_buf_set_extmark(buffer, inline.ns, range.row_start, range.col_start + delim_start, {
 			undo_restore = false, invalidate = true,
 			end_row = range.row_end,
-			end_col = range.col_end - 1,
+			end_col = range.col_end - delim_end,
 			hl_group = utils.set_hl(config.hl)
 		});
 	end
 
-	vim.api.nvim_buf_set_extmark(buffer, inline.ns, range.row_end, range.col_end - 1, {
+	vim.api.nvim_buf_set_extmark(buffer, inline.ns, range.row_end, range.col_end - delim_end, {
 		undo_restore = false, invalidate = true,
 		end_col = range.col_end,
 		conceal = "",
