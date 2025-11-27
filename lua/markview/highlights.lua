@@ -285,13 +285,6 @@ end
 highlights.create_pallete = function (n, src, light, dark)
 	---|fS
 
-	---@type markview.hl.rgb
-	local nr = highlights.get_property(
-		"bg",
-		{ "LineNr" },
-		nil,
-		nil
-	);
 	local bg = highlights.srgb_to_oklab(highlights.get_property(
 		"bg",
 		{ "Normal" },
@@ -304,10 +297,6 @@ highlights.create_pallete = function (n, src, light, dark)
 		light or "#1E1E2E",
 		dark or "#EFF1F5"
 	));
-
-	if not nr then
-		nr = highlights.oklab_to_srgb(bg);
-	end;
 
 	---@type number
 	local alpha = vim.g.markview_alpha or ( bg.L >= 0.5 and 0.15 or 0.25 );
@@ -333,7 +322,6 @@ highlights.create_pallete = function (n, src, light, dark)
 		{
 			group_name = string.format("MarkviewPalette%dSign", n),
 			value = {
-				bg = highlights.rgb_to_hex(nr),
 				fg = highlights.rgb_to_hex(_fg)
 			}
 		},
