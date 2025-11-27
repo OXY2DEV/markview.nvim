@@ -1,5 +1,49 @@
 # Changelog
 
+## [28.0.0](https://github.com/OXY2DEV/markview.nvim/compare/v27.0.0...v28.0.0) (2025-11-27)
+
+
+### ⚠ BREAKING CHANGES
+
+* Updated health module
+* Dropped backwards compatibility for versions lower than v25.0.0
+
+### Features
+
+* **hl:** Configurable blend color for dynamic highlight groups ([f6f930d](https://github.com/OXY2DEV/markview.nvim/commit/f6f930dda4059e08854e651e2716c09110307629)), closes [#428](https://github.com/OXY2DEV/markview.nvim/issues/428) [#172](https://github.com/OXY2DEV/markview.nvim/issues/172)
+* **latex, symbols:** Added `\to` ([8e6a30b](https://github.com/OXY2DEV/markview.nvim/commit/8e6a30b728374eb244761a8027306f96c58eef8f)), closes [#440](https://github.com/OXY2DEV/markview.nvim/issues/440)
+* **markdown_inline, code_span:** Multi backtick code span support ([2bfbe93](https://github.com/OXY2DEV/markview.nvim/commit/2bfbe93ee450fa8765db4739284f754f3bf13b6c)), closes [#451](https://github.com/OXY2DEV/markview.nvim/issues/451)
+* **markdown, tables:** Allpw blank columns when 2 or more spaces are used ([f00ec33](https://github.com/OXY2DEV/markview.nvim/commit/f00ec3315ac9a55d10d197932cfcf51ec66be032)), closes [#450](https://github.com/OXY2DEV/markview.nvim/issues/450)
+* **strict_render:** Strict renderer now takes a config ([7f92df1](https://github.com/OXY2DEV/markview.nvim/commit/7f92df17cc5fde1470733feae792f0cb12857761))
+
+
+### Bug Fixes
+
+* **actions:** `disable()` no longer sometimes disables the plugin globally ([7293a56](https://github.com/OXY2DEV/markview.nvim/commit/7293a56d4099c7d23b23cc5aaa572ffd821ba8bc))
+* Fixed a bug with `disable()` ([efa9b0c](https://github.com/OXY2DEV/markview.nvim/commit/efa9b0c2808c5cf51199e2d6a19fba81408d6352)), closes [#431](https://github.com/OXY2DEV/markview.nvim/issues/431)
+* **highlights:** Do not explicitly set background for `Palette<n>Sign` hls ([bf62f7d](https://github.com/OXY2DEV/markview.nvim/commit/bf62f7d173f4b42cd02794c6c5f5a8bd3047a58a)), closes [#452](https://github.com/OXY2DEV/markview.nvim/issues/452)
+* **markdown, heading, markdown_inline, code_span:** Fixed logic for ([2bfbe93](https://github.com/OXY2DEV/markview.nvim/commit/2bfbe93ee450fa8765db4739284f754f3bf13b6c))
+* **markdown, setext_heading:** Icon alignment fix ([2af180a](https://github.com/OXY2DEV/markview.nvim/commit/2af180a226740bcc5e595d0632b72bd3ec6cb2b4))
+* **markdown, table, wrap:** Fixed separator placemnent position ([86fcabc](https://github.com/OXY2DEV/markview.nvim/commit/86fcabc793e8aa361cb308e794cd0e1356fdc0e1)), closes [#442](https://github.com/OXY2DEV/markview.nvim/issues/442)
+* **markdown:** Added edge case detection for table Lpeg parser ([1cc1312](https://github.com/OXY2DEV/markview.nvim/commit/1cc13125181724b7e720f7479635aaa4f16cce15)), closes [#439](https://github.com/OXY2DEV/markview.nvim/issues/439)
+* **queries:** Queries are now set during `BufEnter` ([af676ed](https://github.com/OXY2DEV/markview.nvim/commit/af676ed4bbf4824d6d6b0263e26773ce15fb7091))
+* **wrap:** Do not override `breakindent` if wrap suppprt isn't used ([c2bd780](https://github.com/OXY2DEV/markview.nvim/commit/c2bd7805efb0d3ceaaa84e2df62d21892718cd93))
+* **wrap:** Fixed wrapping issues with `signcolumn=auto` & default statuscolumn ([522bdd0](https://github.com/OXY2DEV/markview.nvim/commit/522bdd0cf2e0b7ff54e2a131950dadf7ffb71d71)), closes [#434](https://github.com/OXY2DEV/markview.nvim/issues/434)
+* **wrap:** Indent no longer gets placed at end of line ([5529dc4](https://github.com/OXY2DEV/markview.nvim/commit/5529dc4af26bbf00bf4ddcac797f8116baf6571e))
+* **wrap:** Indents are no longer added if there is not enough text after it ([8b2cf30](https://github.com/OXY2DEV/markview.nvim/commit/8b2cf308f55245ce3a1524957124ac75e4ded25c)), closes [#434](https://github.com/OXY2DEV/markview.nvim/issues/434)
+
+
+### Performance Improvements
+
+* **spec:** don't double eval func in `to_static` ([6d48f6a](https://github.com/OXY2DEV/markview.nvim/commit/6d48f6adbc4fdff5d3af4c1e771e4e56b24ee20e))
+* **spec:** don't double eval func in `to_static` ([55b1df5](https://github.com/OXY2DEV/markview.nvim/commit/55b1df59bce0074873223531d040b9f489d34caf))
+
+
+### Code Refactoring
+
+* Dropped backwards compatibility for versions lower than v25.0.0 ([441114d](https://github.com/OXY2DEV/markview.nvim/commit/441114d6114371af3b689a9ef30ffd10e7349138))
+* Updated health module ([91ff27f](https://github.com/OXY2DEV/markview.nvim/commit/91ff27f5357190e88d14f0adc0027257f5616241))
+
 ## [27.0.0](https://github.com/OXY2DEV/markview.nvim/compare/v26.0.1...v27.0.0) (2025-11-02)
 
 
