@@ -75,7 +75,7 @@ inline.code_span = function (buffer, item, heading_lines)
 		hl_mode = "combine"
 	});
 
-	if heading_lines[range.row_start] then
+	if heading_lines[range.row_start] or config.virtual then
 		local text = item.text[1] or "";
 
 		text = string.gsub(text, "^`", "");

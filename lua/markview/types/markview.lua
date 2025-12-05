@@ -123,6 +123,7 @@
 ---@class markview.config.__inline
 ---
 ---@field enable? boolean Only valid if it's a top level option, Used for disabling previews.
+---@field virtual? boolean In `inline_codes`, when `true` masks the text with a virtual text(useful if the line has a background).
 ---
 ---@field corner_left? string Left corner.
 ---@field corner_left_hl? string Highlight group for the left corner.

@@ -3,7 +3,7 @@
                                   Image {img:1}                                 
 
 ╭─────────────────┬──────────────────╮
-│ `:set wrap`     │ `:set nowrap`    │
+│  `:set wrap`      │  `:set nowrap`     │
 ├─────────────────┼──────────────────┤
 │ wrap {img:2}    │ nowrap {img:3}   │
 ╰─────────────────┴──────────────────╯
@@ -21,8 +21,8 @@ Core features,
 ◇ Hybrid editing mode! Allowing editing & previewing at the same time.
 ◇ Splitview! Allows editing & previewing side-by-side.
 ◇ `Wrap` support(markdown only, at the moment)! Allows using text wrapping while
-  not losing most rendering features! See integrations#wrap {4} for fixing visual
-  glitches.
+  not losing most rendering features! See integrations#wrap {5} for fixing visual
+  glitches or integrations#nowrap {4} for disabling it.
 ◇ Highly customisable! You can change almost anything using the config!
 ◇ Dynamic `highlight groups` that automatically updates with the colorscheme!
 ◇ `Callout`, `checkbox` completions for `blink.cmp` & `nvim-cmp`.
@@ -290,8 +290,8 @@ External icon providers,
 	}
 <
 
-◆ mini.icons {5}
-◆ nvim-web-devicons {6}
+◆ mini.icons {6}
+◆ nvim-web-devicons {7}
 
 Parsers,
 
@@ -340,7 +340,7 @@ Add this to your plugin list.
 ▋ cause more time for the previews to load when starting Neovim!
 
 The plugin should be loaded after your colorscheme to ensure the correct
-highlight groups are used. See integrations.transparent_colorschemes {7} if you
+highlight groups are used. See integrations.transparent_colorschemes {8} if you
 use a transparent colorscheme and the colors don't look right.
 
 >lua
@@ -389,7 +389,7 @@ use a transparent colorscheme and the colors don't look right.
 
 📥 GitHub release ~
 
-Tagged releases can be found in the release page {8}.
+Tagged releases can be found in the release page {9}.
 
 ▋ 󰋽 Note
 ▋ `Github releases` may sometimes be slightly behind `main`.
@@ -409,7 +409,7 @@ Tagged releases can be found in the release page {8}.
 --------------------------------------------------------------------------------
 🧭 Usage
 
-You can find more usage recipes here {9}.
+You can find more usage recipes here {10}.
 
 --------------------------------------------------------------------------------
 🎇 Commands                                             *markview.nvim-commands*
@@ -426,19 +426,19 @@ It comes with the following sub-commands,
 ╭────────────────────┬──────────────────────┬──────────────────────╮
 │ Sub-command        │ Arguments            │ Description          │
 ├────────────────────┼──────────────────────┼──────────────────────┤
-│ `Toggle`           │ none                 │ Toggles preview      │
+│  `Toggle`            │ none                 │ Toggles preview      │
 │                    │                      │ globally.            │
-│ `Enable`           │ none                 │ Enables preview      │
+│  `Enable`            │ none                 │ Enables preview      │
 │                    │                      │ globally.            │
-│ `Disable`          │ none                 │ Disables preview     │
+│  `Disable`           │ none                 │ Disables preview     │
 │                    │                      │ globally.            │
-│ `toggle`           │ buffer, integer      │ Toggles preview for  │
+│  `toggle`            │ buffer, integer      │ Toggles preview for  │
 │                    │                      │ buffer.              │
-│ `enable`           │ buffer, integer      │ Enables preview for  │
+│  `enable`            │ buffer, integer      │ Enables preview for  │
 │                    │                      │ buffer.              │
-│ `disable`          │ buffer, integer      │ Disables preview for │
+│  `disable`           │ buffer, integer      │ Disables preview for │
 │                    │                      │ buffer.              │
-│ `splitToggle`      │ none                 │ Toggles splitview.   │
+│  `splitToggle`       │ none                 │ Toggles splitview.   │
 ╰────────────────────┴──────────────────────┴──────────────────────╯
 
 Sub-commands related to auto-registering new buffers for previews and/or
@@ -447,12 +447,12 @@ manually attaching/detaching buffers,
 ╭────────────────────┬──────────────────────┬──────────────────────╮
 │ Sub-command        │ Arguments            │ Description          │
 ├────────────────────┼──────────────────────┼──────────────────────┤
-│ `attach`           │ buffer, integer      │ Attaches to buffer.  │
-│ `detach`           │ buffer, integer      │ Detaches from        │
+│  `attach`            │ buffer, integer      │ Attaches to buffer.  │
+│  `detach`            │ buffer, integer      │ Detaches from        │
 │                    │                      │ buffer.              │
-│ `Start`            │ none                 │ Allows attaching to  │
+│  `Start`             │ none                 │ Allows attaching to  │
 │                    │                      │ new buffers.         │
-│ `Stop`             │ none                 │ Prevents attaching   │
+│  `Stop`              │ none                 │ Prevents attaching   │
 │                    │                      │ to new buffers.      │
 ╰────────────────────┴──────────────────────┴──────────────────────╯
 
@@ -461,21 +461,21 @@ Sub-commands related to controlling hybrid_mode,
 ╭────────────────────┬──────────────────────┬──────────────────────╮
 │ Sub-command        │ Arguments            │ Description          │
 ├────────────────────┼──────────────────────┼──────────────────────┤
-│ `HybridEnable`     │ none                 │ Enables hybrid mode. │
-│ `HybridDisable`    │ none                 │ Disables hybrid      │
+│  `HybridEnable`      │ none                 │ Enables hybrid mode. │
+│  `HybridDisable`     │ none                 │ Disables hybrid      │
 │                    │                      │ mode.                │
-│ `HybridToggle`     │ none                 │ Toggles hybrid mode. │
-│ `hybridEnable`     │ buffer, integer      │ Enables hybrid mode  │
+│  `HybridToggle`      │ none                 │ Toggles hybrid mode. │
+│  `hybridEnable`      │ buffer, integer      │ Enables hybrid mode  │
 │                    │                      │ for buffer.          │
-│ `hybridDisable`    │ buffer, integer      │ Disables hybrid mode │
+│  `hybridDisable`     │ buffer, integer      │ Disables hybrid mode │
 │                    │                      │ for buffer.          │
-│ `hybridToggle`     │ buffer, integer      │ Toggles hybrid mode  │
+│  `hybridToggle`      │ buffer, integer      │ Toggles hybrid mode  │
 │                    │                      │ for buffer.          │
-│ `linewiseEnable`   │ none                 │ Enables linewise     │
+│  `linewiseEnable`    │ none                 │ Enables linewise     │
 │                    │                      │ hybrid mode.         │
-│ `linewiseDisable`  │ none                 │ Disables linewise    │
+│  `linewiseDisable`   │ none                 │ Disables linewise    │
 │                    │                      │ hybrid mode.         │
-│ `linewiseToggle`   │ none                 │ Toggles linewise     │
+│  `linewiseToggle`    │ none                 │ Toggles linewise     │
 │                    │                      │ hybrid mode.         │
 ╰────────────────────┴──────────────────────┴──────────────────────╯
 
@@ -484,11 +484,11 @@ Sub-commands for working with `splitview`,
 ╭────────────────────┬──────────────────────┬──────────────────────╮
 │ Sub-command        │ Arguments            │ Description          │
 ├────────────────────┼──────────────────────┼──────────────────────┤
-│ `splitOpen`        │ buffer, integer      │ Opens splitview for  │
+│  `splitOpen`         │ buffer, integer      │ Opens splitview for  │
 │                    │                      │ buffer.              │
-│ `splitClose`       │ none                 │ Closes any open      │
+│  `splitClose`        │ none                 │ Closes any open      │
 │                    │                      │ splitview.           │
-│ `splitRedraw`      │ none                 │ Updates splitview    │
+│  `splitRedraw`       │ none                 │ Updates splitview    │
 │                    │                      │ contents.            │
 ╰────────────────────┴──────────────────────┴──────────────────────╯
 
@@ -497,13 +497,13 @@ Sub-commands for manual `preview` updates,
 ╭────────────────────┬──────────────────────┬──────────────────────╮
 │ Sub-command        │ Arguments            │ Description          │
 ├────────────────────┼──────────────────────┼──────────────────────┤
-│ `render`           │ buffer, integer      │ Renders preview for  │
+│  `render`            │ buffer, integer      │ Renders preview for  │
 │                    │                      │ buffer.              │
-│ `clear`            │ buffer, integer      │ Clears preview for   │
+│  `clear`             │ buffer, integer      │ Clears preview for   │
 │                    │                      │ buffer.              │
-│ `Render`           │ none                 │ Updates preview of   │
+│  `Render`            │ none                 │ Updates preview of   │
 │                    │                      │ all active buffers.  │
-│ `Clear`            │ none                 │ Clears preview of    │
+│  `Clear`             │ none                 │ Clears preview of    │
 │                    │                      │ all active buffer.   │
 ╰────────────────────┴──────────────────────┴──────────────────────╯
 
@@ -512,10 +512,10 @@ Sub-commands for `bug report`,
 ╭────────────────────┬──────────────────────┬──────────────────────╮
 │ Sub-command        │ Arguments            │ Description          │
 ├────────────────────┼──────────────────────┼──────────────────────┤
-│ `traceExport`      │ none                 │ Exports trace logs   │
+│  `traceExport`       │ none                 │ Exports trace logs   │
 │                    │                      │ to                   │
-│                    │                      │ `markview_log.txt`.  │
-│ `traceShow`        │ none                 │ Shows trace logs in  │
+│                    │                      │  `markview_log.txt` .  │
+│  `traceShow`         │ none                 │ Shows trace logs in  │
 │                    │                      │ a window.            │
 ╰────────────────────┴──────────────────────┴──────────────────────╯
 
@@ -551,12 +551,13 @@ Links ~
 1: https://github.com/OXY2DEV/markview.nvim/wiki/Presets
 2: https://github.com/OXY2DEV/markview.nvim/wiki/Extras
 3: https://github.com/OXY2DEV/markview.nvim/wiki/Home
-4: https://github.com/OXY2DEV/markview.nvim/wiki/Integrations#-wrap
-5: https://github.com/nvim-mini/mini.icons
-6: https://github.com/nvim-tree/nvim-web-devicons
-7: https://github.com/OXY2DEV/markview.nvim/wiki/Integrations#-transparent-colorschemes
-8: https://github.com/OXY2DEV/markview.nvim/releases
-9: |markview.nvim-usage|
+4: https://github.com/OXY2DEV/markview.nvim/wiki/Integrations#-nowrap
+5: https://github.com/OXY2DEV/markview.nvim/wiki/Integrations#-wrap
+6: https://github.com/nvim-mini/mini.icons
+7: https://github.com/nvim-tree/nvim-web-devicons
+8: https://github.com/OXY2DEV/markview.nvim/wiki/Integrations#-transparent-colorschemes
+9: https://github.com/OXY2DEV/markview.nvim/releases
+10: |markview.nvim-usage|
 
 Images ~
 

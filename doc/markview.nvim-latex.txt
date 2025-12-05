@@ -592,6 +592,7 @@ Demo {img:7}
 texts                                                *markview.nvim-latex.texts*
 
 >lua
+	--[[ Configuration table for `\text{}`. ]]
 	---@class markview.config.latex.texts
 	---
 	---@field enable boolean Enable rendering of text blocks.

@@ -98,7 +98,7 @@ To use it add the following code to your plugin,
 	end
 <
 
-💡 Custom state ~
+💡 Using custom state ~
 
 If you don't want to have things like `hybrid mode` be present in previews you can disable them in the preview.
 
@@ -115,6 +115,7 @@ If you don't want to have things like `hybrid mode` be present in previews you c
 Each buffer has the following states,
 
 >lua
+	--[[ Buffer state for `markview.nvim`. ]]
 	---@class markview.state.buf
 	---
 	---@field enable boolean Is the `preview` enabled?

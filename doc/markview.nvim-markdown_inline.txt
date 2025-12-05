@@ -135,6 +135,12 @@ Changes how inline codes are shown.
 	},
 <
 
+▋  Tip
+▋ You can set `inline_codes.virtual = true` to add a mask to the text.
+▋ This allows using them on lines that have a line highlight(e.g. `headings`).
+▋
+▋ This will be enabled if the line is in a heading regardless of what you set.
+
 --------------------------------------------------------------------------------
 emails                                    *markview.nvim-markdown_inline.emails*
 
@@ -192,6 +198,7 @@ Changes how emails are shown.
 Each emails have these options.
 
 >lua
+	--[[ Options for a specific email type. ]]
 	---@alias markview.config.markdown_inline.emails.opts markview.config.__inline
 <
 
@@ -224,6 +231,7 @@ Changes how embed file links are shown.
 Each embed file types have these options.
 
 >lua
+	--[[ Options for a specific embed file type. ]]
 	---@alias markview.config.markdown_inline.embed_files.opts markview.config.__inline
 <
 
@@ -320,6 +328,7 @@ Changes how footnotes are shown.
 Each footnote type has the following options.
 
 >lua
+	--[[ Options for a specific footnote type. ]]
 	---@alias markview.config.markdown_inline.footnotes.opts markview.config.__inline
 <
 
@@ -354,6 +363,7 @@ Changes how highlights are shown.
 Each highlights type has the following options.
 
 >lua
+	--[[ Options for a specific footnote type. ]]
 	---@alias markview.config.markdown_inline.highlights.opts markview.config.__inline
 <
 
@@ -555,6 +565,7 @@ Changes how footnotes are shown.
 Each hyperlinks type has the following options.
 
 >lua
+	--[[ Options for a specific hyperlink type. ]]
 	---@alias markview.config.markdown_inline.hyperlinks.opts markview.config.__inline
 <
 
@@ -593,6 +604,7 @@ Changes how images are shown.
 Each highlights type has the following options.
 
 >lua
+	--[[ Options for a specific image link type. ]]
 	---@alias markview.config.markdown_inline.images.opts markview.config.__inline
 <
 
@@ -625,6 +637,7 @@ Changes how internal links are shown.
 Each internal link type has the following options.
 
 >lua
+	--[[ Options for a specific internal link type. ]]
 	---@alias markview.config.markdown_inline.internal_links.opts markview.config.__inline
 <
 
@@ -826,6 +839,7 @@ Changes how uri autolinks look.
 Each uri autolinks type has the following options.
 
 >lua
+	--[[ Options for a specific URI autolink type. ]]
 	---@alias markview.config.markdown_inline.uri_autolinks.opts markview.config.__inline
 <
 

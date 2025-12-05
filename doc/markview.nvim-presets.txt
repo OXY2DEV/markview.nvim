@@ -149,6 +149,13 @@ Image {img:18}
 --------------------------------------------------------------------------------
 🔖 No nerd fonts presets
 
+╭──────────────────────┬──────────────────────╮
+│ Nerd fonts           │ No nerd fonts        │
+├──────────────────────┼──────────────────────┤
+│ nerd fonts {img:19}  │ no nerd fonts        │
+│                      │ {img:20}             │
+╰──────────────────────┴──────────────────────╯
+
 📚 Usage: ~
 
 >lua
@@ -177,5 +184,7 @@ Images ~
 16: https://github.com/OXY2DEV/markview.nvim/blob/images/v25/wiki/presets-tables.double.png
 17: https://github.com/OXY2DEV/markview.nvim/blob/images/v25/wiki/presets-tables.rounded.png
 18: https://github.com/OXY2DEV/markview.nvim/blob/images/v25/wiki/presets-tables.solid.png
+19: ./images/markview.nvim-nerd_fonts.png
+20: ./images/markview.nvim-no_nerd_fonts.png
 
 vim:ft=help:textwidth=80:tabstop=4:noexpandtab:

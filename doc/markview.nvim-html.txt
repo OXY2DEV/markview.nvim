@@ -24,6 +24,7 @@ Enable rendering of HTML elements.
 container_elements                       *markview.nvim-html.container_elements*
 
 >lua
+	--[[ HTML `<container></container>` element config. ]]
 	---@class markview.config.html.container_elements
 	---
 	---@field enable boolean Enable rendering of container elements?
@@ -271,6 +272,7 @@ Demo {img:2}
 void_elements                                 *markview.nvim-html.void_elements*
 
 >lua
+	--[[ HTML `<container></container>` element config. ]]
 	---@class markview.config.html.container_elements
 	---
 	---@field enable boolean Enable rendering of container elements?

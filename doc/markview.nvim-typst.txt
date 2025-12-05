@@ -326,6 +326,7 @@ Changes how math blocks are shown.
 math_spans                                      *markview.nvim-typst.math_spans*
 
 >lua
+	-- Configuration for inline maths.
 	---@alias markview.config.typst.math_spans markview.config.__inline
 <
 
@@ -423,6 +424,7 @@ for diff files.
 raw_spans                                        *markview.nvim-typst.raw_spans*
 
 >lua
+	-- Configuration for raw spans.
 	---@alias markview.config.typst.raw_spans markview.config.__inline
 <
 
