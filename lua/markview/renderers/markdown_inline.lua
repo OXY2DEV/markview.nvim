@@ -78,19 +78,29 @@ inline.code_span = function (buffer, item, heading_lines)
 	if heading_lines[range.row_start] or config.virtual then
 		local text = item.text[1] or "";
 
-		text = string.gsub(text, "^`", "");
-		text = string.gsub(text, "`$", "");
+		text = string.gsub(text, "^`+", "");
+		text = string.gsub(text, "`+$", "");
 
-		vim.api.nvim_buf_set_extmark(buffer, inline.ns, range.row_start, range.col_start + delim_start, {
-			undo_restore = false, invalidate = true,
-			end_row = range.row_end,
-			end_col = range.col_end - delim_end,
+		local chars = vim.fn.split(text, "\\zs");
+		local col_offset = 0;
 
-			virt_text_pos = "overlay",
-			virt_text = {
-				{ string.gsub(text, "^`+", ""):gsub("`+$", ""), utils.set_hl(config.hl) }
-			}
-		});
+		--[[
+			NOTE: Virtual texts do not wrap with the text.
+
+			So, the text is split into characters and each character gets a mask applied to it.
+		]]
+		for c = 1, #chars do
+			vim.api.nvim_buf_set_extmark(buffer, inline.ns, range.row_start, (range.col_start + delim_start) + col_offset, {
+				undo_restore = false, invalidate = true,
+
+				virt_text_pos = "overlay",
+				virt_text = {
+					{ chars[c], utils.set_hl(config.hl) }
+				}
+			});
+
+			col_offset = col_offset + #chars[c];
+		end
 	else
 		vim.api.nvim_buf_set_extmark(buffer, inline.ns, range.row_start, range.col_start + delim_start, {
 			undo_restore = false, invalidate = true,
