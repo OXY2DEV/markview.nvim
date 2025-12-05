@@ -655,7 +655,7 @@ fts.styles = {
 	["ts"]                      = { name = "Typescript",           sign = " ", sign_hl = "MarkviewPalette3Sign", icon = " ", icon_hl = "MarkviewIcon3", border_hl = "MarkviewPalette3Fg" },
 	["typescript"]              = { name = "Typescript",           sign = " ", sign_hl = "MarkviewPalette3Sign", icon = " ", icon_hl = "MarkviewIcon3", border_hl = "MarkviewPalette3Fg" },
 	["typescriptreact"]         = { name = "React",                sign = " ", sign_hl = "MarkviewPalette3Sign", icon = " ", icon_hl = "MarkviewIcon3", border_hl = "MarkviewPalette3Fg" },
-	["typ"]                     = { name = "Typst",                sign = " ", sign_hl = "MarkviewPalette6Sign", icon = " ", icon_hl = "MarkviewIcon6", border_hl = "MarkviewPalette6Fg" },
+    ["typ"]                     = { name = "Typst",                sign = " ", sign_hl = "MarkviewPalette6Sign", icon = " ", icon_hl = "MarkviewIcon6", border_hl = "MarkviewPalette6Fg" },
 	["uc"]                      = { name = "UnrealScript",         sign = " ", sign_hl = "MarkviewPalette0Sign", icon = " ", icon_hl = "MarkviewIcon0", border_hl = "MarkviewPalette0Fg" },
 	["uci"]                     = { name = "OpenWrt Config",       sign = " ", sign_hl = "MarkviewPalette3Sign", icon = " ", icon_hl = "MarkviewIcon3", border_hl = "MarkviewPalette3Fg" },
 	["udevconf"]                = { name = "Udev Config",          sign = " ", sign_hl = "MarkviewPalette3Sign", icon = " ", icon_hl = "MarkviewIcon3", border_hl = "MarkviewPalette3Fg" },
