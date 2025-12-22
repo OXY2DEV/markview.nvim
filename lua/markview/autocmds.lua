@@ -430,6 +430,14 @@ autocmds.setup = function ()
 	});
 
 	vim.api.nvim_create_autocmd({
+		"BufDelete", "BufWipeout"
+	}, {
+		callback = function(args)
+			require("markview.state").detach(args.buf, true);
+		end
+	});
+
+	vim.api.nvim_create_autocmd({
 		"CursorMoved",  "TextChanged",
 		"CursorMovedI", "TextChangedI"
 	}, {
