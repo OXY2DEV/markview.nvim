@@ -399,6 +399,24 @@ end
 actions.set_query = function (buffer)
 	---|fS
 
+	-- Ensure buffer is valid before setting queries
+	if not vim.api.nvim_buf_is_valid(buffer) then
+		return;
+	end
+
+	--[[
+		NOTE: Check if `buffer` has `markdown` as it's parser language.
+
+		This should avoid,
+		- Invalid buffers(see #456)
+		- Buffers that do not have correct parser.
+	]]
+	local got_parser, parser = pcall(vim.treesitter.get_parser, buffer);
+
+	if not got_parser or (parser and parser:lang() ~= "markdown") then
+		return;
+	end
+
 	local default_path = vim.treesitter.query.get_files("markdown", "highlights")[1];
 
 	if not default_path then
