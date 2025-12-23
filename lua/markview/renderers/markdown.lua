@@ -1707,7 +1707,7 @@ markdown.code_block = function (buffer, item)
 		---|fE
 	end
 
-	if not win or config.style == "simple" or ( vim.o.wrap == true or vim.wo[win].wrap == true ) then
+	if not win or config.style == "simple" or item.uses_tab or ( vim.o.wrap == true or vim.wo[win].wrap == true ) then
 		render_simple();
 	elseif config.style == "block" then
 		render_block()

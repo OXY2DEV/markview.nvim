@@ -32,6 +32,7 @@
 ---@class markview.parsed.markdown.code_blocks
 ---
 ---@field class "markdown_code_block"
+---@field uses_tab boolean Does the code block use tab inside it? Used for switching render style.
 ---
 ---@field delimiters [ string, string ] Code block delimiters(```).
 ---@field language string? Language string(typically after ```).

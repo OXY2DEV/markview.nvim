@@ -349,7 +349,8 @@ code_blocks: block ~
 Creates a block around the code block.
 
 ▋  Important
-▋ This is disabled if `wrap` is enabled.
+▋ This is disabled if `wrap` is enabled. Or if you used `tab` inside the code
+▋ block.
 
 code_blocks: simple ~
 

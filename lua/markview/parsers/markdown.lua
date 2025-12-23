@@ -274,6 +274,7 @@ markdown.code_block = function (buffer, TSNode, _, range)
 	-- Use buffer lines instead.
 	---@type string[]
 	local text = vim.api.nvim_buf_get_lines(buffer, range.row_start, range.row_end, false);
+	local uses_tab = false;
 
 	-- Fix range when leading whitespace(s)
 	-- are present.
@@ -285,6 +286,10 @@ markdown.code_block = function (buffer, TSNode, _, range)
 	-- inside the node's range is visible.
 	for l, line in ipairs(text) do
 		text[l] = line:sub(range.col_start + 1);
+
+		if string.match(text[l], "\t") then
+			uses_tab = true;
+		end
 	end
 
 	local language, info_string;
@@ -331,6 +336,7 @@ markdown.code_block = function (buffer, TSNode, _, range)
 
 	markdown.insert({
 		class = "markdown_code_block",
+		uses_tab = uses_tab,
 
 		language = language,
 		info_string = info_string,
