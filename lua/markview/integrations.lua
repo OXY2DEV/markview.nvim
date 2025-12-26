@@ -23,7 +23,7 @@ integrations.register_blink_source = function ()
 	local function handle_filetype(filetype, config)
 		---|fS
 
-		if type(config) == "table" and vim.islist(config) then
+		if type(config) == "table" then
 			---@cast config table
 			if vim.list_contains(config, "markview") then
 				-- `markview` is already used as a source.
@@ -31,7 +31,7 @@ integrations.register_blink_source = function ()
 			end
 
 			-- If the config sources is a list we extend the list of sources.
-			blink_config.sources.per_filetype[filetype] = vim.list_extend(config, { "markview" });
+			blink_config.sources.per_filetype[filetype] = vim.list_extend(vim.deepcopy(config), { "markview" });
 		else
 			---@cast config fun(): table
 
