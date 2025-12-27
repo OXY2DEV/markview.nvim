@@ -17,6 +17,43 @@ integrations.register_blink_source = function ()
 		ignore_enable = true
 	});
 
+	--- Dynamic filetype.
+	---@param filetype string
+	---@param config table | fun(): table See |blink-cmp-config-sources|.
+	local function handle_filetype(filetype, config)
+		---|fS
+
+		if type(config) == "table" then
+			---@cast config table
+			if vim.list_contains(config, "markview") then
+				-- `markview` is already used as a source.
+				return;
+			end
+
+			-- If the config sources is a list we extend the list of sources.
+			blink_config.sources.per_filetype[filetype] = vim.list_extend(vim.deepcopy(config), { "markview" });
+		else
+			---@cast config fun(): table
+
+			-- If it's a function we wrap it in
+			-- *another* function.
+			blink_config.sources.per_filetype[filetype] = function (...)
+				local can_exec, result = pcall(config, ...);
+
+				if can_exec and vim.islist(result) and not vim.list_contains(result, "markview") then
+					return vim.list_extend(result, { "markview" });
+				elseif can_exec == false then
+					-- Emit errors in the original function.
+					error(result);
+				else
+					return { "markview" };
+				end
+			end
+		end
+
+		---|fE
+	end
+
 	add_provider("markview", {
 		name = "markview",
 		module = "blink-markview",
@@ -26,36 +63,10 @@ integrations.register_blink_source = function ()
 		end
 	});
 
-	-- ISSUE, blink.cmp doesn't allow dynamically
-	-- modifying source list.
 	for _, filetype in ipairs(filetypes) do
 		if blink_config then
-			---|fS "feat: Modify blink sources"
-
-			local default = blink_config.sources.default;
-
-			if vim.islist(default) then
-				-- If the default sources is a list
-				-- we extend the list of sources.
-				blink_config.sources.per_filetype[filetype] = vim.list_extend(default, { "markview" });
-			else
-				-- If it's a function we wrap it in
-				-- *another* function.
-				blink_config.sources.per_filetype[filetype] = function (...)
-					local can_exec, result = pcall(default, ...);
-
-					if can_exec and vim.islist(result) and not vim.list_contains(result, "markview") then
-						return vim.list_extend(result, { "markview" });
-					elseif can_exec == false then
-						-- Emit errors in the original function.
-						error(result);
-					else
-						return { "markview" };
-					end
-				end
-			end
-
-			---|fE
+			-- Use `filetype` sources if available, see #459
+			handle_filetype(filetype, blink_config.sources.per_filetype[filetype] or blink_config.sources.default)
 		else
 			pcall(blink.add_filetype_source, filetype, "markview");
 		end
