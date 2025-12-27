@@ -735,7 +735,7 @@ end
 
 ------------------------------------------------------------------------------
 
-actions.hybridTtoggle = function (buffer)
+actions.hybridToggle = function (buffer)
 	---|fS
 
 	buffer = buffer or vim.api.nvim_get_current_buf();
@@ -750,9 +750,9 @@ actions.hybridTtoggle = function (buffer)
 	end
 
 	if old_state.hybrid_mode == true then
-		actions.hybrid_disable();
+		actions.hybridDisable();
 	else
-		actions.hybrid_enable();
+		actions.hybridEnable();
 	end
 
 	---|fE
