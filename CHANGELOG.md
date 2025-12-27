@@ -1,5 +1,12 @@
 # Changelog
 
+## [28.0.1](https://github.com/OXY2DEV/markview.nvim/compare/v28.0.0...v28.0.1) (2025-12-27)
+
+
+### Bug Fixes
+
+* no longer overriding blink-cmp per_filetype sources ([a185a64](https://github.com/OXY2DEV/markview.nvim/commit/a185a643e301d023f6364ffe60da41607ba82733))
+
 ## [28.0.0](https://github.com/OXY2DEV/markview.nvim/compare/v27.0.0...v28.0.0) (2025-12-23)
 
 
