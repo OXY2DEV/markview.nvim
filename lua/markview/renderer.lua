@@ -16,7 +16,7 @@ renderer.option_maps = {
 	---|fS
 
 	doxtext = {
-		tasks = { "doctext_task" },
+		tasks = { "comment_task" },
 	},
 	html = {
 		container_elements = { "html_container_element" },
@@ -359,7 +359,7 @@ renderer.render = function (buffer, parsed_content)
 	---|fS
 
 	local _renderers = {
-		doctext = require("markview.renderers.doctext"),
+		comment = require("markview.renderers.comment"),
 		html = require("markview.renderers.html"),
 		markdown = require("markview.renderers.markdown"),
 		markdown_inline = require("markview.renderers.markdown_inline"),

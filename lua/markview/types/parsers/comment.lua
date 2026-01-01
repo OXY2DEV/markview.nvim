@@ -3,16 +3,16 @@
 ------------------------------------------------------------------------------
 
 --- A `task`.
----@class markview.parsed.doctext.tasks
+---@class markview.parsed.comment.tasks
 ---
----@field class "doctext_task"
+---@field class "comment_task"
 ---
 ---@field kind string Type of task(e.g. `feat`, `TODO` etc.)
 ---@field text string
----@field range markview.parsed.doctext.tasks.range
+---@field range markview.parsed.comment.tasks.range
 
 
----@class markview.parsed.doctext.tasks.range
+---@class markview.parsed.comment.tasks.range
 ---
 ---@field label_row_end? integer End row of a label(A label may be like `foo:`, `bar(topic):`).
 ---@field label_col_end? integer End column of a label(A label may be like `foo:`, `bar(topic):`).
@@ -26,23 +26,32 @@
 
 
 --- An issue reference.
----@class markview.parsed.doctext.issues
+---@class markview.parsed.comment.issues
 ---
----@field class "doctext_issue"
+---@field class "comment_issue"
 ---
 ---@field text string
 ---@field range markview.parsed.range
 
 
 --- A mention.
----@class markview.parsed.doctext.mentions
+---@class markview.parsed.comment.mentions
 ---
----@field class "doctext_mention"
+---@field class "comment_mention"
+---
+---@field text string
+---@field range markview.parsed.range
+
+
+--- A mention.
+---@class markview.parsed.comment.inline_codes
+---
+---@field class "comment_inline_code"
 ---
 ---@field text string
 ---@field range markview.parsed.range
 
 ------------------------------------------------------------------------------
 
----@alias markview.parsed.doctext
----| markview.parsed.doctext.tasks
+---@alias markview.parsed.comment
+---| markview.parsed.comment.tasks

@@ -210,7 +210,7 @@ spec.default = {
 
 ---@type string[] Properties that should be sourced *externally*.
 spec.__external_config = {
-	"doctext",
+	"comment",
 	"html",
 	"markdown",
 	"markdown_inline",

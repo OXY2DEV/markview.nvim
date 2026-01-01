@@ -1,6 +1,13 @@
 return {
 	enable = true,
 
+	inline_codes = {
+			padding_left = " ",
+			padding_right = " ",
+
+			hl = "MarkviewInlineCode",
+	},
+
 	tasks = {
 		default = {
 			padding_left = " ",
