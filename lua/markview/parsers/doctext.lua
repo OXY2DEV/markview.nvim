@@ -23,10 +23,55 @@ end
 
 --- Tasks.
 ---@param buffer integer
----@param TSNode table
+---@param TSNode TSNode
+---@param text string[]
+---@param range markview.parsed.doctext.task.range
+doctext.task = function (buffer, TSNode, text, range)
+	local kind = TSNode:field("type")[1];
+
+	for child in TSNode:iter_children() do
+		if child:type() == ":" then
+			_, _, range.label_row_end, range.label_col_end = child:range();
+		end
+	end
+
+	if not kind then
+		return;
+	end
+
+	range.kind = { kind:range(); };
+
+	doctext.insert({
+		class = "doctext_task",
+		kind = vim.treesitter.get_node_text(kind, buffer, {}),
+
+		text = text,
+		range = range,
+	});
+end
+
+--- Issue.
 ---@param text string[]
 ---@param range markview.parsed.range
-doctext.task = function (buffer, TSNode, text, range)
+doctext.issue = function (_, _, text, range)
+	doctext.insert({
+		class = "doctext_issue",
+
+		text = text,
+		range = range,
+	});
+end
+
+--- Issue.
+---@param text string[]
+---@param range markview.parsed.range
+doctext.mention = function (_, _, text, range)
+	doctext.insert({
+		class = "doctext_mention",
+
+		text = text,
+		range = range,
+	});
 end
 
 --- HTML parser
