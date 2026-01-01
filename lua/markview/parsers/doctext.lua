@@ -25,7 +25,7 @@ end
 ---@param buffer integer
 ---@param TSNode TSNode
 ---@param text string[]
----@param range markview.parsed.doctext.task.range
+---@param range markview.parsed.doctext.tasks.range
 doctext.task = function (buffer, TSNode, text, range)
 	local kind = TSNode:field("type")[1];
 

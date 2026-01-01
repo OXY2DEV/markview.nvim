@@ -81,7 +81,7 @@ doctext.task = function (buffer, item)
 end
 
 ---@param buffer integer
----@param item markview.parsed.doctext.tasks
+---@param item markview.parsed.doctext.issues
 doctext.issue = function (buffer, item)
 	---|fS
 
@@ -142,7 +142,7 @@ doctext.issue = function (buffer, item)
 end
 
 ---@param buffer integer
----@param item markview.parsed.doctext.tasks
+---@param item markview.parsed.doctext.mentions
 doctext.mention = function (buffer, item)
 	---|fS
 
@@ -206,14 +206,6 @@ end
 ---@param buffer integer
 ---@param content markview.parsed.doctext[]
 doctext.render = function (buffer, content)
-	doctext.cache = {
-		font_regions = {},
-		style_regions = {
-			superscripts = {},
-			subscripts = {}
-		},
-	};
-
 	local custom = spec.get({ "renderers" }, { fallback = {} });
 
 	for _, item in ipairs(content or {}) do
