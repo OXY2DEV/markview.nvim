@@ -167,6 +167,8 @@ doctext.mention = function (buffer, item)
 
 	vim.api.nvim_buf_set_extmark(buffer, doctext.ns, range.row_start, range.col_start, {
 		undo_restore = false, invalidate = true,
+		end_col = range.col_start + 1,
+		conceal = "",
 
 		virt_text_pos = "inline",
 		virt_text = {
