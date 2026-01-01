@@ -187,7 +187,7 @@ spec.default = {
 		debounce = 150,
 		icon_provider = "internal",
 
-		filetypes = { "markdown", "quarto", "rmd", "typst" },
+		filetypes = { "markdown", "quarto", "rmd", "typst", "doctext", },
 		ignore_buftypes = { "nofile" },
 		raw_previews = {},
 
@@ -210,6 +210,7 @@ spec.default = {
 
 ---@type string[] Properties that should be sourced *externally*.
 spec.__external_config = {
+	"doctext",
 	"html",
 	"markdown",
 	"markdown_inline",
