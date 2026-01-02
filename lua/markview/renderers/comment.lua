@@ -649,6 +649,197 @@ comment.code_block = function (buffer, item)
 	---|fE
 end
 
+---@param buffer integer
+---@param item markview.parsed.comment.urls
+comment.url = function (buffer, item)
+	---|fS
+
+	---@type markview.config.comment.urls?
+	local main_config = spec.get({ "comment", "urls" }, { fallback = nil });
+
+	if not main_config then
+		return;
+	end
+
+	---@type markview.config.comment.urls.opts?
+	local config = utils.match(main_config, item.text[1] or "", {
+		ignore_keys = { "enable" },
+		eval_args = { buffer, item }
+	});
+
+	if not config then
+		return;
+	end
+
+	local range = item.range;
+
+	vim.api.nvim_buf_set_extmark(buffer, comment.ns, range.row_start, range.col_start, {
+		undo_restore = false, invalidate = true,
+
+		virt_text_pos = "inline",
+		virt_text = {
+			{ config.corner_left or "", utils.set_hl(config.corner_left_hl or config.hl) },
+			{ config.padding_left or "", utils.set_hl(config.padding_left_hl or config.hl) },
+
+			{ config.icon or "", utils.set_hl(config.icon_hl or config.hl) }
+		},
+
+		hl_mode = "combine"
+	});
+
+	vim.api.nvim_buf_set_extmark(buffer, comment.ns, range.row_start, range.col_start, {
+		undo_restore = false, invalidate = true,
+		end_row = range.row_end,
+		end_col = range.col_end,
+
+		hl_group = utils.set_hl(config.hl)
+	});
+
+	vim.api.nvim_buf_set_extmark(buffer, comment.ns, range.row_end, range.col_end, {
+		undo_restore = false, invalidate = true,
+
+		virt_text_pos = "inline",
+		virt_text = {
+			{ config.padding_right or "", utils.set_hl(config.padding_right_hl or config.hl) },
+			{ config.corner_right or "", utils.set_hl(config.corner_right_hl or config.hl) }
+		},
+
+		hl_mode = "combine"
+	});
+
+	---|fE
+end
+
+---@param buffer integer
+---@param item markview.parsed.comment.taglinks
+comment.taglink = function (buffer, item)
+	---|fS
+
+	---@type markview.config.comment.taglinks?
+	local main_config = spec.get({ "comment", "taglinks" }, { fallback = nil });
+
+	if not main_config then
+		return;
+	end
+
+	---@type markview.config.comment.taglinks.opts?
+	local config = utils.match(main_config, item.text[1] or "", {
+		ignore_keys = { "enable" },
+		eval_args = { buffer, item }
+	});
+
+	if not config then
+		return;
+	end
+
+	local range = item.range;
+
+	vim.api.nvim_buf_set_extmark(buffer, comment.ns, range.row_start, range.col_start, {
+		undo_restore = false, invalidate = true,
+		end_col = range.col_start + 1,
+		conceal = "",
+
+		virt_text_pos = "inline",
+		virt_text = {
+			{ config.corner_left or "", utils.set_hl(config.corner_left_hl or config.hl) },
+			{ config.padding_left or "", utils.set_hl(config.padding_left_hl or config.hl) },
+
+			{ config.icon or "", utils.set_hl(config.icon_hl or config.hl) }
+		},
+
+		hl_mode = "combine"
+	});
+
+	vim.api.nvim_buf_set_extmark(buffer, comment.ns, range.row_start, range.col_start, {
+		undo_restore = false, invalidate = true,
+		end_row = range.row_end,
+		end_col = range.col_end,
+
+		hl_group = utils.set_hl(config.hl)
+	});
+
+	vim.api.nvim_buf_set_extmark(buffer, comment.ns, range.row_end, range.col_end - 1, {
+		undo_restore = false, invalidate = true,
+		end_col = range.col_end,
+		conceal = "",
+
+		virt_text_pos = "inline",
+		virt_text = {
+			{ config.padding_right or "", utils.set_hl(config.padding_right_hl or config.hl) },
+			{ config.corner_right or "", utils.set_hl(config.corner_right_hl or config.hl) }
+		},
+
+		hl_mode = "combine"
+	});
+
+	---|fE
+end
+
+---@param buffer integer
+---@param item markview.parsed.comment.autolinks
+comment.autolink = function (buffer, item)
+	---|fS
+
+	---@type markview.config.comment.autolinks?
+	local main_config = spec.get({ "comment", "autolinks" }, { fallback = nil });
+
+	if not main_config then
+		return;
+	end
+
+	---@type markview.config.comment.autolinks.opts?
+	local config = utils.match(main_config, item.text[1] or "", {
+		ignore_keys = { "enable" },
+		eval_args = { buffer, item }
+	});
+
+	if not config then
+		return;
+	end
+
+	local range = item.range;
+
+	vim.api.nvim_buf_set_extmark(buffer, comment.ns, range.row_start, range.col_start, {
+		undo_restore = false, invalidate = true,
+		end_col = range.col_start + 1,
+		conceal = "",
+
+		virt_text_pos = "inline",
+		virt_text = {
+			{ config.corner_left or "", utils.set_hl(config.corner_left_hl or config.hl) },
+			{ config.padding_left or "", utils.set_hl(config.padding_left_hl or config.hl) },
+
+			{ config.icon or "", utils.set_hl(config.icon_hl or config.hl) }
+		},
+
+		hl_mode = "combine"
+	});
+
+	vim.api.nvim_buf_set_extmark(buffer, comment.ns, range.row_start, range.col_start, {
+		undo_restore = false, invalidate = true,
+		end_row = range.row_end,
+		end_col = range.col_end,
+
+		hl_group = utils.set_hl(config.hl)
+	});
+
+	vim.api.nvim_buf_set_extmark(buffer, comment.ns, range.row_end, range.col_end - 1, {
+		undo_restore = false, invalidate = true,
+		end_col = range.col_end,
+		conceal = "",
+
+		virt_text_pos = "inline",
+		virt_text = {
+			{ config.padding_right or "", utils.set_hl(config.padding_right_hl or config.hl) },
+			{ config.corner_right or "", utils.set_hl(config.corner_right_hl or config.hl) }
+		},
+
+		hl_mode = "combine"
+	});
+
+	---|fE
+end
+
 --- Renders HTML elements
 ---@param buffer integer
 ---@param content markview.parsed.comment[]

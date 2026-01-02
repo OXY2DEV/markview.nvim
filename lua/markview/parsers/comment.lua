@@ -192,7 +192,7 @@ comment.taglink = function (_, _, text, range)
 	});
 end
 
---- HTML parser
+--- Comment parser
 ---@param buffer integer
 ---@param TSTree table
 ---@param from integer?
