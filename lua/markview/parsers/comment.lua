@@ -74,22 +74,58 @@ comment.inline_code = function (_, _, text, range)
 	});
 end
 
---- Issue.
+-- Issue.
 ---@param buffer integer
 ---@param TSNode TSNode
 ---@param text string[]
----@param range markview.parsed.range
+---@param range markview.parsed.comment.code_blocks.range
 comment.code_block = function (buffer, TSNode, text, range)
-	local lang = TSNode:field("type")[1];
+	local uses_tab = false;
+
+	local lang = TSNode:field("language")[1];
 	local language;
 
 	if lang then
 		language = vim.treesitter.get_node_text(lang, buffer, {});
+		range.language = { lang:range() };
+	end
+
+	for _, line in ipairs(text) do
+		if string.match(line, "\t") then
+			uses_tab = true;
+			break;
+		end
+	end
+
+	---@type TSNode, TSNode?
+	local start_delim, end_delim;
+
+	for child in TSNode:iter_children() do
+		if child:type() == "start_delimiter" then
+			start_delim = child;
+			local delim = vim.treesitter.get_node_text(child, buffer, {});
+
+			range.start_delim = { child:range() };
+			range.start_delim[2] = range.start_delim[2] + #string.match(delim, "^%s*");
+		elseif child:type() == "end_delimiter" then
+			end_delim = child;
+			local delim = vim.treesitter.get_node_text(child, buffer, {});
+
+			range.end_delim = { child:range() };
+			range.end_delim[2] = range.end_delim[2] + #string.match(delim, "^%s*");
+		end
 	end
 
 	comment.insert({
 		class = "comment_code_block",
+		uses_tab = uses_tab,
+
 		language = language,
+		info_string = nil,
+		delimiters = {
+			start_delim and vim.treesitter.get_node_text(start_delim, buffer) or "",
+			end_delim and vim.treesitter.get_node_text(end_delim, buffer) or "",
+		},
 
 		text = text,
 		range = range,

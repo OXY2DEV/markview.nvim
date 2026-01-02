@@ -463,6 +463,7 @@ renderer.clear = function (buffer, from, to, hybrid_mode)
 	---|fS
 
 	local _renderers = {
+		comment = require("markview.renderers.comment");
 		html = require("markview.renderers.html");
 		markdown = require("markview.renderers.markdown");
 		markdown_inline = require("markview.renderers.markdown_inline");
