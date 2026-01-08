@@ -332,8 +332,6 @@ comment.code_block = function (buffer, item)
 	local delims = item.delimiters;
 	local range = item.range;
 
-	local info_range = range.info_string or {};
-
 	if not config then
 		return;
 	end
@@ -343,17 +341,6 @@ comment.code_block = function (buffer, item)
 	local decorations = require("markview.filetypes").get(item.language);
 	local label = { string.format(" %s%s ", decorations.icon, decorations.name), config.label_hl or decorations.icon_hl };
 	local win = utils.buf_getwin(buffer);
-
-	--- Column end for concealing code block language string.
-	---@return integer
-	local function lang_conceal_to ()
-		if item.info_string == nil then
-			return range.start_delim[4];
-		else
-			local _to = item.info_string:match("^%S+%s*"):len();
-			return (range.info_string and range.info_string[2] or range.start_delim[4]) + _to;
-		end
-	end
 
 	--- Gets highlight configuration for a line.
 	---@param line string
@@ -661,7 +648,7 @@ comment.url = function (buffer, item)
 		return;
 	end
 
-	---@type markview.config.comment.urls.opts?
+	---@type markview.config.__inline?
 	local config = utils.match(main_config, item.text[1] or "", {
 		ignore_keys = { "enable" },
 		eval_args = { buffer, item }
@@ -722,7 +709,7 @@ comment.taglink = function (buffer, item)
 		return;
 	end
 
-	---@type markview.config.comment.taglinks.opts?
+	---@type markview.config.__inline?
 	local config = utils.match(main_config, item.text[1] or "", {
 		ignore_keys = { "enable" },
 		eval_args = { buffer, item }
@@ -787,7 +774,7 @@ comment.autolink = function (buffer, item)
 		return;
 	end
 
-	---@type markview.config.comment.autolinks.opts?
+	---@type markview.config.__inline?
 	local config = utils.match(main_config, item.text[1] or "", {
 		ignore_keys = { "enable" },
 		eval_args = { buffer, item }
