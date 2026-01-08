@@ -2,6 +2,17 @@
 
 ------------------------------------------------------------------------------
 
+--[[ Configuration for `comments`. ]]
+---@class markview.config.comment
+---
+---@field enable boolean Enable **comment** rendering.
+---
+---@field code_blocks markview.config.comment.code_blocks
+---@field inline_codes markview.config.comment.inline_codes
+---@field tasks markview.config.comment.tasks
+
+------------------------------------------------------------------------------
+
 ---@class markview.config.comment.tasks
 ---
 ---@field enable boolean
@@ -93,3 +104,41 @@
 ---@field pad_hl
 ---| string Highlight group for the padding of the line.
 ---| fun(buffer: integer, line: string): string? Takes `line` & the `buffer` containing it and returns a highlight group for the padding..
+
+------------------------------------------------------------------------------
+
+---@alias markview.config.comment.issues markview.config.__inline
+---@alias markview.config.comment.mentions markview.config.__inline
+
+------------------------------------------------------------------------------
+
+--- Configuration for block reference links.
+---@class markview.config.comment.urls
+---
+---@field enable boolean Enable rendering of `URL`s.
+---
+---@field default markview.config.__inline Default configuration for URLs.
+---@field [string] markview.config.__inline Configuration for URLs whose text matches with the key's pattern.
+
+
+------------------------------------------------------------------------------
+
+--- Configuration for block taglinks.
+---@class markview.config.comment.taglinks
+---
+---@field enable boolean Enable rendering of `URL`s.
+---
+---@field default markview.config.__inline Default configuration.
+---@field [string] markview.config.__inline Configuration for URLs matching the key's pattern.
+
+------------------------------------------------------------------------------
+
+--- Configuration for block autolinks.
+---@class markview.config.comment.autolinks
+---
+---@field enable boolean Enable rendering of `URL`s.
+---
+---@field default markview.config.__inline Default configuration.
+---@field [string] markview.config.__inline Configuration for URLs matching the key's pattern.
+
+

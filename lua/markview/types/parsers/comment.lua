@@ -36,6 +36,36 @@
 
 ------------------------------------------------------------------------------
 
+--- An URL.
+---@class markview.parsed.comment.urls
+---
+---@field class "comment_url"
+---
+---@field text string
+---@field range markview.parsed.range
+
+------------------------------------------------------------------------------
+
+--- An taglink.
+---@class markview.parsed.comment.autolinks
+---
+---@field class "comment_autolink"
+---
+---@field text string
+---@field range markview.parsed.range
+
+------------------------------------------------------------------------------
+
+--- A taglink.
+---@class markview.parsed.comment.taglinks
+---
+---@field class "comment_taglink"
+---
+---@field text string
+---@field range markview.parsed.range
+
+------------------------------------------------------------------------------
+
 --- A mention.
 ---@class markview.parsed.comment.mentions
 ---
