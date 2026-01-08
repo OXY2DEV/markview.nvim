@@ -23,7 +23,7 @@
 	---@field ignore_buftypes? string[] Buftypes that should be ignored(e.g. nofile).
 	---@field raw_previews? markview.config.preview.raw Options that will show up as raw in hybrid mode.
 	---
-	---@field condition? fun(buffer: integer): boolean Condition to check if a buffer should be attached or not.
+	---@field condition? fun(buffer: integer): boolean? Condition to check if a buffer should be attached or not. Overrides `preview.filetypes` & `preview.ignore_buftypes`. If `nil` is returned, `preview.filetypes` & `preview.ignore_buftypes` are checked.
 	---
 	---@field modes? string[] Vim-modes where previews will be shown.
 	---@field hybrid_modes? string[] Vim-modes where `hybrid mode` is enabled. Options that should/shouldn't be previewed in `hybrid_modes`.
@@ -196,10 +196,35 @@ condition                                      *markview.nvim-preview.condition*
 
 A function that returns a boolean indicating if a buffer should be attached to.
 
+▋  Important
+▋ This will disable filetypes {9} & ignore_buftypes {8}.
+
 ▋ 󰋽 Note
-▋ This is run after filetypes {9} & ignore_buftypes {8} is checked.
+▋ The function may return `nil`. In which case, filetypes {11} & ignore_buftypes
+▋ {10} will be checked.
 
 Useful if you need sophisticated logic for buffer attaching.
+
+For example, this is the default value. It attaches to any buffer that has
+`tree-sitter` parser available when experimental.fancy_comments {12} is set to
+`true`.
+
+>lua
+	condition = function (buffer)
+	    local is_enabled = spec.get({ "experimental", "fancy_comments" }, {
+	        fallback = false,
+	    });
+	
+	    if not is_enabled then
+	        return false;
+	    end
+	
+	    local success, parser = pcall(vim.treesitter.get_parser, buffer);
+	    if success and parser ~= nil then
+	        return true;
+	    end
+	end,
+<
 
 --------------------------------------------------------------------------------
 modes                                              *markview.nvim-preview.modes*
@@ -220,7 +245,7 @@ hybrid_modes                                *markview.nvim-preview.hybrid_modes*
 Modes where `hybrid mode` will be shown.
 
 ▋  Important
-▋ The mode must also be preset in modes {10} for this to take effect!
+▋ The mode must also be preset in modes {13} for this to take effect!
 
 ╭──────────────────────┬──────────────────────╮
 │                      │  `hybrid_modes = {}`   │
@@ -238,7 +263,7 @@ linewise_hybrid_mode                *markview.nvim-preview.linewise_hybrid_mode*
 	linewise_hybrid_mode = false,
 <
 
-Enables `linewise` hybrid mode. edit_range {11} is used to control the number of
+Enables `linewise` hybrid mode. edit_range {14} is used to control the number of
 lines to clear around each cursor.
 
 ╭──────────────────────┬──────────────────────╮
@@ -267,7 +292,7 @@ Maximum number of lines a buffer can have for it to be rendered completely.
 ▋ cause lag when opening the buffer.
 
 If the line count is larger than this value, the buffer will be partially drawn.
-draw_range {12} is used to control the number of lines drawn around each cursor.
+draw_range {15} is used to control the number of lines drawn around each cursor.
 
 --------------------------------------------------------------------------------
 draw_range                                    *markview.nvim-preview.draw_range*
@@ -291,10 +316,10 @@ edit_range                                    *markview.nvim-preview.edit_range*
 <
 
 Number of lines above & below each cursor that are considered being edited. Only
-useful in hybrid_modes {13}.
+useful in hybrid_modes {16}.
 
 ▋  Important
-▋ When linewise_hybrid_mode {14} is `false`, a Node only needs to partially be
+▋ When linewise_hybrid_mode {17} is `false`, a Node only needs to partially be
 ▋ within the range for it to be considered being edited.
 ▋ So, things such as List items, Block quotes etc. may clear more lines than the
 ▋ specified amount.
@@ -317,20 +342,23 @@ Window options for the `splitview` window. Passed directly to `nvim_open_win()`.
 
 Links ~
 
-1: #-preview-options
-2: ./Experimental.md#prefer_nvim
-3: ./Experimental.md#file_open_command
-4: ./Experimental.md#prefer_nvim
-5: #ignore_buftypes
-6: #ignore_buftypes
-7: #hybrid_modes
-8: #ignore_buftypes
-9: #filetypes
-10: #modes
-11: #edit_range
-12: #draw_range
-13: #hybrid_modes
-14: #linewise_hybrid_mode
+1: `markview.nvim-preview`
+2: `markview.nvim-experimental.prefer_nvim`
+3: `markview.nvim-experimental.file_open_command`
+4: `markview.nvim-experimental.prefer_nvim`
+5: `markview.nvim-preview.ignore_buftypes`
+6: `markview.nvim-preview.ignore_buftypes`
+7: `markview.nvim-preview.modes`
+8: `markview.nvim-preview.ignore_buftypes`
+9: `markview.nvim-preview.filetypes`
+10: `markview.nvim-preview.ignore_buftypes`
+11: `markview.nvim-preview.filetypes`
+12: `markview.nvim-experimental.fancy_comments`
+13: `markview.nvim-preview.modes`
+14: `markview.nvim-preview.edit_range`
+15: `markview.nvim-preview.draw_range`
+16: `markview.nvim-preview.modes`
+17: `markview.nvim-preview.linewise_hybrid_mode`
 
 Images ~
 

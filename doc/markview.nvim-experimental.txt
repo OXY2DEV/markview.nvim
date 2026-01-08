@@ -4,6 +4,8 @@
 	--- Experimental options.
 	---@class markview.config.experimental
 	---
+	---@field fancy_comments boolean When `true`, enables preview on **all buffers** with an active `tree-sitter parser`.
+	---
 	---@field date_formats string[] List of lua patterns for detecting date in YAML.
 	---@field date_time_formats string[] List of lua patterns for detecting date & time in YAML.
 	---
