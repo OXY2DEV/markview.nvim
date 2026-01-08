@@ -8,6 +8,8 @@ local spec = {};
 ---@type markview.config
 spec.default = {
 	experimental = {
+		fancy_comments = false,
+
 		date_formats = {
 			"^%d%d%d%d%-%d%d%-%d%d$",      --- YYYY-MM-DD
 			"^%d%d%-%d%d%-%d%d%d%d$",      --- DD-MM-YYYY, MM-DD-YYYY
@@ -187,8 +189,23 @@ spec.default = {
 		debounce = 150,
 		icon_provider = "internal",
 
-		filetypes = { "markdown", "quarto", "rmd", "typst", "doctext", },
+		filetypes = { "markdown", "quarto", "rmd", "typst", },
 		ignore_buftypes = { "nofile" },
+		condition = function (buffer)
+			local is_enabled = spec.get({ "experimental", "fancy_comments" }, {
+				fallback = false,
+			});
+
+			if not is_enabled then
+				return false;
+			end
+
+			local success, parser = pcall(vim.treesitter.get_parser, buffer);
+			if success and parser ~= nil then
+				return true;
+			end
+		end,
+
 		raw_previews = {},
 
 		modes = { "n", "no", "c" },

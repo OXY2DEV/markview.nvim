@@ -22,7 +22,7 @@
 ---@field ignore_buftypes? string[] Buftypes that should be ignored(e.g. nofile).
 ---@field raw_previews? markview.config.preview.raw Options that will show up as raw in hybrid mode.
 ---
----@field condition? fun(buffer: integer): boolean Condition to check if a buffer should be attached or not.
+---@field condition? fun(buffer: integer): boolean? Condition to check if a buffer should be attached or not. Overrides `preview.filetypes` & `preview.ignore_buftypes`. If `nil` is returned, `preview.filetypes` & `preview.ignore_buftypes` are checked.
 ---
 ---@field modes? string[] Vim-modes where previews will be shown.
 ---@field hybrid_modes? string[] Vim-modes where `hybrid mode` is enabled. Options that should/shouldn't be previewed in `hybrid_modes`.
