@@ -375,9 +375,9 @@ return {
 			padding_left = " ",
 			padding_right = " ",
 
-			icon = "󰋽 ",
+			icon = " ",
 
-			hl = "MarkviewPalette6",
+			hl = "MarkviewPalette5",
 		},
 	},
 
