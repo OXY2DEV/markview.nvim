@@ -43,6 +43,16 @@ An autolink.
 
 ------------------------------------------------------------------------------
 
+--- A `task` scope.
+---@class markview.parsed.comment.task_scopes
+---
+---@field class "comment_task_scopes"
+---
+---@field text string
+---@field range markview.parsed.comment.tasks.range
+
+------------------------------------------------------------------------------
+
 --- An issue reference.
 ---@class markview.parsed.comment.issues
 ---
@@ -130,6 +140,7 @@ An autolink.
 ---| markview.parsed.comment.mentions
 ---| markview.parsed.comment.taglinks
 ---| markview.parsed.comment.tasks
+---| markview.parsed.comment.task_scopes
 ---| markview.parsed.comment.urls
 
 
@@ -142,5 +153,6 @@ An autolink.
 ---@field mentions markview.parsed.comment.mentions[]
 ---@field taglinks markview.parsed.comment.taglinks[]
 ---@field tasks markview.parsed.comment.tasks[]
+---@field task_scopes markview.parsed.comment.task_scopes[]
 ---@field urls markview.parsed.comment.urls[]
 

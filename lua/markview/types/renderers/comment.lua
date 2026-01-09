@@ -14,6 +14,7 @@
 ---@field mentions markview.config.comment.mentions
 ---@field taglinks markview.config.comment.taglinks
 ---@field tasks markview.config.comment.tasks
+---@field task_scopes markview.config.comment.task_scopes
 ---@field urls markview.config.comment.urls
 
 ------------------------------------------------------------------------------
@@ -129,6 +130,16 @@
 ---
 ---@field default markview.config.__inline Default configuration for mentions.
 ---@field [string] markview.config.__inline Configuration for mentions whose text matches with the key's pattern.
+
+------------------------------------------------------------------------------
+
+--- Configuration for task_scopes.
+---@class markview.config.comment.task_scopes
+---
+---@field enable boolean Enable rendering of `task scope`s.
+---
+---@field default markview.config.__inline Default configuration for mentions.
+---@field [string] markview.config.__inline Configuration for scopes matching the key's pattern.
 
 ------------------------------------------------------------------------------
 

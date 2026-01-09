@@ -569,6 +569,19 @@ return {
 		},
 	},
 
+	task_scopes = {
+		enable = true,
+
+		default = {
+			padding_left = " ",
+			padding_right = " ",
+
+			icon = "󰈲 ",
+
+			hl = "MarkviewPalette4",
+		},
+	},
+
 	urls = {
 		enable = true,
 

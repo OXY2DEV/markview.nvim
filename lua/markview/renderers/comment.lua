@@ -149,18 +149,18 @@ comment.task = function (buffer, item)
 end
 
 ---@param buffer integer
----@param item markview.parsed.comment.issues
+---@param item markview.parsed.comment.task_scopes
 comment.task_scope = function (buffer, item)
 	---|fS
 
-	---@type markview.config.comment.tasks?
+	---@type markview.config.comment.task_scopes?
 	local main_config = spec.get({ "comment", "task_scopes" }, { fallback = nil });
 
 	if not main_config then
 		return;
 	end
 
-	---@type markview.config.comment.tasks.opts?
+	---@type markview.config.__inline?
 	local config = utils.match(main_config, item.text[1] or "", {
 		ignore_keys = { "enable" },
 		eval_args = { buffer, item }
