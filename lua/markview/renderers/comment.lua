@@ -6,6 +6,72 @@ local spec = require("markview.spec");
 comment.ns = vim.api.nvim_create_namespace("markview/comment");
 
 ---@param buffer integer
+---@param item markview.parsed.comment.autolinks
+comment.autolink = function (buffer, item)
+	---|fS
+
+	---@type markview.config.comment.autolinks?
+	local main_config = spec.get({ "comment", "autolinks" }, { fallback = nil });
+
+	if not main_config then
+		return;
+	end
+
+	---@type markview.config.comments.autolinks.opts?
+	local config = utils.match(main_config, item.destination or "", {
+		ignore_keys = { "enable" },
+		eval_args = { buffer, item }
+	});
+
+	if not config then
+		return;
+	end
+
+	local range = item.range;
+
+	vim.api.nvim_buf_set_extmark(buffer, comment.ns, range.row_start, range.col_start, {
+		undo_restore = false, invalidate = true,
+		end_col = config.text and range.col_end - 1 or range.col_start + 1,
+		conceal = "",
+
+		virt_text_pos = "inline",
+		virt_text = {
+			{ config.corner_left or "", utils.set_hl(config.corner_left_hl or config.hl) },
+			{ config.padding_left or "", utils.set_hl(config.padding_left_hl or config.hl) },
+
+			{ config.icon or "", utils.set_hl(config.icon_hl or config.hl) },
+			config.text and { config.text, utils.set_hl(config.text_hl or config.hl) } or nil,
+		},
+
+		hl_mode = "combine"
+	});
+
+	vim.api.nvim_buf_set_extmark(buffer, comment.ns, range.row_start, range.col_start, {
+		undo_restore = false, invalidate = true,
+		end_row = range.row_end,
+		end_col = range.col_end,
+
+		hl_group = utils.set_hl(config.hl)
+	});
+
+	vim.api.nvim_buf_set_extmark(buffer, comment.ns, range.row_end, range.col_end - 1, {
+		undo_restore = false, invalidate = true,
+		end_col = range.col_end,
+		conceal = "",
+
+		virt_text_pos = "inline",
+		virt_text = {
+			{ config.padding_right or "", utils.set_hl(config.padding_right_hl or config.hl) },
+			{ config.corner_right or "", utils.set_hl(config.corner_right_hl or config.hl) }
+		},
+
+		hl_mode = "combine"
+	});
+
+	---|fE
+end
+
+---@param buffer integer
 ---@param item markview.parsed.comment.tasks
 comment.task = function (buffer, item)
 	---|fS
@@ -706,71 +772,6 @@ comment.taglink = function (buffer, item)
 
 	---@type markview.config.comment.taglinks?
 	local main_config = spec.get({ "comment", "taglinks" }, { fallback = nil });
-
-	if not main_config then
-		return;
-	end
-
-	---@type markview.config.__inline?
-	local config = utils.match(main_config, item.text[1] or "", {
-		ignore_keys = { "enable" },
-		eval_args = { buffer, item }
-	});
-
-	if not config then
-		return;
-	end
-
-	local range = item.range;
-
-	vim.api.nvim_buf_set_extmark(buffer, comment.ns, range.row_start, range.col_start, {
-		undo_restore = false, invalidate = true,
-		end_col = range.col_start + 1,
-		conceal = "",
-
-		virt_text_pos = "inline",
-		virt_text = {
-			{ config.corner_left or "", utils.set_hl(config.corner_left_hl or config.hl) },
-			{ config.padding_left or "", utils.set_hl(config.padding_left_hl or config.hl) },
-
-			{ config.icon or "", utils.set_hl(config.icon_hl or config.hl) }
-		},
-
-		hl_mode = "combine"
-	});
-
-	vim.api.nvim_buf_set_extmark(buffer, comment.ns, range.row_start, range.col_start, {
-		undo_restore = false, invalidate = true,
-		end_row = range.row_end,
-		end_col = range.col_end,
-
-		hl_group = utils.set_hl(config.hl)
-	});
-
-	vim.api.nvim_buf_set_extmark(buffer, comment.ns, range.row_end, range.col_end - 1, {
-		undo_restore = false, invalidate = true,
-		end_col = range.col_end,
-		conceal = "",
-
-		virt_text_pos = "inline",
-		virt_text = {
-			{ config.padding_right or "", utils.set_hl(config.padding_right_hl or config.hl) },
-			{ config.corner_right or "", utils.set_hl(config.corner_right_hl or config.hl) }
-		},
-
-		hl_mode = "combine"
-	});
-
-	---|fE
-end
-
----@param buffer integer
----@param item markview.parsed.comment.autolinks
-comment.autolink = function (buffer, item)
-	---|fS
-
-	---@type markview.config.comment.autolinks?
-	local main_config = spec.get({ "comment", "autolinks" }, { fallback = nil });
 
 	if not main_config then
 		return;

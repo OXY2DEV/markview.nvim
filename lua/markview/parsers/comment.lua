@@ -174,6 +174,7 @@ end
 comment.autolink = function (_, _, text, range)
 	comment.insert({
 		class = "comment_autolink",
+		destination = string.gsub(text[1] or "", "^%<", ""):gsub("%>$", ""),
 
 		text = text,
 		range = range,

@@ -12,6 +12,7 @@ An autolink.
 ---@class markview.parsed.comment.autolinks
 ---
 ---@field class "comment_autolink"
+---@field destination string Text between `<>`.
 ---
 ---@field text string
 ---@field range markview.parsed.range
