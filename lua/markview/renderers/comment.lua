@@ -19,6 +19,8 @@ comment.task = function (buffer, item)
 
 	---@type markview.config.comment.tasks.opts?
 	local config = utils.match(main_config, item.kind, {
+		case_insensitive = true,
+
 		ignore_keys = { "enable" },
 		eval_args = { buffer, item }
 	});
