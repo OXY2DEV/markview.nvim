@@ -404,8 +404,6 @@ comment.code_block = function (buffer, item)
 		return;
 	end
 
-	-- vim.print(item)
-
 	local decorations = require("markview.filetypes").get(item.language);
 	local label = { string.format(" %s%s ", decorations.icon, decorations.name), config.label_hl or decorations.icon_hl };
 	local win = utils.buf_getwin(buffer);
@@ -716,8 +714,8 @@ comment.url = function (buffer, item)
 		return;
 	end
 
-	---@type markview.config.__inline?
-	local config = utils.match(main_config, item.text[1] or "", {
+	---@type markview.config.comments.urls.opts?
+	local config = utils.match(main_config, item.destination or "", {
 		ignore_keys = { "enable" },
 		eval_args = { buffer, item }
 	});
@@ -730,13 +728,16 @@ comment.url = function (buffer, item)
 
 	vim.api.nvim_buf_set_extmark(buffer, comment.ns, range.row_start, range.col_start, {
 		undo_restore = false, invalidate = true,
+		end_col = config.text and range.col_end or nil,
+		conceal = config.text and "" or nil,
 
 		virt_text_pos = "inline",
 		virt_text = {
 			{ config.corner_left or "", utils.set_hl(config.corner_left_hl or config.hl) },
 			{ config.padding_left or "", utils.set_hl(config.padding_left_hl or config.hl) },
 
-			{ config.icon or "", utils.set_hl(config.icon_hl or config.hl) }
+			{ config.icon or "", utils.set_hl(config.icon_hl or config.hl) },
+			config.text and { config.text, utils.set_hl(config.text_hl or config.hl) } or nil,
 		},
 
 		hl_mode = "combine"

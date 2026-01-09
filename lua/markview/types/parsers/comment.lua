@@ -57,6 +57,7 @@ An autolink.
 ---@class markview.parsed.comment.urls
 ---
 ---@field class "comment_url"
+---@field destination string
 ---
 ---@field text string
 ---@field range markview.parsed.range

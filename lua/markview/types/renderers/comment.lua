@@ -137,8 +137,34 @@
 ---
 ---@field enable boolean Enable rendering of `URL`s.
 ---
----@field default markview.config.__inline Default configuration for URLs.
----@field [string] markview.config.__inline Configuration for URLs whose text matches with the key's pattern.
+---@field default markview.config.comments.urls.opts Default configuration for URLs.
+---@field [string] markview.config.comments.urls.opts Configuration for URLs whose text matches with the key's pattern.
+
+
+---@class markview.config.comments.urls.opts
+---
+---@field corner_left? string Left corner.
+---@field corner_left_hl? string Highlight group for the left corner.
+---
+---@field padding_left? string Left padding(added after `corner_left`).
+---@field padding_left_hl? string Highlight group for the left padding.
+---
+---@field icon? string Icon(added after `padding_left`).
+---@field icon_hl? string Highlight group for the icon.
+---
+--[[ Text to show instead of the `autolink`.]]
+---@field text?
+---| string
+---| function(buffer: integer, item: markview.parsed.comment.autolinks): string
+---@field text_hl? string Highlight group for the shown text.
+---
+---@field hl? string Default highlight group(used by `*_hl` options when they are not set).
+---
+---@field padding_right? string Right padding.
+---@field padding_right_hl? string Highlight group for the right padding.
+---
+---@field corner_right? string Right corner(added after `padding_right`).
+---@field corner_right_hl? string Highlight group for the right corner.
 
 
 ------------------------------------------------------------------------------
@@ -173,7 +199,10 @@
 ---@field icon? string Icon(added after `padding_left`).
 ---@field icon_hl? string Highlight group for the icon.
 ---
----@field text? string Text to show instead of the `autolink`.
+--[[ Text to show instead of the `autolink`.]]
+---@field text?
+---| string
+---| function(buffer: integer, item: markview.parsed.comment.autolinks): string
 ---@field text_hl? string Highlight group for the shown text.
 ---
 ---@field hl? string Default highlight group(used by `*_hl` options when they are not set).

@@ -162,6 +162,7 @@ end
 comment.url = function (_, _, text, range)
 	comment.insert({
 		class = "comment_url",
+		destination = text[1] or "",
 
 		text = text,
 		range = range,
