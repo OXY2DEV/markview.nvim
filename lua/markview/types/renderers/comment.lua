@@ -7,9 +7,14 @@
 ---
 ---@field enable boolean Enable **comment** rendering.
 ---
+---@field autolinks markview.config.comment.autolinks
 ---@field code_blocks markview.config.comment.code_blocks
 ---@field inline_codes markview.config.comment.inline_codes
+---@field issues markview.config.comment.issues
+---@field mentions markview.config.comment.mentions
+---@field taglinks markview.config.comment.taglinks
 ---@field tasks markview.config.comment.tasks
+---@field urls markview.config.comment.urls
 
 ------------------------------------------------------------------------------
 
@@ -107,12 +112,27 @@
 
 ------------------------------------------------------------------------------
 
----@alias markview.config.comment.issues markview.config.__inline
----@alias markview.config.comment.mentions markview.config.__inline
+--- Configuration for issues.
+---@class markview.config.comment.issues
+---
+---@field enable boolean Enable rendering of `#issue`s.
+---
+---@field default markview.config.__inline Default configuration for issues.
+---@field [string] markview.config.__inline Configuration for issues whose text matches with the key's pattern.
 
 ------------------------------------------------------------------------------
 
---- Configuration for block reference links.
+--- Configuration for mentions.
+---@class markview.config.comment.mentions
+---
+---@field enable boolean Enable rendering of `@mention`s.
+---
+---@field default markview.config.__inline Default configuration for mentions.
+---@field [string] markview.config.__inline Configuration for mentions whose text matches with the key's pattern.
+
+------------------------------------------------------------------------------
+
+--- Configuration for URLs.
 ---@class markview.config.comment.urls
 ---
 ---@field enable boolean Enable rendering of `URL`s.
@@ -123,22 +143,21 @@
 
 ------------------------------------------------------------------------------
 
---- Configuration for block taglinks.
+--- Configuration for taglinks.
 ---@class markview.config.comment.taglinks
 ---
----@field enable boolean Enable rendering of `URL`s.
+---@field enable boolean Enable rendering of `|taglink|`s.
 ---
 ---@field default markview.config.__inline Default configuration.
----@field [string] markview.config.__inline Configuration for URLs matching the key's pattern.
+---@field [string] markview.config.__inline Configuration for taglinks matching the key's pattern.
 
 ------------------------------------------------------------------------------
 
---- Configuration for block autolinks.
+--- Configuration for autolinks.
 ---@class markview.config.comment.autolinks
 ---
----@field enable boolean Enable rendering of `URL`s.
+---@field enable boolean Enable rendering of `<autolink>`s.
 ---
 ---@field default markview.config.__inline Default configuration.
----@field [string] markview.config.__inline Configuration for URLs matching the key's pattern.
-
+---@field [string] markview.config.__inline Configuration for autolinks matching the key's pattern.
 

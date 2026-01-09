@@ -2,6 +2,22 @@
 
 ------------------------------------------------------------------------------
 
+--[[
+An autolink.
+
+```comment
+<hello>
+```
+]]
+---@class markview.parsed.comment.autolinks
+---
+---@field class "comment_autolink"
+---
+---@field text string
+---@field range markview.parsed.range
+
+------------------------------------------------------------------------------
+
 --- A `task`.
 ---@class markview.parsed.comment.tasks
 ---
@@ -40,16 +56,6 @@
 ---@class markview.parsed.comment.urls
 ---
 ---@field class "comment_url"
----
----@field text string
----@field range markview.parsed.range
-
-------------------------------------------------------------------------------
-
---- An taglink.
----@class markview.parsed.comment.autolinks
----
----@field class "comment_autolink"
 ---
 ---@field text string
 ---@field range markview.parsed.range
@@ -115,10 +121,24 @@
 ------------------------------------------------------------------------------
 
 ---@alias markview.parsed.comment
+---| markview.parsed.comment.autolinks
+---| markview.parsed.comment.code_blocks
+---| markview.parsed.comment.inline_codes
+---| markview.parsed.comment.issues
+---| markview.parsed.comment.mentions
+---| markview.parsed.comment.taglinks
 ---| markview.parsed.comment.tasks
+---| markview.parsed.comment.urls
 
 
 ---@class markview.parsed.comment_sorted
 ---
+---@field autolinks markview.parsed.comment.autolinks[]
+---@field code_blocks markview.parsed.comment.code_blocks[]
+---@field inline_codes markview.parsed.comment.inline_codes[]
+---@field issues markview.parsed.comment.issues[]
+---@field mentions markview.parsed.comment.mentions[]
+---@field taglinks markview.parsed.comment.taglinks[]
 ---@field tasks markview.parsed.comment.tasks[]
+---@field urls markview.parsed.comment.urls[]
 
