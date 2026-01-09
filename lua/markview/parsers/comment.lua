@@ -50,6 +50,111 @@ comment.task = function (buffer, TSNode, text, range)
 	});
 end
 
+--- Tasks(legacy parser).
+---@param buffer integer
+---@param TSNode TSNode
+---@param text string[]
+---@param range markview.parsed.comment.tasks.range
+comment.tag = function (buffer, TSNode, text, range)
+	local kind;
+
+	for child in TSNode:iter_children() do
+		if child:type() == "name" then
+			kind = child;
+			range.kind = { child:range() };
+
+			range.label_row_end = range.row_start;
+			range.label_col_end = range.kind[4] + 1; -- `:` is part of the label!
+		elseif child:type() == "user" then
+			local user_range = { child:range() };
+
+			range.label_row_end = range.row_start;
+			range.label_col_end = user_range[4] + 2; -- `:` is part of the label!
+
+			-- Add special syntax support for scope text.
+			comment.tag_scope(buffer, child, { vim.treesitter.get_node_text(child, buffer, {}) }, user_range);
+		end
+	end
+
+	if not kind then
+		return;
+	end
+
+	comment.insert({
+		class = "comment_task",
+		kind = vim.treesitter.get_node_text(kind, buffer, {}),
+
+		text = text,
+		range = range,
+	});
+end
+
+--- Tasks scope parser(legacy parser).
+---@param buffer integer
+---@param _ TSNode
+---@param text string[]
+---@param root_range markview.parsed.comment.tasks.range
+comment.tag_scope = function (buffer, _, text, root_range)
+	local lpeg = vim.lpeg;
+
+	local function as_wspace   (m) return { kind = "space", value = m }; end
+	local function as_comma    (m) return { kind = "comma", value = m }; end
+
+	local function as_issue   (m) return { kind = "issue", value = m }; end
+	local function as_mention (m) return { kind = "mention", value = m }; end
+	local function as_word    (m) return { kind = "word", value = m }; end
+
+	local space = lpeg.C( lpeg.S(" \t\n\r") ) / as_wspace;
+	local comma = lpeg.C( lpeg.P(",") ) / as_comma;
+
+	local walnum = lpeg.R("az", "AZ", "09");
+	local non_wspacse = 1 - ( space + comma );
+	local word = lpeg.C( walnum * (non_wspacse^0) ) / as_word;
+
+	local mention = lpeg.C( lpeg.P("@") * (non_wspacse^1) ) / as_mention;
+
+	local num_issue = lpeg.C( lpeg.P("#") * ( lpeg.R("09") ^ 1 ) ) / as_issue;
+
+	local invalid_cahrs = space + lpeg.P("#");
+	local issue_name = lpeg.R("az", "AZ", "09") * (1 - invalid_cahrs)^0;
+	local desc_issue = lpeg.C( issue_name * lpeg.P("#") * ( lpeg.R("09") ^ 1 ) ) / as_issue;
+
+	local token = space + comma + desc_issue + num_issue + mention + word;
+	local scope = lpeg.Ct(token^0);
+
+	local col_start = root_range[2];
+
+	for _, item in ipairs(lpeg.match(scope, text[1] or "")) do
+		if item.kind == "word" then
+			comment.task_scope(buffer, nil, { item.value }, {
+				row_start = root_range[1],
+				col_start = col_start,
+
+				row_end = root_range[3],
+				col_end = col_start + #item.value,
+			});
+		elseif item.kind == "issue" then
+			comment.issue(buffer, nil, { item.value }, {
+				row_start = root_range[1],
+				col_start = col_start,
+
+				row_end = root_range[3],
+				col_end = col_start + #item.value,
+			});
+		elseif item.kind == "mention" then
+			comment.mention(buffer, nil, { item.value }, {
+				row_start = root_range[1],
+				col_start = col_start,
+
+				row_end = root_range[3],
+				col_end = col_start + #item.value,
+			});
+		end
+
+		col_start = col_start + #item.value;
+	end
+end
+
 --- Issue.
 ---@param text string[]
 ---@param range markview.parsed.range
