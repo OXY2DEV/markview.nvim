@@ -86,15 +86,27 @@ autocmds.should_detach = function (args)
 
 	local condition = spec.get({ "preview", "condition" }, { eval_args = { args.buf } });
 
-	if vim.list_contains(ignore_bt, bt) == true then
-		return true;
-	elseif vim.list_contains(attach_ft, ft) == false then
-		return true;
-	elseif condition == false then
-		return true;
+	--[[
+		feat: Attaching to buffers.
+
+		If condition is `true`(either `preview.condition = true` or the evaluated function value is `true`), attach to `buffer`.
+
+		Otherwise, check if the **buftype** is included in `preview.ignore_buftypes`. If it is then we don't attach to `buffer`.
+		Then check if the **filetype** is included in `preview.filetypes`. IF it is we attach to `buffer`.
+	]]
+	if condition == nil then
+		-- No condition specified.
+
+		if vim.list_contains(ignore_bt, bt) == true then
+			--- Ignored buffer type.
+			return true;
+		elseif vim.list_contains(attach_ft, ft) == false then
+			--- Ignored file type.
+			return true;
+		end
 	end
 
-	return false;
+	return condition == false;
 
 	---|fE
 end
