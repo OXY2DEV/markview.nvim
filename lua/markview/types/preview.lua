@@ -58,12 +58,34 @@
 --- in `hybrid mode`.
 ---@class markview.config.preview.raw
 ---
+---@field comment? markview.config.preview.raw.comment[]
 ---@field html? markview.config.preview.raw.html[]
 ---@field latex? markview.config.preview.raw.latex[]
 ---@field markdown? markview.config.preview.raw.markdown[]
 ---@field markdown_inline? markview.config.preview.raw.markdown_inline[]
 ---@field typst? markview.config.preview.raw.typst[]
 ---@field yaml? markview.config.preview.raw.yaml[]
+
+---@alias markview.config.preview.raw.comment
+---| "!autolinks"
+---| "!code_blocks"
+---| "!inline_codes"
+---| "!issues"
+---| "!mentions"
+---| "!taglinks"
+---| "!task_scopes"
+---| "!tasks"
+---| "!urls"
+---
+---| "autolinks"
+---| "code_blocks"
+---| "inline_codes"
+---| "issues"
+---| "mentions"
+---| "taglinks"
+---| "task_scopes"
+---| "tasks"
+---| "urls"
 
 ---@alias markview.config.preview.raw.html
 ---| "!container_elements"

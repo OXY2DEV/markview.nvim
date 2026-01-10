@@ -15,7 +15,14 @@ renderer.__filter_cache = {
 renderer.option_maps = {
 	---|fS
 
-	doxtext = {
+	comment = {
+		autolinks = { "comment_autolink" },
+		code_blocks = { "comment_code_block" },
+		inline_codes = { "comment_inline_code" },
+		issues = { "comment_issue" },
+		mentions = { "comment_mention" },
+		taglinks = { "comment_taglink" },
+		task_scopes = { "comment_task_scope" },
 		tasks = { "comment_task" },
 	},
 	html = {
