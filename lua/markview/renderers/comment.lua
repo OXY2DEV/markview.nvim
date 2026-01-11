@@ -831,10 +831,122 @@ comment.taglink = function (buffer, item)
 	---|fE
 end
 
---- Renders HTML elements
+---@param buffer integer
+---@param item markview.parsed.comment.inline_codes
+comment.bold = function (buffer, item)
+	---|fS
+
+	---@type markview.config.comment.bolds?
+	local config = spec.get({ "comment", "bolds" }, { fallback = nil });
+
+	if not config then
+		return;
+	end
+
+	local range = item.range;
+
+	vim.api.nvim_buf_set_extmark(buffer, comment.ns, range.row_start, range.col_start, {
+		undo_restore = false, invalidate = true,
+		end_col = range.col_start + 2,
+		conceal = "",
+
+		virt_text_pos = "inline",
+		virt_text = {
+			{ config.corner_left or "", utils.set_hl(config.corner_left_hl or config.hl) },
+			{ config.padding_left or "", utils.set_hl(config.padding_left_hl or config.hl) },
+
+			{ config.icon or "", utils.set_hl(config.icon_hl or config.hl) }
+		},
+
+		hl_mode = "combine"
+	});
+
+	vim.api.nvim_buf_set_extmark(buffer, comment.ns, range.row_start, range.col_start, {
+		undo_restore = false, invalidate = true,
+		end_row = range.row_end,
+		end_col = range.col_end,
+
+		hl_group = utils.set_hl(config.hl)
+	});
+
+	vim.api.nvim_buf_set_extmark(buffer, comment.ns, range.row_end, range.col_end - 2, {
+		undo_restore = false, invalidate = true,
+		end_col = range.col_end,
+		conceal = "",
+
+		virt_text_pos = "inline",
+		virt_text = {
+			{ config.padding_right or "", utils.set_hl(config.padding_right_hl or config.hl) },
+			{ config.corner_right or "", utils.set_hl(config.corner_right_hl or config.hl) }
+		},
+
+		hl_mode = "combine"
+	});
+
+	---|fE
+end
+
+---@param buffer integer
+---@param item markview.parsed.comment.inline_codes
+comment.italic = function (buffer, item)
+	---|fS
+
+	---@type markview.config.comment.italics?
+	local config = spec.get({ "comment", "italics" }, { fallback = nil });
+
+	if not config then
+		return;
+	end
+
+	local range = item.range;
+
+	vim.api.nvim_buf_set_extmark(buffer, comment.ns, range.row_start, range.col_start, {
+		undo_restore = false, invalidate = true,
+		end_col = range.col_start + 1,
+		conceal = "",
+
+		virt_text_pos = "inline",
+		virt_text = {
+			{ config.corner_left or "", utils.set_hl(config.corner_left_hl or config.hl) },
+			{ config.padding_left or "", utils.set_hl(config.padding_left_hl or config.hl) },
+
+			{ config.icon or "", utils.set_hl(config.icon_hl or config.hl) }
+		},
+
+		hl_mode = "combine"
+	});
+
+	vim.api.nvim_buf_set_extmark(buffer, comment.ns, range.row_start, range.col_start, {
+		undo_restore = false, invalidate = true,
+		end_row = range.row_end,
+		end_col = range.col_end,
+
+		hl_group = utils.set_hl(config.hl)
+	});
+
+	vim.api.nvim_buf_set_extmark(buffer, comment.ns, range.row_end, range.col_end - 1, {
+		undo_restore = false, invalidate = true,
+		end_col = range.col_end,
+		conceal = "",
+
+		virt_text_pos = "inline",
+		virt_text = {
+			{ config.padding_right or "", utils.set_hl(config.padding_right_hl or config.hl) },
+			{ config.corner_right or "", utils.set_hl(config.corner_right_hl or config.hl) }
+		},
+
+		hl_mode = "combine"
+	});
+
+	---|fE
+end
+
+--- Renders fancy comments
 ---@param buffer integer
 ---@param content markview.parsed.comment[]
 comment.render = function (buffer, content)
+	---|fS
+
 	local custom = spec.get({ "renderers" }, { fallback = {} });
 
 	for _, item in ipairs(content or {}) do
@@ -859,9 +971,11 @@ comment.render = function (buffer, content)
 			});
 		end
 	end
+
+	---|fE
 end
 
---- Clears decorations of HTML elements
+--- Clears decorations of fancy comments
 ---@param buffer integer
 ---@param from integer
 ---@param to integer

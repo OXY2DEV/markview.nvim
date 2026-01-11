@@ -322,6 +322,10 @@ return {
 		---|fE
 	},
 
+	bolds = {
+		enable = true,
+	},
+
 	code_blocks = {
 		enable = true,
 
@@ -375,6 +379,10 @@ return {
 
 			hl = "MarkviewPalette2",
 		},
+	},
+
+	italics = {
+		enable = true,
 	},
 
 	mentions = {

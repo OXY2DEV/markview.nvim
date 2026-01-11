@@ -170,6 +170,30 @@ end
 --- Issue.
 ---@param text string[]
 ---@param range markview.parsed.range
+comment.bold = function (_, _, text, range)
+	comment.insert({
+		class = "comment_bold",
+
+		text = text,
+		range = range,
+	});
+end
+
+--- Issue.
+---@param text string[]
+---@param range markview.parsed.range
+comment.italic = function (_, _, text, range)
+	comment.insert({
+		class = "comment_italic",
+
+		text = text,
+		range = range,
+	});
+end
+
+--- Issue.
+---@param text string[]
+---@param range markview.parsed.range
 comment.inline_code = function (_, _, text, range)
 	comment.insert({
 		class = "comment_inline_code",
@@ -324,6 +348,9 @@ comment.parse = function (buffer, TSTree, from, to)
 
 			(task_scope
 				(word) @comment.task_scope)
+
+			(bold) @comment.bold
+			(italic) @comment.italic
 
 			(code) @comment.inline_code
 			(code_block) @comment.code_block
