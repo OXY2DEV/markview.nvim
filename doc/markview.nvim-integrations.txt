@@ -116,7 +116,7 @@ You can see an example here {6}.
 --------------------------------------------------------------------------------
 📦 Fancy comments               *markview.nvim-integrations.nvim-fancy_comments*
 
-▋  Attention
+▋  Important
 ▋ This will remap `gx` by default! Set preview.map_gx {7} to `false` to
 ▋ overwrite this behavior.
 
@@ -127,8 +127,8 @@ Demo {img:2}
 For this you would need a `comment` parser. You can use either,
 
 ◆ stsewd/tree-sitter-comment {8}, which supports some simple syntax.
-◆ OXY2DEV/tree-sitter-comment {9}, which also supports a subset of `markdown` &
-  `vimdoc`. See [installation]().
+◆ OXY2DEV/tree-sitter-comment {10}, which also supports a subset of `markdown` &
+  `vimdoc`. See installation {9}.
 
 Links ~
 
@@ -140,11 +140,12 @@ Links ~
 6: https://gist.github.com/OXY2DEV/645c90df32095a8a397735d0be646452
 7: `markview.nvim-preview.map_gx`
 8: https://github.com/stsewd/tree-sitter-comment
-9: https://github.com/OXY2DEV/tree-sitter-comment
+9: https://github.com/OXY2DEV/markview.nvim/wiki/images/comment/markview.nvim-comment.injection.png
+10: https://github.com/OXY2DEV/tree-sitter-comment
 
 Images ~
 
 1: ./images/markview.nvim-lsp_hover.png
-2: ./images/comments/markview.nvim-comment.png
+2: ./images/comment/markview.nvim-comment.png
 
 vim:ft=help:textwidth=80:tabstop=4:noexpandtab:
