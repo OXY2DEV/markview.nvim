@@ -63,6 +63,7 @@
 <div align="center">
     <img src="https://github.com/OXY2DEV/markview.nvim/blob/images/v27/markview.nvim-splitview_2.png">
     <img src="https://github.com/OXY2DEV/markview.nvim/blob/images/v27/markview.nvim-hybrid_mode.png">
+    <img src="https://github.com/OXY2DEV/markview.nvim/blob/images/v27/markview.nvim-comment.png">
 </div>
 
 <div align="center">
@@ -80,6 +81,7 @@ Core features,
 + Highly customisable! You can change almost anything using the config!
 + Dynamic `highlight groups` that automatically updates with the colorscheme!
 + `Callout`, `checkbox` completions for `blink.cmp` & `nvim-cmp`.
++ Works with `tree-sitter injections` too!
 
 <TOC/>
 
@@ -103,6 +105,32 @@ Also see,
 <details>
     <summary>Expand to see complete feature list</summary>
 <!--markdoc_ignore_end-->
+
+#### Fancy comments,
+
+<img src="https://github.com/OXY2DEV/markview.nvim/wiki/images/comment/markview.nvim-comment.injection.png">
+
+> Comments are still experimental! The original parser only supports basic features.
+
+Conventional commit style comments with support for a subset of `markdown` & `vimdoc`. See [integrations#fancy-comments](https://github.com/OXY2DEV/markview.nvim/wiki/Integrations#-fancy-comments) For more info.
+
+Supported syntax,
+
++ Tasks(e.g. `feat`, `TODO` etc.)
++ Task scopes.
+
+Extra syntax(needs external parser),
+
++ `**Bold**`
++ `*Italic*`
++ `Code`
++ `'Quoted_text'`
++ `"Double quoted text"`
++ `@mentions`
++ `issues/reference#52`
++ `https://example.com`
++ `|help-section|`
++ Code blocks
 
 #### HTML,
 
@@ -372,6 +400,7 @@ Parsers,
 
 - `markdown`
 - `markdown_inline`
+- `comment`(optional)
 - `html`(optional)
 - `latex`(optional)
 - `typst`(optional)

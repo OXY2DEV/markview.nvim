@@ -781,7 +781,7 @@ fts.get = function (ft)
 	end
 
 	local this_conf = fts.styles[_ft] or fts.styles[ft] or fts.styles.default;
-	conf.name = this_conf.name or string.gsub(ft, "^%w", string.upper) or "Unknown";
+	conf.name = this_conf.name or ( type(ft) == "string" and string.gsub(ft, "^%w", string.upper) or "Unknown" );
 
 	return conf;
 end

@@ -287,11 +287,20 @@ utils.create_user_command_class = function (config)
 	return class;
 end
 
+---@class markview.utils.match.opts
+---
+---@field case_insensitive? boolean
+---@field def_fallback? any
+---@field default? boolean
+---@field eval_args any[]
+---@field ignore_keys? any[]
+---@field key_mod? string
+
 --- Gets a config from a list of config tables.
 --- NOTE, {name} will be used to index the config.
 ---@param config table
 ---@param name string
----@param opts { key_mod: string?, default: boolean, def_fallback: any?, eval_args: any[], ignore_keys?: any[] }
+---@param opts markview.utils.match.opts
 ---@return any
 utils.match = function (config, name, opts)
 	config = config or {};
@@ -347,15 +356,22 @@ utils.match = function (config, name, opts)
 
 	local function is_valid (value, pattern)
 		local ignore = opts.ignore_keys or { "enable" };
+
+		local _value = value;
 		local _pattern = pattern;
 
 		if opts.key_mod then
 			_pattern = string.format(opts.key_mod, _pattern);
 		end
 
+		if opts.case_insensitive and type(_value) == "string" then
+			_value = string.lower(_value);
+			_pattern = string.lower(_pattern);
+		end
+
 		if vim.list_contains(ignore, pattern) then
 			return false;
-		elseif string.match(value, _pattern) then
+		elseif string.match(_value, _pattern) then
 			return true;
 		else
 			return false;

@@ -100,6 +100,7 @@
 --- Maps a `node_type` to an option name.
 ---@class markview.renderer.option_maps
 ---
+---@field comment markview.renderer.option_map
 ---@field html markview.renderer.option_map
 ---@field latex markview.renderer.option_map
 ---@field markdown markview.renderer.option_map
