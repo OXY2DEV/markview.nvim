@@ -6,10 +6,11 @@ local comment = {};
 comment.content = {};
 
 --- Queried contents, but sorted
----@type { [string]: table }
+---@type markview.parsed.comment_sorted
+---@diagnostic disable-next-line: missing-fields
 comment.sorted = {}
 
---- Wrapper for `table.insert()`.
+--[[ Wrapper for `table.insert()`. ]]
 ---@param data table
 comment.insert = function (data)
 	table.insert(comment.content, data);
@@ -21,12 +22,20 @@ comment.insert = function (data)
 	table.insert(comment.sorted[data.class], data);
 end
 
---- Tasks.
+--[[
+Conventional commit style tasks.
+
+```comment
+feat: Added comment parser.
+```
+]]
 ---@param buffer integer
 ---@param TSNode TSNode
 ---@param text string[]
 ---@param range markview.parsed.comment.tasks.range
 comment.task = function (buffer, TSNode, text, range)
+	---|fS
+
 	local kind = TSNode:field("type")[1];
 
 	for child in TSNode:iter_children() do
@@ -48,14 +57,24 @@ comment.task = function (buffer, TSNode, text, range)
 		text = text,
 		range = range,
 	});
+
+	---|fE
 end
 
---- Tasks(legacy parser).
+--[[
+Conventional commit style tasks(for the original parser).
+
+```comment
+feat: Added comment parser.
+```
+]]
 ---@param buffer integer
 ---@param TSNode TSNode
 ---@param text string[]
 ---@param range markview.parsed.comment.tasks.range
 comment.tag = function (buffer, TSNode, text, range)
+	---|fS
+
 	local kind;
 
 	for child in TSNode:iter_children() do
@@ -87,14 +106,24 @@ comment.tag = function (buffer, TSNode, text, range)
 		text = text,
 		range = range,
 	});
+
+	---|fE
 end
 
---- Tasks scope parser(legacy parser).
+--[[
+Conventional commit style task scope(for the original parser).
+
+```comment
+feat(scope): Added comment parser.
+```
+]]
 ---@param buffer integer
 ---@param _ TSNode
 ---@param text string[]
 ---@param root_range markview.parsed.comment.tasks.range
 comment.tag_scope = function (buffer, _, text, root_range)
+	---|fS
+
 	local lpeg = vim.lpeg;
 
 	local function as_wspace   (m) return { kind = "space", value = m }; end
@@ -120,6 +149,16 @@ comment.tag_scope = function (buffer, _, text, root_range)
 	local desc_issue = lpeg.C( issue_name * lpeg.P("#") * ( lpeg.R("09") ^ 1 ) ) / as_issue;
 
 	local token = space + comma + desc_issue + num_issue + mention + word;
+
+	--[[
+		A scope may contain one or more `token`s separated by `,` & *whitespaces*.
+
+		Valid tokens may be any of,
+
+		- Mentions(`@foo`).
+		- Issue reference(`#48`, `OXY2DEV/markview.nvim#48`).
+		- Keyword(must start with a letter).
+	]]
 	local scope = lpeg.Ct(token^0);
 
 	local col_start = root_range[2];
@@ -153,45 +192,62 @@ comment.tag_scope = function (buffer, _, text, root_range)
 
 		col_start = col_start + #item.value;
 	end
+
+	---|fE
 end
 
---- Issue.
+--[[
+Conventional commit style task scope.
+
+```comment
+feat(scope): Added comment parser.
+```
+]]
 ---@param text string[]
 ---@param range markview.parsed.range
 comment.task_scope = function (_, _, text, range)
+	---|fS
+
 	comment.insert({
 		class = "comment_task_scope",
 
 		text = text,
 		range = range,
 	});
+
+	---|fE
 end
 
---- Issue.
 ---@param text string[]
 ---@param range markview.parsed.range
 comment.bold = function (_, _, text, range)
+	---|fS
+
 	comment.insert({
 		class = "comment_bold",
 
 		text = text,
 		range = range,
 	});
+
+	---|fE
 end
 
---- Issue.
 ---@param text string[]
 ---@param range markview.parsed.range
 comment.italic = function (_, _, text, range)
+	---|fS
+
 	comment.insert({
 		class = "comment_italic",
 
 		text = text,
 		range = range,
 	});
+
+	---|fE
 end
 
---- Issue.
 ---@param text string[]
 ---@param range markview.parsed.range
 comment.inline_code = function (_, _, text, range)
@@ -203,12 +259,20 @@ comment.inline_code = function (_, _, text, range)
 	});
 end
 
--- Issue.
+--[[
+Markdown-style fenced code blocks.
+
+```lua
+vim.print("Hello, Neovim!");
+```
+]]
 ---@param buffer integer
 ---@param TSNode TSNode
 ---@param text string[]
 ---@param range markview.parsed.comment.code_blocks.range
 comment.code_block = function (buffer, TSNode, text, range)
+	---|fS
+
 	local uses_tab = false;
 
 	local lang = TSNode:field("language")[1];
@@ -259,36 +323,72 @@ comment.code_block = function (buffer, TSNode, text, range)
 		text = text,
 		range = range,
 	});
+
+	---|fE
 end
 
---- Issue.
+--[[
+Issue reference.
+
+It may be of any of the following format(s),
+
+- Numeric(`#99`).
+- Descriptive(`owner/repo#99`).
+
+```comment
+OXY2DEV/markview.nvim#48
+#48
+```
+]]
 ---@param text string[]
 ---@param range markview.parsed.range
 comment.issue = function (_, _, text, range)
+	---|fS
+
 	comment.insert({
 		class = "comment_issue",
 
 		text = text,
 		range = range,
 	});
+
+	---|fE
 end
 
---- Issue.
+--[[
+User handle mention.
+
+```comment
+See, @username
+```
+]]
 ---@param text string[]
 ---@param range markview.parsed.range
 comment.mention = function (_, _, text, range)
+	---|fS
+
 	comment.insert({
 		class = "comment_mention",
 
 		text = text,
 		range = range,
 	});
+
+	---|fE
 end
 
---- Issue.
+--[[
+URL.
+
+```comment
+www.example.com
+```
+]]
 ---@param text string[]
 ---@param range markview.parsed.range
 comment.url = function (_, _, text, range)
+	---|fS
+
 	comment.insert({
 		class = "comment_url",
 		destination = text[1] or "",
@@ -296,12 +396,22 @@ comment.url = function (_, _, text, range)
 		text = text,
 		range = range,
 	});
+
+	---|fE
 end
 
---- Issue.
+--[[
+Markdown-like autolinks.
+
+```comment
+Mail to <foo@gmail.com>
+```
+]]
 ---@param text string[]
 ---@param range markview.parsed.range
 comment.autolink = function (_, _, text, range)
+	---|fS
+
 	comment.insert({
 		class = "comment_autolink",
 		destination = string.gsub(text[1] or "", "^%<", ""):gsub("%>$", ""),
@@ -309,21 +419,32 @@ comment.autolink = function (_, _, text, range)
 		text = text,
 		range = range,
 	});
+
+	---|fE
 end
 
---- Issue.
+--[[
+Vimdoc-like help tag links.
+
+```comment
+See |intro.txt|
+```
+]]
 ---@param text string[]
 ---@param range markview.parsed.range
 comment.taglink = function (_, _, text, range)
+	---|fS
+
 	comment.insert({
 		class = "comment_taglink",
 
 		text = text,
 		range = range,
 	});
+
+	---|fE
 end
 
---- Comment parser
 ---@param buffer integer
 ---@param TSTree table
 ---@param from integer?
@@ -331,7 +452,9 @@ end
 ---@return markview.parsed.comment[]
 ---@return markview.parsed.comment_sorted
 comment.parse = function (buffer, TSTree, from, to)
-	-- Clear the previous contents
+	---|fS
+
+	---@diagnostic disable-next-line: missing-fields
 	comment.sorted = {};
 	comment.content = {};
 
@@ -421,6 +544,8 @@ comment.parse = function (buffer, TSTree, from, to)
 	end
 
 	return comment.content, comment.sorted;
+
+	---|fE
 end
 
 return comment;
