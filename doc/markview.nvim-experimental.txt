@@ -20,6 +20,12 @@
 <
 
 --------------------------------------------------------------------------------
+fancy_comments                       *markview.nvim-experimental.fancy_comments*
+
+When true enables `fancy comment rendering`. See [integrations#fancy_comments]()
+for more information.
+
+--------------------------------------------------------------------------------
 date_formats                           *markview.nvim-experimental.date_formats*
 
 A list of date string formats(used for detecting YAML properties).

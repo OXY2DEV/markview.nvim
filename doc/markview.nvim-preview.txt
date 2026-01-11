@@ -160,6 +160,7 @@ raw_previews                                *markview.nvim-preview.raw_previews*
 	--- in `hybrid mode`.
 	---@class markview.config.preview.raw
 	---
+	---@field comment? markview.config.preview.raw.comment[]
 	---@field html? markview.config.preview.raw.html[]
 	---@field latex? markview.config.preview.raw.latex[]
 	---@field markdown? markview.config.preview.raw.markdown[]
