@@ -8,7 +8,7 @@
 │ wrap {img:2}    │ nowrap {img:3}   │
 ╰─────────────────┴──────────────────╯
 
-                           Image {img:5} Image {img:4}                          
+                    Image {img:6} Image {img:5} Image {img:4}                   
 
                   📚 Wiki {3} | 🧩 Extras {2} | 📦 Presets {1}                  
 
@@ -26,6 +26,7 @@ Core features,
 ◇ Highly customisable! You can change almost anything using the config!
 ◇ Dynamic `highlight groups` that automatically updates with the colorscheme!
 ◇ `Callout`, `checkbox` completions for `blink.cmp` & `nvim-cmp`.
+◇ Works with `tree-sitter injections` too!
 
 --------------------------------------------------------------------------------
 Table of contents
@@ -37,9 +38,37 @@ Table of contents
 🧩 Extras ............................................... |markview.nvim-extras|
 📦 Presets ............................................. |markview.nvim-presets|
 
+Fancy comments, ~
+
+Image {img:7}
+
+▋ Comments are still experimental! The original parser only supports basic
+▋ features.
+
+Conventional commit style comments with support for a subset of `markdown` &
+`vimdoc`. See integrations#fancy-comments {6} For more info.
+
+Supported syntax,
+
+◇ Tasks(e.g. `feat`, `TODO` etc.)
+◇ Task scopes.
+
+Extra syntax(needs external parser),
+
+◇ `**Bold**`
+◇ `*Italic*`
+◇ `Code`
+◇ `'Quoted_text'`
+◇ `"Double quoted text"`
+◇ `@mentions`
+◇ `issues/reference#52`
+◇ `https://example.com`
+◇ `|help-section|`
+◇ Code blocks
+
 HTML, ~
 
-Image {img:6}
+Image {img:8}
 
 ◇ Customizable previews for `container` & `void` elements.
 ◇ Supports the following container elements out of the box,
@@ -63,7 +92,7 @@ Image {img:6}
 
 LaTeX, ~
 
-Image {img:7}
+Image {img:9}
 
 ◇ Supports basic LaTeX syntax,
     ◇ Math blocks(typically `$$...$$`) & inline math(typically `$...$`).
@@ -133,7 +162,7 @@ Image {img:7}
 
 Markdown, ~
 
-Image {img:8}
+Image {img:10}
 
 ◇ Supports basic markdown(Github-flavored) syntax,
     ◇ Block quotes(with support for `callouts` & titles).
@@ -162,7 +191,7 @@ Image {img:8}
 
 ◇ `Org-mode` like indentation for headings.
 
-Image {img:9}
+Image {img:11}
 
 ◇ Obsidian/PKM extended syntax support,
     ◇ Block reference links.
@@ -178,7 +207,7 @@ Image {img:9}
 
 Typst, ~
 
-Image {img:10}
+Image {img:12}
 
 ◇ Supports the following items,
     ◇ Code blocks.
@@ -206,7 +235,7 @@ Image {img:10}
 
 YAML, ~
 
-Image {img:11}
+Image {img:13}
 
 ◇ Custom property icons.
 ◇ Custom property scope decorations.
@@ -229,8 +258,8 @@ Hybrid mode ~
 ╭──────────────────────┬──────────────────────╮
 │ Normal hybrid mode   │ Linewise hybrid mode │
 ├──────────────────────┼──────────────────────┤
-│ hybrid_mode {img:12} │ linewise_hybrid_mode │
-│                      │ {img:13}             │
+│ hybrid_mode {img:14} │ linewise_hybrid_mode │
+│                      │ {img:15}             │
 ╰──────────────────────┴──────────────────────╯
 
 ◇ Node-based edit range(default).
@@ -254,7 +283,7 @@ Internal Icon provider features,
 ◇ 708 different filetype configuration.
 ◇ Dynamic highlight groups for matching the colorscheme.
 
-Image {img:14}
+Image {img:16}
 
 ◇ You can use `:Markview traceShow` to see what the plugin has been
   doing(including how long some of them took).
@@ -290,8 +319,8 @@ External icon providers,
 	}
 <
 
-◆ mini.icons {6}
-◆ nvim-web-devicons {7}
+◆ mini.icons {7}
+◆ nvim-web-devicons {8}
 
 Parsers,
 
@@ -308,6 +337,7 @@ Parsers,
 
 ◆ `markdown`
 ◆ `markdown_inline`
+◆ `comment`(optional)
 ◆ `html`(optional)
 ◆ `latex`(optional)
 ◆ `typst`(optional)
@@ -340,7 +370,7 @@ Add this to your plugin list.
 ▋ cause more time for the previews to load when starting Neovim!
 
 The plugin should be loaded after your colorscheme to ensure the correct
-highlight groups are used. See integrations.transparent_colorschemes {8} if you
+highlight groups are used. See integrations.transparent_colorschemes {9} if you
 use a transparent colorscheme and the colors don't look right.
 
 >lua
@@ -389,7 +419,7 @@ use a transparent colorscheme and the colors don't look right.
 
 📥 GitHub release ~
 
-Tagged releases can be found in the release page {9}.
+Tagged releases can be found in the release page {10}.
 
 ▋ 󰋽 Note
 ▋ `Github releases` may sometimes be slightly behind `main`.
@@ -409,7 +439,7 @@ Tagged releases can be found in the release page {9}.
 --------------------------------------------------------------------------------
 🧭 Usage
 
-You can find more usage recipes here {10}.
+You can find more usage recipes here {11}.
 
 --------------------------------------------------------------------------------
 🎇 Commands                                             *markview.nvim-commands*
@@ -553,27 +583,30 @@ Links ~
 3: https://github.com/OXY2DEV/markview.nvim/wiki/Home
 4: https://github.com/OXY2DEV/markview.nvim/wiki/Integrations#-nowrap
 5: https://github.com/OXY2DEV/markview.nvim/wiki/Integrations#-wrap
-6: https://github.com/nvim-mini/mini.icons
-7: https://github.com/nvim-tree/nvim-web-devicons
-8: https://github.com/OXY2DEV/markview.nvim/wiki/Integrations#-transparent-colorschemes
-9: https://github.com/OXY2DEV/markview.nvim/releases
-10: |markview.nvim-usage|
+6: https://github.com/OXY2DEV/markview.nvim/wiki/Integrations#-fancy-comments
+7: https://github.com/nvim-mini/mini.icons
+8: https://github.com/nvim-tree/nvim-web-devicons
+9: https://github.com/OXY2DEV/markview.nvim/wiki/Integrations#-transparent-colorschemes
+10: https://github.com/OXY2DEV/markview.nvim/releases
+11: |markview.nvim-usage|
 
 Images ~
 
 1: https://github.com/OXY2DEV/markview.nvim/blob/images/v27/markview.nvim-splitview.png
 2: https://github.com/OXY2DEV/markview.nvim/blob/images/v27/markview.nvim-wrap.png
 3: https://github.com/OXY2DEV/markview.nvim/blob/images/v27/markview.nvim-nowrap.png
-4: https://github.com/OXY2DEV/markview.nvim/blob/images/v27/markview.nvim-hybrid_mode.png
-5: https://github.com/OXY2DEV/markview.nvim/blob/images/v27/markview.nvim-splitview_2.png
-6: https://github.com/OXY2DEV/markview.nvim/blob/images/v25/repo/html-tokyonight_night.png
-7: https://github.com/OXY2DEV/markview.nvim/blob/images/v25/repo/latex-cyberdream.png
-8: https://github.com/OXY2DEV/markview.nvim/blob/images/v25/repo/markdown-catppuccin_mocha.png
-9: https://github.com/OXY2DEV/markview.nvim/blob/images/v25/repo/markdown_inline-nightfly.png
-10: https://github.com/OXY2DEV/markview.nvim/blob/images/v25/repo/typst-kanagawa_wave.png
-11: https://github.com/OXY2DEV/markview.nvim/blob/images/v25/repo/yaml-material_palenight.png
-12: https://github.com/OXY2DEV/markview.nvim/blob/images/v25/wiki/hybrid_mode.png
-13: https://github.com/OXY2DEV/markview.nvim/blob/images/v25/wiki/linewise_hybrid_mode.png
-14: https://github.com/OXY2DEV/markview.nvim/blob/images/v25/repo/traceback.png
+4: https://github.com/OXY2DEV/markview.nvim/blob/images/v27/markview.nvim-comment.png
+5: https://github.com/OXY2DEV/markview.nvim/blob/images/v27/markview.nvim-hybrid_mode.png
+6: https://github.com/OXY2DEV/markview.nvim/blob/images/v27/markview.nvim-splitview_2.png
+7: https://github.com/OXY2DEV/markview.nvim/wiki/images/comment/markview.nvim-comment.injection.png
+8: https://github.com/OXY2DEV/markview.nvim/blob/images/v25/repo/html-tokyonight_night.png
+9: https://github.com/OXY2DEV/markview.nvim/blob/images/v25/repo/latex-cyberdream.png
+10: https://github.com/OXY2DEV/markview.nvim/blob/images/v25/repo/markdown-catppuccin_mocha.png
+11: https://github.com/OXY2DEV/markview.nvim/blob/images/v25/repo/markdown_inline-nightfly.png
+12: https://github.com/OXY2DEV/markview.nvim/blob/images/v25/repo/typst-kanagawa_wave.png
+13: https://github.com/OXY2DEV/markview.nvim/blob/images/v25/repo/yaml-material_palenight.png
+14: https://github.com/OXY2DEV/markview.nvim/blob/images/v25/wiki/hybrid_mode.png
+15: https://github.com/OXY2DEV/markview.nvim/blob/images/v25/wiki/linewise_hybrid_mode.png
+16: https://github.com/OXY2DEV/markview.nvim/blob/images/v25/repo/traceback.png
 
 vim:ft=help:textwidth=80:tabstop=4:noexpandtab:
