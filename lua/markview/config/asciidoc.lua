@@ -9,5 +9,7 @@ return {
 		icon = "󰛓 ",
 		hl = "MarkviewPalette7",
 	},
-	section_titles = {},
+	document_attributes = {
+		enable = true,
+	},
 };

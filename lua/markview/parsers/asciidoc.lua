@@ -25,13 +25,24 @@ asciidoc.insert = function (data)
 	table.insert(asciidoc.sorted[data.class], data);
 end
 
----@param buffer integer
----@param TSNode table
 ---@param text string[]
 ---@param range markview.parsed.range
-asciidoc.doc_title = function (buffer, TSNode, text, range)
+asciidoc.doc_title = function (_, _, text, range)
+	asciidoc.data.document_title = string.match(text[1] or "", "=%s+(.*)$")
+
 	asciidoc.insert({
 		class = "asciidoc_document_title",
+
+		text = text,
+		range = range
+	});
+end
+
+---@param text string[]
+---@param range markview.parsed.range
+asciidoc.doc_attr = function (_, _, text, range)
+	asciidoc.insert({
+		class = "asciidoc_document_attribute",
 
 		text = text,
 		range = range
@@ -52,6 +63,7 @@ asciidoc.parse = function (buffer, TSTree, from, to)
 
 	local scanned_queries = vim.treesitter.query.parse("asciidoc", [[
 		(document_title) @asciidoc.doc_title
+		(document_attr) @asciidoc.doc_attr
 	]]);
 
 	for capture_id, capture_node, _, _ in scanned_queries:iter_captures(TSTree:root(), buffer, from, to) do

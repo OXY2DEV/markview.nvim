@@ -5,7 +5,24 @@ local spec = require("markview.spec");
 
 asciidoc.ns = vim.api.nvim_create_namespace("markview/asciidoc");
 
---- Renders void elements
+---@param buffer integer
+---@param item markview.parsed.asciidoc.document_titles
+asciidoc.document_attribute = function (buffer, item)
+	---@type markview.config.asciidoc.document_titles?
+	local config = spec.get({ "asciidoc", "document_attributes" }, { eval_args = { buffer, item } });
+
+	if not config then
+		return;
+	end
+
+	local range = item.range;
+
+	utils.set_extmark(buffer, asciidoc.ns, range.row_start, range.col_start, {
+		end_row = range.row_end - 1,
+		conceal_lines = "",
+	});
+end
+
 ---@param buffer integer
 ---@param item markview.parsed.asciidoc.document_titles
 asciidoc.document_title = function (buffer, item)

@@ -2,6 +2,12 @@
 
 ------------------------------------------------------------------------------
 
+---@class markview.config.asciidoc.document_attributes
+---
+---@field enable boolean
+
+------------------------------------------------------------------------------
+
 ---@class markview.config.asciidoc.document_titles
 ---
 ---@field enable boolean
@@ -18,5 +24,6 @@
 
 ---@class markview.config.asciidoc
 ---
+---@field document_attributes markview.config.asciidoc.document_attributes
 ---@field document_titles markview.config.asciidoc.document_titles
 
