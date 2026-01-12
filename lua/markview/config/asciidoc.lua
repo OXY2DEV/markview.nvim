@@ -1,7 +1,13 @@
+---@type markview.config.asciidoc
 return {
-	document_title = {
-		icon = "H ",
-		line_hl = "MarkviewHeading1",
+	document_titles = {
+		enable = true,
+
+		sign = "󰛓 ",
+		sign_hl = "MarkviewPalette7Sign",
+
+		icon = "󰛓 ",
+		hl = "MarkviewPalette7",
 	},
-	section_title = {},
+	section_titles = {},
 };
