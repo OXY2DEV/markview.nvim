@@ -15,6 +15,9 @@ renderer.__filter_cache = {
 renderer.option_maps = {
 	---|fS
 
+	asciidoc = {
+		document_title = { "asciidoc_document_title" },
+	},
 	comment = {
 		autolinks = { "comment_autolink" },
 		code_blocks = { "comment_code_block" },
@@ -366,6 +369,7 @@ renderer.render = function (buffer, parsed_content)
 	---|fS
 
 	local _renderers = {
+		asciidoc = require("markview.renderers.asciidoc"),
 		comment = require("markview.renderers.comment"),
 		html = require("markview.renderers.html"),
 		markdown = require("markview.renderers.markdown"),
@@ -470,6 +474,7 @@ renderer.clear = function (buffer, from, to, hybrid_mode)
 	---|fS
 
 	local _renderers = {
+		asciidoc = require("markview.renderers.asciidoc"),
 		comment = require("markview.renderers.comment");
 		html = require("markview.renderers.html");
 		markdown = require("markview.renderers.markdown");

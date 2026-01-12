@@ -1,6 +1,10 @@
 --- HTML parser for `markview.nvim`.
 local asciidoc = {};
 
+asciidoc.data = {
+	document_title = nil,
+};
+
 --- Queried contents
 ---@type table[]
 asciidoc.content = {};
@@ -21,17 +25,13 @@ asciidoc.insert = function (data)
 	table.insert(asciidoc.sorted[data.class], data);
 end
 
---- Heading element parser
 ---@param buffer integer
 ---@param TSNode table
 ---@param text string[]
 ---@param range markview.parsed.range
-asciidoc.heading = function (buffer, TSNode, text, range)
-	local tag = vim.treesitter.get_node_text(TSNode:named_child(0):named_child(0), buffer);
-
+asciidoc.doc_title = function (buffer, TSNode, text, range)
 	asciidoc.insert({
-		class = "asciidoc_heading",
-		level = tonumber(tag:match("^h(%d)$")),
+		class = "asciidoc_document_title",
 
 		text = text,
 		range = range
@@ -51,6 +51,7 @@ asciidoc.parse = function (buffer, TSTree, from, to)
 	asciidoc.content = {};
 
 	local scanned_queries = vim.treesitter.query.parse("asciidoc", [[
+		(document_title) @asciidoc.doc_title
 	]]);
 
 	for capture_id, capture_node, _, _ in scanned_queries:iter_captures(TSTree:root(), buffer, from, to) do
