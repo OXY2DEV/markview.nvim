@@ -19,8 +19,8 @@ asciidoc.document_title = function (buffer, item)
 	local range = item.range;
 
 	utils.set_extmark(buffer, asciidoc.ns, range.row_start, range.col_start, {
-		-- Remove `#+%s*` amount of characters.
-		end_col = range.col_start + 1,
+		-- Remove `=%s*` amount of characters.
+		end_col = range.col_start + #string.match(item.text[1] or "", "=+%s*"),
 		conceal = "",
 
 		sign_text = tostring(config.sign or ""),
