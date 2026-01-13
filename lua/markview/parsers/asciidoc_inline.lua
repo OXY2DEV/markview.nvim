@@ -1,6 +1,8 @@
 --- HTML parser for `markview.nvim`.
 local asciidoc_inline = {};
 
+asciidoc_inline.parsed_ranges = {};
+
 --- Queried contents
 ---@type table[]
 asciidoc_inline.content = {};
@@ -75,7 +77,7 @@ end
 
 --- HTML parser
 ---@param buffer integer
----@param TSTree table
+---@param TSTree TSTree
 ---@param from integer?
 ---@param to integer?
 ---@return markview.parsed.asciidoc_inline[]
@@ -84,6 +86,17 @@ asciidoc_inline.parse = function (buffer, TSTree, from, to)
 	-- Clear the previous contents
 	asciidoc_inline.sorted = {};
 	asciidoc_inline.content = {};
+
+	local root = TSTree:root();
+	local r_range = { root:range() };
+
+	for _, entry in ipairs(asciidoc_inline.parsed_ranges) do
+		if vim.deep_equal(entry, r_range) then
+			return asciidoc_inline.content, asciidoc_inline.sorted;
+		end
+	end
+
+	table.insert(asciidoc_inline.parsed_ranges, r_range);
 
 	local scanned_queries = vim.treesitter.query.parse("asciidoc_inline", [[
 		(emphasis) @asciidoc_inline.bold
