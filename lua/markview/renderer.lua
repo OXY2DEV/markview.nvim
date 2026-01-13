@@ -18,6 +18,8 @@ renderer.option_maps = {
 	asciidoc = {
 		document_title = { "asciidoc_document_title" },
 	},
+	asciidoc_inline = {
+	},
 	comment = {
 		autolinks = { "comment_autolink" },
 		code_blocks = { "comment_code_block" },
@@ -370,6 +372,7 @@ renderer.render = function (buffer, parsed_content)
 
 	local _renderers = {
 		asciidoc = require("markview.renderers.asciidoc"),
+		asciidoc_inline = require("markview.renderers.asciidoc_inline"),
 		comment = require("markview.renderers.comment"),
 		html = require("markview.renderers.html"),
 		markdown = require("markview.renderers.markdown"),
@@ -475,6 +478,7 @@ renderer.clear = function (buffer, from, to, hybrid_mode)
 
 	local _renderers = {
 		asciidoc = require("markview.renderers.asciidoc"),
+		asciidoc_inline = require("markview.renderers.asciidoc_inline"),
 		comment = require("markview.renderers.comment");
 		html = require("markview.renderers.html");
 		markdown = require("markview.renderers.markdown");

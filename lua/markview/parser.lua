@@ -100,6 +100,7 @@ parser.init = function (buffer, from, to, cache)
 
 	local _parsers = {
 		asciidoc = require("markview.parsers.asciidoc"),
+		asciidoc_inline = require("markview.parsers.asciidoc_inline"),
 		comment = require("markview.parsers.comment");
 		markdown = require("markview.parsers.markdown");
 		markdown_inline = require("markview.parsers.markdown_inline");

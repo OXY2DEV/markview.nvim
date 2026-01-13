@@ -50,7 +50,6 @@ asciidoc.document_title = function (buffer, item)
 	});
 end
 
---- Renders HTML elements
 ---@param buffer integer
 ---@param content markview.parsed.asciidoc[]
 asciidoc.render = function (buffer, content)

@@ -1,35 +1,31 @@
 --- HTML parser for `markview.nvim`.
-local asciidoc = {};
-
-asciidoc.data = {
-	document_title = nil,
-};
+local asciidoc_inline = {};
 
 --- Queried contents
 ---@type table[]
-asciidoc.content = {};
+asciidoc_inline.content = {};
 
 --- Queried contents, but sorted
 ---@type { [string]: table }
-asciidoc.sorted = {}
+asciidoc_inline.sorted = {}
 
 --- Wrapper for `table.insert()`.
 ---@param data table
-asciidoc.insert = function (data)
-	table.insert(asciidoc.content, data);
+asciidoc_inline.insert = function (data)
+	table.insert(asciidoc_inline.content, data);
 
-	if not asciidoc.sorted[data.class] then
-		asciidoc.sorted[data.class] = {};
+	if not asciidoc_inline.sorted[data.class] then
+		asciidoc_inline.sorted[data.class] = {};
 	end
 
-	table.insert(asciidoc.sorted[data.class], data);
+	table.insert(asciidoc_inline.sorted[data.class], data);
 end
 
 ---@param text string[]
 ---@param range markview.parsed.range
-asciidoc.doc_attr = function (_, _, text, range)
-	asciidoc.insert({
-		class = "asciidoc_document_attribute",
+asciidoc_inline.bold = function (_, _, text, range)
+	asciidoc_inline.insert({
+		class = "asciidoc_inline_bold",
 
 		text = text,
 		range = range
@@ -38,11 +34,9 @@ end
 
 ---@param text string[]
 ---@param range markview.parsed.range
-asciidoc.doc_title = function (_, _, text, range)
-	asciidoc.data.document_title = string.match(text[1] or "", "=%s+(.*)$")
-
-	asciidoc.insert({
-		class = "asciidoc_document_title",
+asciidoc_inline.italic = function (_, _, text, range)
+	asciidoc_inline.insert({
+		class = "asciidoc_inline_italic",
 
 		text = text,
 		range = range
@@ -54,22 +48,22 @@ end
 ---@param TSTree table
 ---@param from integer?
 ---@param to integer?
----@return markview.parsed.asciidoc[]
----@return markview.parsed.asciidoc_sorted
-asciidoc.parse = function (buffer, TSTree, from, to)
+---@return markview.parsed.asciidoc_inline[]
+---@return markview.parsed.asciidoc_inline_sorted
+asciidoc_inline.parse = function (buffer, TSTree, from, to)
 	-- Clear the previous contents
-	asciidoc.sorted = {};
-	asciidoc.content = {};
+	asciidoc_inline.sorted = {};
+	asciidoc_inline.content = {};
 
-	local scanned_queries = vim.treesitter.query.parse("asciidoc", [[
-		(document_title) @asciidoc.doc_title
-		(document_attr) @asciidoc.doc_attr
+	local scanned_queries = vim.treesitter.query.parse("asciidoc_inline", [[
+		(emphasis) @asciidoc_inline.bold
+		(ltalic) @asciidoc_inline.italic
 	]]);
 
 	for capture_id, capture_node, _, _ in scanned_queries:iter_captures(TSTree:root(), buffer, from, to) do
 		local capture_name = scanned_queries.captures[capture_id];
 
-		if not capture_name:match("^asciidoc%.") then
+		if not capture_name:match("^asciidoc_inline%.") then
 			goto continue;
 		end
 
@@ -93,7 +87,7 @@ asciidoc.parse = function (buffer, TSTree, from, to)
 
 		---@type boolean, string
 		local success, error = pcall(
-			asciidoc[capture_name:gsub("^asciidoc%.", "")],
+			asciidoc_inline[capture_name:gsub("^asciidoc_inline%.", "")],
 
 			buffer,
 			capture_node,
@@ -111,7 +105,7 @@ asciidoc.parse = function (buffer, TSTree, from, to)
 			require("markview.health").print({
 				kind = "ERR",
 
-				from = "parsers/asciidoc.lua",
+				from = "parsers/asciidoc_inline.lua",
 				fn = "parse()",
 
 				message = {
@@ -123,7 +117,7 @@ asciidoc.parse = function (buffer, TSTree, from, to)
 	    ::continue::
 	end
 
-	return asciidoc.content, asciidoc.sorted;
+	return asciidoc_inline.content, asciidoc_inline.sorted;
 end
 
-return asciidoc;
+return asciidoc_inline;
