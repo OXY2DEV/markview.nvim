@@ -51,18 +51,55 @@ asciidoc_inline.italic = function (buffer, item)
 	});
 end
 
---- Renders HTML elements
+---@param buffer integer
+---@param item markview.parsed.asciidoc_inline.monospaces
+asciidoc_inline.monospace = function (buffer, item)
+	---@type markview.config.asciidoc_inline.monospaces?
+	local config = spec.get({ "asciidoc_inline", "monospaces" }, { eval_args = { buffer, item } });
+
+	if not config then
+		return;
+	end
+
+	local range = item.range;
+
+	utils.set_extmark(buffer, asciidoc_inline.ns, range.row_start, range.col_start, {
+		end_col = range.col_start + #(item.delimiters[1] or ""),
+		conceal = "",
+
+		virt_text_pos = "inline",
+		virt_text = {
+			{ config.corner_left or "", utils.set_hl(config.corner_left_hl or config.hl) },
+			{ config.padding_left or "", utils.set_hl(config.padding_left_hl or config.hl) }
+		},
+
+		hl_mode = "combine"
+	});
+
+	utils.set_extmark(buffer, asciidoc_inline.ns, range.row_start, range.col_start, {
+		end_col = range.col_end, end_row = range.row_end,
+
+		hl_group = utils.set_hl(config.hl),
+		hl_mode = "combine"
+	});
+
+	utils.set_extmark(buffer, asciidoc_inline.ns, range.row_end, range.col_end - #(item.delimiters[2] or ""), {
+		end_col = range.col_end,
+		conceal = "",
+
+		virt_text_pos = "inline",
+		virt_text = {
+			{ config.corner_right or "", utils.set_hl(config.corner_right_hl or config.hl) },
+			{ config.padding_right or "", utils.set_hl(config.padding_right_hl or config.hl) }
+		},
+
+		hl_mode = "combine"
+	});
+end
+
 ---@param buffer integer
 ---@param content markview.parsed.asciidoc_inline[]
 asciidoc_inline.render = function (buffer, content)
-	asciidoc_inline.cache = {
-		font_regions = {},
-		style_regions = {
-			superscripts = {},
-			subscripts = {}
-		},
-	};
-
 	local custom = spec.get({ "renderers" }, { fallback = {} });
 
 	for _, item in ipairs(content or {}) do

@@ -75,6 +75,32 @@ asciidoc_inline.italic = function (buffer, TSNode, text, range)
 	});
 end
 
+---@param buffer integer
+---@param TSNode TSNode
+---@param text string[]
+---@param range markview.parsed.range
+asciidoc_inline.monospace = function (buffer, TSNode, text, range)
+	local delimiters = {};
+
+	for child in TSNode:iter_children() do
+		if child:named() == false then
+			if delimiters[1] then
+				delimiters[2] = vim.treesitter.get_node_text(child, buffer, {});
+			else
+				delimiters[1] = vim.treesitter.get_node_text(child, buffer, {});
+			end
+		end
+	end
+
+	asciidoc_inline.insert({
+		class = "asciidoc_inline_monospace",
+		delimiters = delimiters,
+
+		text = text,
+		range = range
+	});
+end
+
 --- HTML parser
 ---@param buffer integer
 ---@param TSTree TSTree
@@ -101,6 +127,7 @@ asciidoc_inline.parse = function (buffer, TSTree, from, to)
 	local scanned_queries = vim.treesitter.query.parse("asciidoc_inline", [[
 		(emphasis) @asciidoc_inline.bold
 		(ltalic) @asciidoc_inline.italic
+		(monospace) @asciidoc_inline.monospace
 	]]);
 
 	for capture_id, capture_node, _, _ in scanned_queries:iter_captures(TSTree:root(), buffer, from, to) do
