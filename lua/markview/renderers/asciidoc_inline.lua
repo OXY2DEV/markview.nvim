@@ -6,7 +6,7 @@ local spec = require("markview.spec");
 asciidoc_inline.ns = vim.api.nvim_create_namespace("markview/asciidoc_inline");
 
 ---@param buffer integer
----@param item markview.parsed.asciidoc_inline.document_titles
+---@param item markview.parsed.asciidoc_inline.bolds
 asciidoc_inline.bold = function (buffer, item)
 	---@type markview.config.asciidoc_inline.bolds?
 	local config = spec.get({ "asciidoc_inline", "bolds" }, { eval_args = { buffer, item } });
@@ -18,24 +18,20 @@ asciidoc_inline.bold = function (buffer, item)
 	local range = item.range;
 
 	utils.set_extmark(buffer, asciidoc_inline.ns, range.row_start, range.col_start, {
-		end_col = range.col_start + 2,
+		end_col = range.col_start + #(item.delimiters[1] or ""),
 		conceal = "",
 	});
 
-	if not string.match(item.text[#item.text] or "", "%*%*$") then
-		return;
-	end
-
-	utils.set_extmark(buffer, asciidoc_inline.ns, range.row_end, range.col_end - 2, {
+	utils.set_extmark(buffer, asciidoc_inline.ns, range.row_end, range.col_end - #(item.delimiters[2] or ""), {
 		end_col = range.col_end,
 		conceal = "",
 	});
 end
 
 ---@param buffer integer
----@param item markview.parsed.asciidoc_inline.document_titles
+---@param item markview.parsed.asciidoc_inline.italics
 asciidoc_inline.italic = function (buffer, item)
-	---@type markview.config.asciidoc_inline.document_titles?
+	---@type markview.config.asciidoc_inline.italics?
 	local config = spec.get({ "asciidoc_inline", "italics" }, { eval_args = { buffer, item } });
 
 	if not config then
@@ -45,15 +41,11 @@ asciidoc_inline.italic = function (buffer, item)
 	local range = item.range;
 
 	utils.set_extmark(buffer, asciidoc_inline.ns, range.row_start, range.col_start, {
-		end_col = range.col_start + 1,
+		end_col = range.col_start + #(item.delimiters[1] or ""),
 		conceal = "",
 	});
 
-	if not string.match(item.text[#item.text] or "", "%*$") then
-		return;
-	end
-
-	utils.set_extmark(buffer, asciidoc_inline.ns, range.row_end, range.col_end - 1, {
+	utils.set_extmark(buffer, asciidoc_inline.ns, range.row_end, range.col_end - #(item.delimiters[2] or ""), {
 		end_col = range.col_end,
 		conceal = "",
 	});

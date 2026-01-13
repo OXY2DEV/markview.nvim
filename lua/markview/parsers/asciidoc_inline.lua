@@ -21,22 +21,52 @@ asciidoc_inline.insert = function (data)
 	table.insert(asciidoc_inline.sorted[data.class], data);
 end
 
+---@param buffer integer
+---@param TSNode TSNode
 ---@param text string[]
 ---@param range markview.parsed.range
-asciidoc_inline.bold = function (_, _, text, range)
+asciidoc_inline.bold = function (buffer, TSNode, text, range)
+	local delimiters = {};
+
+	for child in TSNode:iter_children() do
+		if child:named() == false then
+			if delimiters[1] then
+				delimiters[2] = vim.treesitter.get_node_text(child, buffer, {});
+			else
+				delimiters[1] = vim.treesitter.get_node_text(child, buffer, {});
+			end
+		end
+	end
+
 	asciidoc_inline.insert({
 		class = "asciidoc_inline_bold",
+		delimiters = delimiters,
 
 		text = text,
 		range = range
 	});
 end
 
+---@param buffer integer
+---@param TSNode TSNode
 ---@param text string[]
 ---@param range markview.parsed.range
-asciidoc_inline.italic = function (_, _, text, range)
+asciidoc_inline.italic = function (buffer, TSNode, text, range)
+	local delimiters = {};
+
+	for child in TSNode:iter_children() do
+		if child:named() == false then
+			if delimiters[1] then
+				delimiters[2] = vim.treesitter.get_node_text(child, buffer, {});
+			else
+				delimiters[1] = vim.treesitter.get_node_text(child, buffer, {});
+			end
+		end
+	end
+
 	asciidoc_inline.insert({
 		class = "asciidoc_inline_italic",
+		delimiters = delimiters,
 
 		text = text,
 		range = range
