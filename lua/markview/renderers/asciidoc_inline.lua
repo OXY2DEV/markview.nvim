@@ -29,6 +29,64 @@ asciidoc_inline.bold = function (buffer, item)
 end
 
 ---@param buffer integer
+---@param item markview.parsed.asciidoc_inline.highlights
+asciidoc_inline.highlight = function (buffer, item)
+	---@type markview.config.asciidoc_inline.highlights?
+	local main_config = spec.get({ "asciidoc_inline", "highlights" }, { fallback = nil });
+	local range = item.range;
+
+	if not main_config then
+		return;
+	end
+
+	---@type markview.config.__inline?
+	local config = utils.match(
+		main_config,
+		table.concat(item.text, "\n"),
+		{
+			eval_args = { buffer, item }
+		}
+	);
+
+	if config == nil then
+		return;
+	end
+
+	utils.set_extmark(buffer, asciidoc_inline.ns, range.row_start, range.col_start, {
+		end_col = range.col_start + #(item.delimiters[1] or ""),
+		conceal = "",
+
+		virt_text_pos = "inline",
+		virt_text = {
+			{ config.corner_left or "", utils.set_hl(config.corner_left_hl or config.hl) },
+			{ config.padding_left or "", utils.set_hl(config.padding_left_hl or config.hl) }
+		},
+
+		hl_mode = "combine"
+	});
+
+	utils.set_extmark(buffer, asciidoc_inline.ns, range.row_start, range.col_start, {
+		end_col = range.col_end, end_row = range.row_end,
+
+		hl_group = utils.set_hl(config.hl),
+		hl_mode = "combine"
+	});
+
+	utils.set_extmark(buffer, asciidoc_inline.ns, range.row_end, range.col_end - #(item.delimiters[2] or ""), {
+		end_col = range.col_end,
+		conceal = "",
+
+		virt_text_pos = "inline",
+		virt_text = {
+			{ config.corner_right or "", utils.set_hl(config.corner_right_hl or config.hl) },
+			{ config.padding_right or "", utils.set_hl(config.padding_right_hl or config.hl) }
+		},
+
+		hl_mode = "combine"
+	});
+end
+
+---@param buffer integer
 ---@param item markview.parsed.asciidoc_inline.italics
 asciidoc_inline.italic = function (buffer, item)
 	---@type markview.config.asciidoc_inline.italics?

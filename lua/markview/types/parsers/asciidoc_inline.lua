@@ -10,6 +10,15 @@
 ---@field range markview.parsed.range
 
 
+---@class markview.parsed.asciidoc_inline.highlights
+---
+---@field class "asciidoc_inline_highlight"
+---@field delimiters [ string?, string? ] Delimiters
+---
+---@field text string[]
+---@field range markview.parsed.range
+
+
 ---@class markview.parsed.asciidoc_inline.italics
 ---
 ---@field class "asciidoc_inline_italic"
@@ -30,6 +39,7 @@
 
 ---@alias markview.parsed.asciidoc_inline
 ---| markview.parsed.asciidoc_inline.bolds
+---| markview.parsed.asciidoc_inline.highlights
 ---| markview.parsed.asciidoc_inline.italics
 ---| markview.parsed.asciidoc_inline.monospaces
 
@@ -39,4 +49,5 @@
 ---@field bolds markview.parsed.asciidoc_inline.bolds
 ---@field italics markview.parsed.asciidoc_inline.italics
 ---@field monospaces markview.parsed.asciidoc_inline.monospaces
+---@field highlights markview.parsed.asciidoc_inline.highlights
 

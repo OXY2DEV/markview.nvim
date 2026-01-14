@@ -10,4 +10,15 @@ return {
 		padding_left = " ",
 		padding_right = " "
 	},
+
+	highlights = {
+		enable = true,
+
+		default = {
+			padding_left = " ",
+			padding_right = " ",
+
+			hl = "MarkviewPalette3"
+		}
+	},
 };
