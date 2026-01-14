@@ -37,6 +37,16 @@
 ---@field range markview.parsed.range
 
 
+---@class markview.parsed.asciidoc_inline.uris
+---
+---@field class "asciidoc_inline_uri"
+---@field delimiters [ string?, string? ] Delimiters
+---@field destination string URL the node is pointing to.
+---
+---@field text string[]
+---@field range markview.parsed.range
+
+
 ---@alias markview.parsed.asciidoc_inline
 ---| markview.parsed.asciidoc_inline.bolds
 ---| markview.parsed.asciidoc_inline.highlights

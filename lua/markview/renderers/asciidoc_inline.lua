@@ -158,6 +158,77 @@ asciidoc_inline.monospace = function (buffer, item)
 end
 
 ---@param buffer integer
+---@param item markview.parsed.asciidoc_inline.uris
+asciidoc_inline.uri = function (buffer, item)
+	---@type markview.config.asciidoc_inline.uris?
+	local main_config = spec.get({ "asciidoc_inline", "uris" }, { fallback = nil });
+	local range = item.range;
+
+	if not main_config then
+		return;
+	end
+
+	---@type markview.config.asciidoc_inline.uris.opts?
+	local config = utils.match(
+		main_config,
+		item.destination or "",
+		{
+			eval_args = { buffer, item }
+		}
+	);
+
+	if config == nil then
+		return;
+	end
+
+	utils.set_extmark(buffer, asciidoc_inline.ns, range.row_start, range.col_start, {
+		end_col = range.col_start + #(item.delimiters[1] or ""),
+		conceal = "",
+
+		virt_text_pos = "inline",
+		virt_text = {
+			{ config.corner_left or "", utils.set_hl(config.corner_left_hl or config.hl) },
+			{ config.padding_left or "", utils.set_hl(config.padding_left_hl or config.hl) },
+			{ config.icon or "", utils.set_hl(config.icon_hl or config.hl) }
+		},
+
+		hl_mode = "combine"
+	});
+
+	if config.text then
+		utils.set_extmark(buffer, asciidoc_inline.ns, range.row_start, range.col_start + #(item.delimiters[1] or ""), {
+			end_col = range.col_end - #(item.delimiters[2] or ""), end_row = range.row_end,
+
+		virt_text = {
+			{ config.text or "", utils.set_hl(config.text_hl or config.hl) }
+		},
+
+			hl_mode = "combine"
+		});
+	else
+		utils.set_extmark(buffer, asciidoc_inline.ns, range.row_start, range.col_start, {
+			end_col = range.col_end, end_row = range.row_end,
+
+			hl_group = utils.set_hl(config.hl),
+			hl_mode = "combine"
+		});
+	end
+
+	utils.set_extmark(buffer, asciidoc_inline.ns, range.row_end, range.col_end - #(item.delimiters[2] or ""), {
+		end_col = range.col_end,
+		conceal = "",
+
+		virt_text_pos = "inline",
+		virt_text = {
+			{ config.corner_right or "", utils.set_hl(config.corner_right_hl or config.hl) },
+			{ config.padding_right or "", utils.set_hl(config.padding_right_hl or config.hl) }
+		},
+
+		hl_mode = "combine"
+	});
+end
+
+---@param buffer integer
 ---@param content markview.parsed.asciidoc_inline[]
 asciidoc_inline.render = function (buffer, content)
 	local custom = spec.get({ "renderers" }, { fallback = {} });

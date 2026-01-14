@@ -39,3 +39,13 @@ A [.myrole]#custom role# must be fulfilled by the theme.
 
 ~sub~script
 
+https://asciidoctor.org - automatic!
+"https://asciidoctor.org" - automatic!
+
+https://asciidoctor.org[Asciidoctor]
+
+devel@discuss.example.org
+
+mailto:devel@discuss.example.org[Discuss]
+
+mailto:join@discuss.example.org[Subscribe,Subscribe me,I want to join!]
