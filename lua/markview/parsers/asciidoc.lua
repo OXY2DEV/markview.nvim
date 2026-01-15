@@ -49,6 +49,26 @@ asciidoc.doc_title = function (_, _, text, range)
 	});
 end
 
+---@param buffer integer
+---@param TSNode TSNode
+---@param text string[]
+---@param range markview.parsed.range
+asciidoc.section_title = function (buffer, TSNode, text, range)
+	local marker = TSNode:child(0);
+
+	if not marker then
+		return;
+	end
+
+	asciidoc.insert({
+		class = "asciidoc_section_title",
+		marker = vim.treesitter.get_node_text(marker, buffer, {}),
+
+		text = text,
+		range = range
+	});
+end
+
 --- HTML parser
 ---@param buffer integer
 ---@param TSTree table
@@ -61,10 +81,33 @@ asciidoc.parse = function (buffer, TSTree, from, to)
 	asciidoc.sorted = {};
 	asciidoc.content = {};
 
-	local scanned_queries = vim.treesitter.query.parse("asciidoc", [[
+	local can_scan, scanned_queries = pcall(vim.treesitter.query.parse, "asciidoc", [[
 		(document_title) @asciidoc.doc_title
 		(document_attr) @asciidoc.doc_attr
+
+		[
+			(title1)
+			(title2)
+			(title3)
+			(title4)
+			(title5)
+		] @asciidoc.section_title
 	]]);
+
+	if not can_scan then
+		require("markview.health").print({
+			kind = "ERR",
+
+			from = "parsers/asciidoc.lua",
+			fn = "parse() -> query",
+
+			message = {
+				{ tostring(error), "DiagnosticError" }
+			}
+		});
+
+		return asciidoc.content, asciidoc.sorted;
+	end
 
 	for capture_id, capture_node, _, _ in scanned_queries:iter_captures(TSTree:root(), buffer, from, to) do
 		local capture_name = scanned_queries.captures[capture_id];

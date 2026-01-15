@@ -20,9 +20,20 @@
 
 ------------------------------------------------------------------------------
 
+---@class markview.parsed.asciidoc.section_titles
+---
+---@field class "asciidoc_section_title"
+---@field marker string The `=` part of the title.
+---
+---@field text string[]
+---@field range markview.parsed.range
+
+------------------------------------------------------------------------------
+
 ---@alias markview.parsed.asciidoc
 ---| markview.parsed.asciidoc.document_attributes
 ---| markview.parsed.asciidoc.document_titles
+---| markview.parsed.asciidoc.section_titles
 
 ------------------------------------------------------------------------------
 
@@ -30,4 +41,5 @@
 ---
 ---@field document_attributes markview.parsed.asciidoc.document_attributes[]
 ---@field document_titles markview.parsed.asciidoc.document_titles[]
+---@field section_titles markview.parsed.asciidoc.section_titles[]
 

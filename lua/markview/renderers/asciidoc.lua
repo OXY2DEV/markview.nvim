@@ -50,6 +50,43 @@ asciidoc.document_title = function (buffer, item)
 	});
 end
 
+--- Renders atx headings.
+---@param buffer integer
+---@param item markview.parsed.asciidoc.section_titles
+asciidoc.section_title = function (buffer, item)
+	---@type markview.config.asciidoc.section_titles?
+	local main_config = spec.get({ "asciidoc", "section_titles" }, { fallback = nil, eval_args = { buffer, item } });
+
+	if not main_config then
+		return;
+	end
+
+	---@type markview.config.asciidoc.section_titles.opts?
+	local config = spec.get({ "title_" .. (#item.marker - 1) }, { source = main_config, eval_args = { buffer, item } });
+
+	if not config then
+		return;
+	end
+
+	local shift_width = spec.get({ "shift_width" }, { source = main_config, fallback = 1, eval_args = { buffer, item } });
+
+	local range = item.range;
+
+	utils.set_extmark(buffer, asciidoc.ns, range.row_start, range.col_start, {
+		end_col = range.col_start + #item.marker,
+		conceal = "",
+
+		sign_text = tostring(config.sign or ""),
+		sign_hl_group = utils.set_hl(config.sign_hl),
+
+		virt_text = {
+			{ string.rep(" ", (#item.marker - 1) * shift_width) },
+			{ config.icon, config.icon_hl or config.hl },
+		},
+		line_hl_group = utils.set_hl(config.hl),
+	});
+end
+
 ---@param buffer integer
 ---@param content markview.parsed.asciidoc[]
 asciidoc.render = function (buffer, content)
