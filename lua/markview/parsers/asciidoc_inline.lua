@@ -131,6 +131,30 @@ end
 ---@param TSNode TSNode
 ---@param text string[]
 ---@param range markview.parsed.range
+asciidoc_inline.labeled_uri = function (buffer, TSNode, text, range)
+	local destination;
+
+	for child in TSNode:iter_children() do
+		if child:type() == "uri_label" then
+			_, range.label_col_start, _, range.label_col_end = child:range();
+		elseif child:type() == "uri" then
+			destination = vim.treesitter.get_node_text(child, buffer, {});
+		end
+	end
+
+	asciidoc_inline.insert({
+		class = "asciidoc_inline_labeled_uri",
+		destination = destination,
+
+		text = text,
+		range = range
+	});
+end
+
+---@param buffer integer
+---@param TSNode TSNode
+---@param text string[]
+---@param range markview.parsed.range
 asciidoc_inline.uri = function (buffer, TSNode, text, range)
 	local delimiters = {};
 	local destination;
@@ -157,7 +181,6 @@ asciidoc_inline.uri = function (buffer, TSNode, text, range)
 	});
 end
 
---- HTML parser
 ---@param buffer integer
 ---@param TSTree TSTree
 ---@param from integer?
@@ -180,7 +203,7 @@ asciidoc_inline.parse = function (buffer, TSTree, from, to)
 
 	table.insert(asciidoc_inline.parsed_ranges, r_range);
 
-	local scanned_queries = vim.treesitter.query.parse("asciidoc_inline", [[
+	local can_scan, scanned_queries = pcall(vim.treesitter.query.parse, "asciidoc_inline", [[
 		(emphasis) @asciidoc_inline.bold
 		(ltalic) @asciidoc_inline.italic
 		(monospace) @asciidoc_inline.monospace
@@ -188,10 +211,25 @@ asciidoc_inline.parse = function (buffer, TSTree, from, to)
 
 		(autolink
 			(uri)) @asciidoc_inline.uri
-		;
-		; (autolink
-		; 	(labeled_uri)) @asciidoc_inline.labeled_uri
+
+		(labled_uri
+			(uri)) @asciidoc_inline.labeled_uri
 	]]);
+
+	if not can_scan then
+		require("markview.health").print({
+			kind = "ERR",
+
+			from = "parsers/asciidoc_inline.lua",
+			fn = "parse() -> query",
+
+			message = {
+				{ tostring(error), "DiagnosticError" }
+			}
+		});
+
+		return asciidoc_inline.content, asciidoc_inline.sorted;
+	end
 
 	for capture_id, capture_node, _, _ in scanned_queries:iter_captures(TSTree:root(), buffer, from, to) do
 		local capture_name = scanned_queries.captures[capture_id];

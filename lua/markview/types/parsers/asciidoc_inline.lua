@@ -37,6 +37,27 @@
 ---@field range markview.parsed.range
 
 
+---@class markview.parsed.asciidoc_inline.labeled_uris
+---
+---@field class "asciidoc_inline_labeled_uri"
+---@field destination string URL the node is pointing to.
+---
+---@field text string[]
+---@field range markview.parsed.asciidoc_inline.labeled_uris.range
+
+
+---@class markview.parsed.asciidoc_inline.labeled_uris.range
+---
+---@field row_start integer
+---@field col_start integer
+---
+---@field row_end integer
+---@field col_end integer
+---
+---@field label_col_start? integer Start column of the **label** of an URI(e.g. `foo` in `https://example.com[foo]`).
+---@field label_col_end? integer End column of the **label** of an URI.
+
+
 ---@class markview.parsed.asciidoc_inline.uris
 ---
 ---@field class "asciidoc_inline_uri"
@@ -52,6 +73,8 @@
 ---| markview.parsed.asciidoc_inline.highlights
 ---| markview.parsed.asciidoc_inline.italics
 ---| markview.parsed.asciidoc_inline.monospaces
+---| markview.parsed.asciidoc_inline.labeled_uris
+---| markview.parsed.asciidoc_inline.uris
 
 
 ---@class markview.parsed.asciidoc_inline_sorted
@@ -60,4 +83,6 @@
 ---@field italics markview.parsed.asciidoc_inline.italics
 ---@field monospaces markview.parsed.asciidoc_inline.monospaces
 ---@field highlights markview.parsed.asciidoc_inline.highlights
+---@field labeled_uris markview.parsed.asciidoc_inline.labeled_uris
+---@field uris markview.parsed.asciidoc_inline.uris
 
