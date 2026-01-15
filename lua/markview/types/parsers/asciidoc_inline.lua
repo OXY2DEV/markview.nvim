@@ -40,6 +40,7 @@
 ---@class markview.parsed.asciidoc_inline.labeled_uris
 ---
 ---@field class "asciidoc_inline_labeled_uri"
+---@field kind? string URI type(e.g. `mailto`). Only if the node is a **macro**.
 ---@field destination string URL the node is pointing to.
 ---
 ---@field text string[]
@@ -54,7 +55,7 @@
 ---@field row_end integer
 ---@field col_end integer
 ---
----@field label_col_start? integer Start column of the **label** of an URI(e.g. `foo` in `https://example.com[foo]`).
+---@field label_col_start? integer Start column of the **label** of an URI(e.g. `foo` in `https://example.com[foo]` or `https://example.com[foo,bar]`).
 ---@field label_col_end? integer End column of the **label** of an URI.
 
 

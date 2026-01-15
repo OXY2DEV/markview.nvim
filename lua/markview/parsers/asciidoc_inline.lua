@@ -130,7 +130,7 @@ end
 ---@param buffer integer
 ---@param TSNode TSNode
 ---@param text string[]
----@param range markview.parsed.range
+---@param range markview.parsed.asciidoc_inline.labeled_uris.range
 asciidoc_inline.labeled_uri = function (buffer, TSNode, text, range)
 	local destination;
 
@@ -182,6 +182,46 @@ asciidoc_inline.uri = function (buffer, TSNode, text, range)
 end
 
 ---@param buffer integer
+---@param TSNode TSNode
+---@param text string[]
+---@param range markview.parsed.asciidoc_inline.labeled_uris.range
+asciidoc_inline.uri_macro = function (buffer, TSNode, text, range)
+	local kind, destination;
+
+	for child in TSNode:iter_children() do
+		if child:type() == "macro_name" then
+			kind = vim.treesitter.get_node_text(child, buffer, {});
+		elseif child:type() == "target" then
+			destination = vim.treesitter.get_node_text(child, buffer, {});
+		elseif child:type() == "attr" then
+			local attr = vim.treesitter.get_node_text(child, buffer, {});
+
+			if string.match(attr, '^".*"$') or not string.match(attr, "[,=]") then
+				_, range.label_col_start, _, range.label_col_end = child:range();
+			else
+				local R = { child:range() };
+				local target = string.match(attr, '^"[^"]*"') or string.match(attr, "^[^,]*") or "";
+				target = string.gsub(target, "%s+$", "");
+
+				local spaces_before = #string.match(target, "^%s*");
+
+				range.label_col_start = R[2] + spaces_before;
+				range.label_col_end = R[2] + spaces_before + #target;
+			end
+		end
+	end
+
+	asciidoc_inline.insert({
+		class = "asciidoc_inline_labeled_uri",
+		kind = kind,
+		destination = destination,
+
+		text = text,
+		range = range
+	});
+end
+
+---@param buffer integer
 ---@param TSTree TSTree
 ---@param from integer?
 ---@param to integer?
@@ -214,6 +254,12 @@ asciidoc_inline.parse = function (buffer, TSTree, from, to)
 
 		(labled_uri
 			(uri)) @asciidoc_inline.labeled_uri
+
+		(inline_macro
+			((macro_name) @uri_macro_name
+				(#any-of? @uri_macro_name "link" "mailto"))
+			(target)
+			(attr)) @asciidoc_inline.uri_macro
 	]]);
 
 	if not can_scan then
