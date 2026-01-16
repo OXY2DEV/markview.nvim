@@ -30,6 +30,29 @@
 
 ------------------------------------------------------------------------------
 
+---@class markview.parsed.asciidoc.tocs
+---
+---@field class "asciidoc_toc"
+---@field title? string
+---@field max_depth? integer
+---@field entries markview.parser.asciidoc.data.toc_entry[]
+---
+---@field text string[]
+---@field range markview.parsed.asciidoc.tocs.range
+
+
+---@class markview.parsed.asciidoc.tocs.range
+---
+---@field row_start integer
+---@field col_start integer
+---
+---@field row_end integer
+---@field col_end integer
+---
+---@field position? markview.parsed.range
+
+------------------------------------------------------------------------------
+
 ---@alias markview.parsed.asciidoc
 ---| markview.parsed.asciidoc.document_attributes
 ---| markview.parsed.asciidoc.document_titles
@@ -42,4 +65,22 @@
 ---@field document_attributes markview.parsed.asciidoc.document_attributes[]
 ---@field document_titles markview.parsed.asciidoc.document_titles[]
 ---@field section_titles markview.parsed.asciidoc.section_titles[]
+
+------------------------------------------------------------------------------
+
+---@class markview.parser.asciidoc.data
+---
+---@field document_title? string
+---@field toc_title? string
+---@field toc_max_depth? integer
+---@field toc_entries? markview.parser.asciidoc.data.toc_entry[]
+---@field toc_pos? markview.parsed.range
+
+
+---@class markview.parser.asciidoc.data.toc_entry
+---
+---@field depth integer
+---
+---@field text string
+---@field range markview.parsed.range
 

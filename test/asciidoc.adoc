@@ -1,10 +1,21 @@
 = Hello world
 
+:toc:
+:toc-title: Hello
+
+[discrete]
 == hii
+
+
+== hii
+
+=== bye
 
 :bye:
 hi
 :hi: 123
+
+toc::[]
 
 It has *strong* significance to me.
 

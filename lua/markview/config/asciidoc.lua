@@ -45,4 +45,43 @@ return {
 	document_attributes = {
 		enable = true,
 	},
+
+	tocs = {
+		shift_width = 2,
+		hl = "MarkviewPalette2Fg",
+
+		sign = "󰙅 ",
+		sign_hl = "MarkviewPalette2Sign",
+
+		depth_1 = {
+			icon = "◆ ",
+			icon_hl = "Comment",
+
+			hl = "MarkviewPalette5Fg",
+		},
+		depth_2 = {
+			icon = "◇ ",
+			icon_hl = "Comment",
+
+			hl = "MarkviewPalette5Fg",
+		},
+		depth_3 = {
+			icon = "◆ ",
+			icon_hl = "Comment",
+
+			hl = "MarkviewPalette5Fg",
+		},
+		depth_4 = {
+			icon = "◇ ",
+			icon_hl = "Comment",
+
+			hl = "MarkviewPalette5Fg",
+		},
+		depth_5 = {
+			icon = "◆ ",
+			icon_hl = "Comment",
+
+			hl = "MarkviewPalette5Fg",
+		},
+	},
 };

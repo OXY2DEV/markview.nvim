@@ -46,6 +46,36 @@
 
 ------------------------------------------------------------------------------
 
+---@class markview.config.asciidoc.tocs
+---
+---@field enable boolean
+---@field shift_width integer
+---
+---@field icon? string Icon for the TOC title.
+---@field icon_hl? string Highlight group for `icon`.
+---
+---@field sign? string Sign for the TOC title.
+---@field sign_hl? string Highlight group for `sign`.
+---
+---@field hl? string
+---
+---@field depth_1 markview.config.asciidoc.tocs.opts
+---@field depth_2 markview.config.asciidoc.tocs.opts
+---@field depth_3 markview.config.asciidoc.tocs.opts
+---@field depth_4 markview.config.asciidoc.tocs.opts
+---@field depth_5 markview.config.asciidoc.tocs.opts
+
+
+---@class markview.config.asciidoc.tocs.opts
+---
+---@field shift_char? string
+---@field hl? string
+---
+---@field icon? string Icon for the TOC title.
+---@field icon_hl? string Highlight group for `icon`.
+
+------------------------------------------------------------------------------
+
 ---@class markview.config.asciidoc
 ---
 ---@field document_attributes markview.config.asciidoc.document_attributes

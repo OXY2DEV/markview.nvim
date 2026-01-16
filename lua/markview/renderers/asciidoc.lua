@@ -88,6 +88,86 @@ asciidoc.section_title = function (buffer, item)
 end
 
 ---@param buffer integer
+---@param item markview.parsed.asciidoc.tocs
+asciidoc.toc = function (buffer, item)
+	---@type markview.config.asciidoc.tocs?
+	local main_config = spec.get({ "asciidoc", "tocs" }, { fallback = nil, eval_args = { buffer, item } });
+
+	if not main_config then
+		return;
+	end
+
+	local range = item.range;
+	local lines = {};
+
+	table.insert(lines, {
+		{ main_config.icon or "", main_config.icon_hl or main_config.hl },
+		{ item.title or "Table of contents", main_config.hl },
+	});
+
+	if item.entries and #item.entries > 0 then
+		table.insert(lines, { { "" } });
+	end
+
+	for _, entry in ipairs(item.entries or {}) do
+		---@type markview.config.asciidoc.tocs.opts?
+		local config = spec.get({ "depth_" .. (entry.depth or 1) }, { source = main_config, eval_args = { buffer, item } });
+
+		if config then
+			local text = require("markview.renderers.asciidoc.tostring").tostring(buffer, entry.text, config.hl);
+			local shift_by = (main_config.shift_width or 1) * ( (entry.depth or 1) - 1 );
+
+			local line = {
+				{ string.rep(config.shift_char or " ", shift_by), config.hl },
+				{ config.icon or "", config.icon_hl or config.hl },
+			};
+
+			vim.list_extend(line, text);
+			table.insert(lines, line);
+		end
+	end
+
+	local title = table.remove(lines, 1);
+
+	if range.position then
+		utils.set_extmark(buffer, asciidoc.ns, range.row_start, range.col_start, {
+			end_row = range.row_end - 1,
+			conceal_lines = "",
+		});
+
+		local r_pos = range.position --[[@as markview.parsed.range]];
+
+		utils.set_extmark(buffer, asciidoc.ns, r_pos.row_start, r_pos.col_start, {
+			end_col = r_pos.col_end,
+			conceal = "",
+
+			virt_text = title,
+			virt_text_pos = "inline",
+
+			sign_text = main_config.sign or "",
+			sign_hl_group = utils.set_hl(main_config.sign_hl),
+
+			virt_lines = lines,
+			hl_mode = "combine",
+		});
+	else
+		utils.set_extmark(buffer, asciidoc.ns, range.row_start, range.col_start, {
+			end_col = range.col_end,
+			conceal = "",
+
+			virt_text = title,
+			virt_text_pos = "inline",
+
+			sign_text = main_config.sign or "",
+			sign_hl_group = utils.set_hl(main_config.sign_hl),
+
+			virt_lines = lines,
+			hl_mode = "combine",
+		});
+	end
+end
+
+---@param buffer integer
 ---@param content markview.parsed.asciidoc[]
 asciidoc.render = function (buffer, content)
 	asciidoc.cache = {
