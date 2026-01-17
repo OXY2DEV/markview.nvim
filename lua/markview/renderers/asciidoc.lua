@@ -52,6 +52,61 @@ end
 
 --- Renders atx headings.
 ---@param buffer integer
+---@param item markview.parsed.asciidoc.list_items
+asciidoc.list_item = function (buffer, item)
+	---@type markview.config.asciidoc.list_items?
+	local main_config = spec.get({ "asciidoc", "list_items" }, { fallback = nil, eval_args = { buffer, item } });
+
+	if not main_config then
+		return;
+	end
+
+	---@type markview.config.asciidoc.list_items.opts?
+	local config;
+
+	if string.match(item.marker, "%*") then
+		config = spec.get({ "marker_star" }, { source = main_config, eval_args = { buffer, item } });
+	elseif string.match(item.marker, "%-") then
+		config = spec.get({ "marker_minus" }, { source = main_config, eval_args = { buffer, item } });
+	else
+		config = spec.get({ "marker_dot" }, { source = main_config, eval_args = { buffer, item } });
+	end
+
+	if not config then
+		return;
+	end
+
+	---@cast config markview.config.asciidoc.list_items.opts
+
+	local shift_width = main_config.shift_width or 2;
+	local range = item.range;
+
+	for r = range.row_start, range.row_end - 1, 1 do
+		if r == range.row_start then
+
+			utils.set_extmark(buffer, asciidoc.ns, r, range.col_start, {
+				end_col = range.marker_end,
+				conceal = "",
+
+				virt_text = {
+					{ config.add_padding and string.rep(" ", #item.marker * shift_width) or "" },
+					{ config.text or "", config.hl },
+				},
+				hl_mode = "combine",
+			});
+		elseif config.add_padding then
+			utils.set_extmark(buffer, asciidoc.ns, r, 0, {
+				virt_text = {
+					{ string.rep(" ", #item.marker * shift_width) },
+				},
+				hl_mode = "combine",
+			});
+		end
+	end
+end
+
+--- Renders atx headings.
+---@param buffer integer
 ---@param item markview.parsed.asciidoc.section_titles
 asciidoc.section_title = function (buffer, item)
 	---@type markview.config.asciidoc.section_titles?

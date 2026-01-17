@@ -47,6 +47,8 @@ return {
 	},
 
 	tocs = {
+		enable = true,
+
 		shift_width = 2,
 		hl = "MarkviewPalette2Fg",
 
@@ -82,6 +84,37 @@ return {
 			icon_hl = "Comment",
 
 			hl = "MarkviewPalette5Fg",
+		},
+	},
+
+	list_items = {
+		enable = true,
+		shift_width = 4,
+
+		marker_dot = {
+			add_padding = true,
+			conceal_on_checkboxes = true,
+
+			text = function (_, item)
+				return string.format("%d.", item.n);
+			end,
+			hl = "@markup.list.markdown",
+		},
+
+		marker_minus = {
+			add_padding = true,
+			conceal_on_checkboxes = true,
+
+			text = "●",
+			hl = "MarkviewListItemMinus"
+		},
+
+		marker_star = {
+			add_padding = true,
+			conceal_on_checkboxes = true,
+
+			text = "◇",
+			hl = "MarkviewListItemStar"
 		},
 	},
 };

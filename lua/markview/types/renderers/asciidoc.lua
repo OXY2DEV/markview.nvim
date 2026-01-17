@@ -22,6 +22,33 @@
 
 ------------------------------------------------------------------------------
 
+--- Configuration for list items.
+---@class markview.config.asciidoc.list_items
+---
+---@field enable boolean
+---@field shift_width integer | fun(buffer: integer, item: markview.parsed.markdown.list_items): integer Virtual indentation size for previewed list items.
+---
+---@field marker_dot markview.config.asciidoc.list_items.opts Configuration for `.` list items.
+---@field marker_minus markview.config.asciidoc.list_items.opts Configuration for `-` list items.
+---@field marker_star markview.config.asciidoc.list_items.opts Configuration for `*` list items.
+---
+---@field wrap? boolean Enables wrap support.
+
+
+---@class markview.config.asciidoc.list_items.opts
+---
+---@field add_padding boolean
+---@field conceal_on_checkboxes? boolean
+---@field enable? boolean
+---@field hl? string
+---
+---[[ Text used to replace the list item marker. ]]
+---@field text?
+---| string
+---| fun(buffer: integer, item: markview.parsed.asciidoc.list_items): string
+
+------------------------------------------------------------------------------
+
 ---@class markview.config.asciidoc.section_titles
 ---
 ---@field enable boolean
@@ -80,5 +107,7 @@
 ---
 ---@field document_attributes markview.config.asciidoc.document_attributes
 ---@field document_titles markview.config.asciidoc.document_titles
+---@field list_items markview.config.asciidoc.list_items
 ---@field section_titles markview.config.asciidoc.section_titles
+---@field tocs markview.config.asciidoc.tocs
 

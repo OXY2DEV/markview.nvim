@@ -20,6 +20,28 @@
 
 ------------------------------------------------------------------------------
 
+---@class markview.parsed.asciidoc.list_items
+---
+---@field class "asciidoc_list_item"
+---@field marker string List item marker.
+---@field n integer Item index.
+---
+---@field text string[]
+---@field range markview.parsed.asciidoc.list_items.range
+
+
+---@class markview.parsed.asciidoc.list_items.range
+---
+---@field row_start integer
+---@field col_start integer
+---
+---@field row_end integer
+---@field col_end integer
+---
+---@field marker_end integer End column for the list item marker(e.g. `*` or `.`).
+
+------------------------------------------------------------------------------
+
 ---@class markview.parsed.asciidoc.section_titles
 ---
 ---@field class "asciidoc_section_title"
@@ -56,7 +78,9 @@
 ---@alias markview.parsed.asciidoc
 ---| markview.parsed.asciidoc.document_attributes
 ---| markview.parsed.asciidoc.document_titles
+---| markview.parsed.asciidoc.list_items
 ---| markview.parsed.asciidoc.section_titles
+---| markview.parsed.asciidoc.tocs
 
 ------------------------------------------------------------------------------
 
@@ -64,7 +88,9 @@
 ---
 ---@field document_attributes markview.parsed.asciidoc.document_attributes[]
 ---@field document_titles markview.parsed.asciidoc.document_titles[]
+---@field list_items markview.parsed.asciidoc.list_items[]
 ---@field section_titles markview.parsed.asciidoc.section_titles[]
+---@field tocs markview.parsed.asciidoc.tocs[]
 
 ------------------------------------------------------------------------------
 

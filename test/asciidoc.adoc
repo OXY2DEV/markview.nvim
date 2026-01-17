@@ -62,3 +62,22 @@ devel@discuss.example.org
 mailto:devel@discuss.example.org[Discuss]
 
 mailto:join@discuss.example.org[Subscribe,Subscribe me,I want to join!]
+
+* List item
++
+Hello
+
+* Bye
+** Nested list item
+*** Deeper nested list item
+* List item
+*** Another nested list item
+* List item
+
+. Hi
+.. Hello
+.. Bye
+. Bye
+.. bye
+.. hi
+

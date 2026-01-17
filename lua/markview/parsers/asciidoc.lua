@@ -148,6 +148,99 @@ asciidoc.toc = function (_, _, text, range)
 	});
 end
 
+---@param buffer integer
+---@param now string Current marker.
+---@param last TSNode
+---@return boolean
+local function is_on_same_level(buffer, now, last)
+	local _marker = last:child(0);
+
+	if not _marker then
+		return false;
+	end
+
+	local marker = vim.treesitter.get_node_text(_marker, buffer, {});
+	return marker == now;
+end
+
+---@param buffer integer
+---@param TSNode TSNode
+---@param text string[]
+---@param range markview.parsed.asciidoc.list_items.range
+asciidoc.unordered_list_item = function (buffer, TSNode, text, range)
+	local _marker = TSNode:child(0);
+
+	if not _marker then
+		return;
+	end
+
+	local N = 1;
+	local prev = TSNode:prev_named_sibling();
+
+	local marker = vim.treesitter.get_node_text(_marker, buffer, {});
+	_, _, _, range.marker_end = _marker:range();
+
+	while prev do
+		if prev:type() == "unordered_list_item" then
+			if is_on_same_level(buffer, marker, prev) then
+				N = N + 1;
+			else
+				break;
+			end
+		end
+
+		prev = prev:prev_named_sibling();
+	end
+
+	asciidoc.insert({
+		class = "asciidoc_list_item",
+		marker = marker,
+		n = N,
+
+		text = text,
+		range = range
+	});
+end
+
+---@param buffer integer
+---@param TSNode TSNode
+---@param text string[]
+---@param range markview.parsed.asciidoc.list_items.range
+asciidoc.ordered_list_item = function (buffer, TSNode, text, range)
+	local _marker = TSNode:child(0);
+
+	if not _marker then
+		return;
+	end
+
+	local N = 1;
+	local prev = TSNode:prev_named_sibling();
+
+	local marker = vim.treesitter.get_node_text(_marker, buffer, {});
+	_, _, _, range.marker_end = _marker:range();
+
+	while prev do
+		if prev:type() == "ordered_list_item" then
+			if is_on_same_level(buffer, marker, prev) then
+				N = N + 1;
+			else
+				break;
+			end
+		end
+
+		prev = prev:prev_named_sibling();
+	end
+
+	asciidoc.insert({
+		class = "asciidoc_list_item",
+		marker = marker,
+		n = N,
+
+		text = text,
+		range = range
+	});
+end
+
 --- HTML parser
 ---@param buffer integer
 ---@param TSTree table
@@ -178,6 +271,9 @@ asciidoc.parse = function (buffer, TSTree, from, to)
 				(block_macro_name) @toc_pos_name
 				(#eq? @toc_pos_name "toc")
 			)) @asciidoc.toc_pos
+
+		(unordered_list_item) @asciidoc.unordered_list_item
+		(ordered_list_item) @asciidoc.ordered_list_item
 	]]);
 
 	if not can_scan then
