@@ -167,7 +167,7 @@ end
 ---@param TSNode TSNode
 ---@param text string[]
 ---@param range markview.parsed.asciidoc.list_items.range
-asciidoc.unordered_list_item = function (buffer, TSNode, text, range)
+asciidoc.list_item = function (buffer, TSNode, text, range)
 	local _marker = TSNode:child(0);
 
 	if not _marker then
@@ -181,7 +181,8 @@ asciidoc.unordered_list_item = function (buffer, TSNode, text, range)
 	_, _, _, range.marker_end = _marker:range();
 
 	while prev do
-		if prev:type() == "unordered_list_item" then
+		-- NOTE: Only one of these node types should appear.
+		if vim.list_contains({ "unordered_list_item", "ordered_list_item" }, prev:type()) then
 			if is_on_same_level(buffer, marker, prev) then
 				N = N + 1;
 			else
@@ -272,8 +273,8 @@ asciidoc.parse = function (buffer, TSTree, from, to)
 				(#eq? @toc_pos_name "toc")
 			)) @asciidoc.toc_pos
 
-		(unordered_list_item) @asciidoc.unordered_list_item
-		(ordered_list_item) @asciidoc.ordered_list_item
+		(unordered_list_item) @asciidoc.list_item
+		(ordered_list_item) @asciidoc.list_item
 	]]);
 
 	if not can_scan then
