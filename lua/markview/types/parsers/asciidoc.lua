@@ -23,6 +23,7 @@
 ---@class markview.parsed.asciidoc.list_items
 ---
 ---@field class "asciidoc_list_item"
+---@field checkbox? string
 ---@field marker string List item marker.
 ---@field n integer Item index.
 ---
@@ -39,6 +40,9 @@
 ---@field col_end integer
 ---
 ---@field marker_end integer End column for the list item marker(e.g. `*` or `.`).
+---
+---@field checkbox_start? integer Start column for the checkbox(e.g. `[*]` or `[ ]`).
+---@field checkbox_end? integer End column for the checkbox(e.g. `[*]` or `[ ]`).
 
 ------------------------------------------------------------------------------
 

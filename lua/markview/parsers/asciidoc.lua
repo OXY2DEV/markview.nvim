@@ -167,7 +167,7 @@ end
 ---@param TSNode TSNode
 ---@param text string[]
 ---@param range markview.parsed.asciidoc.list_items.range
-asciidoc.list_item = function (buffer, TSNode, text, range)
+asciidoc._list_item = function (buffer, TSNode, text, range)
 	local _marker = TSNode:child(0);
 
 	if not _marker then
@@ -207,18 +207,11 @@ end
 ---@param TSNode TSNode
 ---@param text string[]
 ---@param range markview.parsed.asciidoc.list_items.range
-asciidoc.ordered_list_item = function (buffer, TSNode, text, range)
-	local _marker = TSNode:child(0);
-
-	if not _marker then
-		return;
-	end
-
+asciidoc.list_item = function (buffer, TSNode, text, range)
 	local N = 1;
 	local prev = TSNode:prev_named_sibling();
 
-	local marker = vim.treesitter.get_node_text(_marker, buffer, {});
-	_, _, _, range.marker_end = _marker:range();
+	local marker;
 
 	while prev do
 		if prev:type() == "ordered_list_item" then
@@ -232,8 +225,53 @@ asciidoc.ordered_list_item = function (buffer, TSNode, text, range)
 		prev = prev:prev_named_sibling();
 	end
 
+	local checkbox;
+
+	for child in TSNode:iter_children() do
+		if child:type() == "checked_list_marker" then
+			local _marker = child:named_child(0):named_child(0) --[[@as TSNode]];
+			local _checkbox = child:named_child(1) --[[@as TSNode]];
+
+			marker = vim.treesitter.get_node_text(_marker, buffer, {})
+			_, _, _, range.marker_end = _marker:range();
+
+			if _checkbox then
+				if _checkbox:type() == "checked_list_marker_checked" then
+					checkbox = "*";
+					_, range.checkbox_start, _, range.checkbox_end = _checkbox:range();
+
+					break;
+				elseif _checkbox:type() == "checked_list_marker_unchecked" then
+					checkbox = " ";
+					_, range.checkbox_start, _, range.checkbox_end = _checkbox:range();
+
+					break;
+				end
+			end
+		elseif vim.list_contains({ "ordered_list_marker", "unordered_list_marker" }, child:type()) then
+			local _marker = child:named_child(0) --[[@as TSNode]];
+
+			marker = vim.treesitter.get_node_text(_marker, buffer, {})
+			_, _, _, range.marker_end = _marker:range();
+		elseif child:type() == "line" then
+			local _text = vim.treesitter.get_node_text(child, buffer, {});
+			checkbox = string.match(_text, "^%[(.)%]");
+
+			if checkbox then
+				local _, tmp = child:range();
+
+				range.checkbox_start = tmp;
+				range.checkbox_end = tmp + 3;
+
+				break;
+			end
+		end
+	end
+
 	asciidoc.insert({
 		class = "asciidoc_list_item",
+
+		checkbox = checkbox,
 		marker = marker,
 		n = N,
 
@@ -275,6 +313,8 @@ asciidoc.parse = function (buffer, TSTree, from, to)
 
 		(unordered_list_item) @asciidoc.list_item
 		(ordered_list_item) @asciidoc.list_item
+
+		(checked_list_item) @asciidoc.list_item
 	]]);
 
 	if not can_scan then

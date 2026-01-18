@@ -2,6 +2,26 @@
 
 ------------------------------------------------------------------------------
 
+--- Configuration for checkboxes.
+---@class markview.config.asciidoc.checkboxes
+---
+---@field enable boolean Enable rendering of checkboxes.
+---
+---@field checked markview.config.markdown_inline.checkboxes.opts Configuration for `[*]`.
+---@field unchecked markview.config.markdown_inline.checkboxes.opts Configuration for `[ ]`.
+---
+---@field [string] markview.config.markdown_inline.checkboxes.opts Configuration for `[string]` checkbox.
+
+
+--[[ Options for a specific checkbox. ]]
+---@class markview.config.asciidoc.checkboxes.opts
+---
+---@field text string Text used to replace `[]` part.
+---@field hl? string Highlight group for `text`.
+---@field scope_hl? string Highlight group for the list item.
+
+------------------------------------------------------------------------------
+
 ---@class markview.config.asciidoc.document_attributes
 ---
 ---@field enable boolean
@@ -105,6 +125,7 @@
 
 ---@class markview.config.asciidoc
 ---
+---@field checkboxes markview.config.asciidoc.checkboxes
 ---@field document_attributes markview.config.asciidoc.document_attributes
 ---@field document_titles markview.config.asciidoc.document_titles
 ---@field list_items markview.config.asciidoc.list_items

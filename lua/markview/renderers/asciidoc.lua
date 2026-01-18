@@ -78,22 +78,57 @@ asciidoc.list_item = function (buffer, item)
 
 	---@cast config markview.config.asciidoc.list_items.opts
 
+	local checkbox_config;
+
+	if item.checkbox == "*" then
+		checkbox_config = spec.get({ "asciidoc", "checkboxes", "checked" }, { eval_args = { buffer, item } });
+	elseif item.checkbox == " " then
+		checkbox_config = spec.get({ "asciidoc", "checkboxes", "unchecked" }, { eval_args = { buffer, item } });
+	elseif item.checkbox then
+		local checkboxes = spec.get({ "asciidoc", "checkboxes" }, { eval_args = { buffer, item } });
+		local _state = vim.pesc(tostring(item.checkbox));
+
+		checkbox_config = utils.match(checkboxes, "^" .. _state .. "$", { default = false, ignore_keys = { "checked", "unchecked", "enable" }, eval_args = { buffer, item } });
+	end
+
 	local shift_width = main_config.shift_width or 2;
 	local range = item.range;
 
 	for r = range.row_start, range.row_end - 1, 1 do
 		if r == range.row_start then
+			if checkbox_config and not vim.tbl_isempty(checkbox_config) then
+				utils.set_extmark(buffer, asciidoc.ns, r, range.col_start, {
+					end_col = config.conceal_on_checkboxes and range.checkbox_start or range.marker_end,
+					conceal = "",
 
-			utils.set_extmark(buffer, asciidoc.ns, r, range.col_start, {
-				end_col = range.marker_end,
-				conceal = "",
+					virt_text = {
+						{ config.add_padding and string.rep(" ", #item.marker * shift_width) or "" },
+						{ not config.conceal_on_checkboxes and config.text or "", config.hl },
+					},
+					hl_mode = "combine",
+				});
 
-				virt_text = {
-					{ config.add_padding and string.rep(" ", #item.marker * shift_width) or "" },
-					{ config.text or "", config.hl },
-				},
-				hl_mode = "combine",
-			});
+				utils.set_extmark(buffer, asciidoc.ns, r, range.checkbox_start, {
+					end_col = range.checkbox_end,
+					conceal = "",
+
+					virt_text = {
+						{ checkbox_config.text or "", checkbox_config.hl },
+					},
+					hl_mode = "combine",
+				});
+			else
+				utils.set_extmark(buffer, asciidoc.ns, r, range.col_start, {
+					end_col = range.marker_end,
+					conceal = "",
+
+					virt_text = {
+						{ config.add_padding and string.rep(" ", #item.marker * shift_width) or "" },
+						{ config.text or "", config.hl },
+					},
+					hl_mode = "combine",
+				});
+			end
 		elseif config.add_padding then
 			utils.set_extmark(buffer, asciidoc.ns, r, 0, {
 				virt_text = {

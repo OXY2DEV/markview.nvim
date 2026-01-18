@@ -73,6 +73,7 @@ Hello
 * List item
 *** Another nested list item
 * List item
+- Bye
 
 . Hi
 .. Hello
@@ -80,4 +81,9 @@ Hello
 . Bye
 .. bye
 .. hi
+
+* [*] checked
+* [ ] also checked
+* [-] not checked
+* normal list item
 
