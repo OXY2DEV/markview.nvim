@@ -99,6 +99,8 @@ parser.init = function (buffer, from, to, cache)
 	---|fS
 
 	local _parsers = {
+		asciidoc = require("markview.parsers.asciidoc"),
+		asciidoc_inline = require("markview.parsers.asciidoc_inline"),
 		comment = require("markview.parsers.comment");
 		markdown = require("markview.parsers.markdown");
 		markdown_inline = require("markview.parsers.markdown_inline");
@@ -125,6 +127,18 @@ parser.init = function (buffer, from, to, cache)
 		-- Can't find root parser.
 		return parser.content, parser.sorted;
 	end
+
+	--[[
+		WARN: Recursion when parsing `asciidoc_inline` trees
+
+		`cathaysia/tree-sitter-asciidoc` uses `#injection.include-children` for it's inline parser.
+		This causes the same text to be parsed multiple times,
+
+		FIX(asciidoc_inline): Check parse range
+
+		Check if a parser range has been parsed before. If it has, do not parse again.
+	]]
+	_parsers.asciidoc_inline.parsed_ranges = {};
 
 	---|fS "chore: Announce start of parsing"
 	---@type integer Start time

@@ -189,7 +189,7 @@ spec.default = {
 		debounce = 150,
 		icon_provider = "internal",
 
-		filetypes = { "markdown", "quarto", "rmd", "typst", },
+		filetypes = { "markdown", "quarto", "rmd", "typst", "asciidoc", },
 		ignore_buftypes = { "nofile" },
 		condition = function (buffer)
 			local is_enabled = spec.get({ "experimental", "fancy_comments" }, {
@@ -227,6 +227,8 @@ spec.default = {
 
 ---@type string[] Properties that should be sourced *externally*.
 spec.__external_config = {
+	"asciidoc",
+	"asciidoc_inline",
 	"comment",
 	"html",
 	"markdown",
