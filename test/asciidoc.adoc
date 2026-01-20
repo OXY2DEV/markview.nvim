@@ -1,3 +1,13 @@
+image::sunset.jpg[]
+
+image::sunset.jpg[Sunset]
+
+.A mountain sunset
+[#img-sunset,caption="Figure 1: ",link=https://www.flickr.com/photos/javh/5448336655]
+image::macros:sunset.jpg[Sunset,200,100]
+
+image::https://asciidoctor.org/images/octocat.jpg[GitHub mascot]
+
 = Hello world
 
 :toc:

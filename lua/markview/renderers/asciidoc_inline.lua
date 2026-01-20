@@ -258,9 +258,9 @@ asciidoc_inline.uri = function (buffer, item)
 		utils.set_extmark(buffer, asciidoc_inline.ns, range.row_start, range.col_start + #(item.delimiters[1] or ""), {
 			end_col = range.col_end - #(item.delimiters[2] or ""), end_row = range.row_end,
 
-		virt_text = {
-			{ config.text or "", utils.set_hl(config.text_hl or config.hl) }
-		},
+			virt_text = {
+				{ config.text or "", utils.set_hl(config.text_hl or config.hl) }
+			},
 
 			hl_mode = "combine"
 		});

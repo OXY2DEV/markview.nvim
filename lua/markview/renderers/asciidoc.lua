@@ -24,6 +24,77 @@ asciidoc.document_attribute = function (buffer, item)
 end
 
 ---@param buffer integer
+---@param item markview.parsed.asciidoc.images
+asciidoc.image = function (buffer, item)
+	---@type markview.config.asciidoc.images?
+	local main_config = spec.get({ "asciidoc", "images" }, { fallback = nil });
+	local range = item.range;
+
+	if not main_config then
+		return;
+	end
+
+	---@type markview.config.asciidoc.images.opts?
+	local config = utils.match(
+		main_config,
+		item.destination,
+		{
+			eval_args = { buffer, item }
+		}
+	);
+
+	if config == nil then
+		return;
+	end
+
+	utils.set_extmark(buffer, asciidoc.ns, range.row_start, range.col_start, {
+		end_col = range.destination[2],
+		conceal = "",
+
+		virt_text_pos = "inline",
+		virt_text = {
+			{ config.corner_left or "", utils.set_hl(config.corner_left_hl or config.hl) },
+			{ config.padding_left or "", utils.set_hl(config.padding_left_hl or config.hl) },
+			{ config.icon or "", utils.set_hl(config.icon_hl or config.hl) }
+		},
+
+		hl_mode = "combine"
+	});
+
+	if config.text then
+		utils.set_extmark(buffer, asciidoc.ns, range.destination[1], range.destination[2], {
+			end_col = range.destination[4], end_row = range.destination[3],
+
+			virt_text = {
+				{ config.text or "", utils.set_hl(config.text_hl or config.hl) }
+			},
+
+			hl_mode = "combine"
+		});
+	else
+		utils.set_extmark(buffer, asciidoc.ns, range.destination[1], range.destination[2], {
+			end_col = range.destination[4], end_row = range.destination[3],
+
+			hl_group = utils.set_hl(config.hl),
+			hl_mode = "combine"
+		});
+	end
+
+	utils.set_extmark(buffer, asciidoc.ns, range.row_end, range.destination[4], {
+		end_col = range.col_end,
+		conceal = "",
+
+		virt_text_pos = "inline",
+		virt_text = {
+			{ config.corner_right or "", utils.set_hl(config.corner_right_hl or config.hl) },
+			{ config.padding_right or "", utils.set_hl(config.padding_right_hl or config.hl) }
+		},
+
+		hl_mode = "combine"
+	});
+end
+
+---@param buffer integer
 ---@param item markview.parsed.asciidoc.document_titles
 asciidoc.document_title = function (buffer, item)
 	---@type markview.config.asciidoc.document_titles?

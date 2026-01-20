@@ -156,6 +156,13 @@ end
 ---@param text string[]
 ---@param range markview.parsed.range
 asciidoc_inline.uri = function (buffer, TSNode, text, range)
+	local before = vim.api.nvim_buf_get_text(buffer, range.row_start, 0, range.row_start, range.col_start, {})[1];
+
+	-- NOTE: Do not parse a URI if it's part of an image macro.
+	if string.match(before, "image::$") then
+		return;
+	end
+
 	local delimiters = {};
 	local destination;
 

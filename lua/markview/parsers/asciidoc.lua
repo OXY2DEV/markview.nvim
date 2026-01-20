@@ -115,6 +115,38 @@ asciidoc.section_title = function (buffer, TSNode, text, range)
 	});
 end
 
+---@param buffer integer
+---@param TSNode TSNode
+---@param text string[]
+---@param range markview.parsed.asciidoc.images.range
+asciidoc.image = function (buffer, TSNode, text, range)
+	local _destination = TSNode:named_child(1);
+
+	if not _destination then
+		return;
+	end
+
+	local destination = vim.treesitter.get_node_text(_destination, buffer, {});
+	range.destination = { _destination:range() };
+
+	--[[
+		refactor: Range correction
+
+		Block macros end at the start of the next line.
+		So, we correct the end column & end row.
+	]]
+	range.row_end = range.row_end - 1;
+	range.col_end = range.col_start + #(text[#text] or "");
+
+	asciidoc.insert({
+		class = "asciidoc_image",
+		destination = destination,
+
+		text = text,
+		range = range
+	});
+end
+
 ---@param text string[]
 ---@param range markview.parsed.range
 asciidoc.toc_pos = function (_, _, text, range)
@@ -315,6 +347,12 @@ asciidoc.parse = function (buffer, TSTree, from, to)
 		(ordered_list_item) @asciidoc.list_item
 
 		(checked_list_item) @asciidoc.list_item
+
+		(block_macro
+			(
+				(block_macro_name) @image_keyword
+				(#eq? @image_keyword "image")
+			)) @asciidoc.image
 	]]);
 
 	if not can_scan then

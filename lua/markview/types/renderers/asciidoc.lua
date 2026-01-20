@@ -42,6 +42,43 @@
 
 ------------------------------------------------------------------------------
 
+--- Configuration for image links.
+---@class markview.config.asciidoc.images
+---
+---@field enable boolean Enable rendering of image links
+---
+---@field default markview.config.asciidoc.images.opts Default configuration for image links
+---@field [string] markview.config.asciidoc.images.opts Configuration image links whose description matches `string`.
+
+
+--[[ Options for a specific image link type. ]]
+---@class markview.config.asciidoc.images.opts
+---
+---@field corner_left? string Left corner.
+---@field corner_left_hl? string Highlight group for the left corner.
+---
+---@field padding_left? string Left padding(added after `corner_left`).
+---@field padding_left_hl? string Highlight group for the left padding.
+---
+---@field icon? string Icon(added after `padding_left`).
+---@field icon_hl? string Highlight group for the icon.
+---
+--[[ Text to show instead of the `URL`.]]
+---@field text?
+---| string
+---| function(buffer: integer, item: markview.parsed.asciidoc_inline.uris): string
+---@field text_hl? string Highlight group for the text.
+---
+---@field hl? string Default highlight group(used by `*_hl` options when they are not set).
+---
+---@field padding_right? string Right padding.
+---@field padding_right_hl? string Highlight group for the right padding.
+---
+---@field corner_right? string Right corner(added after `padding_right`).
+---@field corner_right_hl? string Highlight group for the right corner.
+
+------------------------------------------------------------------------------
+
 --- Configuration for list items.
 ---@class markview.config.asciidoc.list_items
 ---

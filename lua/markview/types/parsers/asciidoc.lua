@@ -20,6 +20,27 @@
 
 ------------------------------------------------------------------------------
 
+---@class markview.parsed.asciidoc.images
+---
+---@field class "asciidoc_image"
+---@field destination string Source of the image.
+---
+---@field text string[]
+---@field range markview.parsed.asciidoc.images.range
+
+
+---@class markview.parsed.asciidoc.images.range
+---
+---@field row_start integer
+---@field col_start integer
+---
+---@field row_end integer
+---@field col_end integer
+---
+---@field destination integer[] Range of the image destination(output of `{ TSNode:range() }`.
+
+------------------------------------------------------------------------------
+
 ---@class markview.parsed.asciidoc.list_items
 ---
 ---@field class "asciidoc_list_item"

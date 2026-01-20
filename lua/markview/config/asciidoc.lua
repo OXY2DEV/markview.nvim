@@ -75,6 +75,21 @@ return {
 		enable = true,
 	},
 
+	images = {
+		enable = true,
+
+		default = {
+			icon = "󰥶 ",
+			hl = "MarkviewImage",
+		},
+
+		["%.svg$"] = { icon = "󰜡 " },
+		["%.png$"] = { icon = "󰸭 " },
+		["%.jpg$"] = { icon = "󰈥 " },
+		["%.gif$"] = { icon = "󰵸 " },
+		["%.pdf$"] = { icon = " " }
+	},
+
 	tocs = {
 		enable = true,
 
