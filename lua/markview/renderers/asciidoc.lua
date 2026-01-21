@@ -6,6 +6,307 @@ local spec = require("markview.spec");
 asciidoc.ns = vim.api.nvim_create_namespace("markview/asciidoc");
 
 ---@param buffer integer
+---@param item markview.parsed.asciidoc.literal_blocks
+asciidoc.literal_block = function (buffer, item)
+	---@type markview.config.asciidoc.literal_blocks?
+	local config = spec.get({ "asciidoc", "literal_blocks" }, { fallback = nil, eval_args = { buffer, item } });
+
+	local delims = item.delimiters;
+	local range = item.range;
+
+	if not config then
+		return;
+	end
+
+	local label = { config.label, config.label_hl or config.hl };
+	local win = utils.buf_getwin(buffer);
+
+	--[[ *Basic* rendering of `code blocks`. ]]
+	local function render_simple()
+		---|fS
+
+		local conceal_from = range.start_delim[2] + #string.match(item.delimiters[1], "^%s*");
+		local conceal_to = #delims[1];
+
+		if config.label_direction == nil or config.label_direction == "left" then
+			vim.api.nvim_buf_set_extmark(buffer, asciidoc.ns, range.row_start, conceal_from, {
+				undo_restore = false, invalidate = true,
+
+				end_col = conceal_to,
+				conceal = "",
+
+				sign_text = config.sign,
+				sign_hl_group = utils.set_hl(config.sign_hl),
+
+				virt_text_pos = "inline",
+				virt_text = { label },
+
+				line_hl_group = utils.set_hl(config.hl)
+			});
+		else
+			vim.api.nvim_buf_set_extmark(buffer, asciidoc.ns, range.row_start, conceal_from, {
+				undo_restore = false, invalidate = true,
+
+				end_col = conceal_to,
+				conceal = "",
+
+				sign_text = config.sign,
+				sign_hl_group = utils.set_hl(config.sign_hl),
+
+				virt_text_pos = "right_align",
+				virt_text = { label },
+
+				line_hl_group = utils.set_hl(config.hl)
+			});
+		end
+
+		--- Background
+		for l = range.row_start + 1, range.row_end - 1 do
+			vim.api.nvim_buf_set_extmark(buffer, asciidoc.ns, l, 0, {
+				undo_restore = false, invalidate = true,
+				end_row = l,
+
+				line_hl_group = config.hl
+			});
+		end
+
+		vim.api.nvim_buf_set_extmark(buffer, asciidoc.ns, range.row_end, (range.col_start + #item.text[#item.text]) - #delims[2], {
+			undo_restore = false, invalidate = true,
+			end_col = range.col_start + #item.text[#item.text],
+			conceal = "",
+
+			line_hl_group = utils.set_hl(config.hl)
+		});
+
+		---|fE
+	end
+
+	--- Renders block style code blocks.
+	local function render_block ()
+		---|fS
+
+		---|fS "chunk: Calculate various widths"
+
+		local pad_amount = config.pad_amount or 0;
+		local block_width = config.min_width or 60;
+
+		local pad_char = config.pad_char or " ";
+
+		---@type integer[] Visual width of lines.
+		local line_widths = {};
+
+		for l, line in ipairs(item.text) do
+			if l ~= 1 and l ~= #item.text then
+				table.insert(line_widths, vim.fn.strdisplaywidth(line));
+
+				if vim.fn.strdisplaywidth(line) > (block_width - (2 * pad_amount)) then
+					block_width = vim.fn.strdisplaywidth(line) + (2 * pad_amount);
+				end
+			end
+		end
+
+		local label_width = utils.virt_len({ label });
+
+		---|fE
+
+		local delim_conceal_from = range.start_delim[2] + #string.match(item.delimiters[1], "^%s*");
+		local conceal_to = #delims[1];
+
+		---|fS "chunk: Top border"
+
+		local visible_info = string.sub(item.text[1], (conceal_to + 1) - range.col_start);
+		local left_padding = visible_info ~= "" and 1 or pad_amount;
+
+		local pad_width = vim.fn.strdisplaywidth(
+			string.rep(pad_char, left_padding)
+		);
+
+		-- Hide the leading `backticks`s.
+		vim.api.nvim_buf_set_extmark(buffer, asciidoc.ns, range.row_start, delim_conceal_from, {
+			undo_restore = false, invalidate = true,
+
+			end_col = conceal_to,
+			conceal = "",
+
+			sign_text = config.sign,
+			sign_hl_group = utils.set_hl(config.sign_hl),
+		});
+
+		if config.label_direction == "right" then
+			vim.api.nvim_buf_set_extmark(buffer, asciidoc.ns, range.row_start, delim_conceal_from, {
+				virt_text_pos = "inline",
+				virt_text = {
+					{
+						string.rep(" " or pad_char, left_padding),
+						utils.set_hl(config.hl)
+					}
+				}
+			});
+		else
+			vim.api.nvim_buf_set_extmark(buffer, asciidoc.ns, range.row_start, range.col_start + #item.text[1], {
+				virt_text_pos = "inline",
+				virt_text = {
+					{
+						string.rep(" " or pad_char, left_padding),
+						utils.set_hl(config.hl)
+					}
+				}
+			});
+		end
+
+		---|fS "chunk: Prettify info"
+
+		-- Calculating the amount of spacing to add,
+		-- 1. Used space = label width(`label_width`) + padding size(`pad_width`).
+		-- 2. Total block width - Used space
+		local spacing = block_width - (label_width + pad_width);
+
+		vim.api.nvim_buf_set_extmark(buffer, asciidoc.ns, range.row_start, range.col_start + #item.text[1], {
+			virt_text_pos = "inline",
+			virt_text = {
+				{
+					string.rep(pad_char, spacing),
+					utils.set_hl(config.hl)
+				},
+			}
+		});
+
+		---|fE
+
+		---|fS "chunk: Place label"
+
+		local top_border = {
+		};
+
+		if config.label_direction == "right" then
+			top_border.col_start = range.start_delim[2] + #item.text[1];
+		else
+			top_border.col_start = range.start_delim[4];
+		end
+
+		vim.api.nvim_buf_set_extmark(buffer, asciidoc.ns, range.row_start, top_border.col_start, {
+			virt_text_pos = "inline",
+			virt_text = { label }
+		});
+
+		---|fE
+
+		---|fE
+
+		--- Line padding
+		for l, width in ipairs(line_widths) do
+			local line = item.text[l + 1];
+
+			if width ~= 0 then
+				vim.api.nvim_buf_set_extmark(buffer, asciidoc.ns, range.row_start + l, line ~= "" and range.col_start or 0, {
+					undo_restore = false, invalidate = true,
+
+					virt_text_pos = "inline",
+					virt_text = {
+						{
+							string.rep(" ", pad_amount),
+							utils.set_hl(config.hl --[[ @as string ]])
+						}
+					},
+				});
+
+				vim.api.nvim_buf_set_extmark(buffer, asciidoc.ns, range.row_start + l, range.col_start + #line, {
+					undo_restore = false, invalidate = true,
+
+					virt_text_pos = "inline",
+					virt_text = {
+						{
+							string.rep(" ", math.max(0, block_width - (( 2 * pad_amount) + width))),
+							utils.set_hl(config.hl --[[ @as string ]])
+						},
+						{
+							string.rep(" ", pad_amount),
+							utils.set_hl(config.hl --[[ @as string ]])
+						}
+					},
+				});
+
+				--- Background
+				vim.api.nvim_buf_set_extmark(buffer, asciidoc.ns, range.row_start + l, range.col_start, {
+					undo_restore = false, invalidate = true,
+					end_col = range.col_start + #line,
+
+					hl_group = utils.set_hl(config.hl --[[ @as string ]])
+				});
+			else
+				local buf_line = vim.api.nvim_buf_get_lines(buffer, range.row_start + l, range.row_start + l + 1, false)[1];
+
+				vim.api.nvim_buf_set_extmark(buffer, asciidoc.ns, range.row_start + l, #buf_line, {
+					undo_restore = false, invalidate = true,
+
+					virt_text_pos = "inline",
+					virt_text = {
+						{
+							string.rep(" ", math.max(0, range.col_start - #buf_line))
+						},
+						{
+							string.rep(" ", pad_amount),
+							utils.set_hl(config.hl --[[ @as string ]])
+						},
+						{
+							string.rep(" ", math.max(0, block_width - (2 * pad_amount))),
+							utils.set_hl(config.hl --[[ @as string ]])
+						},
+						{
+							string.rep(" ", pad_amount),
+							utils.set_hl(config.hl --[[ @as string ]])
+						},
+					},
+				});
+			end
+		end
+
+		--- Render bottom
+		if item.delimiters[2] then
+			local end_delim_conceal_from = range.end_delim[2] + #string.match(item.delimiters[2], "^%s*");
+
+			vim.api.nvim_buf_set_extmark(buffer, asciidoc.ns, range.row_end, end_delim_conceal_from, {
+				undo_restore = false, invalidate = true,
+				end_col = range.col_start + #item.text[#item.text],
+				conceal = ""
+			});
+
+			vim.api.nvim_buf_set_extmark(buffer, asciidoc.ns, range.row_end, end_delim_conceal_from, {
+				undo_restore = false, invalidate = true,
+
+				virt_text_pos = "inline",
+				virt_text = {
+					{
+						string.rep(" ", block_width),
+						utils.set_hl(config.hl)
+					}
+				}
+			});
+		else
+			vim.api.nvim_buf_set_extmark(buffer, asciidoc.ns, range.row_end, range.col_start, {
+				undo_restore = false, invalidate = true,
+
+				virt_text_pos = "inline",
+				virt_text = {
+					{
+						string.rep(" ", block_width),
+						utils.set_hl(config.hl)
+					}
+				}
+			});
+		end
+
+		---|fE
+	end
+
+	if not win or config.style == "simple" or item.uses_tab or ( vim.o.wrap == true or vim.wo[win].wrap == true ) then
+		render_simple();
+	elseif config.style == "block" then
+		render_block()
+	end
+end
+
+---@param buffer integer
 ---@param item markview.parsed.asciidoc.document_titles
 asciidoc.document_attribute = function (buffer, item)
 	---@type markview.config.asciidoc.document_titles?
@@ -105,7 +406,7 @@ asciidoc.keycode = function (buffer, item)
 		return;
 	end
 
-	---@type markview.config.asciidoc.images.opts?
+	---@type markview.config.asciidoc.keycodes.opts?
 	local config = utils.match(
 		main_config,
 		string.upper(item.content or ""),

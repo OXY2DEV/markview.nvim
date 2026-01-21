@@ -27,6 +27,46 @@ end
 ---@param buffer integer
 ---@param TSNode TSNode
 ---@param text string[]
+---@param range markview.parsed.asciidoc.literal_blocks.range
+asciidoc.literal_block = function (buffer, TSNode, text, range)
+	local _delimiters = {
+		TSNode:named_child(0),
+		TSNode:named_child(2),
+	};
+
+	if _delimiters[1] then
+		range.start_delim = { _delimiters[1]:range(); };
+	end
+
+	if _delimiters[1] then
+		range.end_delim = { _delimiters[2]:range(); };
+	end
+
+	local uses_tab = false;
+
+	for _, line in ipairs(text) do
+		if string.match(line, "\t") then
+			uses_tab = true;
+			break;
+		end
+	end
+
+	asciidoc.insert({
+		class = "asciidoc_literal_block",
+		delimiters = {
+			_delimiters[1] and vim.treesitter.get_node_text(_delimiters[1], buffer, {}) or "",
+			_delimiters[2] and vim.treesitter.get_node_text(_delimiters[2], buffer, {}) or "",
+		},
+		uses_tab = uses_tab,
+
+		text = text,
+		range = range
+	});
+end
+
+---@param buffer integer
+---@param TSNode TSNode
+---@param text string[]
 ---@param range markview.parsed.range
 asciidoc.doc_attr = function (buffer, TSNode, text, range)
 	local _name = TSNode:named_child(1) --[[@as TSNode]];
@@ -351,6 +391,8 @@ asciidoc.parse = function (buffer, TSTree, from, to)
 				(block_macro_name) @kbd_keyword
 				(#eq? @kbd_keyword "kbd")
 			)) @asciidoc.keycode
+
+			(literal_block) @asciidoc.literal_block
 	]]);
 
 	if not can_scan then

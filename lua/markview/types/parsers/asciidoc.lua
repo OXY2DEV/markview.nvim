@@ -41,10 +41,34 @@
 
 ------------------------------------------------------------------------------
 
+---@class markview.parsed.asciidoc.literal_blocks
+---
+---@field class "asciidoc_literal_block"
+---@field delimiters [ string, string ] Block delimiters.
+---@field uses_tab boolean Are there tabs in the text?
+---
+---@field text string[]
+---@field range markview.parsed.asciidoc.literal_blocks.range
+
+
+---@class markview.parsed.asciidoc.literal_blocks.range
+---
+---@field row_start integer
+---@field col_start integer
+---
+---@field row_end integer
+---@field col_end integer
+---
+---@field start_delim integer[] Range of the block start delimiter(output of `{ TSNode:range() }`.
+---@field end_delim integer[] Range of the block end delimiter(output of `{ TSNode:range() }`.
+
+
+------------------------------------------------------------------------------
+
 ---@class markview.parsed.asciidoc.keycodes
 ---
 ---@field class "asciidoc_keycode"
----@field destination string Source of the keycode.
+---@field content string Text inside the keycode.
 ---
 ---@field text string[]
 ---@field range markview.parsed.asciidoc.keycodes.range
@@ -58,7 +82,7 @@
 ---@field row_end integer
 ---@field col_end integer
 ---
----@field destination integer[] Range of the keycode destination(output of `{ TSNode:range() }`.
+---@field content integer[] Range of the keycode destination(output of `{ TSNode:range() }`.
 
 ------------------------------------------------------------------------------
 

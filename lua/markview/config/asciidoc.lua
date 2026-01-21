@@ -86,6 +86,24 @@ return {
 		["d"] = { text = "󰔳", hl = "MarkviewCheckboxUnchecked" },
 	},
 
+	literal_blocks = {
+		enable = true,
+
+		hl = "MarkviewCode",
+
+		sign = "hi",
+
+		label = "Hello ",
+		label_direction = "right",
+		label_hl = nil,
+
+		min_width = 60,
+		pad_amount = 2,
+		pad_char = " ",
+
+		style = "block",
+	},
+
 	document_titles = {
 		enable = true,
 

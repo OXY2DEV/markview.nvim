@@ -79,6 +79,27 @@
 
 ------------------------------------------------------------------------------
 
+--- Configuration for image links.
+---@class markview.config.asciidoc.literal_blocks
+---
+---@field enable boolean Enable rendering of image links
+---@field style? "simple" | "block"
+---
+---@field pad_amount? integer
+---@field pad_char? string
+---@field min_width? integer
+---
+---@field label? string
+---@field label_hl? string
+---@field label_direction? "left" | "right"
+---
+---@field sign? string
+---@field sign_hl? string
+---
+---@field hl? string
+
+------------------------------------------------------------------------------
+
 --- Configuration for keycodes.
 ---@class markview.config.asciidoc.keycodes
 ---
