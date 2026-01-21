@@ -1,3 +1,60 @@
+---@type [ string, markview.config.asciidoc.keycodes ]
+local keycodes = {
+	default = {
+		padding_left = " ",
+		padding_right = " ",
+
+		icon = "󰌌 ",
+		hl = "MarkviewPalette6",
+	},
+
+	ctrl = {
+		icon = " ",
+		hl = "MarkviewPalette3",
+	},
+
+	shift = {
+		icon = "󰘶 ",
+		hl = "MarkviewPalette4",
+	},
+
+	meta = {
+		icon = "󰘵 ",
+		hl = "MarkviewPalette2",
+	},
+
+	super = {
+		icon = "󰌽 ",
+		hl = "MarkviewPalette5",
+	},
+
+	command = {
+		icon = "󰘳 ",
+		hl = "MarkviewPalette5",
+	},
+
+	caps_lock = {
+		icon = "󰘲 ",
+		hl = "MarkviewPalette1",
+	},
+
+	space = {
+		icon = "󱁐 ",
+		hl = "MarkviewPalette5",
+	},
+
+	enter = {
+		icon = "󰌑 ",
+		hl = "MarkviewPalette2",
+	},
+
+	tab = {
+		icon = "󰌒 ",
+		hl = "MarkviewPalette3",
+	},
+};
+
+
 ---@type markview.config.asciidoc
 return {
 	checkboxes = {
@@ -88,6 +145,34 @@ return {
 		["%.jpg$"] = { icon = "󰈥 " },
 		["%.gif$"] = { icon = "󰵸 " },
 		["%.pdf$"] = { icon = " " }
+	},
+
+	keycodes = {
+		enable = true,
+
+		default = keycodes.default,
+
+		["^CTRL"] = keycodes.ctrl,
+		["^%<[cC]"] = keycodes.ctrl,
+
+		["^SHIFT"] = keycodes.shift,
+		["^%<[sS]"] = keycodes.shift,
+
+		["^META"] = keycodes.meta,
+		["^OPT"] = keycodes.meta,
+		["^ALT"] = keycodes.meta,
+		["^%<[mM]"] = keycodes.meta,
+
+		["^SUPER"] = keycodes.super,
+		["^%<[dD]"] = keycodes.super,
+
+		["^CMD"] = keycodes.command,
+		["^COMMAND"] = keycodes.command,
+
+		["CAPS.LOCK"] = keycodes.caps_lock,
+		["SPACE"] = keycodes.space,
+		["TAB"] = keycodes.tab,
+		["ENTER"] = keycodes.enter,
 	},
 
 	tocs = {

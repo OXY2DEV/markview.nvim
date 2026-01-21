@@ -79,6 +79,20 @@
 
 ------------------------------------------------------------------------------
 
+--- Configuration for keycodes.
+---@class markview.config.asciidoc.keycodes
+---
+---@field enable boolean Enable rendering of keycodes
+---
+---@field default markview.config.asciidoc.keycodes.opts Default configuration for keycodes
+---@field [string] markview.config.asciidoc.keycodes.opts Configuration of keycodes whose content matches `string`. **NOTE:** Case-insensitive
+
+
+--[[ Options for a specific keycode type. ]]
+---@alias markview.config.asciidoc.keycodes.opts markview.config.__inline
+
+------------------------------------------------------------------------------
+
 --- Configuration for list items.
 ---@class markview.config.asciidoc.list_items
 ---

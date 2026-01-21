@@ -1,3 +1,5 @@
+kbd::space[]
+
 image::sunset.jpg[]
 
 image::sunset.jpg[Sunset]

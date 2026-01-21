@@ -181,6 +181,38 @@ asciidoc.toc = function (_, _, text, range)
 end
 
 ---@param buffer integer
+---@param TSNode TSNode
+---@param text string[]
+---@param range markview.parsed.asciidoc.keycodes.range
+asciidoc.keycode = function (buffer, TSNode, text, range)
+	local _content = TSNode:named_child(1);
+
+	if not _content then
+		return;
+	end
+
+	local content = vim.treesitter.get_node_text(_content, buffer, {});
+	range.content = { _content:range() };
+
+	--[[
+		refactor: Range correction
+
+		Block macros end at the start of the next line.
+		So, we correct the end column & end row.
+	]]
+	range.row_end = range.row_end - 1;
+	range.col_end = range.col_start + #(text[#text] or "");
+
+	asciidoc.insert({
+		class = "asciidoc_keycode",
+		content = content,
+
+		text = text,
+		range = range
+	});
+end
+
+---@param buffer integer
 ---@param now string Current marker.
 ---@param last TSNode
 ---@return boolean
@@ -193,46 +225,6 @@ local function is_on_same_level(buffer, now, last)
 
 	local marker = vim.treesitter.get_node_text(_marker, buffer, {});
 	return marker == now;
-end
-
----@param buffer integer
----@param TSNode TSNode
----@param text string[]
----@param range markview.parsed.asciidoc.list_items.range
-asciidoc._list_item = function (buffer, TSNode, text, range)
-	local _marker = TSNode:child(0);
-
-	if not _marker then
-		return;
-	end
-
-	local N = 1;
-	local prev = TSNode:prev_named_sibling();
-
-	local marker = vim.treesitter.get_node_text(_marker, buffer, {});
-	_, _, _, range.marker_end = _marker:range();
-
-	while prev do
-		-- NOTE: Only one of these node types should appear.
-		if vim.list_contains({ "unordered_list_item", "ordered_list_item" }, prev:type()) then
-			if is_on_same_level(buffer, marker, prev) then
-				N = N + 1;
-			else
-				break;
-			end
-		end
-
-		prev = prev:prev_named_sibling();
-	end
-
-	asciidoc.insert({
-		class = "asciidoc_list_item",
-		marker = marker,
-		n = N,
-
-		text = text,
-		range = range
-	});
 end
 
 ---@param buffer integer
@@ -353,6 +345,12 @@ asciidoc.parse = function (buffer, TSTree, from, to)
 				(block_macro_name) @image_keyword
 				(#eq? @image_keyword "image")
 			)) @asciidoc.image
+
+		(block_macro
+			(
+				(block_macro_name) @kbd_keyword
+				(#eq? @kbd_keyword "kbd")
+			)) @asciidoc.keycode
 	]]);
 
 	if not can_scan then

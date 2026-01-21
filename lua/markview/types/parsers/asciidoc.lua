@@ -41,6 +41,27 @@
 
 ------------------------------------------------------------------------------
 
+---@class markview.parsed.asciidoc.keycodes
+---
+---@field class "asciidoc_keycode"
+---@field destination string Source of the keycode.
+---
+---@field text string[]
+---@field range markview.parsed.asciidoc.keycodes.range
+
+
+---@class markview.parsed.asciidoc.keycodes.range
+---
+---@field row_start integer
+---@field col_start integer
+---
+---@field row_end integer
+---@field col_end integer
+---
+---@field destination integer[] Range of the keycode destination(output of `{ TSNode:range() }`.
+
+------------------------------------------------------------------------------
+
 ---@class markview.parsed.asciidoc.list_items
 ---
 ---@field class "asciidoc_list_item"
