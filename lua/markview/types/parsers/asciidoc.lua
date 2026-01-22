@@ -5,7 +5,7 @@
 ---@class markview.parsed.asciidoc.admonitions
 ---
 ---@field class "asciidoc_admonition"
----@field kind string Type of admonition.
+---@field kind string Type of admonition(e.g. `NOTE`).
 ---
 ---@field text string[]
 ---@field range markview.parsed.asciidoc.admonitions.range
@@ -71,30 +71,6 @@
 
 ------------------------------------------------------------------------------
 
----@class markview.parsed.asciidoc.literal_blocks
----
----@field class "asciidoc_literal_block"
----@field delimiters [ string, string ] Block delimiters.
----@field uses_tab boolean Are there tabs in the text?
----
----@field text string[]
----@field range markview.parsed.asciidoc.literal_blocks.range
-
-
----@class markview.parsed.asciidoc.literal_blocks.range
----
----@field row_start integer
----@field col_start integer
----
----@field row_end integer
----@field col_end integer
----
----@field start_delim integer[] Range of the block start delimiter(output of `{ TSNode:range() }`.
----@field end_delim integer[] Range of the block end delimiter(output of `{ TSNode:range() }`.
-
-
-------------------------------------------------------------------------------
-
 ---@class markview.parsed.asciidoc.keycodes
 ---
 ---@field class "asciidoc_keycode"
@@ -142,6 +118,29 @@
 
 ------------------------------------------------------------------------------
 
+---@class markview.parsed.asciidoc.literal_blocks
+---
+---@field class "asciidoc_literal_block"
+---@field delimiters [ string, string ] Block delimiters.
+---@field uses_tab boolean Are there tabs in the text?
+---
+---@field text string[]
+---@field range markview.parsed.asciidoc.literal_blocks.range
+
+
+---@class markview.parsed.asciidoc.literal_blocks.range
+---
+---@field row_start integer
+---@field col_start integer
+---
+---@field row_end integer
+---@field col_end integer
+---
+---@field start_delim integer[] Range of the block start delimiter(output of `{ TSNode:range() }`.
+---@field end_delim integer[] Range of the block end delimiter(output of `{ TSNode:range() }`.
+
+------------------------------------------------------------------------------
+
 ---@class markview.parsed.asciidoc.section_titles
 ---
 ---@field class "asciidoc_section_title"
@@ -179,7 +178,11 @@
 ---| markview.parsed.asciidoc.admonitions
 ---| markview.parsed.asciidoc.document_attributes
 ---| markview.parsed.asciidoc.document_titles
+---| markview.parsed.asciidoc.hrs
+---| markview.parsed.asciidoc.images
+---| markview.parsed.asciidoc.keycodes
 ---| markview.parsed.asciidoc.list_items
+---| markview.parsed.asciidoc.literal_blocks
 ---| markview.parsed.asciidoc.section_titles
 ---| markview.parsed.asciidoc.tocs
 
@@ -190,7 +193,11 @@
 ---@field admonitions markview.parsed.asciidoc.admonitions[]
 ---@field document_attributes markview.parsed.asciidoc.document_attributes[]
 ---@field document_titles markview.parsed.asciidoc.document_titles[]
+---@field hrs markview.parsed.asciidoc.hrs[]
+---@field images markview.parsed.asciidoc.images[]
+---@field keycodes markview.parsed.asciidoc.keycodes[]
 ---@field list_items markview.parsed.asciidoc.list_items[]
+---@field literal_blocks markview.parsed.asciidoc.literal_blocks[]
 ---@field section_titles markview.parsed.asciidoc.section_titles[]
 ---@field tocs markview.parsed.asciidoc.tocs[]
 

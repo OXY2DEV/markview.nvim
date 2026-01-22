@@ -1,5 +1,6 @@
 ---@meta
 
+------------------------------------------------------------------------------
 
 ---@class markview.parsed.asciidoc_inline.bolds
 ---
@@ -9,6 +10,7 @@
 ---@field text string[]
 ---@field range markview.parsed.range
 
+------------------------------------------------------------------------------
 
 ---@class markview.parsed.asciidoc_inline.highlights
 ---
@@ -18,6 +20,7 @@
 ---@field text string[]
 ---@field range markview.parsed.range
 
+------------------------------------------------------------------------------
 
 ---@class markview.parsed.asciidoc_inline.italics
 ---
@@ -27,6 +30,7 @@
 ---@field text string[]
 ---@field range markview.parsed.range
 
+------------------------------------------------------------------------------
 
 ---@class markview.parsed.asciidoc_inline.monospaces
 ---
@@ -36,6 +40,7 @@
 ---@field text string[]
 ---@field range markview.parsed.range
 
+------------------------------------------------------------------------------
 
 ---@class markview.parsed.asciidoc_inline.labeled_uris
 ---
@@ -58,6 +63,7 @@
 ---@field label_col_start? integer Start column of the **label** of an URI(e.g. `foo` in `https://example.com[foo]` or `https://example.com[foo,bar]`).
 ---@field label_col_end? integer End column of the **label** of an URI.
 
+------------------------------------------------------------------------------
 
 ---@class markview.parsed.asciidoc_inline.uris
 ---
@@ -68,22 +74,23 @@
 ---@field text string[]
 ---@field range markview.parsed.range
 
+------------------------------------------------------------------------------
 
 ---@alias markview.parsed.asciidoc_inline
 ---| markview.parsed.asciidoc_inline.bolds
 ---| markview.parsed.asciidoc_inline.highlights
 ---| markview.parsed.asciidoc_inline.italics
----| markview.parsed.asciidoc_inline.monospaces
 ---| markview.parsed.asciidoc_inline.labeled_uris
+---| markview.parsed.asciidoc_inline.monospaces
 ---| markview.parsed.asciidoc_inline.uris
 
 
 ---@class markview.parsed.asciidoc_inline_sorted
 ---
 ---@field bolds markview.parsed.asciidoc_inline.bolds
----@field italics markview.parsed.asciidoc_inline.italics
----@field monospaces markview.parsed.asciidoc_inline.monospaces
 ---@field highlights markview.parsed.asciidoc_inline.highlights
+---@field italics markview.parsed.asciidoc_inline.italics
 ---@field labeled_uris markview.parsed.asciidoc_inline.labeled_uris
+---@field monospaces markview.parsed.asciidoc_inline.monospaces
 ---@field uris markview.parsed.asciidoc_inline.uris
 

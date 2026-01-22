@@ -1,14 +1,16 @@
 --- HTML parser for `markview.nvim`.
 local asciidoc_inline = {};
 
+---@type integer[][] Already parsed ranges. Used to prevent re-parsing already parsed regions.
 asciidoc_inline.parsed_ranges = {};
 
 --- Queried contents
----@type table[]
+---@type markview.parsed.asciidoc_inline[]
 asciidoc_inline.content = {};
 
 --- Queried contents, but sorted
----@type { [string]: table }
+---@type markview.parsed.asciidoc_inline_sorted
+---@diagnostic disable-next-line: missing-fields
 asciidoc_inline.sorted = {}
 
 --- Wrapper for `table.insert()`.
@@ -23,11 +25,20 @@ asciidoc_inline.insert = function (data)
 	table.insert(asciidoc_inline.sorted[data.class], data);
 end
 
+--[[
+Bold text.
+
+```asciidoc
+*bold*
+```
+]]
 ---@param buffer integer
 ---@param TSNode TSNode
 ---@param text string[]
 ---@param range markview.parsed.range
 asciidoc_inline.bold = function (buffer, TSNode, text, range)
+	---|fS
+
 	local delimiters = {};
 
 	for child in TSNode:iter_children() do
@@ -47,13 +58,24 @@ asciidoc_inline.bold = function (buffer, TSNode, text, range)
 		text = text,
 		range = range
 	});
+
+	---|fE
 end
 
+--[[
+Highlighted text.
+
+```asciidoc
+#highlighted#
+```
+]]
 ---@param buffer integer
 ---@param TSNode TSNode
 ---@param text string[]
 ---@param range markview.parsed.range
 asciidoc_inline.highlight = function (buffer, TSNode, text, range)
+	---|fS
+
 	local delimiters = {};
 
 	for child in TSNode:iter_children() do
@@ -73,13 +95,24 @@ asciidoc_inline.highlight = function (buffer, TSNode, text, range)
 		text = text,
 		range = range
 	});
+
+	---|fE
 end
 
+--[[
+Italic.
+
+```asciidoc
+__italic__
+```
+]]
 ---@param buffer integer
 ---@param TSNode TSNode
 ---@param text string[]
 ---@param range markview.parsed.range
 asciidoc_inline.italic = function (buffer, TSNode, text, range)
+	---|fS
+
 	local delimiters = {};
 
 	for child in TSNode:iter_children() do
@@ -99,39 +132,24 @@ asciidoc_inline.italic = function (buffer, TSNode, text, range)
 		text = text,
 		range = range
 	});
+
+	---|fE
 end
 
----@param buffer integer
----@param TSNode TSNode
----@param text string[]
----@param range markview.parsed.range
-asciidoc_inline.monospace = function (buffer, TSNode, text, range)
-	local delimiters = {};
+--[[
+Labeled URI.
 
-	for child in TSNode:iter_children() do
-		if child:named() == false then
-			if delimiters[1] then
-				delimiters[2] = vim.treesitter.get_node_text(child, buffer, {});
-			else
-				delimiters[1] = vim.treesitter.get_node_text(child, buffer, {});
-			end
-		end
-	end
-
-	asciidoc_inline.insert({
-		class = "asciidoc_inline_monospace",
-		delimiters = delimiters,
-
-		text = text,
-		range = range
-	});
-end
-
+```asciidoc
+www.example.com[Example]
+```
+]]
 ---@param buffer integer
 ---@param TSNode TSNode
 ---@param text string[]
 ---@param range markview.parsed.asciidoc_inline.labeled_uris.range
 asciidoc_inline.labeled_uri = function (buffer, TSNode, text, range)
+	---|fS
+
 	local destination;
 
 	for child in TSNode:iter_children() do
@@ -149,50 +167,24 @@ asciidoc_inline.labeled_uri = function (buffer, TSNode, text, range)
 		text = text,
 		range = range
 	});
+
+	---|fE
 end
 
----@param buffer integer
----@param TSNode TSNode
----@param text string[]
----@param range markview.parsed.range
-asciidoc_inline.uri = function (buffer, TSNode, text, range)
-	local before = vim.api.nvim_buf_get_text(buffer, range.row_start, 0, range.row_start, range.col_start, {})[1];
+--[[
+Inline macro for labeled URI.
 
-	-- NOTE: Do not parse a URI if it's part of an image macro.
-	if string.match(before, "image::$") then
-		return;
-	end
-
-	local delimiters = {};
-	local destination;
-
-	for child in TSNode:iter_children() do
-		if child:named() == false then
-			if delimiters[1] then
-				delimiters[2] = vim.treesitter.get_node_text(child, buffer, {});
-			else
-				delimiters[1] = vim.treesitter.get_node_text(child, buffer, {});
-			end
-		else
-			destination = vim.treesitter.get_node_text(child, buffer, {});
-		end
-	end
-
-	asciidoc_inline.insert({
-		class = "asciidoc_inline_uri",
-		delimiters = delimiters,
-		destination = destination,
-
-		text = text,
-		range = range
-	});
-end
-
+```asciidoc
+link:www.example.com[Example]
+```
+]]
 ---@param buffer integer
 ---@param TSNode TSNode
 ---@param text string[]
 ---@param range markview.parsed.asciidoc_inline.labeled_uris.range
 asciidoc_inline.uri_macro = function (buffer, TSNode, text, range)
+	---|fS
+
 	local kind, destination;
 
 	for child in TSNode:iter_children() do
@@ -226,6 +218,93 @@ asciidoc_inline.uri_macro = function (buffer, TSNode, text, range)
 		text = text,
 		range = range
 	});
+
+	---|fE
+end
+
+--[[
+Monospace text.
+
+```asciidoc
+`mono`
+```
+]]
+---@param buffer integer
+---@param TSNode TSNode
+---@param text string[]
+---@param range markview.parsed.range
+asciidoc_inline.monospace = function (buffer, TSNode, text, range)
+	---|fS
+
+	local delimiters = {};
+
+	for child in TSNode:iter_children() do
+		if child:named() == false then
+			if delimiters[1] then
+				delimiters[2] = vim.treesitter.get_node_text(child, buffer, {});
+			else
+				delimiters[1] = vim.treesitter.get_node_text(child, buffer, {});
+			end
+		end
+	end
+
+	asciidoc_inline.insert({
+		class = "asciidoc_inline_monospace",
+		delimiters = delimiters,
+
+		text = text,
+		range = range
+	});
+
+	---|fE
+end
+
+--[[
+Unlabeled URI.
+
+```asciidoc
+www.example.com
+```
+]]
+---@param buffer integer
+---@param TSNode TSNode
+---@param text string[]
+---@param range markview.parsed.range
+asciidoc_inline.uri = function (buffer, TSNode, text, range)
+	---|fS
+
+	local before = vim.api.nvim_buf_get_text(buffer, range.row_start, 0, range.row_start, range.col_start, {})[1];
+
+	-- NOTE: Do not parse a URI if it's part of an image macro.
+	if string.match(before, "image::$") then
+		return;
+	end
+
+	local delimiters = {};
+	local destination;
+
+	for child in TSNode:iter_children() do
+		if child:named() == false then
+			if delimiters[1] then
+				delimiters[2] = vim.treesitter.get_node_text(child, buffer, {});
+			else
+				delimiters[1] = vim.treesitter.get_node_text(child, buffer, {});
+			end
+		else
+			destination = vim.treesitter.get_node_text(child, buffer, {});
+		end
+	end
+
+	asciidoc_inline.insert({
+		class = "asciidoc_inline_uri",
+		delimiters = delimiters,
+		destination = destination,
+
+		text = text,
+		range = range
+	});
+
+	---|fE
 end
 
 ---@param buffer integer
@@ -235,7 +314,9 @@ end
 ---@return markview.parsed.asciidoc_inline[]
 ---@return markview.parsed.asciidoc_inline_sorted
 asciidoc_inline.parse = function (buffer, TSTree, from, to)
-	-- Clear the previous contents
+	---|fS
+
+	---@diagnostic disable-next-line: missing-fields
 	asciidoc_inline.sorted = {};
 	asciidoc_inline.content = {};
 
@@ -342,6 +423,8 @@ asciidoc_inline.parse = function (buffer, TSTree, from, to)
 	end
 
 	return asciidoc_inline.content, asciidoc_inline.sorted;
+
+	---|fE
 end
 
 return asciidoc_inline;

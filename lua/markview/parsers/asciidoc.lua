@@ -5,11 +5,12 @@ local asciidoc = {};
 asciidoc.data = {};
 
 --- Queried contents
----@type table[]
+---@type markview.parsed.asciidoc[]
 asciidoc.content = {};
 
 --- Queried contents, but sorted
----@type { [string]: table }
+---@type markview.parsed.asciidoc_sorted
+---@diagnostic disable-next-line: missing-fields
 asciidoc.sorted = {}
 
 --- Wrapper for `table.insert()`.
@@ -24,11 +25,20 @@ asciidoc.insert = function (data)
 	table.insert(asciidoc.sorted[data.class], data);
 end
 
+--[[
+Admonitions.
+
+```asciidoc
+NOTE: Some note.
+```
+]]
 ---@param buffer integer
 ---@param _ TSNode
 ---@param text string[]
 ---@param range markview.parsed.asciidoc.admonitions.range
 asciidoc.admonition = function (buffer, _, text, range)
+	---|fS
+
 	local before = vim.api.nvim_buf_get_text(buffer, range.row_start, 0, range.row_start, range.col_start, {})[1] or "";
 	local kind = string.match(before, "[A-Z]+$");
 
@@ -48,58 +58,30 @@ asciidoc.admonition = function (buffer, _, text, range)
 		text = text,
 		range = range
 	});
+
+	---|fE
 end
 
----@param buffer integer
----@param TSNode TSNode
----@param text string[]
----@param range markview.parsed.asciidoc.literal_blocks.range
-asciidoc.literal_block = function (buffer, TSNode, text, range)
-	local _delimiters = {
-		TSNode:named_child(0),
-		TSNode:named_child(2),
-	};
+--[[
+Document attributes.
 
-	if _delimiters[1] then
-		range.start_delim = { _delimiters[1]:range(); };
-	end
-
-	if _delimiters[1] then
-		range.end_delim = { _delimiters[2]:range(); };
-	end
-
-	local uses_tab = false;
-
-	for _, line in ipairs(text) do
-		if string.match(line, "\t") then
-			uses_tab = true;
-			break;
-		end
-	end
-
-	asciidoc.insert({
-		class = "asciidoc_literal_block",
-		delimiters = {
-			_delimiters[1] and vim.treesitter.get_node_text(_delimiters[1], buffer, {}) or "",
-			_delimiters[2] and vim.treesitter.get_node_text(_delimiters[2], buffer, {}) or "",
-		},
-		uses_tab = uses_tab,
-
-		text = text,
-		range = range
-	});
-end
-
+```asciidoc
+:toc-title: Some title
+```
+]]
 ---@param buffer integer
 ---@param TSNode TSNode
 ---@param text string[]
 ---@param range markview.parsed.range
 asciidoc.doc_attr = function (buffer, TSNode, text, range)
+	---|fS
+
 	local _name = TSNode:named_child(1) --[[@as TSNode]];
 	local name = vim.treesitter.get_node_text(_name, buffer, {});
 
 	local _value = TSNode:named_child(3);
 
+	-- NOTE: Handle special attributes first.
 	if name == "toc" then
 		return;
 	elseif name == "toc-title" and _value then
@@ -122,8 +104,17 @@ asciidoc.doc_attr = function (buffer, TSNode, text, range)
 		text = text,
 		range = range
 	});
+
+	---|fE
 end
 
+--[[
+Document title.
+
+```asciidoc
+= Some title
+```
+]]
 ---@param text string[]
 ---@param range markview.parsed.range
 asciidoc.doc_title = function (_, _, text, range)
@@ -137,6 +128,13 @@ asciidoc.doc_title = function (_, _, text, range)
 	});
 end
 
+--[[
+Horizontal rule or thematic break
+
+```asciidoc
+'''
+```
+]]
 ---@param text string[]
 ---@param range markview.parsed.range
 asciidoc.hr = function (_, _, text, range)
@@ -148,55 +146,22 @@ asciidoc.hr = function (_, _, text, range)
 	});
 end
 
----@param buffer integer
----@param TSNode TSNode
----@param text string[]
----@param range markview.parsed.range
-asciidoc.section_title = function (buffer, TSNode, text, range)
-	local _marker = TSNode:child(0);
+--[[
+Image.
 
-	if not _marker then
-		return;
-	end
+NOTE: Images aren't handled by the `asciidoc_inline` parser due to it being a **block macro**.
 
-	local marker = vim.treesitter.get_node_text(_marker, buffer, {});
-	local prev = TSNode:prev_named_sibling();
-
-	if prev then
-		local prev_text = vim.treesitter.get_node_text(prev, buffer, {});
-
-		if prev:type() == "element_attr" and prev_text == "[discrete]" then
-			goto dont_add_to_toc;
-		end
-	end
-
-	if not asciidoc.data.toc_entries then
-		asciidoc.data.toc_entries = {};
-	end
-
-	table.insert(asciidoc.data.toc_entries, {
-		depth = (#marker or 1) - 1,
-		text = string.gsub(text[1] or "", "^[=%s]+", ""),
-
-		range = vim.deepcopy(range, true),
-	} --[[@as markview.parser.asciidoc.data.toc_entry]]);
-
-	::dont_add_to_toc::
-
-	asciidoc.insert({
-		class = "asciidoc_section_title",
-		marker = marker,
-
-		text = text,
-		range = range
-	});
-end
-
+```asciidoc
+image::markview.jpg[]
+```
+]]
 ---@param buffer integer
 ---@param TSNode TSNode
 ---@param text string[]
 ---@param range markview.parsed.asciidoc.images.range
 asciidoc.image = function (buffer, TSNode, text, range)
+	---|fS
+
 	local _destination = TSNode:named_child(1);
 
 	if not _destination then
@@ -222,46 +187,27 @@ asciidoc.image = function (buffer, TSNode, text, range)
 		text = text,
 		range = range
 	});
+
+	---|fE
 end
 
----@param text string[]
----@param range markview.parsed.range
-asciidoc.toc_pos = function (_, _, text, range)
-	range.col_end = range.col_start + #(text[1] or "");
-	asciidoc.data.toc_pos = range;
-end
+--[[
+Keycodes.
 
----@param text string[]
----@param range markview.parsed.asciidoc.tocs.range
-asciidoc.toc = function (_, _, text, range)
-	local validated = {};
+NOTE: Keycodes are **block macro**.
+NIT: Should a separate function be used for `menus`?
 
-	for _, entry in ipairs(asciidoc.data.toc_entries or {}) do
-		if entry.depth < (asciidoc.data.toc_max_depth or 5) then
-			table.insert(validated, entry);
-		end
-	end
-
-	range.col_end = range.col_start + #(text[1] or "");
-	range.position = asciidoc.data.toc_pos;
-
-	asciidoc.insert({
-		class = "asciidoc_toc",
-
-		title = asciidoc.data.toc_title,
-		max_depth = asciidoc.data.toc_max_depth,
-		entries = validated,
-
-		text = text,
-		range = range
-	});
-end
-
+```asciidoc
+kbd::space[]
+```
+]]
 ---@param buffer integer
 ---@param TSNode TSNode
 ---@param text string[]
 ---@param range markview.parsed.asciidoc.keycodes.range
 asciidoc.keycode = function (buffer, TSNode, text, range)
+	---|fS
+
 	local _content = TSNode:named_child(1);
 
 	if not _content then
@@ -287,13 +233,18 @@ asciidoc.keycode = function (buffer, TSNode, text, range)
 		text = text,
 		range = range
 	});
+
+	---|fE
 end
 
+--[[ Is the given `list item marker` on the same level as the **current** list item? ]]
 ---@param buffer integer
 ---@param now string Current marker.
 ---@param last TSNode
 ---@return boolean
 local function is_on_same_level(buffer, now, last)
+	---|fS
+
 	local _marker = last:child(0);
 
 	if not _marker then
@@ -302,13 +253,29 @@ local function is_on_same_level(buffer, now, last)
 
 	local marker = vim.treesitter.get_node_text(_marker, buffer, {});
 	return marker == now;
+
+	---|fE
 end
 
+--[[
+List item(`ordered` & `unordered`)
+
+```asciidoc
+* Unordered
+* Unordered 2
+
+. Ordered
+. Ordered 2
+```
+]]
 ---@param buffer integer
 ---@param TSNode TSNode
 ---@param text string[]
 ---@param range markview.parsed.asciidoc.list_items.range
 asciidoc.list_item = function (buffer, TSNode, text, range)
+	---|fS
+
+	---@type integer List item index
 	local N = 1;
 	local prev = TSNode:prev_named_sibling();
 
@@ -379,9 +346,175 @@ asciidoc.list_item = function (buffer, TSNode, text, range)
 		text = text,
 		range = range
 	});
+
+	---|fE
 end
 
---- HTML parser
+--[[
+Literal block.
+
+```asciidoc
+...
+Some text literally
+...
+```
+]]
+---@param buffer integer
+---@param TSNode TSNode
+---@param text string[]
+---@param range markview.parsed.asciidoc.literal_blocks.range
+asciidoc.literal_block = function (buffer, TSNode, text, range)
+	---|fS
+
+	local _delimiters = {
+		TSNode:named_child(0),
+		TSNode:named_child(2),
+	};
+
+	if _delimiters[1] then
+		range.start_delim = { _delimiters[1]:range(); };
+	end
+
+	if _delimiters[1] then
+		range.end_delim = { _delimiters[2]:range(); };
+	end
+
+	local uses_tab = false;
+
+	for _, line in ipairs(text) do
+		if string.match(line, "\t") then
+			uses_tab = true;
+			break;
+		end
+	end
+
+	asciidoc.insert({
+		class = "asciidoc_literal_block",
+		delimiters = {
+			_delimiters[1] and vim.treesitter.get_node_text(_delimiters[1], buffer, {}) or "",
+			_delimiters[2] and vim.treesitter.get_node_text(_delimiters[2], buffer, {}) or "",
+		},
+		uses_tab = uses_tab,
+
+		text = text,
+		range = range
+	});
+
+	---|fE
+end
+
+--[[
+Section tiles.
+
+```asciidoc
+...
+== Section
+
+=== Sub-section
+
+=== Sub-section 2
+...
+```
+]]
+---@param buffer integer
+---@param TSNode TSNode
+---@param text string[]
+---@param range markview.parsed.range
+asciidoc.section_title = function (buffer, TSNode, text, range)
+	---|fS
+
+	local _marker = TSNode:child(0);
+
+	if not _marker then
+		return;
+	end
+
+	local marker = vim.treesitter.get_node_text(_marker, buffer, {});
+	local prev = TSNode:prev_named_sibling();
+
+	if prev then
+		local prev_text = vim.treesitter.get_node_text(prev, buffer, {});
+
+		if prev:type() == "element_attr" and prev_text == "[discrete]" then
+			goto dont_add_to_toc;
+		end
+	end
+
+	if not asciidoc.data.toc_entries then
+		asciidoc.data.toc_entries = {};
+	end
+
+	table.insert(asciidoc.data.toc_entries, {
+		depth = (#marker or 1) - 1,
+		text = string.gsub(text[1] or "", "^[=%s]+", ""),
+
+		range = vim.deepcopy(range, true),
+	} --[[@as markview.parser.asciidoc.data.toc_entry]]);
+
+	::dont_add_to_toc::
+
+	asciidoc.insert({
+		class = "asciidoc_section_title",
+		marker = marker,
+
+		text = text,
+		range = range
+	});
+
+	---|fE
+end
+
+--[[
+Specified automated TOC position.
+
+NOTE: This needs to be parsed before parsing any TOC nodes!
+]]
+---@param text string[]
+---@param range markview.parsed.range
+asciidoc.toc_pos = function (_, _, text, range)
+	range.col_end = range.col_start + #(text[1] or "");
+	asciidoc.data.toc_pos = range;
+end
+
+--[[
+Automated Table of Content.
+
+```asciidoc
+:toc:
+```
+]]
+---@param text string[]
+---@param range markview.parsed.asciidoc.tocs.range
+asciidoc.toc = function (_, _, text, range)
+	---|fS
+
+	---@type markview.parser.asciidoc.data.toc_entry[] Validated TOC entries(matches heading depth).
+	local validated = {};
+
+	for _, entry in ipairs(asciidoc.data.toc_entries or {}) do
+		if entry.depth < (asciidoc.data.toc_max_depth or 5) then
+			table.insert(validated, entry);
+		end
+	end
+
+	range.col_end = range.col_start + #(text[1] or "");
+	range.position = asciidoc.data.toc_pos;
+
+	asciidoc.insert({
+		class = "asciidoc_toc",
+
+		title = asciidoc.data.toc_title,
+		max_depth = asciidoc.data.toc_max_depth,
+		entries = validated,
+
+		text = text,
+		range = range
+	});
+
+	---|fE
+end
+
+--- Asciidoc parser
 ---@param buffer integer
 ---@param TSTree table
 ---@param from integer?
@@ -389,8 +522,11 @@ end
 ---@return markview.parsed.asciidoc[]
 ---@return markview.parsed.asciidoc_sorted
 asciidoc.parse = function (buffer, TSTree, from, to)
+	---|fS
+
 	-- Clear the previous contents
 	asciidoc.data = {};
+	---@diagnostic disable-next-line: missing-fields
 	asciidoc.sorted = {};
 	asciidoc.content = {};
 
@@ -515,6 +651,12 @@ asciidoc.parse = function (buffer, TSTree, from, to)
 
 	iter(scanned_queries);
 
+	--[[
+		NOTE: We need to parse TOC nodes separately because certain document attributes changes the TOC
+
+		Parsing them together will require manually finding TOC nodes every time a change needs to be applied.
+	]]
+
 	local can_scan_tquery, scanned_tqueries = pcall(vim.treesitter.query.parse, "asciidoc", [[
 		(document_attr
 			(
@@ -539,6 +681,8 @@ asciidoc.parse = function (buffer, TSTree, from, to)
 	end
 
 	return asciidoc.content, asciidoc.sorted;
+
+	---|fE
 end
 
 return asciidoc;

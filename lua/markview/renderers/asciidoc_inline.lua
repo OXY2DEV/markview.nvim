@@ -8,6 +8,8 @@ asciidoc_inline.ns = vim.api.nvim_create_namespace("markview/asciidoc_inline");
 ---@param buffer integer
 ---@param item markview.parsed.asciidoc_inline.bolds
 asciidoc_inline.bold = function (buffer, item)
+	---|fS
+
 	---@type markview.config.asciidoc_inline.bolds?
 	local config = spec.get({ "asciidoc_inline", "bolds" }, { eval_args = { buffer, item } });
 
@@ -26,11 +28,15 @@ asciidoc_inline.bold = function (buffer, item)
 		end_col = range.col_end,
 		conceal = "",
 	});
+
+	---|fE
 end
 
 ---@param buffer integer
 ---@param item markview.parsed.asciidoc_inline.highlights
 asciidoc_inline.highlight = function (buffer, item)
+	---|fS
+
 	---@type markview.config.asciidoc_inline.highlights?
 	local main_config = spec.get({ "asciidoc_inline", "highlights" }, { fallback = nil });
 	local range = item.range;
@@ -85,11 +91,15 @@ asciidoc_inline.highlight = function (buffer, item)
 
 		hl_mode = "combine"
 	});
+
+	---|fE
 end
 
 ---@param buffer integer
 ---@param item markview.parsed.asciidoc_inline.italics
 asciidoc_inline.italic = function (buffer, item)
+	---|fS
+
 	---@type markview.config.asciidoc_inline.italics?
 	local config = spec.get({ "asciidoc_inline", "italics" }, { eval_args = { buffer, item } });
 
@@ -108,11 +118,15 @@ asciidoc_inline.italic = function (buffer, item)
 		end_col = range.col_end,
 		conceal = "",
 	});
+
+	---|fE
 end
 
 ---@param buffer integer
 ---@param item markview.parsed.asciidoc_inline.monospaces
 asciidoc_inline.monospace = function (buffer, item)
+	---|fS
+
 	---@type markview.config.asciidoc_inline.monospaces?
 	local config = spec.get({ "asciidoc_inline", "monospaces" }, { eval_args = { buffer, item } });
 
@@ -155,11 +169,15 @@ asciidoc_inline.monospace = function (buffer, item)
 
 		hl_mode = "combine"
 	});
+
+	---|fE
 end
 
 ---@param buffer integer
 ---@param item markview.parsed.asciidoc_inline.labeled_uris
 asciidoc_inline.labeled_uri = function (buffer, item)
+	---|fS
+
 	---@type markview.config.asciidoc_inline.uris?
 	local main_config = spec.get({ "asciidoc_inline", "uris" }, { fallback = nil });
 	local range = item.range;
@@ -214,11 +232,15 @@ asciidoc_inline.labeled_uri = function (buffer, item)
 
 		hl_mode = "combine"
 	});
+
+	---|fE
 end
 
 ---@param buffer integer
 ---@param item markview.parsed.asciidoc_inline.uris
 asciidoc_inline.uri = function (buffer, item)
+	---|fS
+
 	---@type markview.config.asciidoc_inline.uris?
 	local main_config = spec.get({ "asciidoc_inline", "uris" }, { fallback = nil });
 	local range = item.range;
@@ -285,11 +307,15 @@ asciidoc_inline.uri = function (buffer, item)
 
 		hl_mode = "combine"
 	});
+
+	---|fE
 end
 
 ---@param buffer integer
 ---@param content markview.parsed.asciidoc_inline[]
 asciidoc_inline.render = function (buffer, content)
+	---|fS
+
 	local custom = spec.get({ "renderers" }, { fallback = {} });
 
 	for _, item in ipairs(content or {}) do
@@ -314,9 +340,10 @@ asciidoc_inline.render = function (buffer, content)
 			});
 		end
 	end
+
+	---|fE
 end
 
---- Clears decorations of HTML elements
 ---@param buffer integer
 ---@param from integer
 ---@param to integer

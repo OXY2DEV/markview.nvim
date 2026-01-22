@@ -1,3 +1,8 @@
+--[[
+Basic renderer for `asciidoc`. Used to convert regular strings to preview strings.
+
+Used for width calculations.
+]]
 local adoc_str = {};
 
 local utils = require("markview.utils");
