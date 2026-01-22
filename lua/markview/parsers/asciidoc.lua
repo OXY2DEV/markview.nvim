@@ -25,6 +25,32 @@ asciidoc.insert = function (data)
 end
 
 ---@param buffer integer
+---@param _ TSNode
+---@param text string[]
+---@param range markview.parsed.asciidoc.admonitions.range
+asciidoc.admonition = function (buffer, _, text, range)
+	local before = vim.api.nvim_buf_get_text(buffer, range.row_start, 0, range.row_start, range.col_start, {})[1] or "";
+	local kind = string.match(before, "[A-Z]+$");
+
+	range.kind = {
+		range.row_start,
+		range.col_start - #(kind or ""),
+
+		range.row_start,
+		range.col_start + 1,
+	};
+	range.col_start = range.kind[2];
+
+	asciidoc.insert({
+		class = "asciidoc_admonition",
+		kind = kind,
+
+		text = text,
+		range = range
+	});
+end
+
+---@param buffer integer
 ---@param TSNode TSNode
 ---@param text string[]
 ---@param range markview.parsed.asciidoc.literal_blocks.range
@@ -392,7 +418,9 @@ asciidoc.parse = function (buffer, TSTree, from, to)
 				(#eq? @kbd_keyword "kbd")
 			)) @asciidoc.keycode
 
-			(literal_block) @asciidoc.literal_block
+		(literal_block) @asciidoc.literal_block
+
+		(admonition) @asciidoc.admonition
 	]]);
 
 	if not can_scan then

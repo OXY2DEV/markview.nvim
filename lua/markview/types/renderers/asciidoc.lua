@@ -3,6 +3,37 @@
 ------------------------------------------------------------------------------
 
 --- Configuration for checkboxes.
+---@class markview.config.asciidoc.admonitions
+---
+---@field enable boolean Enable rendering of admonitions.
+---
+---@field default markview.config.asciidoc.admonitions.opts Default configuration for admonitions.
+---@field [string] markview.config.asciidoc.admonitions.opts Configuration for `[string]` admonitions.
+
+
+---@class markview.config.asciidoc.admonitions.opts
+---
+---@field corner_left? string Left corner.
+---@field corner_left_hl? string Highlight group for the left corner.
+---
+---@field padding_left? string Left padding(added after `corner_left`).
+---@field padding_left_hl? string Highlight group for the left padding.
+---
+---@field icon? string Icon(added after `padding_left`).
+---@field icon_hl? string Highlight group for the icon.
+---
+---@field hl? string Default highlight group(used by `*_hl` options when they are not set).
+---@field desc_hl? string Highlight group for the `description`.
+---
+---@field padding_right? string Right padding.
+---@field padding_right_hl? string Highlight group for the right padding.
+---
+---@field corner_right? string Right corner(added after `padding_right`).
+---@field corner_right_hl? string Highlight group for the right corner.
+
+------------------------------------------------------------------------------
+
+--- Configuration for checkboxes.
 ---@class markview.config.asciidoc.checkboxes
 ---
 ---@field enable boolean Enable rendering of checkboxes.
@@ -197,6 +228,7 @@
 
 ---@class markview.config.asciidoc
 ---
+---@field admonitions markview.config.asciidoc.admonitions
 ---@field checkboxes markview.config.asciidoc.checkboxes
 ---@field document_attributes markview.config.asciidoc.document_attributes
 ---@field document_titles markview.config.asciidoc.document_titles

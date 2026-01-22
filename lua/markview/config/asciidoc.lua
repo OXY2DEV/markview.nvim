@@ -1,5 +1,7 @@
 ---@type [ string, markview.config.asciidoc.keycodes ]
 local keycodes = {
+	---|fS
+
 	default = {
 		padding_left = " ",
 		padding_right = " ",
@@ -52,11 +54,62 @@ local keycodes = {
 		icon = "󰌒 ",
 		hl = "MarkviewPalette3",
 	},
+
+	---|fE
 };
 
 
 ---@type markview.config.asciidoc
 return {
+	admonitions = {
+		enable = true,
+
+		default = {
+			padding_left = " ",
+			padding_right = " ",
+
+			icon = " ",
+
+			hl = "MarkviewPalette5",
+		},
+
+		important = {
+			padding_left = " ",
+			padding_right = " ",
+
+			icon = " ",
+
+			hl = "MarkviewPalette1",
+		},
+
+		tip = {
+			padding_left = " ",
+			padding_right = " ",
+
+			icon = " ",
+
+			hl = "MarkviewPalette4",
+		},
+
+		caution = {
+			padding_left = " ",
+			padding_right = " ",
+
+			icon = " ",
+
+			hl = "MarkviewPalette7",
+		},
+
+		warn = {
+			padding_left = " ",
+			padding_right = " ",
+
+			icon = " ",
+
+			hl = "MarkviewPalette3",
+		},
+	},
+
 	checkboxes = {
 		enable = true,
 

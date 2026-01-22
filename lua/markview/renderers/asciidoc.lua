@@ -6,6 +6,83 @@ local spec = require("markview.spec");
 asciidoc.ns = vim.api.nvim_create_namespace("markview/asciidoc");
 
 ---@param buffer integer
+---@param item markview.parsed.asciidoc.admonitions
+asciidoc.admonition = function (buffer, item)
+	---|fS
+
+	---@type markview.config.asciidoc.admonitions?
+	local main_config = spec.get({ "asciidoc", "admonitions" }, { fallback = nil });
+
+	if not main_config then
+		return;
+	end
+
+	---@type markview.config.asciidoc.admonitions.opts?
+	local config = utils.match(main_config, item.kind, {
+		case_insensitive = true,
+
+		ignore_keys = { "enable" },
+		eval_args = { buffer, item }
+	});
+
+	if not config then
+		return;
+	end
+
+	local range = item.range;
+	local row_end = range.kind[3];
+	local col_end = range.kind[4];
+
+	vim.api.nvim_buf_set_extmark(buffer, asciidoc.ns, range.row_start, range.col_start, {
+		undo_restore = false, invalidate = true,
+
+		virt_text_pos = "inline",
+		virt_text = {
+			{ config.corner_left or "", utils.set_hl(config.corner_left_hl or config.hl) },
+			{ config.padding_left or "", utils.set_hl(config.padding_left_hl or config.hl) },
+
+			{ config.icon or "", utils.set_hl(config.icon_hl or config.hl) }
+		},
+
+		hl_mode = "combine"
+	});
+
+	vim.api.nvim_buf_set_extmark(buffer, asciidoc.ns, range.kind[1], range.kind[2], {
+		undo_restore = false, invalidate = true,
+		end_row = row_end,
+		end_col = col_end,
+
+		hl_group = utils.set_hl(config.hl)
+	});
+
+	vim.api.nvim_buf_set_extmark(buffer, asciidoc.ns, row_end, col_end - 1, {
+		undo_restore = false, invalidate = true,
+		end_col = col_end,
+		conceal = "",
+
+		virt_text_pos = "inline",
+		virt_text = {
+			{ config.padding_right or "", utils.set_hl(config.padding_right_hl or config.hl) },
+			{ config.corner_right or "", utils.set_hl(config.corner_right_hl or config.hl) }
+		},
+
+		hl_mode = "combine"
+	});
+
+	if config.desc_hl then
+		vim.api.nvim_buf_set_extmark(buffer, asciidoc.ns, row_end, col_end, {
+			undo_restore = false, invalidate = true,
+			end_row = range.row_end,
+			end_col = range.col_end,
+
+			hl_group = utils.set_hl(config.desc_hl)
+		});
+	end
+
+	---|fE
+end
+
+---@param buffer integer
 ---@param item markview.parsed.asciidoc.literal_blocks
 asciidoc.literal_block = function (buffer, item)
 	---@type markview.config.asciidoc.literal_blocks?
@@ -418,8 +495,6 @@ asciidoc.keycode = function (buffer, item)
 	if config == nil then
 		return;
 	end
-
-	vim.print(config.corner_left == nil)
 
 	utils.set_extmark(buffer, asciidoc.ns, range.row_start, range.col_start, {
 		end_col = range.content[2],

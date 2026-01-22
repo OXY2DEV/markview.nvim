@@ -1,3 +1,29 @@
+NOTE: An admonition draws the reader's attention to auxiliary information.
+
+Here are the other built-in admonition types:
+
+IMPORTANT: Don't forget the children!
+
+TIP: Look for the warp zone under the bridge.
+
+CAUTION: Slippery when wet.
+
+WARNING: The software you're about to use is untested.
+
+IMPORTANT: Sign off before stepping away from your computer.
+
+[NOTE]
+====
+An admonition block may contain compound content.
+
+.A list
+- one
+- two
+- three
+
+Another paragraph.
+====
+
 ....
 error: 1954 Forbidden search
 absolutely fatal: operation lost in the dodecahedron of doom
