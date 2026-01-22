@@ -137,6 +137,17 @@ asciidoc.doc_title = function (_, _, text, range)
 	});
 end
 
+---@param text string[]
+---@param range markview.parsed.range
+asciidoc.hr = function (_, _, text, range)
+	asciidoc.insert({
+		class = "asciidoc_hr",
+
+		text = text,
+		range = range
+	});
+end
+
 ---@param buffer integer
 ---@param TSNode TSNode
 ---@param text string[]
@@ -421,6 +432,7 @@ asciidoc.parse = function (buffer, TSTree, from, to)
 		(literal_block) @asciidoc.literal_block
 
 		(admonition) @asciidoc.admonition
+		(breaks) @asciidoc.hr
 	]]);
 
 	if not can_scan then

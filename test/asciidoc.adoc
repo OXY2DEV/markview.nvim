@@ -1,3 +1,6 @@
+'''
+
+
 NOTE: An admonition draws the reader's attention to auxiliary information.
 
 Here are the other built-in admonition types:

@@ -82,6 +82,69 @@ asciidoc.admonition = function (buffer, item)
 	---|fE
 end
 
+--- Renders horizontal rules/line breaks.
+---@param buffer integer
+---@param item markview.parsed.asciidoc.hrs
+asciidoc.hr = function (buffer, item)
+	---@type markview.config.asciidoc.hrs?
+	local config = spec.get({ "asciidoc", "horizontal_rules" }, { fallback = nil, eval_args = { buffer, item } });
+	local range = item.range;
+
+	if not config then
+		return;
+	end
+
+	local virt_text = {};
+	local function val(opt, index, wrap)
+		if vim.islist(opt) == false then
+			return opt;
+		elseif #opt < index then
+			if wrap == true then
+				local mod = index % #opt;
+				return mod == 0 and opt[#opt] or opt[mod];
+			else
+				return opt[#opt];
+			end
+		elseif index < 0 then
+			return opt[1];
+		end
+
+		return opt[index];
+	end
+
+	for _, part in ipairs(config.parts) do
+		if part.type == "text" then
+			table.insert(virt_text, { part.text, utils.set_hl(part.hl --[[ @as string ]]) });
+		elseif part.type == "repeating" then
+			local rep     = spec.get({ "repeat_amount" }, { source = part, fallback = 1, eval_args = { buffer, item } });
+			local hl_rep  = spec.get({ "repeat_hl" }, { source = part, fallback = false, eval_args = { buffer, item } });
+			local txt_rep = spec.get({ "repeat_text" }, { source = part, fallback = false, eval_args = { buffer, item } });
+
+			for r = 1, rep, 1 do
+				if part.direction == "right" then
+					table.insert(virt_text, {
+						val(part.text, (rep - r) + 1, txt_rep),
+						val(part.hl, (rep - r) + 1, hl_rep)
+					});
+				else
+					table.insert(virt_text, {
+						val(part.text, r, txt_rep),
+						val(part.hl, r, hl_rep)
+					});
+				end
+			end
+		end
+	end
+
+	vim.api.nvim_buf_set_extmark(buffer, asciidoc.ns, range.row_start, 0, {
+		undo_restore = false, invalidate = true,
+		virt_text_pos = "overlay",
+		virt_text = virt_text,
+
+		hl_mode = "combine"
+	});
+end
+
 ---@param buffer integer
 ---@param item markview.parsed.asciidoc.literal_blocks
 asciidoc.literal_block = function (buffer, item)

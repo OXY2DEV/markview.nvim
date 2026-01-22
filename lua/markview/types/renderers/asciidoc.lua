@@ -73,6 +73,41 @@
 
 ------------------------------------------------------------------------------
 
+--- Configuration for horizontal rules.
+---@class markview.config.asciidoc.hrs
+---
+---@field enable boolean Enable preview of horizontal rules.
+---@field parts markview.config.asciidoc.hrs.part[] Parts for the horizontal rules.
+
+
+---@alias markview.config.asciidoc.hrs.part
+---| markview.config.asciidoc.hrs.text
+---| markview.config.asciidoc.hrs.repeating
+
+
+---@class markview.config.asciidoc.hrs.text
+---
+---@field type "text" Part name.
+---
+---@field hl? string Highlight group for this part.
+---@field text string Text to show.
+
+
+---@class markview.config.asciidoc.hrs.repeating
+---
+---@field type "repeating" Part name.
+---
+---@field direction "left" | "right" Direction from which the highlight groups are applied from.
+---
+---@field repeat_amount integer | fun(buffer: integer, item: markview.parsed.asciidoc.hrs): integer How many times to repeat the text.
+---@field repeat_hl? boolean Whether to repeat the highlight groups.
+---@field repeat_text? boolean Whether to repeat the text.
+---
+---@field text string | string[] Text to repeat.
+---@field hl? string | string[] Highlight group for the text.
+
+------------------------------------------------------------------------------
+
 --- Configuration for image links.
 ---@class markview.config.asciidoc.images
 ---

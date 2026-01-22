@@ -41,6 +41,15 @@
 
 ------------------------------------------------------------------------------
 
+---@class markview.parsed.asciidoc.hrs
+---
+---@field class "asciidoc_hr"
+---
+---@field text string[]
+---@field range markview.parsed.range
+
+------------------------------------------------------------------------------
+
 ---@class markview.parsed.asciidoc.images
 ---
 ---@field class "asciidoc_image"
