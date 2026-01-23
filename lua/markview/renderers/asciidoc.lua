@@ -124,10 +124,10 @@ asciidoc.document_title = function (buffer, item)
 		conceal = "",
 
 		sign_text = tostring(config.sign or ""),
-		sign_hl_group = utils.set_hl(config.sign_hl),
+		sign_hl_group = utils.set_hl(config.sign_hl or config.hl),
 
 		virt_text = {
-			{ config.icon, config.icon_hl or config.hl },
+			{ config.icon, utils.set_hl(config.icon_hl or config.hl) },
 		},
 		line_hl_group = utils.set_hl(config.hl),
 	});
@@ -399,7 +399,7 @@ asciidoc.list_item = function (buffer, item)
 
 					virt_text = {
 						{ config.add_padding and string.rep(" ", #item.marker * shift_width) or "" },
-						{ not config.conceal_on_checkboxes and config.text or "", config.hl },
+						{ not config.conceal_on_checkboxes and config.text or "", utils.set_hl(config.hl) },
 					},
 					hl_mode = "combine",
 				});
@@ -409,7 +409,7 @@ asciidoc.list_item = function (buffer, item)
 					conceal = "",
 
 					virt_text = {
-						{ checkbox_config.text or "", checkbox_config.hl },
+						{ checkbox_config.text or "", utils.set_hl(checkbox_config.hl) },
 					},
 					hl_mode = "combine",
 				});
@@ -420,7 +420,7 @@ asciidoc.list_item = function (buffer, item)
 
 					virt_text = {
 						{ config.add_padding and string.rep(" ", #item.marker * shift_width) or "" },
-						{ config.text or "", config.hl },
+						{ config.text or "", utils.set_hl(config.hl) },
 					},
 					hl_mode = "combine",
 				});
@@ -473,7 +473,7 @@ asciidoc.literal_block = function (buffer, item)
 		return;
 	end
 
-	local label = { config.label, config.label_hl or config.hl };
+	local label = { config.label, utils.set_hl(config.label_hl or config.hl) };
 	local win = utils.buf_getwin(buffer);
 
 	--[[ *Basic* rendering of `code blocks`. ]]
@@ -521,7 +521,7 @@ asciidoc.literal_block = function (buffer, item)
 				undo_restore = false, invalidate = true,
 				end_row = l,
 
-				line_hl_group = config.hl
+				line_hl_group = utils.set_hl(config.hl)
 			});
 		end
 
@@ -795,7 +795,7 @@ asciidoc.section_title = function (buffer, item)
 
 		virt_text = {
 			{ string.rep(" ", (#item.marker - 1) * shift_width) },
-			{ config.icon, config.icon_hl or config.hl },
+			{ config.icon, utils.set_hl(config.icon_hl or config.hl) },
 		},
 		line_hl_group = utils.set_hl(config.hl),
 	});
@@ -819,8 +819,8 @@ asciidoc.toc = function (buffer, item)
 	local lines = {};
 
 	table.insert(lines, {
-		{ main_config.icon or "", main_config.icon_hl or main_config.hl },
-		{ item.title or "Table of contents", main_config.hl },
+		{ main_config.icon or "", utils.set_hl(main_config.icon_hl or main_config.hl) },
+		{ item.title or "Table of contents", utils.set_hl(main_config.hl) },
 	});
 
 	if item.entries and #item.entries > 0 then
@@ -832,12 +832,12 @@ asciidoc.toc = function (buffer, item)
 		local config = spec.get({ "depth_" .. (entry.depth or 1) }, { source = main_config, eval_args = { buffer, item } });
 
 		if config then
-			local text = require("markview.renderers.asciidoc.tostring").tostring(buffer, entry.text, config.hl);
+			local text = require("markview.renderers.asciidoc.tostring").tostring(buffer, entry.text, utils.set_hl(config.hl) --[[@as string]]);
 			local shift_by = (main_config.shift_width or 1) * ( (entry.depth or 1) - 1 );
 
 			local line = {
-				{ string.rep(config.shift_char or " ", shift_by), config.hl },
-				{ config.icon or "", config.icon_hl or config.hl },
+				{ string.rep(config.shift_char or " ", shift_by), utils.set_hl(config.hl) },
+				{ config.icon or "", utils.set_hl(config.icon_hl or config.hl) },
 			};
 
 			vim.list_extend(line, text);

@@ -53,23 +53,24 @@
 
 ------------------------------------------------------------------------------
 
+--[[ Options for document attributes. ]]
 ---@class markview.config.asciidoc.document_attributes
 ---
----@field enable boolean
+---@field enable boolean Enable concealing of document attributes? Requires `conceal_lines` support.
 
 ------------------------------------------------------------------------------
 
 ---@class markview.config.asciidoc.document_titles
 ---
----@field enable boolean
+---@field enable boolean Enable rendering of document titles.
 ---
----@field sign? string
----@field sign_hl? string
+---@field sign? string Text to add to the sign column.
+---@field sign_hl? string Highlight group for the sign.
 ---
----@field icon? string
----@field icon_hl? string
+---@field icon? string Icon added before the title.
+---@field icon_hl? string Highlight group for `icon`.
 ---
----@field hl? string
+---@field hl? string Fallback for all `*_hl` options.
 
 ------------------------------------------------------------------------------
 
@@ -269,6 +270,7 @@
 ---@field checkboxes markview.config.asciidoc.checkboxes
 ---@field document_attributes markview.config.asciidoc.document_attributes
 ---@field document_titles markview.config.asciidoc.document_titles
+---@field horizontal_rules markview.config.asciidoc.hrs
 ---@field list_items markview.config.asciidoc.list_items
 ---@field section_titles markview.config.asciidoc.section_titles
 ---@field tocs markview.config.asciidoc.tocs
