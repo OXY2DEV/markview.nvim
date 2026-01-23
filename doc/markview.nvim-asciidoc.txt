@@ -1,0 +1,480 @@
+*markview.nvim-asciidoc*                 🧩 Asciidoc options for `markview.nvim`
+
+>lua
+	---@class markview.config.asciidoc
+	---
+	---@field enable boolean Enable rendering of Asciidoc files?
+	---
+	---@field admonitions markview.config.asciidoc.admonitions
+	---@field checkboxes markview.config.asciidoc.checkboxes
+	---@field document_attributes markview.config.asciidoc.document_attributes
+	---@field document_titles markview.config.asciidoc.document_titles
+	---@field horizontal_rules markview.config.asciidoc.hrs
+	---@field list_items markview.config.asciidoc.list_items
+	---@field section_titles markview.config.asciidoc.section_titles
+	---@field tocs markview.config.asciidoc.tocs
+<
+
+--------------------------------------------------------------------------------
+enable
+
+Enables previewing asciidoc files.
+
+>lua
+	enable = true
+<
+
+--------------------------------------------------------------------------------
+admonitions
+
+>lua
+	--- Configuration for admonitions.
+	---@class markview.config.asciidoc.admonitions
+	---
+	---@field enable boolean Enable rendering of admonitions.
+	---
+	---@field default markview.config.asciidoc.admonitions.opts Default configuration for admonitions.
+	---@field [string] markview.config.asciidoc.admonitions.opts Configuration for `[string]` admonitions.
+<
+
+Changes how admonitions are shown.
+
+>lua
+	admonitions = {
+	    enable = true,
+	
+	    default = {
+	        padding_left = " ",
+	        padding_right = " ",
+	
+	        icon = " ",
+	
+	        hl = "MarkviewPalette5",
+	    },
+	
+	    important = {
+	        padding_left = " ",
+	        padding_right = " ",
+	
+	        icon = " ",
+	
+	        hl = "MarkviewPalette1",
+	    },
+	
+	    tip = {
+	        padding_left = " ",
+	        padding_right = " ",
+	
+	        icon = " ",
+	
+	        hl = "MarkviewPalette4",
+	    },
+	
+	    caution = {
+	        padding_left = " ",
+	        padding_right = " ",
+	
+	        icon = " ",
+	
+	        hl = "MarkviewPalette7",
+	    },
+	
+	    warn = {
+	        padding_left = " ",
+	        padding_right = " ",
+	
+	        icon = " ",
+	
+	        hl = "MarkviewPalette3",
+	    },
+	},
+<
+
+Each admonition type has the following options.
+
+▋  Important
+▋ The key names are case-insensitive. So, `foo` & `FOO` refer to the same type.
+▋ However, modifying `FOO` instead of `foo` can lead to undefined behavior. Use
+▋ lower case for type names!
+
+>lua
+	---@class markview.config.asciidoc.admonitions.opts
+	---
+	---@field corner_left? string Left corner.
+	---@field corner_left_hl? string Highlight group for the left corner.
+	---
+	---@field padding_left? string Left padding(added after `corner_left`).
+	---@field padding_left_hl? string Highlight group for the left padding.
+	---
+	---@field icon? string Icon(added after `padding_left`).
+	---@field icon_hl? string Highlight group for the icon.
+	---
+	---@field hl? string Default highlight group(used by `*_hl` options when they are not set).
+	---@field desc_hl? string Highlight group for the `description`.
+	---
+	---@field padding_right? string Right padding.
+	---@field padding_right_hl? string Highlight group for the right padding.
+	---
+	---@field corner_right? string Right corner(added after `padding_right`).
+	---@field corner_right_hl? string Highlight group for the right corner.
+<
+
+--------------------------------------------------------------------------------
+document_attributes
+
+>lua
+	--[[ Options for document attributes. ]]
+	---@class markview.config.asciidoc.document_attributes
+	---
+	---@field enable boolean Enable concealing of document attributes? Requires `conceal_lines` support.
+<
+
+Hides document attributes 
+
+>lua
+	document_attributes = {
+	    enable = true,
+	},
+<
+
+--------------------------------------------------------------------------------
+hrs
+
+>lua
+	--- Configuration for horizontal rules.
+	---@class markview.config.asciidoc.hrs
+	---
+	---@field enable boolean Enable preview of horizontal rules.
+	---@field parts markview.config.asciidoc.hrs.part[] Parts for the horizontal rules.
+<
+
+Changes how horizontal rules/thematic breaks are shown.
+
+>lua
+	horizontal_rules = {
+	    enable = true,
+	
+	    parts = {
+	        {
+	            type = "repeating",
+	            direction = "left",
+	
+	            repeat_amount = function (buffer)
+	                local utils = require("markview.utils");
+	                local window = utils.buf_getwin(buffer)
+	
+	                local width = vim.api.nvim_win_get_width(window)
+	                local textoff = vim.fn.getwininfo(window)[1].textoff;
+	
+	                return math.floor((width - textoff - 3) / 2);
+	            end,
+	
+	            text = "─",
+	
+	            hl = {
+	                "MarkviewGradient1", "MarkviewGradient1",
+	                "MarkviewGradient2", "MarkviewGradient2",
+	                "MarkviewGradient3", "MarkviewGradient3",
+	                "MarkviewGradient4", "MarkviewGradient4",
+	                "MarkviewGradient5", "MarkviewGradient5",
+	                "MarkviewGradient6", "MarkviewGradient6",
+	                "MarkviewGradient7", "MarkviewGradient7",
+	                "MarkviewGradient8", "MarkviewGradient8",
+	                "MarkviewGradient9", "MarkviewGradient9"
+	            }
+	        },
+	        {
+	            type = "text",
+	
+	            text = "  ",
+	            hl = "MarkviewIcon3Fg"
+	        },
+	        {
+	            type = "repeating",
+	            direction = "right",
+	
+	            repeat_amount = function (buffer) --[[@as function]]
+	                local utils = require("markview.utils");
+	                local window = utils.buf_getwin(buffer)
+	
+	                local width = vim.api.nvim_win_get_width(window)
+	                local textoff = vim.fn.getwininfo(window)[1].textoff;
+	
+	                return math.ceil((width - textoff - 3) / 2);
+	            end,
+	
+	            text = "─",
+	            hl = {
+	                "MarkviewGradient1", "MarkviewGradient1",
+	                "MarkviewGradient2", "MarkviewGradient2",
+	                "MarkviewGradient3", "MarkviewGradient3",
+	                "MarkviewGradient4", "MarkviewGradient4",
+	                "MarkviewGradient5", "MarkviewGradient5",
+	                "MarkviewGradient6", "MarkviewGradient6",
+	                "MarkviewGradient7", "MarkviewGradient7",
+	                "MarkviewGradient8", "MarkviewGradient8",
+	                "MarkviewGradient9", "MarkviewGradient9"
+	            }
+	        }
+	    }
+	},
+<
+
+parts ~
+
+You can have any of the following parts.
+
+▋ Text
+
+Shows some text literally.
+
+>lua
+	---@class markview.config.asciidoc.hrs.text
+	---
+	---@field type "text" Part name.
+	---
+	---@field hl? string Highlight group for this part.
+	---@field text string Text to show.
+<
+
+▋ Repeating
+
+Repeats given text by an amount.
+
+>lua
+	---@class markview.config.asciidoc.hrs.repeating
+	---
+	---@field type "repeating" Part name.
+	---
+	---@field direction "left" | "right" Direction from which the highlight groups are applied from.
+	---
+	---@field repeat_amount integer | fun(buffer: integer, item: markview.parsed.asciidoc.hrs): integer How many times to repeat the text.
+	---@field repeat_hl? boolean Whether to repeat the highlight groups.
+	---@field repeat_text? boolean Whether to repeat the text.
+	---
+	---@field text string | string[] Text to repeat.
+	---@field hl? string | string[] Highlight group for the text.
+<
+
+--------------------------------------------------------------------------------
+list_items
+
+>lua
+	--- Configuration for list items.
+	---@class markview.config.asciidoc.list_items
+	---
+	---@field enable boolean
+	---@field shift_width integer | fun(buffer: integer, item: markview.parsed.markdown.list_items): integer Virtual indentation size for previewed list items.
+	---
+	---@field marker_dot markview.config.asciidoc.list_items.opts Configuration for `.` list items.
+	---@field marker_minus markview.config.asciidoc.list_items.opts Configuration for `-` list items.
+	---@field marker_star markview.config.asciidoc.list_items.opts Configuration for `*` list items.
+	---
+	---@field wrap? boolean Enables wrap support.
+<
+
+Changes how list items are shown.
+
+>lua
+	list_items = {
+	    enable = true,
+	    shift_width = 4,
+	
+	    marker_dot = {
+	        add_padding = true,
+	        conceal_on_checkboxes = true,
+	
+	        text = function (_, item)
+	            return string.format("%d.", item.n);
+	        end,
+	        hl = "@markup.list.markdown",
+	    },
+	
+	    marker_minus = {
+	        add_padding = true,
+	        conceal_on_checkboxes = true,
+	
+	        text = "●",
+	        hl = "MarkviewListItemMinus"
+	    },
+	
+	    marker_star = {
+	        add_padding = true,
+	        conceal_on_checkboxes = true,
+	
+	        text = "◇",
+	        hl = "MarkviewListItemStar"
+	    },
+	},
+<
+
+Each list item type has the following options.
+
+>lua
+	---@class markview.config.asciidoc.list_items.opts
+	---
+	---@field enable? boolean Enable rendering of this list item type?
+	---
+	---@field add_padding boolean When `true`, Add padding before the list item.
+	---@field conceal_on_checkboxes? boolean Should the list item marker be hidden if the item contains a `checkbox`?
+	---
+	---[[ Text used to replace the list item marker. ]]
+	---@field text?
+	---| string
+	---| fun(buffer: integer, item: markview.parsed.asciidoc.list_items): string Dynamic marker. Used for stuff like adding list index to `ordered list items`.
+	---
+	---@field hl? string Highlight group for the `text`.
+<
+
+--------------------------------------------------------------------------------
+section_titles
+
+>lua
+	--- Configuration for section titles.
+	---@class markview.config.asciidoc.section_titles
+	---
+	---@field enable boolean Enable rendering of section titles.
+	---@field shift_width integer Amount of spaces to add to the start for each title level. Useful to visualize nesting of sections.
+	---
+	---@field title_1 markview.config.asciidoc.section_titles.opts
+	---@field title_2 markview.config.asciidoc.section_titles.opts
+	---@field title_3 markview.config.asciidoc.section_titles.opts
+	---@field title_4 markview.config.asciidoc.section_titles.opts
+	---@field title_5 markview.config.asciidoc.section_titles.opts
+<
+
+Changes how section titles are shown.
+
+>lua
+	section_titles = {
+	    enable = true,
+	
+	    title_1 = {
+	        sign = "󰌕 ", sign_hl = "MarkviewHeading1Sign",
+	
+	        icon = "󰼏  ", hl = "MarkviewHeading1",
+	    },
+	    title_2 = {
+	        sign = "󰌖 ", sign_hl = "MarkviewHeading2Sign",
+	
+	        icon = "󰎨  ", hl = "MarkviewHeading2",
+	    },
+	    title_3 = {
+	
+	        icon = "󰼑  ", hl = "MarkviewHeading3",
+	    },
+	    title_4 = {
+	
+	        icon = "󰎲  ", hl = "MarkviewHeading4",
+	    },
+	    title_5 = {
+	
+	        icon = "󰼓  ", hl = "MarkviewHeading5",
+	    },
+	    title_6 = {
+	
+	        icon = "󰎴  ", hl = "MarkviewHeading6",
+	    },
+	
+	    shift_width = 1,
+	},
+<
+
+Each section title level has the following options.
+
+>lua
+	---@class markview.config.asciidoc.section_titles.opts
+	---
+	---@field icon? string Icon added before the title.
+	---@field icon_hl? string Highlight group for `icon`.
+	---
+	---@field sign? string Sign to show in the sign column.
+	---@field sign_hl? string Highlight group for the `sign`.
+	---
+	---@field hl? string Fallback highlight group for the `*_hl` options.
+<
+
+--------------------------------------------------------------------------------
+tocs
+
+>lua
+	--- Configuration for generated Table of contents section..
+	---@class markview.config.asciidoc.tocs
+	---
+	---@field enable boolean Enable rendering of automated TOC.
+	---@field shift_width integer Amount if `shift_char` to add per item depth level.
+	---
+	---@field icon? string Icon for the TOC title.
+	---@field icon_hl? string Highlight group for `icon`.
+	---
+	---@field sign? string Sign for the TOC title.
+	---@field sign_hl? string Highlight group for `sign`.
+	---
+	---@field hl? string Highlight group for the TOC title.
+	---
+	---@field depth_1 markview.config.asciidoc.tocs.opts
+	---@field depth_2 markview.config.asciidoc.tocs.opts
+	---@field depth_3 markview.config.asciidoc.tocs.opts
+	---@field depth_4 markview.config.asciidoc.tocs.opts
+	---@field depth_5 markview.config.asciidoc.tocs.opts
+<
+
+Changes how automatic TOCs are shown.
+
+>lua
+	tocs = {
+	    enable = true,
+	
+	    shift_width = 2,
+	    hl = "MarkviewPalette2Fg",
+	
+	    sign = "󰙅 ",
+	    sign_hl = "MarkviewPalette2Sign",
+	
+	    depth_1 = {
+	        icon = "◆ ",
+	        icon_hl = "Comment",
+	
+	        hl = "MarkviewPalette5Fg",
+	    },
+	    depth_2 = {
+	        icon = "◇ ",
+	        icon_hl = "Comment",
+	
+	        hl = "MarkviewPalette5Fg",
+	    },
+	    depth_3 = {
+	        icon = "◆ ",
+	        icon_hl = "Comment",
+	
+	        hl = "MarkviewPalette5Fg",
+	    },
+	    depth_4 = {
+	        icon = "◇ ",
+	        icon_hl = "Comment",
+	
+	        hl = "MarkviewPalette5Fg",
+	    },
+	    depth_5 = {
+	        icon = "◆ ",
+	        icon_hl = "Comment",
+	
+	        hl = "MarkviewPalette5Fg",
+	    },
+	},
+<
+
+Each item depth has the following options.
+
+>lua
+	--- Options for a specific item depth.
+	---@class markview.config.asciidoc.tocs.opts
+	---
+	---@field shift_char? string The character used to shift the entry(helps visualize nesting, document structure).
+	---@field hl? string Highlight group for the text.
+	---
+	---@field icon? string Icon for the TOC title.
+	---@field icon_hl? string Highlight group for `icon`.
+<
+
+vim:ft=help:textwidth=80:tabstop=4:noexpandtab:

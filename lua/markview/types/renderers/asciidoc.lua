@@ -196,22 +196,25 @@
 
 ---@class markview.config.asciidoc.list_items.opts
 ---
----@field add_padding boolean
----@field conceal_on_checkboxes? boolean
----@field enable? boolean
----@field hl? string
+---@field enable? boolean Enable rendering of this list item type?
+---
+---@field add_padding boolean When `true`, Add padding before the list item.
+---@field conceal_on_checkboxes? boolean Should the list item marker be hidden if the item contains a `checkbox`?
 ---
 ---[[ Text used to replace the list item marker. ]]
 ---@field text?
 ---| string
----| fun(buffer: integer, item: markview.parsed.asciidoc.list_items): string
+---| fun(buffer: integer, item: markview.parsed.asciidoc.list_items): string Dynamic marker. Used for stuff like adding list index to `ordered list items`.
+---
+---@field hl? string Highlight group for the `text`.
 
 ------------------------------------------------------------------------------
 
+--- Configuration for section titles.
 ---@class markview.config.asciidoc.section_titles
 ---
----@field enable boolean
----@field shift_width integer
+---@field enable boolean Enable rendering of section titles.
+---@field shift_width integer Amount of spaces to add to the start for each title level. Useful to visualize nesting of sections.
 ---
 ---@field title_1 markview.config.asciidoc.section_titles.opts
 ---@field title_2 markview.config.asciidoc.section_titles.opts
@@ -222,20 +225,21 @@
 
 ---@class markview.config.asciidoc.section_titles.opts
 ---
----@field icon? string
----@field icon_hl? string
+---@field icon? string Icon added before the title.
+---@field icon_hl? string Highlight group for `icon`.
 ---
----@field sign? string
----@field sign_hl? string
+---@field sign? string Sign to show in the sign column.
+---@field sign_hl? string Highlight group for the `sign`.
 ---
----@field hl? string
+---@field hl? string Fallback highlight group for the `*_hl` options.
 
 ------------------------------------------------------------------------------
 
+--- Configuration for generated Table of contents section..
 ---@class markview.config.asciidoc.tocs
 ---
----@field enable boolean
----@field shift_width integer
+---@field enable boolean Enable rendering of automated TOC.
+---@field shift_width integer Amount if `shift_char` to add per item depth level.
 ---
 ---@field icon? string Icon for the TOC title.
 ---@field icon_hl? string Highlight group for `icon`.
@@ -243,7 +247,7 @@
 ---@field sign? string Sign for the TOC title.
 ---@field sign_hl? string Highlight group for `sign`.
 ---
----@field hl? string
+---@field hl? string Highlight group for the TOC title.
 ---
 ---@field depth_1 markview.config.asciidoc.tocs.opts
 ---@field depth_2 markview.config.asciidoc.tocs.opts
@@ -252,10 +256,11 @@
 ---@field depth_5 markview.config.asciidoc.tocs.opts
 
 
+--- Options for a specific item depth.
 ---@class markview.config.asciidoc.tocs.opts
 ---
----@field shift_char? string
----@field hl? string
+---@field shift_char? string The character used to shift the entry(helps visualize nesting, document structure).
+---@field hl? string Highlight group for the text.
 ---
 ---@field icon? string Icon for the TOC title.
 ---@field icon_hl? string Highlight group for `icon`.
