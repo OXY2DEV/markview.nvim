@@ -33,9 +33,7 @@ asciidoc.admonition = function (buffer, item)
 	local row_end = range.kind[3];
 	local col_end = range.kind[4];
 
-	vim.api.nvim_buf_set_extmark(buffer, asciidoc.ns, range.row_start, range.col_start, {
-		undo_restore = false, invalidate = true,
-
+	utils.set_extmark(buffer, asciidoc.ns, range.row_start, range.col_start, {
 		virt_text_pos = "inline",
 		virt_text = {
 			{ config.corner_left or "", utils.set_hl(config.corner_left_hl or config.hl) },
@@ -47,16 +45,14 @@ asciidoc.admonition = function (buffer, item)
 		hl_mode = "combine"
 	});
 
-	vim.api.nvim_buf_set_extmark(buffer, asciidoc.ns, range.kind[1], range.kind[2], {
-		undo_restore = false, invalidate = true,
+	utils.set_extmark(buffer, asciidoc.ns, range.kind[1], range.kind[2], {
 		end_row = row_end,
 		end_col = col_end,
 
 		hl_group = utils.set_hl(config.hl)
 	});
 
-	vim.api.nvim_buf_set_extmark(buffer, asciidoc.ns, row_end, col_end - 1, {
-		undo_restore = false, invalidate = true,
+	utils.set_extmark(buffer, asciidoc.ns, row_end, col_end - 1, {
 		end_col = col_end,
 		conceal = "",
 
@@ -70,8 +66,7 @@ asciidoc.admonition = function (buffer, item)
 	});
 
 	if config.desc_hl then
-		vim.api.nvim_buf_set_extmark(buffer, asciidoc.ns, row_end, col_end, {
-			undo_restore = false, invalidate = true,
+		utils.set_extmark(buffer, asciidoc.ns, row_end, col_end, {
 			end_row = range.row_end,
 			end_col = range.col_end,
 
@@ -191,8 +186,7 @@ asciidoc.hr = function (buffer, item)
 		end
 	end
 
-	vim.api.nvim_buf_set_extmark(buffer, asciidoc.ns, range.row_start, 0, {
-		undo_restore = false, invalidate = true,
+	utils.set_extmark(buffer, asciidoc.ns, range.row_start, 0, {
 		virt_text_pos = "overlay",
 		virt_text = virt_text,
 
@@ -437,7 +431,6 @@ asciidoc.list_item = function (buffer, item)
 		if scope_hl then
 			if r == range.row_start then
 				utils.set_extmark(buffer, asciidoc.ns, r, range.col_start, {
-					undo_restore = false, invalidate = true,
 					end_col = #item.text[1],
 
 					hl_group = utils.set_hl(scope_hl)
@@ -445,8 +438,7 @@ asciidoc.list_item = function (buffer, item)
 			elseif line ~= "" then
 				local spaces = line:match("^([%>%s]*)");
 
-				vim.api.nvim_buf_set_extmark(buffer, asciidoc.ns, range.row_start + (r - 1), #spaces, {
-					undo_restore = false, invalidate = true,
+				utils.set_extmark(buffer, asciidoc.ns, range.row_start + (r - 1), #spaces, {
 					end_col = #line,
 
 					hl_group = utils.set_hl(scope_hl)
@@ -484,9 +476,7 @@ asciidoc.literal_block = function (buffer, item)
 		local conceal_to = #delims[1];
 
 		if config.label_direction == nil or config.label_direction == "left" then
-			vim.api.nvim_buf_set_extmark(buffer, asciidoc.ns, range.row_start, conceal_from, {
-				undo_restore = false, invalidate = true,
-
+			utils.set_extmark(buffer, asciidoc.ns, range.row_start, conceal_from, {
 				end_col = conceal_to,
 				conceal = "",
 
@@ -499,9 +489,7 @@ asciidoc.literal_block = function (buffer, item)
 				line_hl_group = utils.set_hl(config.hl)
 			});
 		else
-			vim.api.nvim_buf_set_extmark(buffer, asciidoc.ns, range.row_start, conceal_from, {
-				undo_restore = false, invalidate = true,
-
+			utils.set_extmark(buffer, asciidoc.ns, range.row_start, conceal_from, {
 				end_col = conceal_to,
 				conceal = "",
 
@@ -517,16 +505,14 @@ asciidoc.literal_block = function (buffer, item)
 
 		--- Background
 		for l = range.row_start + 1, range.row_end - 1 do
-			vim.api.nvim_buf_set_extmark(buffer, asciidoc.ns, l, 0, {
-				undo_restore = false, invalidate = true,
+			utils.set_extmark(buffer, asciidoc.ns, l, 0, {
 				end_row = l,
 
 				line_hl_group = utils.set_hl(config.hl)
 			});
 		end
 
-		vim.api.nvim_buf_set_extmark(buffer, asciidoc.ns, range.row_end, (range.col_start + #item.text[#item.text]) - #delims[2], {
-			undo_restore = false, invalidate = true,
+		utils.set_extmark(buffer, asciidoc.ns, range.row_end, (range.col_start + #item.text[#item.text]) - #delims[2], {
 			end_col = range.col_start + #item.text[#item.text],
 			conceal = "",
 
@@ -576,10 +562,8 @@ asciidoc.literal_block = function (buffer, item)
 			string.rep(pad_char, left_padding)
 		);
 
-		-- Hide the leading `backticks`s.
-		vim.api.nvim_buf_set_extmark(buffer, asciidoc.ns, range.row_start, delim_conceal_from, {
-			undo_restore = false, invalidate = true,
-
+		-- Hide the leading `dot`s.
+		utils.set_extmark(buffer, asciidoc.ns, range.row_start, delim_conceal_from, {
 			end_col = conceal_to,
 			conceal = "",
 
@@ -588,7 +572,7 @@ asciidoc.literal_block = function (buffer, item)
 		});
 
 		if config.label_direction == "right" then
-			vim.api.nvim_buf_set_extmark(buffer, asciidoc.ns, range.row_start, delim_conceal_from, {
+			utils.set_extmark(buffer, asciidoc.ns, range.row_start, delim_conceal_from, {
 				virt_text_pos = "inline",
 				virt_text = {
 					{
@@ -598,7 +582,7 @@ asciidoc.literal_block = function (buffer, item)
 				}
 			});
 		else
-			vim.api.nvim_buf_set_extmark(buffer, asciidoc.ns, range.row_start, range.col_start + #item.text[1], {
+			utils.set_extmark(buffer, asciidoc.ns, range.row_start, range.col_start + #item.text[1], {
 				virt_text_pos = "inline",
 				virt_text = {
 					{
@@ -616,7 +600,9 @@ asciidoc.literal_block = function (buffer, item)
 		-- 2. Total block width - Used space
 		local spacing = block_width - (label_width + pad_width);
 
-		vim.api.nvim_buf_set_extmark(buffer, asciidoc.ns, range.row_start, range.col_start + #item.text[1], {
+		utils.set_extmark(buffer, asciidoc.ns, range.row_start, range.col_start + #item.text[1], {
+			right_gravity = config.label_direction ~= "right",
+
 			virt_text_pos = "inline",
 			virt_text = {
 				{
@@ -639,7 +625,9 @@ asciidoc.literal_block = function (buffer, item)
 			top_border.col_start = range.start_delim[4];
 		end
 
-		vim.api.nvim_buf_set_extmark(buffer, asciidoc.ns, range.row_start, top_border.col_start, {
+		utils.set_extmark(buffer, asciidoc.ns, range.row_start, top_border.col_start, {
+			right_gravity = config.label_direction == "right",
+
 			virt_text_pos = "inline",
 			virt_text = { label }
 		});
@@ -653,9 +641,7 @@ asciidoc.literal_block = function (buffer, item)
 			local line = item.text[l + 1];
 
 			if width ~= 0 then
-				vim.api.nvim_buf_set_extmark(buffer, asciidoc.ns, range.row_start + l, line ~= "" and range.col_start or 0, {
-					undo_restore = false, invalidate = true,
-
+				utils.set_extmark(buffer, asciidoc.ns, range.row_start + l, line ~= "" and range.col_start or 0, {
 					virt_text_pos = "inline",
 					virt_text = {
 						{
@@ -665,9 +651,7 @@ asciidoc.literal_block = function (buffer, item)
 					},
 				});
 
-				vim.api.nvim_buf_set_extmark(buffer, asciidoc.ns, range.row_start + l, range.col_start + #line, {
-					undo_restore = false, invalidate = true,
-
+				utils.set_extmark(buffer, asciidoc.ns, range.row_start + l, range.col_start + #line, {
 					virt_text_pos = "inline",
 					virt_text = {
 						{
@@ -682,8 +666,7 @@ asciidoc.literal_block = function (buffer, item)
 				});
 
 				--- Background
-				vim.api.nvim_buf_set_extmark(buffer, asciidoc.ns, range.row_start + l, range.col_start, {
-					undo_restore = false, invalidate = true,
+				utils.set_extmark(buffer, asciidoc.ns, range.row_start + l, range.col_start, {
 					end_col = range.col_start + #line,
 
 					hl_group = utils.set_hl(config.hl --[[ @as string ]])
@@ -691,9 +674,7 @@ asciidoc.literal_block = function (buffer, item)
 			else
 				local buf_line = vim.api.nvim_buf_get_lines(buffer, range.row_start + l, range.row_start + l + 1, false)[1];
 
-				vim.api.nvim_buf_set_extmark(buffer, asciidoc.ns, range.row_start + l, #buf_line, {
-					undo_restore = false, invalidate = true,
-
+				utils.set_extmark(buffer, asciidoc.ns, range.row_start + l, #buf_line, {
 					virt_text_pos = "inline",
 					virt_text = {
 						{
@@ -720,15 +701,12 @@ asciidoc.literal_block = function (buffer, item)
 		if item.delimiters[2] then
 			local end_delim_conceal_from = range.end_delim[2] + #string.match(item.delimiters[2], "^%s*");
 
-			vim.api.nvim_buf_set_extmark(buffer, asciidoc.ns, range.row_end, end_delim_conceal_from, {
-				undo_restore = false, invalidate = true,
+			utils.set_extmark(buffer, asciidoc.ns, range.row_end, end_delim_conceal_from, {
 				end_col = range.col_start + #item.text[#item.text],
 				conceal = ""
 			});
 
-			vim.api.nvim_buf_set_extmark(buffer, asciidoc.ns, range.row_end, end_delim_conceal_from, {
-				undo_restore = false, invalidate = true,
-
+			utils.set_extmark(buffer, asciidoc.ns, range.row_end, end_delim_conceal_from, {
 				virt_text_pos = "inline",
 				virt_text = {
 					{
@@ -738,9 +716,7 @@ asciidoc.literal_block = function (buffer, item)
 				}
 			});
 		else
-			vim.api.nvim_buf_set_extmark(buffer, asciidoc.ns, range.row_end, range.col_start, {
-				undo_restore = false, invalidate = true,
-
+			utils.set_extmark(buffer, asciidoc.ns, range.row_end, range.col_start, {
 				virt_text_pos = "inline",
 				virt_text = {
 					{
