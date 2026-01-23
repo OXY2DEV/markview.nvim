@@ -11,15 +11,6 @@ return {
 	enable = true,
 
 	bolds = { enable = true },
-	italics = { enable = true },
-
-	monospaces = {
-		enable = true,
-		hl = "MarkviewInlineCode",
-
-		padding_left = " ",
-		padding_right = " "
-	},
 
 	highlights = {
 		enable = true,
@@ -32,6 +23,15 @@ return {
 		}
 	},
 
+	italics = { enable = true },
+
+	monospaces = {
+		enable = true,
+		hl = "MarkviewInlineCode",
+
+		padding_left = " ",
+		padding_right = " "
+	},
 
 	uris = {
 		enable = true,
