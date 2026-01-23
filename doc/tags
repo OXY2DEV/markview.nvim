@@ -1,6 +1,8 @@
 !_TAG_FILE_ENCODING	utf-8	//
 markview.nvim	markview.nvim.txt	/*markview.nvim*
 markview.nvim-advanced	markview.nvim-advanced.txt	/*markview.nvim-advanced*
+markview.nvim-asciidoc	markview.nvim-asciidoc.txt	/*markview.nvim-asciidoc*
+markview.nvim-asciidoc_inline	markview.nvim-asciidoc_inline.txt	/*markview.nvim-asciidoc_inline*
 markview.nvim-autocmds	markview.nvim-autocmds.txt	/*markview.nvim-autocmds*
 markview.nvim-commands	markview.nvim.txt	/*markview.nvim-commands*
 markview.nvim-comment	markview.nvim-comment.txt	/*markview.nvim-comment*
@@ -42,6 +44,7 @@ markview.nvim-integrations.blink-cmp	markview.nvim-integrations.txt	/*markview.n
 markview.nvim-integrations.color_blending	markview.nvim-integrations.txt	/*markview.nvim-integrations.color_blending*
 markview.nvim-integrations.gx	markview.nvim-integrations.txt	/*markview.nvim-integrations.gx*
 markview.nvim-integrations.nowrap	markview.nvim-integrations.txt	/*markview.nvim-integrations.nowrap*
+markview.nvim-integrations.nvim-asciidoc	markview.nvim-integrations.txt	/*markview.nvim-integrations.nvim-asciidoc*
 markview.nvim-integrations.nvim-fancy_comments	markview.nvim-integrations.txt	/*markview.nvim-integrations.nvim-fancy_comments*
 markview.nvim-integrations.transparent_colorschemes	markview.nvim-integrations.txt	/*markview.nvim-integrations.transparent_colorschemes*
 markview.nvim-integrations.wrap	markview.nvim-integrations.txt	/*markview.nvim-integrations.wrap*

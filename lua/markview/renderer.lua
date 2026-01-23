@@ -15,6 +15,26 @@ renderer.__filter_cache = {
 renderer.option_maps = {
 	---|fS
 
+	asciidoc = {
+		admonitions = { "asciidoc_admonitiono" },
+		document_attribute = { "asciidoc_document_attribute" },
+		document_title = { "asciidoc_document_title" },
+		horizontal_rules = { "asciidoc_hr" },
+		images = { "asciidoc_image" },
+		keycode = { "asciidoc_keycode" },
+		list_item = { "asciidoc_list_item" },
+		literal_block = { "asciidoc_literal_block" },
+		section_title = { "asciidoc_section_title" },
+		toc = { "asciidoc_toc" },
+	},
+	asciidoc_inline = {
+		bold = { "asciidoc_inline_bold" },
+		highlight = { "asciidoc_inline_highlight" },
+		italic = { "asciidoc_inline_italic" },
+		labeled_uri = { "asciidoc_inline_labeled_uri" },
+		monospace = { "asciidoc_inline_monospace" },
+		uri = { "asciidoc_inline_uri" },
+	},
 	comment = {
 		autolinks = { "comment_autolink" },
 		code_blocks = { "comment_code_block" },
@@ -366,6 +386,8 @@ renderer.render = function (buffer, parsed_content)
 	---|fS
 
 	local _renderers = {
+		asciidoc = require("markview.renderers.asciidoc"),
+		asciidoc_inline = require("markview.renderers.asciidoc_inline"),
 		comment = require("markview.renderers.comment"),
 		html = require("markview.renderers.html"),
 		markdown = require("markview.renderers.markdown"),
@@ -470,6 +492,8 @@ renderer.clear = function (buffer, from, to, hybrid_mode)
 	---|fS
 
 	local _renderers = {
+		asciidoc = require("markview.renderers.asciidoc"),
+		asciidoc_inline = require("markview.renderers.asciidoc_inline"),
 		comment = require("markview.renderers.comment");
 		html = require("markview.renderers.html");
 		markdown = require("markview.renderers.markdown");

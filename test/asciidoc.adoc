@@ -1,0 +1,92 @@
+= Asciidoc examples
+:toc:
+
+== Admonitions
+
+NOTE: An admonition draws the reader's attention to auxiliary information.
+
+Here are the other built-in admonition types:
+
+IMPORTANT: Don't forget the children!
+
+TIP: Look for the warp zone under the bridge.
+
+CAUTION: Slippery when wet.
+
+WARNING: The software you're about to use is untested.
+
+IMPORTANT: Sign off before stepping away from your computer.
+
+== Checkboxes
+
+=== Main
+
+- [*] Checked
+- [ ] Unchecked
+
+=== Custom states
+
+- [/] Pending
+- [>] Reschedule
+- [-] Cancelled
+
+
+== Horizontal rules
+
+'''
+
+== Literal blocks
+
+....
+error: 1954 Forbidden search
+absolutely fatal: operation lost in the dodecahedron of doom
+
+Would you like to try again? y/n
+....
+
+== Document attributes
+
+:attribute: value
+
+== Images
+
+image::sunset.jpg[]
+
+image::sunset.jpg[Sunset]
+
+.A mountain sunset
+[#img-sunset,caption="Figure 1: ",link=https://www.flickr.com/photos/javh/5448336655]
+image::macros:sunset.jpg[Sunset,200,100]
+
+image::https://asciidoctor.org/images/octocat.jpg[GitHub mascot]
+
+== Keycodes
+
+kbd::space[]
+kbd::tab[]
+
+== List items
+
+* List item
++
+Hello
+
+* Bye
+** Nested list item
+*** Deeper nested list item
+* List item
+*** Another nested list item
+* List item
+- Bye
+
+. Hi
+.. Hello
+.. Bye
+. Bye
+.. bye
+.. hi
+
+== TOCs
+
+toc::[]
+

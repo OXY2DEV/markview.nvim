@@ -130,6 +130,51 @@ For this you would need a `comment` parser. You can use either,
 ◆ OXY2DEV/tree-sitter-comment {10}, which also supports a subset of `markdown` &
   `vimdoc`. See installation {9}.
 
+--------------------------------------------------------------------------------
+📦 Asciidoc                           *markview.nvim-integrations.nvim-asciidoc*
+
+`markview.nvim` provides support for `asciidoc` via a third party tree-sitter
+parser.
+
+To get started, add this to your configuration table for `nvim-treesitter`.
+
+▋ 󰋽 Note
+▋ This is only for the `main` branch of `nvim-treesitter`. `master` branch isn't
+▋ supported.
+
+>lua
+	vim.api.nvim_create_autocmd("User", {
+	    pattern = "TSUpdate",
+	    callback = function ()
+	        require("nvim-treesitter.parsers").asciidoc = {
+	            install_info = {
+	                branch = "master",
+	                location = "tree-sitter-asciidoc",
+	                queries = "queries/asciidoc/",
+	                requires = { "asciidoc_inline" },
+	                url = "https://github.com/cathaysia/tree-sitter-asciidoc"
+	            }
+	        };
+	        require("nvim-treesitter.parsers").asciidoc_inline = {
+	            install_info = {
+	                branch = "master",
+	                location = "tree-sitter-asciidoc_inline",
+	                queries = "queries/asciidoc_inline",
+	                url = "https://github.com/cathaysia/tree-sitter-asciidoc"
+	            }
+	        };
+	    end
+	});
+<
+
+Exit and open `Neovim` and run,
+
+>vim
+	:TSInstall asciidoc asciidoc_inline
+<
+
+Markview should now preview `asciidoc` files.
+
 Links ~
 
 1: https://github.com/OXY2DEV/markview.nvim/wiki/Integrations

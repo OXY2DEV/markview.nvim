@@ -1,0 +1,30 @@
+= Inline asciidoc syntax
+
+== Bold
+
+*Bold*
+
+== Highlight
+
+#Highlight#
+
+== Italic
+
+__Italic__
+
+== Monospace
+
+`Monospace`
+
+== URI
+
+https://asciidoctor.org - automatic!
+
+https://asciidoctor.org[Asciidoctor]
+
+devel@discuss.example.org
+
+mailto:devel@discuss.example.org[Discuss]
+
+mailto:join@discuss.example.org[Subscribe,Subscribe me,I want to join!]
+
