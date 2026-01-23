@@ -281,18 +281,6 @@ asciidoc.list_item = function (buffer, TSNode, text, range)
 
 	local marker;
 
-	while prev do
-		if prev:type() == "ordered_list_item" then
-			if is_on_same_level(buffer, marker, prev) then
-				N = N + 1;
-			else
-				break;
-			end
-		end
-
-		prev = prev:prev_named_sibling();
-	end
-
 	local checkbox;
 
 	for child in TSNode:iter_children() do
@@ -334,6 +322,19 @@ asciidoc.list_item = function (buffer, TSNode, text, range)
 				break;
 			end
 		end
+	end
+
+	-- NOTE: Check list index after getting the list marker.
+	while prev do
+		if prev:type() == "ordered_list_item" then
+			if is_on_same_level(buffer, marker, prev) then
+				N = N + 1;
+			else
+				break;
+			end
+		end
+
+		prev = prev:prev_named_sibling();
 	end
 
 	asciidoc.insert({
