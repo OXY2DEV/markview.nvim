@@ -1,5 +1,6 @@
-'''
+= Asciidoc examples
 
+== Admonitions
 
 NOTE: An admonition draws the reader's attention to auxiliary information.
 
@@ -15,17 +16,25 @@ WARNING: The software you're about to use is untested.
 
 IMPORTANT: Sign off before stepping away from your computer.
 
-[NOTE]
-====
-An admonition block may contain compound content.
+== Checkboxes
 
-.A list
-- one
-- two
-- three
+=== Main
 
-Another paragraph.
-====
+- [*] Checked
+- [ ] Unchecked
+
+=== Custom states
+
+- [/] Pending
+- [>] Reschedule
+- [-] Cancelled
+
+
+== horizontal rules
+
+'''
+
+== Literal blocks
 
 ....
 error: 1954 Forbidden search
@@ -34,17 +43,11 @@ absolutely fatal: operation lost in the dodecahedron of doom
 Would you like to try again? y/n
 ....
 
-.Some Ruby code
-[source,ruby]
-----
-require 'sinatra'
+== Document attributes
 
-get '/hi' do
-  "Hello World!"
-end
-----
+:attribute: value
 
-kbd::space[]
+== Images
 
 image::sunset.jpg[]
 
@@ -56,70 +59,12 @@ image::macros:sunset.jpg[Sunset,200,100]
 
 image::https://asciidoctor.org/images/octocat.jpg[GitHub mascot]
 
-= Hello world
+== Keycodes
 
-:toc:
-:toc-title: Hello
+kbd::space[]
+kbd::tab[]
 
-[discrete]
-== hii
-
-
-== hii
-
-=== bye
-
-:bye:
-hi
-:hi: 123
-
-toc::[]
-
-It has *strong* significance to me.
-
-I _cannot_ stress this enough.
-
-Type `OK` to accept.
-
-That *_really_* has to go.
-
-Can't pick one? Let's use them `*_all_*`.
-
-
-**C**reate, **R**ead, **U**pdate, and **D**elete (CRUD)
-
-That's fan__freakin__tastic!
-
-Don't pass generic ``Object``s to methods that accept ``String``s!
-
-It was Beatle**__mania__**!
-
-
-Mark my words, #automation is essential#.
-
-##Mark##up refers to text that contains formatting ##mark##s.
-
-Where did all the [.underline]#cores# go?
-
-We need [.line-through]#ten# twenty VMs.
-
-A [.myrole]#custom role# must be fulfilled by the theme.
-
-
-^super^script
-
-~sub~script
-
-https://asciidoctor.org - automatic!
-"https://asciidoctor.org" - automatic!
-
-https://asciidoctor.org[Asciidoctor]
-
-devel@discuss.example.org
-
-mailto:devel@discuss.example.org[Discuss]
-
-mailto:join@discuss.example.org[Subscribe,Subscribe me,I want to join!]
+== List items
 
 * List item
 +
@@ -140,8 +85,7 @@ Hello
 .. bye
 .. hi
 
-* [*] checked
-* [ ] also checked
-* [-] not checked
-* normal list item
+== TOCs
+
+toc::[]
 
