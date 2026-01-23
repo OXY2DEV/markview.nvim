@@ -31,7 +31,7 @@ IMPORTANT: Sign off before stepping away from your computer.
 - [-] Cancelled
 
 
-== horizontal rules
+== Horizontal rules
 
 '''
 

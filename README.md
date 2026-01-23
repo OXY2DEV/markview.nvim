@@ -64,6 +64,7 @@
     <img src="https://github.com/OXY2DEV/markview.nvim/blob/images/v27/markview.nvim-splitview_2.png">
     <img src="https://github.com/OXY2DEV/markview.nvim/blob/images/v27/markview.nvim-hybrid_mode.png">
     <img src="https://github.com/OXY2DEV/markview.nvim/blob/images/v27/markview.nvim-comment.png">
+    <img src="https://github.com/OXY2DEV/markview.nvim/blob/images/v27/markview.nvim-asciidoc.png">
 </div>
 
 <div align="center">
@@ -74,7 +75,7 @@
 
 Core features,
 
-+ Preview `Markdown`, <code>HTML</code>, $LaTeX$, `Typst` & `YAML` within Neovim.
++ Preview `Markdown`, <code>HTML</code>, $LaTeX$, `Typst` & `Asciidoc`(See [integrations#Asciidoc](https://github.com/OXY2DEV/markview.nvim/wiki/Usage#Asciidoc)) within Neovim.
 + *Hybrid* editing mode! Allowing *editing* & *previewing* at the same time.
 + *Splitview*! Allows editing & previewing *side-by-side*.
 + `Wrap` support(markdown only, at the moment)! Allows using text wrapping while not losing *most* rendering features! See [integrations#wrap](https://github.com/OXY2DEV/markview.nvim/wiki/Integrations#-wrap) for fixing visual glitches or [integrations#nowrap](https://github.com/OXY2DEV/markview.nvim/wiki/Integrations#-nowrap) for disabling it.
@@ -105,6 +106,32 @@ Also see,
 <details>
     <summary>Expand to see complete feature list</summary>
 <!--markdoc_ignore_end-->
+
+#### Asciidoc
+
+<img src="https://github.com/OXY2DEV/markview.nvim/blob/images/v27/markview.nvim-asciidoc.png">
+
+Supported syntax,
+
++ Admonitions
++ Checkboxes(also supports custom checkbox states).
++ Horizontal rules
++ Literal blocks
++ Hiding document attributes
++ Image macros
++ Keycode macros
++ List items(ordered & unordered)
++ Automated TOC(Table of Contents)
+
+#### Asciidoc inline
+
+Supported syntax,
+
++ Bold
++ Highlights
++ Italic
++ Monospace
++ URI
 
 #### Fancy comments,
 
@@ -405,6 +432,8 @@ Parsers,
 - `latex`(optional)
 - `typst`(optional)
 - `yaml`(optional)
+- [tree-sitter-asciidoc](https://github.com/cathaysia/tree-sitter-asciidoc)(optional)
+  See [integrations#Asciidoc](https://github.com/OXY2DEV/markview.nvim/wiki/Usage#Asciidoc) to see how to get started.
 
 Fonts,
 
