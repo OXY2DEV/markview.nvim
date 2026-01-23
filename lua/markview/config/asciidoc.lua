@@ -213,11 +213,12 @@ return {
 
 		hl = "MarkviewCode",
 
-		sign = "hi",
+		sign = "󱨏 ",
+		sign_hl = "MarkviewPalette6Sign",
 
-		label = "Hello ",
+		label = "󱨏 Raw ",
 		label_direction = "right",
-		label_hl = nil,
+		label_hl = "MarkviewIcon6",
 
 		min_width = 60,
 		pad_amount = 2,

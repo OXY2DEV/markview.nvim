@@ -8,6 +8,8 @@ end
 
 ---@type markview.config.asciidoc_inline
 return {
+	enable = true,
+
 	bolds = { enable = true },
 	italics = { enable = true },
 
