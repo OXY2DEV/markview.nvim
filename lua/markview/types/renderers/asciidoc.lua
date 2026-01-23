@@ -2,7 +2,7 @@
 
 ------------------------------------------------------------------------------
 
---- Configuration for checkboxes.
+--- Configuration for admonitions.
 ---@class markview.config.asciidoc.admonitions
 ---
 ---@field enable boolean Enable rendering of admonitions.
@@ -38,10 +38,10 @@
 ---
 ---@field enable boolean Enable rendering of checkboxes.
 ---
----@field checked markview.config.markdown_inline.checkboxes.opts Configuration for `[*]`.
----@field unchecked markview.config.markdown_inline.checkboxes.opts Configuration for `[ ]`.
+---@field checked markview.config.asciidoc.checkboxes.opts Configuration for `[*]`.
+---@field unchecked markview.config.asciidoc.checkboxes.opts Configuration for `[ ]`.
 ---
----@field [string] markview.config.markdown_inline.checkboxes.opts Configuration for `[string]` checkbox.
+---@field [string] markview.config.asciidoc.checkboxes.opts Configuration for `[string]` checkbox.
 
 
 --[[ Options for a specific checkbox. ]]
@@ -262,6 +262,8 @@
 ------------------------------------------------------------------------------
 
 ---@class markview.config.asciidoc
+---
+---@field enable boolean Enable rendering of Asciidoc files?
 ---
 ---@field admonitions markview.config.asciidoc.admonitions
 ---@field checkboxes markview.config.asciidoc.checkboxes

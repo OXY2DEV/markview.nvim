@@ -369,6 +369,7 @@ asciidoc.list_item = function (buffer, item)
 
 	---@cast config markview.config.asciidoc.list_items.opts
 
+	---@type markview.config.asciidoc.checkboxes.opts?
 	local checkbox_config;
 
 	if item.checkbox == "*" then
@@ -385,7 +386,11 @@ asciidoc.list_item = function (buffer, item)
 	local shift_width = main_config.shift_width or 2;
 	local range = item.range;
 
+	local scope_hl = checkbox_config and checkbox_config.scope_hl or nil;
+
 	for r = range.row_start, range.row_end - 1, 1 do
+		local line = item.text[(r - range.row_start) + 1];
+
 		if r == range.row_start then
 			if checkbox_config and not vim.tbl_isempty(checkbox_config) then
 				utils.set_extmark(buffer, asciidoc.ns, r, range.col_start, {
@@ -427,6 +432,26 @@ asciidoc.list_item = function (buffer, item)
 				},
 				hl_mode = "combine",
 			});
+		end
+
+		if scope_hl then
+			if r == range.row_start then
+				utils.set_extmark(buffer, asciidoc.ns, r, range.col_start, {
+					undo_restore = false, invalidate = true,
+					end_col = #item.text[1],
+
+					hl_group = utils.set_hl(scope_hl)
+				});
+			elseif line ~= "" then
+				local spaces = line:match("^([%>%s]*)");
+
+				vim.api.nvim_buf_set_extmark(buffer, asciidoc.ns, range.row_start + (r - 1), #spaces, {
+					undo_restore = false, invalidate = true,
+					end_col = #line,
+
+					hl_group = utils.set_hl(scope_hl)
+				});
+			end
 		end
 	end
 

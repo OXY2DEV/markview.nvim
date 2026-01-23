@@ -61,6 +61,8 @@ local keycodes = {
 
 ---@type markview.config.asciidoc
 return {
+	enable = true,
+
 	admonitions = {
 		enable = true,
 
@@ -123,7 +125,6 @@ return {
 
 		["?"] = { text = "󰋗", hl = "MarkviewCheckboxPending" },
 		["!"] = { text = "󰀦", hl = "MarkviewCheckboxUnchecked" },
-		["*"] = { text = "󰓎", hl = "MarkviewCheckboxPending" },
 		['"'] = { text = "󰸥", hl = "MarkviewCheckboxCancelled" },
 		["l"] = { text = "󰆋", hl = "MarkviewCheckboxProgress" },
 		["b"] = { text = "󰃀", hl = "MarkviewCheckboxProgress" },
