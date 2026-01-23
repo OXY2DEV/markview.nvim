@@ -17,7 +17,7 @@
 
 ------------------------------------------------------------------------------
 
---[[ Options for a specific footnote type. ]]
+--[[ Options for a specific highlight type. ]]
 ---@alias markview.config.asciidoc_inline.highlights.opts markview.config.__inline
 
 ------------------------------------------------------------------------------
@@ -67,10 +67,13 @@
 
 
 ------------------------------------------------------------------------------
+
 ---@class markview.config.asciidoc_inline
 ---
+---@field enable boolean Enable rendering of inline asciidoc.
+---
 ---@field bolds markview.config.asciidoc_inline.bolds
----@field highlights markview.config.asciidoc_inline.highlights Highlighted text configuration.
+---@field highlights markview.config.asciidoc_inline.highlights
 ---@field italics markview.config.asciidoc_inline.italics
 ---@field monospaces markview.config.asciidoc_inline.monospaces
 ---@field uris markview.config.asciidoc_inline.uris

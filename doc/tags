@@ -2,6 +2,7 @@
 markview.nvim	markview.nvim.txt	/*markview.nvim*
 markview.nvim-advanced	markview.nvim-advanced.txt	/*markview.nvim-advanced*
 markview.nvim-asciidoc	markview.nvim-asciidoc.txt	/*markview.nvim-asciidoc*
+markview.nvim-asciidoc_inline	markview.nvim-asciidoc_inline.txt	/*markview.nvim-asciidoc_inline*
 markview.nvim-autocmds	markview.nvim-autocmds.txt	/*markview.nvim-autocmds*
 markview.nvim-commands	markview.nvim.txt	/*markview.nvim-commands*
 markview.nvim-comment	markview.nvim-comment.txt	/*markview.nvim-comment*
