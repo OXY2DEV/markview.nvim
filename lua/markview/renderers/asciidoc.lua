@@ -78,6 +78,133 @@ asciidoc.admonition = function (buffer, item)
 end
 
 ---@param buffer integer
+---@param item markview.parsed.asciidoc.admonition_blocks
+asciidoc.admonition_block = function (buffer, item)
+	---|fS
+
+	---@type markview.config.asciidoc.delimited_blocks?
+	local config = spec.get({ "asciidoc", "delimited_blocks" }, { fallback = nil });
+
+	if not config then
+		return;
+	end
+
+	---@type markview.config.asciidoc.admonitions?
+	local admonition_config = spec.get({ "asciidoc", "admonitions" }, { fallback = nil });
+	---@type markview.config.asciidoc.admonitions.opts?
+	local ad_config;
+
+	if admonition_config then
+		ad_config = utils.match(admonition_config, item.kind, {
+			case_insensitive = true,
+
+			ignore_keys = { "enable" },
+			eval_args = { buffer, item }
+		});
+	end
+
+	local range = item.range;
+
+	local row_end = range.kind[3];
+	local col_end = range.kind[4];
+
+	if ad_config then
+		utils.set_extmark(buffer, asciidoc.ns, range.row_start, range.col_start, {
+			end_col = range.kind[2],
+			conceal = "",
+
+			virt_text_pos = "inline",
+			virt_text = {
+				{ ad_config.corner_left or "", utils.set_hl(ad_config.corner_left_hl or ad_config.hl) },
+				{ ad_config.padding_left or "", utils.set_hl(ad_config.padding_left_hl or ad_config.hl) },
+
+				{ ad_config.icon or "", utils.set_hl(ad_config.icon_hl or ad_config.hl) }
+			},
+
+			hl_mode = "combine"
+		});
+
+		utils.set_extmark(buffer, asciidoc.ns, range.kind[1], range.kind[2], {
+			end_row = row_end,
+			end_col = col_end,
+
+			hl_group = utils.set_hl(ad_config.hl)
+		});
+
+		utils.set_extmark(buffer, asciidoc.ns, range.kind[3], range.kind[4], {
+			end_col = range.kind[4] + 1,
+			conceal = "",
+
+			virt_text_pos = "inline",
+			virt_text = {
+				{ ad_config.padding_right or "", utils.set_hl(ad_config.padding_right_hl or ad_config.hl) },
+				{ ad_config.corner_right or "", utils.set_hl(ad_config.corner_right_hl or ad_config.hl) }
+			},
+
+			hl_mode = "combine"
+		});
+
+		utils.set_extmark(buffer, asciidoc.ns, range.row_start + 1, range.col_start, {
+			end_row = row_end + 1,
+			conceal_lines = "",
+		});
+	else
+		utils.set_extmark(buffer, asciidoc.ns, range.row_start, range.col_start, {
+			end_row = row_end + 1,
+			conceal_lines = "",
+		});
+	end
+
+	if (ad_config and ad_config.desc_hl) or config.hl then
+		utils.set_extmark(buffer, asciidoc.ns, range.row_start + 1, range.col_start, {
+			end_row = range.row_end - 1,
+
+			---@diagnostic disable-next-line: param-type-mismatch
+			line_hl_group = utils.set_hl(ad_config and ad_config.desc_hl or config.hl)
+		});
+	end
+
+	utils.set_extmark(buffer, asciidoc.ns, range.row_end, 0, {
+		end_row = range.row_end,
+		conceal_lines = "",
+	});
+
+	---|fE
+end
+
+---@param buffer integer
+---@param item markview.parsed.asciidoc.delimited_blocks
+asciidoc.delimited_block = function (buffer, item)
+	---|fS
+
+	---@type markview.config.asciidoc.delimited_blocks?
+	local config = spec.get({ "asciidoc", "delimited_blocks" }, { fallback = nil });
+
+	if not config then
+		return;
+	end
+
+	local range = item.range;
+
+	utils.set_extmark(buffer, asciidoc.ns, range.row_start, range.col_start, {
+		end_row = range.row_start,
+		conceal_lines = "",
+	});
+
+	utils.set_extmark(buffer, asciidoc.ns, range.row_start, range.col_start, {
+		end_row = range.row_end - 1,
+		line_hl_group = utils.set_hl(config.hl)
+	});
+
+	utils.set_extmark(buffer, asciidoc.ns, range.row_end, 0, {
+		end_row = range.row_end,
+		conceal_lines = "",
+	});
+
+	---|fE
+end
+
+---@param buffer integer
 ---@param item markview.parsed.asciidoc.document_titles
 asciidoc.document_attribute = function (buffer, item)
 	---|fS

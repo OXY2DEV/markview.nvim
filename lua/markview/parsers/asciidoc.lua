@@ -63,6 +63,87 @@ asciidoc.admonition = function (buffer, _, text, range)
 end
 
 --[[
+Admonition blocks.
+
+```asciidoc
+[NOTE]
+======
+Some note.
+
+Some other note.
+======
+```
+]]
+---@param buffer integer
+---@param TSNode TSNode
+---@param text string[]
+---@param range markview.parsed.asciidoc.admonitions.range
+asciidoc.admonition_block = function (buffer, TSNode, text, range)
+	---|fS
+
+	local admonition = TSNode:prev_named_sibling() --[[@as TSNode]];
+
+	local _kind = admonition:named_child(1) --[[@as TSNode]];
+	local kind = vim.treesitter.get_node_text(_kind, buffer, {});
+
+	range.kind = { _kind:range() };
+	range.row_start = range.kind[1];
+
+	asciidoc.insert({
+		class = "asciidoc_admonition_block",
+		kind = kind,
+
+		text = text,
+		range = range
+	});
+
+	---|fE
+end
+
+--[[
+Delimited blocks.
+
+```asciidoc
+======
+Foo
+======
+```
+]]
+---@param buffer integer
+---@param TSNode TSNode
+---@param text string[]
+---@param range markview.parsed.range
+asciidoc.delimited_block = function (buffer, TSNode, text, range)
+	---|fS
+
+	local before = TSNode:prev_named_sibling();
+
+	-- NOTE: Detect `admonitions` first.
+	if before and before:type() == "element_attr" then
+		local attr_value = before:named_child(1);
+
+		if attr_value and attr_value:type() == "attr_value" then
+			local attr_text = vim.treesitter.get_node_text(attr_value, buffer, {});
+
+			if string.match(attr_text, "^[A-Z]+$") then
+				---@diagnostic disable-next-line: param-type-mismatch
+				asciidoc.admonition_block(buffer, TSNode, text, range);
+				return;
+			end
+		end
+	end
+
+	asciidoc.insert({
+		class = "asciidoc_delimited_block",
+
+		text = text,
+		range = range
+	});
+
+	---|fE
+end
+
+--[[
 Document attributes.
 
 ```asciidoc
@@ -570,6 +651,8 @@ asciidoc.parse = function (buffer, TSTree, from, to)
 
 		(admonition) @asciidoc.admonition
 		(breaks) @asciidoc.hr
+
+		(delimited_block) @asciidoc.delimited_block
 	]]);
 
 	if not can_scan then

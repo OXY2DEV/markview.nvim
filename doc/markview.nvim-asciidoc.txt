@@ -6,6 +6,7 @@
 	---@field enable boolean Enable rendering of Asciidoc files?
 	---
 	---@field admonitions markview.config.asciidoc.admonitions
+	---@field delimited_blocks markview.config.asciidoc.delimited_blocks
 	---@field checkboxes markview.config.asciidoc.checkboxes
 	---@field document_attributes markview.config.asciidoc.document_attributes
 	---@field document_titles markview.config.asciidoc.document_titles
@@ -16,7 +17,7 @@
 <
 
 --------------------------------------------------------------------------------
-enable
+enable                                           *markview.nvim-asciidoc.enable*
 
 Enables previewing asciidoc files.
 
@@ -25,7 +26,7 @@ Enables previewing asciidoc files.
 <
 
 --------------------------------------------------------------------------------
-admonitions
+admonitions                                 *markview.nvim-asciidoc.admonitions*
 
 >lua
 	--- Configuration for admonitions.
@@ -120,7 +121,34 @@ Each admonition type has the following options.
 <
 
 --------------------------------------------------------------------------------
-document_attributes
+delimited_blocks                       *markview.nvim-asciidoc.delimited_blocks*
+
+>lua
+	--- Configuration for admonition blocks.
+	---@class markview.config.asciidoc.delimited_blocks
+	---
+	---@field enable boolean Enable rendering of delimited blocks.
+	---@field hl? string Highlight group for the lines of the delimited blocks.
+<
+
+Changes how admonitions are shown.
+
+▋ 󰋽 Note
+▋ `Admonition block`s are configured via asciidoc.admonitions {2} as they are a
+▋ variation of delimited blocks. Same with preview.raw_previews {1} where
+▋ disabling `admonitions` won't disable rendering of the block(only the admonition
+▋ label will disappear).
+
+>lua
+	delimited_blocks = {
+	    enable = true,
+	
+	    hl = "MarkviewCode"
+	},
+<
+
+--------------------------------------------------------------------------------
+document_attributes                 *markview.nvim-asciidoc.document_attributes*
 
 >lua
 	--[[ Options for document attributes. ]]
@@ -257,7 +285,7 @@ Repeats given text by an amount.
 <
 
 --------------------------------------------------------------------------------
-list_items
+list_items                                   *markview.nvim-asciidoc.list_items*
 
 >lua
 	--- Configuration for list items.
@@ -327,7 +355,7 @@ Each list item type has the following options.
 <
 
 --------------------------------------------------------------------------------
-section_titles
+section_titles                           *markview.nvim-asciidoc.section_titles*
 
 >lua
 	--- Configuration for section titles.
@@ -395,7 +423,7 @@ Each section title level has the following options.
 <
 
 --------------------------------------------------------------------------------
-tocs
+tocs                                               *markview.nvim-asciidoc.tocs*
 
 >lua
 	--- Configuration for generated Table of contents section..
@@ -476,5 +504,10 @@ Each item depth has the following options.
 	---@field icon? string Icon for the TOC title.
 	---@field icon_hl? string Highlight group for `icon`.
 <
+
+Links ~
+
+1: |markview.nvim-preview.raw_previews|
+2: |markview.nvim-asciidoc.admonitions|
 
 vim:ft=help:textwidth=80:tabstop=4:noexpandtab:

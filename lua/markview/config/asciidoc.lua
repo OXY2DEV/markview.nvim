@@ -140,6 +140,12 @@ return {
 		["d"] = { text = "󰔳", hl = "MarkviewCheckboxUnchecked" },
 	},
 
+	delimited_blocks = {
+		enable = true,
+
+		hl = "MarkviewCode"
+	},
+
 	horizontal_rules = {
 		enable = true,
 

@@ -53,6 +53,14 @@
 
 ------------------------------------------------------------------------------
 
+--- Configuration for admonition blocks.
+---@class markview.config.asciidoc.delimited_blocks
+---
+---@field enable boolean Enable rendering of delimited blocks.
+---@field hl? string Highlight group for the lines of the delimited blocks.
+
+------------------------------------------------------------------------------
+
 --[[ Options for document attributes. ]]
 ---@class markview.config.asciidoc.document_attributes
 ---
@@ -272,6 +280,7 @@
 ---@field enable boolean Enable rendering of Asciidoc files?
 ---
 ---@field admonitions markview.config.asciidoc.admonitions
+---@field delimited_blocks markview.config.asciidoc.delimited_blocks
 ---@field checkboxes markview.config.asciidoc.checkboxes
 ---@field document_attributes markview.config.asciidoc.document_attributes
 ---@field document_titles markview.config.asciidoc.document_titles

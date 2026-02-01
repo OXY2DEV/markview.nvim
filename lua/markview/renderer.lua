@@ -16,7 +16,8 @@ renderer.option_maps = {
 	---|fS
 
 	asciidoc = {
-		admonitions = { "asciidoc_admonitiono" },
+		admonitions = { "asciidoc_admonition", "asciidoc_admonition_block" },
+		delimited_blocks = { "asciidoc_admonition", "asciidoc_delimited_block" },
 		document_attribute = { "asciidoc_document_attribute" },
 		document_title = { "asciidoc_document_title" },
 		horizontal_rules = { "asciidoc_hr" },

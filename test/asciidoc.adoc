@@ -17,6 +17,18 @@ WARNING: The software you're about to use is untested.
 
 IMPORTANT: Sign off before stepping away from your computer.
 
+[NOTE]
+====
+An admonition block may contain compound content.
+
+.A list
+- one
+- two
+- three
+
+Another paragraph.
+====
+
 == Checkboxes
 
 === Main

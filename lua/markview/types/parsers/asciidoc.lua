@@ -11,6 +11,15 @@
 ---@field range markview.parsed.asciidoc.admonitions.range
 
 
+---@class markview.parsed.asciidoc.admonition_blocks
+---
+---@field class "asciidoc_admonition_block"
+---@field kind string Type of admonition(e.g. `NOTE`).
+---
+---@field text string[]
+---@field range markview.parsed.asciidoc.admonitions.range
+
+
 ---@class markview.parsed.asciidoc.admonitions.range
 ---
 ---@field row_start integer
@@ -20,6 +29,15 @@
 ---@field col_end integer
 ---
 ---@field kind integer[] Range of the admonition kind(output of `{ TSNode:range() }`.
+
+------------------------------------------------------------------------------
+
+---@class markview.parsed.asciidoc.delimited_blocks
+---
+---@field class "asciidoc_delimited_block"
+---
+---@field text string[]
+---@field range markview.parsed.range
 
 ------------------------------------------------------------------------------
 
@@ -176,6 +194,8 @@
 
 ---@alias markview.parsed.asciidoc
 ---| markview.parsed.asciidoc.admonitions
+---| markview.parsed.asciidoc.admonition_blocks
+---| markview.parsed.asciidoc.delimited_blocks
 ---| markview.parsed.asciidoc.document_attributes
 ---| markview.parsed.asciidoc.document_titles
 ---| markview.parsed.asciidoc.hrs
@@ -191,6 +211,8 @@
 ---@class markview.parsed.asciidoc_sorted
 ---
 ---@field admonitions markview.parsed.asciidoc.admonitions[]
+---@field admonition_blocks markview.parsed.asciidoc.admonition_blocks[]
+---@field delimited_blocks markview.parsed.asciidoc.delimited_blocks[]
 ---@field document_attributes markview.parsed.asciidoc.document_attributes[]
 ---@field document_titles markview.parsed.asciidoc.document_titles[]
 ---@field hrs markview.parsed.asciidoc.hrs[]
