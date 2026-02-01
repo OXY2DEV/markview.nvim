@@ -17,6 +17,7 @@ renderer.option_maps = {
 
 	asciidoc = {
 		admonitions = { "asciidoc_admonition", "asciidoc_admonition_block" },
+		block_quotes = { "asciidoc_block_quote" },
 		delimited_blocks = { "asciidoc_admonition", "asciidoc_delimited_block" },
 		document_attribute = { "asciidoc_document_attribute" },
 		document_title = { "asciidoc_document_title" },

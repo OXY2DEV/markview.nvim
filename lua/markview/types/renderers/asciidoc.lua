@@ -33,6 +33,24 @@
 
 ------------------------------------------------------------------------------
 
+--- Configuration for block quotes.
+---@class markview.config.asciidoc.block_quotes
+---
+---@field enable boolean Enable rendering of block quotes.
+---
+---@field default markview.config.asciidoc.block_quotes.opts Default configuration.
+---@field [string] markview.config.asciidoc.block_quotes.opts Configuration for `[quote,<string>]` block quote.
+
+
+--- Static configuration options for various types of block quotes.
+---@class markview.config.asciidoc.block_quotes.opts
+---
+---@field border? string Text for the border.
+---@field from? string A `format string` to modify how the quote source looks like.
+---@field hl? string Highlight group for the block quote.
+
+------------------------------------------------------------------------------
+
 --- Configuration for checkboxes.
 ---@class markview.config.asciidoc.checkboxes
 ---
@@ -280,6 +298,7 @@
 ---@field enable boolean Enable rendering of Asciidoc files?
 ---
 ---@field admonitions markview.config.asciidoc.admonitions
+---@field block_quotes markview.config.asciidoc.block_quotes
 ---@field delimited_blocks markview.config.asciidoc.delimited_blocks
 ---@field checkboxes markview.config.asciidoc.checkboxes
 ---@field document_attributes markview.config.asciidoc.document_attributes

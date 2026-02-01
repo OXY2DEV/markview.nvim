@@ -6,6 +6,7 @@
 	---@field enable boolean Enable rendering of Asciidoc files?
 	---
 	---@field admonitions markview.config.asciidoc.admonitions
+	---@field block_quotes markview.config.asciidoc.block_quotes
 	---@field delimited_blocks markview.config.asciidoc.delimited_blocks
 	---@field checkboxes markview.config.asciidoc.checkboxes
 	---@field document_attributes markview.config.asciidoc.document_attributes
@@ -118,6 +119,43 @@ Each admonition type has the following options.
 	---
 	---@field corner_right? string Right corner(added after `padding_right`).
 	---@field corner_right_hl? string Highlight group for the right corner.
+<
+
+--------------------------------------------------------------------------------
+block_quotes                               *markview.nvim-asciidoc.block_quotes*
+
+>lua
+	--- Configuration for block quotes.
+	---@class markview.config.asciidoc.block_quotes
+	---
+	---@field enable boolean Enable rendering of block quotes.
+	---
+	---@field default markview.config.asciidoc.block_quotes.opts Default configuration.
+	---@field [string] markview.config.asciidoc.block_quotes.opts Configuration for `[quote,<string>]` block quote.
+<
+
+Changes how admonitions are shown.
+
+>lua
+	block_quotes = {
+	    enable = true,
+	
+	    default = {
+	        border = "▋",
+	        hl = "MarkviewBlockQuoteDefault"
+	    },
+	},
+<
+
+Each block quote type has the following options.
+
+>lua
+	--- Static configuration options for various types of block quotes.
+	---@class markview.config.asciidoc.block_quotes.opts
+	---
+	---@field border? string Text for the border.
+	---@field from? string A `format string` to modify how the quote source looks like.
+	---@field hl? string Highlight group for the block quote.
 <
 
 --------------------------------------------------------------------------------

@@ -78,6 +78,109 @@ asciidoc.admonition = function (buffer, item)
 end
 
 ---@param buffer integer
+---@param item markview.parsed.asciidoc.block_quotes
+asciidoc.block_quote = function (buffer, item)
+	---|fS
+
+	---@type markview.config.asciidoc.block_quotes?
+	local main_config = spec.get({ "asciidoc", "block_quotes" }, { fallback = nil, eval_args = { buffer, item } });
+	local range = item.range;
+
+	if
+		not main_config or
+		not main_config.default
+	then
+		return;
+	end
+
+	---@type markview.config.asciidoc.block_quotes.opts
+	local config;
+
+	if item.from then
+		config = spec.get(
+			{ item.from, item.context },
+			{ source = main_config, eval_args = { buffer, item } }
+		) or spec.get(
+			{ "default" },
+			{ source = main_config, eval_args = { buffer, item } }
+		);
+
+		---@type markview.config.asciidoc.block_quotes.opts
+		local default = spec.get({ "default" }, { source = main_config, eval_args = { buffer, item } });
+
+		-- Inherit undefined option values from `default`.
+		config = vim.tbl_deep_extend("force", default, config);
+	else
+		config = spec.get({ "default" }, { source = main_config, eval_args = { buffer, item } });
+	end
+
+	utils.set_extmark(buffer, asciidoc.ns, range.row_start, 0, {
+		end_row = range.row_start + (item.has_attr and 1 or 0),
+		conceal_lines = "",
+	});
+
+	for l = range.row_start + 2, range.row_end - 1 do
+		utils.set_extmark(buffer, asciidoc.ns, l, range.col_start, {
+			virt_text_pos = "inline",
+			virt_text = {
+				{ config.border, utils.set_hl(config.hl) }
+			},
+		});
+	end
+
+	if item.from then
+		local _from = string.format(config.from or " - %s", item.from);
+		local from = {
+			{ _from or "", utils.set_hl(config.hl) }
+		};
+		local _context = item.context and string.format(config.from or "   %s", item.context) or nil;
+
+		local context;
+
+		if _context then
+			context = require("markview.renderers.asciidoc.tostring").tostring(
+				buffer,
+				_context,
+				utils.set_hl(config.hl) --[[@as string]]
+			);
+
+			if config.border then
+				table.insert(context, 1, {
+					config.border,
+					utils.set_hl(config.hl)
+				});
+			end
+		end
+
+		if config.border then
+			table.insert(from, 1, {
+				config.border,
+				utils.set_hl(config.hl)
+			});
+		end
+
+		utils.set_extmark(buffer, asciidoc.ns, range.row_end, 0, {
+			end_col = range.col_start + #(item.text[#item.text] or ""),
+			conceal = "",
+
+			virt_text_pos = "inline",
+			virt_text = from,
+
+			virt_lines = context and {
+				context
+			} or nil,
+		});
+	else
+		utils.set_extmark(buffer, asciidoc.ns, range.row_end, 0, {
+			end_row = range.row_end,
+			conceal_lines = "",
+		});
+	end
+
+	---|fE
+end
+
+---@param buffer integer
 ---@param item markview.parsed.asciidoc.admonition_blocks
 asciidoc.admonition_block = function (buffer, item)
 	---|fS

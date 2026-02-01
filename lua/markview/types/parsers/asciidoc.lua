@@ -32,6 +32,29 @@
 
 ------------------------------------------------------------------------------
 
+---@class markview.parsed.asciidoc.block_quotes
+---
+---@field class "asciidoc_block_quote"
+---@field has_attr? boolean Does this block have a `[quote]` attribute above it?
+---@field from string
+---@field context? string Additional info.
+---
+---@field text string[]
+---@field range markview.parsed.asciidoc.block_quotes.range
+
+
+---@class markview.parsed.asciidoc.block_quotes.range
+---
+---@field row_start integer
+---@field col_start integer
+---
+---@field row_end integer
+---@field col_end integer
+---
+---@field quote integer[] Range of the block quote definition(output of `{ TSNode:range() }`.
+
+------------------------------------------------------------------------------
+
 ---@class markview.parsed.asciidoc.delimited_blocks
 ---
 ---@field class "asciidoc_delimited_block"
@@ -194,6 +217,7 @@
 
 ---@alias markview.parsed.asciidoc
 ---| markview.parsed.asciidoc.admonitions
+---| markview.parsed.asciidoc.block_quotes
 ---| markview.parsed.asciidoc.admonition_blocks
 ---| markview.parsed.asciidoc.delimited_blocks
 ---| markview.parsed.asciidoc.document_attributes
@@ -211,6 +235,7 @@
 ---@class markview.parsed.asciidoc_sorted
 ---
 ---@field admonitions markview.parsed.asciidoc.admonitions[]
+---@field block_quotes markview.parsed.asciidoc.block_quotes[]
 ---@field admonition_blocks markview.parsed.asciidoc.admonition_blocks[]
 ---@field delimited_blocks markview.parsed.asciidoc.delimited_blocks[]
 ---@field document_attributes markview.parsed.asciidoc.document_attributes[]

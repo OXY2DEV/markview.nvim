@@ -3,6 +3,7 @@ markview.nvim	markview.nvim.txt	/*markview.nvim*
 markview.nvim-advanced	markview.nvim-advanced.txt	/*markview.nvim-advanced*
 markview.nvim-asciidoc	markview.nvim-asciidoc.txt	/*markview.nvim-asciidoc*
 markview.nvim-asciidoc.admonitions	markview.nvim-asciidoc.txt	/*markview.nvim-asciidoc.admonitions*
+markview.nvim-asciidoc.block_quotes	markview.nvim-asciidoc.txt	/*markview.nvim-asciidoc.block_quotes*
 markview.nvim-asciidoc.delimited_blocks	markview.nvim-asciidoc.txt	/*markview.nvim-asciidoc.delimited_blocks*
 markview.nvim-asciidoc.document_attributes	markview.nvim-asciidoc.txt	/*markview.nvim-asciidoc.document_attributes*
 markview.nvim-asciidoc.enable	markview.nvim-asciidoc.txt	/*markview.nvim-asciidoc.enable*

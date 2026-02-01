@@ -112,6 +112,15 @@ return {
 		},
 	},
 
+	block_quotes = {
+		enable = true,
+
+		default = {
+			border = "▋",
+			hl = "MarkviewBlockQuoteDefault"
+		},
+	},
+
 	checkboxes = {
 		enable = true,
 

@@ -101,6 +101,72 @@ asciidoc.admonition_block = function (buffer, TSNode, text, range)
 end
 
 --[[
+Block quotes.
+
+```asciidoc
+[quote]
+____
+Some quote.
+
+Some other quote.
+____
+```
+]]
+---@param buffer integer
+---@param _ TSNode
+---@param text string[]
+---@param range markview.parsed.asciidoc.block_quotes.range
+asciidoc.block_quote = function (buffer, _, text, range)
+	---|fS
+
+	local from, context;
+	local has_attr;
+
+	if range.row_start > 0 then
+		local before = vim.api.nvim_buf_get_lines(buffer, range.row_start - 1, range.row_start, false)[1] or "";
+		before = string.gsub(before, "^[%s]*%[", "");
+		before = string.gsub(before, "%][%s]*$", "");
+
+		if string.match(before, "^quote") then
+			has_attr = true;
+
+			local parts = vim.split(before, ",");
+			from = parts[2];
+
+			if #parts > 2 then
+				context = table.concat(
+					vim.list_slice(parts, 3),
+					","
+				);
+
+				context = string.gsub(context, "^['\"]+", "");
+				context = string.gsub(context, "['\"]+$", "");
+			end
+
+			range.quote = {
+				range.row_start - 1,
+				0,
+				range.row_start,
+				0
+			};
+			range.row_start = range.quote[1];
+		end
+	end
+
+	asciidoc.insert({
+		class = "asciidoc_block_quote",
+		has_attr = has_attr,
+		from = from,
+		context = context,
+
+		text = text,
+		range = range
+	});
+
+	---|fE
+end
+
+--[[
 Delimited blocks.
 
 ```asciidoc
@@ -653,6 +719,8 @@ asciidoc.parse = function (buffer, TSTree, from, to)
 		(breaks) @asciidoc.hr
 
 		(delimited_block) @asciidoc.delimited_block
+
+		(quoted_block) @asciidoc.block_quote
 	]]);
 
 	if not can_scan then
