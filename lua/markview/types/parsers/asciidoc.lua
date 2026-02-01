@@ -55,6 +55,32 @@
 
 ------------------------------------------------------------------------------
 
+---@class markview.parsed.asciidoc.code_blocks
+---
+---@field class "asciidoc_code_block"
+---@field uses_tab boolean Does the code block use tab inside it? Used for switching render style.
+---
+---@field delimiters [ string, string ] Code block delimiters(```).
+---@field language string? Language string(typically after ```).
+---
+---@field text string[]
+---@field range markview.parsed.asciidoc.code_blocks.range
+
+
+---@class markview.parsed.asciidoc.code_blocks.range
+---
+---@field start_delim integer[] Range of the **start** delimiter.
+---@field end_delim? integer[] Range of the **end** delimiter.
+---
+---@field row_start integer
+---@field row_end integer
+---@field col_start integer
+---@field col_end integer
+---
+---@field language? integer[] Range of the language string.
+
+------------------------------------------------------------------------------
+
 ---@class markview.parsed.asciidoc.delimited_blocks
 ---
 ---@field class "asciidoc_delimited_block"
@@ -216,9 +242,10 @@
 ------------------------------------------------------------------------------
 
 ---@alias markview.parsed.asciidoc
+---| markview.parsed.asciidoc.admonition_blocks
 ---| markview.parsed.asciidoc.admonitions
 ---| markview.parsed.asciidoc.block_quotes
----| markview.parsed.asciidoc.admonition_blocks
+---| markview.parsed.asciidoc.code_blocks
 ---| markview.parsed.asciidoc.delimited_blocks
 ---| markview.parsed.asciidoc.document_attributes
 ---| markview.parsed.asciidoc.document_titles
@@ -234,9 +261,10 @@
 
 ---@class markview.parsed.asciidoc_sorted
 ---
+---@field admonition_blocks markview.parsed.asciidoc.admonition_blocks[]
 ---@field admonitions markview.parsed.asciidoc.admonitions[]
 ---@field block_quotes markview.parsed.asciidoc.block_quotes[]
----@field admonition_blocks markview.parsed.asciidoc.admonition_blocks[]
+---@field code_blocks markview.parsed.asciidoc.code_blocks[]
 ---@field delimited_blocks markview.parsed.asciidoc.delimited_blocks[]
 ---@field document_attributes markview.parsed.asciidoc.document_attributes[]
 ---@field document_titles markview.parsed.asciidoc.document_titles[]

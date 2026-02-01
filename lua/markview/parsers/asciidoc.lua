@@ -167,6 +167,78 @@ asciidoc.block_quote = function (buffer, _, text, range)
 end
 
 --[[
+Block quotes.
+
+```asciidoc
+[quote]
+____
+Some quote.
+
+Some other quote.
+____
+```
+]]
+---@param buffer integer
+---@param TSNode TSNode
+---@param text string[]
+---@param range markview.parsed.asciidoc.code_blocks.range
+asciidoc.code_block = function (buffer, TSNode, text, range)
+	---|fS
+
+	local _lang = TSNode:named_child(0) --[[@as TSNode]];
+	range.language = { _lang:range() };
+
+	local attr_value = _lang:named_child(1);
+	local lang;
+
+	if attr_value and attr_value:type() == "attr_value" then
+		local attr_text = vim.treesitter.get_node_text(attr_value, buffer, {});
+
+		if string.match(attr_text, "^source,") then
+			lang = string.match(attr_text, "^source,(.+)$")
+		end
+	end
+
+	local listing_block = TSNode:named_child(1) --[[@as TSNode]];
+	local delims = {
+		listing_block:named_child(0),
+		listing_block:named_child(2),
+	};
+
+	if delims[1] then
+		range.start_delim = { delims[1]:range() };
+	end
+
+	if delims[2] then
+		range.end_delim = { delims[2]:range() };
+	end
+
+	local uses_tab = false;
+
+	for _, line in ipairs(text) do
+		if string.match(line, "\t") then
+			uses_tab = true;
+			break;
+		end
+	end
+
+	asciidoc.insert({
+		class = "asciidoc_code_block",
+		language = lang,
+		delimiters = {
+			delims[1] and vim.treesitter.get_node_text(delims[1], buffer, {}) or "",
+			delims[2] and vim.treesitter.get_node_text(delims[2], buffer, {}) or "",
+		},
+		uses_tab = uses_tab,
+
+		text = text,
+		range = range
+	});
+
+	---|fE
+end
+
+--[[
 Delimited blocks.
 
 ```asciidoc
@@ -721,6 +793,14 @@ asciidoc.parse = function (buffer, TSTree, from, to)
 		(delimited_block) @asciidoc.delimited_block
 
 		(quoted_block) @asciidoc.block_quote
+
+		(section_block
+			(element_attr
+				(
+					(attr_value) @code_block_marker
+					(#lua-match? @code_block_marker "^source")
+				))
+			(listing_block)) @asciidoc.code_block
 	]]);
 
 	if not can_scan then

@@ -106,7 +106,7 @@ An autolink.
 
 ---@class markview.parsed.comment.code_blocks
 ---
----@field class "markdown_code_block"
+---@field class "comment_code_block"
 ---@field uses_tab boolean Does the code block use tab inside it? Used for switching render style.
 ---
 ---@field delimiters [ string, string ] Code block delimiters(```).

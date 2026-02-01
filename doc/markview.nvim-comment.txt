@@ -405,13 +405,10 @@ Each autolink type has the following options.
 code_blocks                                  *markview.nvim-comment.code_blocks*
 
 >lua
-	--- Configuration for autolinks.
-	---@class markview.config.comment.autolinks
-	---
-	---@field enable boolean Enable rendering of `<autolink>`s.
-	---
-	---@field default markview.config.comments.autolinks.opts Default configuration.
-	---@field [string] markview.config.comments.autolinks.opts Configuration for autolinks matching the key's pattern.
+	--- Configuration for code blocks.
+	---@alias markview.config.comment.code_blocks
+	---| markview.config.comment.code_blocks.simple
+	---| markview.config.comment.code_blocks.block
 <
 
 Enable rendering of `fenced code blocks`.
@@ -454,6 +451,101 @@ configuration ~
 	    style = "block",
 	    sign = true,
 	},
+<
+
+Each style is explained below.
+
+code_blocks: block ~
+
+>lua
+	---@class markview.config.comment.code_blocks.block
+	---
+	---@field enable boolean Enable rendering of code blocks.
+	---
+	---@field border_hl? string Highlight group for borders.
+	---@field info_hl? string Highlight group for the info string.
+	---
+	---@field label_direction? "left" | "right" Position of the language & icon.
+	---@field label_hl? string Highlight group for the label.
+	---
+	---@field min_width? integer Minimum width of the code block.
+	---@field pad_amount? integer Number of `pad_char`s to add on the left & right side of the code block.
+	---@field pad_char? string Character used as padding.
+	---
+	---@field sign? boolean Enables signs for the code block?
+	---@field sign_hl? string Highlight group for the sign.
+	---
+	---@field style "block" Creates a block around the code block. Disabled when `wrap` is enabled.
+	---
+	---@field default markview.config.comment.code_blocks.opts
+	---@field [string] markview.config.comment.code_blocks.opts
+<
+
+Creates a block around the code block.
+
+▋  Important
+▋ This is disabled if `wrap` is enabled. Or if you used `tab` inside the code
+▋ block.
+
+code_blocks: simple ~
+
+>lua
+	---@class markview.config.comment.code_blocks.simple
+	---
+	---@field enable boolean Enable rendering of code blocks.
+	---
+	---@field border_hl? string Highlight group for borders.
+	---@field info_hl? string Highlight group for the info string.
+	---
+	---@field label_direction? "left" | "right" Position of the language & icon.
+	---@field label_hl? string Highlight group for the label.
+	---
+	---@field sign? boolean Enables signs for the code block?
+	---@field sign_hl? string Highlight group for the sign.
+	---
+	---@field style "simple" Only highlights the line. Enabled when `wrap` is enabled.
+	---
+	---@field default markview.config.comment.code_blocks.opts
+	---@field [string] markview.config.comment.code_blocks.opts
+<
+
+Highlights the lines of the code block.
+
+▋  Important
+▋ This is enabled if `wrap` is enabled.
+
+  ╶────────────────────────────────────────────────────────────────────────────╴ 
+
+You can also add line specific styles for different languages. Such as this one
+for diff files.
+
+>lua
+	    ["diff"] = {
+	        block_hl = function (_, line)
+	            if line:match("^%+") then
+	                return "MarkviewPalette4";
+	            elseif line:match("^%-") then
+	                return "MarkviewPalette1";
+	            else
+	                return "MarkviewCode";
+	            end
+	        end,
+	        pad_hl = "MarkviewCode"
+	    },
+<
+
+Each language has the following options.
+
+>lua
+	--[[ Configuration for highlighting `lines` inside a code block. ]]
+	---@class markview.config.comment.code_blocks.opts
+	---
+	---@field block_hl
+	---| string Highlight group for the background of the line.
+	---| fun(buffer: integer, line: string): string? Takes `line` & the `buffer` containing it and returns a highlight group for the line.
+	---@field pad_hl
+	---| string Highlight group for the padding of the line.
+	---| fun(buffer: integer, line: string): string? Takes `line` & the `buffer` containing it and returns a highlight group for the padding..
 <
 
 --------------------------------------------------------------------------------

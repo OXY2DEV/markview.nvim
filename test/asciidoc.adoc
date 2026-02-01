@@ -63,6 +63,17 @@ ____
 - [>] Reschedule
 - [-] Cancelled
 
+== Code blocks
+
+[source,lua]
+----
+vim.print("hi");
+----
+
+[source]
+----
+Some text
+----
 
 == Horizontal rules
 

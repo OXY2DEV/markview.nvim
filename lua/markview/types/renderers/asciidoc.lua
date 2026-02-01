@@ -71,6 +71,66 @@
 
 ------------------------------------------------------------------------------
 
+--- Configuration for code blocks.
+---@alias markview.config.asciidoc.code_blocks
+---| markview.config.asciidoc.code_blocks.simple
+---| markview.config.asciidoc.code_blocks.block
+
+
+---@class markview.config.asciidoc.code_blocks.simple
+---
+---@field enable boolean Enable rendering of code blocks.
+---
+---@field border_hl? string Highlight group for borders.
+---@field info_hl? string Highlight group for the info string.
+---
+---@field label_direction? "left" | "right" Position of the language & icon.
+---@field label_hl? string Highlight group for the label.
+---
+---@field sign? boolean Enables signs for the code block?
+---@field sign_hl? string Highlight group for the sign.
+---
+---@field style "simple" Only highlights the line. Enabled when `wrap` is enabled.
+---
+---@field default markview.config.comment.code_blocks.opts
+---@field [string] markview.config.asciidoc.code_blocks.opts
+
+
+---@class markview.config.asciidoc.code_blocks.block
+---
+---@field enable boolean Enable rendering of code blocks.
+---
+---@field border_hl? string Highlight group for borders.
+---@field info_hl? string Highlight group for the info string.
+---
+---@field label_direction? "left" | "right" Position of the language & icon.
+---@field label_hl? string Highlight group for the label.
+---
+---@field min_width? integer Minimum width of the code block.
+---@field pad_amount? integer Number of `pad_char`s to add on the left & right side of the code block.
+---@field pad_char? string Character used as padding.
+---
+---@field sign? boolean Enables signs for the code block?
+---@field sign_hl? string Highlight group for the sign.
+---
+---@field style "block" Creates a block around the code block. Disabled when `wrap` is enabled.
+---
+---@field default markview.config.asciidoc.code_blocks.opts
+---@field [string] markview.config.asciidoc.code_blocks.opts
+
+
+--[[ Configuration for highlighting `lines` inside a code block. ]]
+---@class markview.config.asciidoc.code_blocks.opts
+---
+---@field block_hl
+---| string Highlight group for the background of the line.
+---| fun(buffer: integer, line: string): string? Takes `line` & the `buffer` containing it and returns a highlight group for the line.
+---@field pad_hl
+---| string Highlight group for the padding of the line.
+---| fun(buffer: integer, line: string): string? Takes `line` & the `buffer` containing it and returns a highlight group for the padding..
+
+------------------------------------------------------------------------------
+
 --- Configuration for admonition blocks.
 ---@class markview.config.asciidoc.delimited_blocks
 ---
@@ -299,8 +359,9 @@
 ---
 ---@field admonitions markview.config.asciidoc.admonitions
 ---@field block_quotes markview.config.asciidoc.block_quotes
----@field delimited_blocks markview.config.asciidoc.delimited_blocks
 ---@field checkboxes markview.config.asciidoc.checkboxes
+---@field code_blocks markview.config.asciidoc.code_blocks
+---@field delimited_blocks markview.config.asciidoc.delimited_blocks
 ---@field document_attributes markview.config.asciidoc.document_attributes
 ---@field document_titles markview.config.asciidoc.document_titles
 ---@field horizontal_rules markview.config.asciidoc.hrs
