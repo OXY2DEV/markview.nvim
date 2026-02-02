@@ -332,18 +332,18 @@ adoc_str.tostring = function (buffer, text, base_hl)
 	local lpeg = vim.lpeg;
 	adoc_str.buffer = buffer;
 
-	local strong_content = ( 1 - lpeg.P("*") )  + lpeg.P("\\*");
+	local strong_content = lpeg.P("\\*") + ( 1 - lpeg.P("*") );
 	local strong = lpeg.C( lpeg.P("*") * strong_content^1 * lpeg.P("*") ) / adoc_str.bold;
 	local ustrong = lpeg.C( lpeg.P("**") * strong_content^1 * lpeg.P("**") ) / adoc_str.bold;
 
-	local italic_content = ( 1 - lpeg.P("_") )  + lpeg.P("\\_");
+	local italic_content = lpeg.P("\\_") + ( 1 - lpeg.P("_") );
 	local italic = lpeg.C( lpeg.P("_") * italic_content^1 * lpeg.P("_") ) / adoc_str.italic;
 	local uitalic = lpeg.C( lpeg.P("__") * italic_content^1 * lpeg.P("__") ) / adoc_str.italic;
 
-	local mono_content = ( 1 - lpeg.P("`") )  + lpeg.P("\\`");
+	local mono_content = lpeg.P("\\`") + ( 1 - lpeg.P("`") );
 	local mono = lpeg.C( lpeg.P("`")^1 * mono_content^1 * lpeg.P("`")^1 ) / adoc_str.monospace;
 
-	local hl_content = ( 1 - lpeg.P("##") )  + lpeg.P("\\#");
+	local hl_content = lpeg.P("\\#") + ( 1 - lpeg.P("##") );
 	local hl = lpeg.C( lpeg.P("##") * hl_content^1 * lpeg.P("##") ) / adoc_str.highlight;
 	local role_content = 1 - lpeg.P("]");
 	local chl = lpeg.C( lpeg.P("[") * role_content^1 * lpeg.P("]") * lpeg.P("##") * hl_content^1 * lpeg.P("##") ) / adoc_str.highlight;
