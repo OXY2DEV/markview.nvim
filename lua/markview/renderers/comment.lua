@@ -509,7 +509,7 @@ comment.code_block = function (buffer, item)
 		local line_widths = {};
 
 		for l, line in ipairs(item.text) do
-			local final = require("markview.renderers.markdown").get_visual_text:init(decorations.name, line);
+			local final = require("markview.renderers.common.visual_text").get_visual_text(item.language, line);
 
 			if l ~= 1 and l ~= #item.text then
 				table.insert(line_widths, vim.fn.strdisplaywidth(final));
