@@ -123,7 +123,7 @@ end
 
 --- YAML parser.
 ---@param buffer integer
----@param TSTree table
+---@param TSTree TSTree
 ---@param from integer?
 ---@param to integer?
 ---@return markview.parsed.yaml[]

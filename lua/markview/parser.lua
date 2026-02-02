@@ -81,6 +81,32 @@ parser.should_ignore = function (TSTree)
 	---|fE
 end
 
+--[[
+Checks if a `yaml block` should be ignored.
+
+This is to prevent rendering inside `code blocks` in **markdown**.
+]]
+---@param root vim.treesitter.LanguageTree
+---@param TSTree TSTree
+---@return boolean
+parser.should_ignore_yaml = function (root, TSTree)
+	---|fS
+
+	if root:lang() ~= "markdown" then
+		return false;
+	end
+
+	---@diagnostic disable-next-line: missing-fields
+	local metadata = root:named_node_for_range({ TSTree:root():range() }, {});
+	if metadata then
+		return metadata:type() ~= "minus_metadata";
+	end
+
+	return true;
+
+	---|fE
+end
+
 ---@type markview.parsed
 parser.content = {};
 ---@type markview.parsed_sorted
@@ -160,7 +186,10 @@ parser.init = function (buffer, from, to, cache)
 		local language = language_tree:lang();
 		local content, sorted = {}, {};
 
-		if _parsers[language] and not parser.should_ignore(TSTree) then
+		if language == "yaml" and not parser.should_ignore_yaml(root_parser, TSTree) then
+			content, sorted = _parsers[language].parse(buffer, TSTree, from, to);
+			parser.create_ignore_range(language, sorted)
+		elseif _parsers[language] and not parser.should_ignore(TSTree) then
 			content, sorted = _parsers[language].parse(buffer, TSTree, from, to);
 			parser.create_ignore_range(language, sorted)
 		end
