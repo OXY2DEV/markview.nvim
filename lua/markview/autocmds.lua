@@ -401,6 +401,17 @@ autocmds.lazy_loaded = function ()
 	require("markview.highlights").setup();
 	require("markview.integrations").setup();
 
+	for _, buf in ipairs(vim.api.nvim_list_bufs()) do
+		autocmds.bufHandle({
+			buf = buf,
+			event = "BufEnter",
+			match = "Lazy",
+			file = vim.api.nvim_buf_get_name(buf),
+
+			id = -1,
+		});
+	end
+
 	--[[
 	BUG: Do not attempt to attach to buffers.
 
