@@ -1,5 +1,72 @@
 # Changelog
 
+## [28.1.0](https://github.com/OXY2DEV/markview.nvim/compare/v28.0.0...v28.1.0) (2026-02-22)
+
+
+### Features
+
+* Asciidoc support ([c81ce9e](https://github.com/OXY2DEV/markview.nvim/commit/c81ce9ed129387fc5fdec91abe9818a1b0e6fcac))
+* **asciidoc_inline:** Added `#highlight#` support ([32c0ddd](https://github.com/OXY2DEV/markview.nvim/commit/32c0ddd390ed3111b2ee18f38d3fc416ab9915db))
+* **asciidoc_inline:** Added `labeled uri` support ([b4a4eb2](https://github.com/OXY2DEV/markview.nvim/commit/b4a4eb2e8f34b375101f3337a64aadef298e6314))
+* **asciidoc_inline:** Added `monospce`s support ([a324d09](https://github.com/OXY2DEV/markview.nvim/commit/a324d09c407232ed15c9b59e73293ae154efcdd4))
+* **asciidoc_inline:** Added `uri macro` support ([f1f1167](https://github.com/OXY2DEV/markview.nvim/commit/f1f11678988fec1ba86122208bb9c2bf75a3fad2))
+* **asciidoc_inline:** Added parser template ([75ae830](https://github.com/OXY2DEV/markview.nvim/commit/75ae830af19853de5dacdd84f440be711c9003e0))
+* **asciidoc_inline:** Added support for unlabeled URIs ([0c463e3](https://github.com/OXY2DEV/markview.nvim/commit/0c463e307cedb27b7135f33db200d941a8d3d26c))
+* **asciidoc:** Added `block quotes` ([9b576e9](https://github.com/OXY2DEV/markview.nvim/commit/9b576e92462caa5be93761093e4834c82bd19ff3)), closes [#455](https://github.com/OXY2DEV/markview.nvim/issues/455)
+* **asciidoc:** Added `code blocks` ([86ce3fe](https://github.com/OXY2DEV/markview.nvim/commit/86ce3fe623fe54319a1f1d4ce6b861219c95b151)), closes [#455](https://github.com/OXY2DEV/markview.nvim/issues/455)
+* **asciidoc:** Added `delimited blocks` & `admonition blocks` support ([ffb465f](https://github.com/OXY2DEV/markview.nvim/commit/ffb465f7b99135eb7676bd2edf53803acc97dcc6)), closes [#455](https://github.com/OXY2DEV/markview.nvim/issues/455)
+* **asciidoc:** Added `document title` support ([966a713](https://github.com/OXY2DEV/markview.nvim/commit/966a713f3d28cb59f6cb8defa7b101561bac4a89))
+* **asciidoc:** Added `section_title` support ([99f6641](https://github.com/OXY2DEV/markview.nvim/commit/99f66416f46db565c4061e3141102100c3315aa5))
+* **asciidoc:** Added `TOC` support ([69226e4](https://github.com/OXY2DEV/markview.nvim/commit/69226e424188728e15c5504746f18bbdc20704a8))
+* **asciidoc:** Added admonitions support ([8cc85d4](https://github.com/OXY2DEV/markview.nvim/commit/8cc85d445a31feeb8bb0d792726d1fba1b761bb0))
+* **asciidoc:** Added checkboxes support ([40ac165](https://github.com/OXY2DEV/markview.nvim/commit/40ac165eda9c79f8821f0cf91cb06a04130eba2d))
+* **asciidoc:** Added document attributes ([7da3aea](https://github.com/OXY2DEV/markview.nvim/commit/7da3aea514199505e13c83bbc3a84200c614cacb))
+* **asciidoc:** Added horizontal rule support ([30da385](https://github.com/OXY2DEV/markview.nvim/commit/30da3855fc6c264e79a413936c50ebdf06f767e8))
+* **asciidoc:** Added Image macro support ([d482fb5](https://github.com/OXY2DEV/markview.nvim/commit/d482fb5e2acd470604fa72da01ee5a2ff71724d4))
+* **asciidoc:** Added keycodes support ([f245285](https://github.com/OXY2DEV/markview.nvim/commit/f2452854cac5fce5fb79f3b9a95f0f603fcc7182))
+* **asciidoc:** Added Literal block support ([5f2cc46](https://github.com/OXY2DEV/markview.nvim/commit/5f2cc4681c7bfd1610d7e85c9db6e203db29a284))
+* **asciidoc:** Added ordered & unordered list item support ([318d47e](https://github.com/OXY2DEV/markview.nvim/commit/318d47e02dbb8b50f2c0eb47ce0f7e782896d34b))
+* **comment:** Added `bold` & `italic` support ([87d74af](https://github.com/OXY2DEV/markview.nvim/commit/87d74af3f0c0a811080fc5412d8b9c5526573700))
+* **comment:** Added `code_block` support ([06fa1fc](https://github.com/OXY2DEV/markview.nvim/commit/06fa1fc145e4f3b252c3f75603f842ccc98bc36d))
+* **comment:** Added `url`, `taglink` & `autolink` ([6da007d](https://github.com/OXY2DEV/markview.nvim/commit/6da007d6cffa72de7c10fe04ab05b0bfb35e4509))
+* **comment:** Added compatibilty for legacy parser ([05a6d53](https://github.com/OXY2DEV/markview.nvim/commit/05a6d53d5a871d7e8ff835bafdf3d7faf5aa3426))
+* **comment:** Added link labels for `autolinks` ([492f4e7](https://github.com/OXY2DEV/markview.nvim/commit/492f4e723744cbe05d8716fa6400f4e4988076f3))
+* **comment:** Added option for rendering *fancy comments* ([f83c081](https://github.com/OXY2DEV/markview.nvim/commit/f83c081895c8fa06c162b431146781fc187bcc28))
+* **comment:** Added task scopes support ([6c07f8f](https://github.com/OXY2DEV/markview.nvim/commit/6c07f8f01fe76c6a4da774e1212a23b7671ace3e))
+* **config, comment, tasks:** Added more task type configs ([ab00aa4](https://github.com/OXY2DEV/markview.nvim/commit/ab00aa4fb1270e55ecc18039a062c2ccd6d02d48))
+* **config, comment:** Added missing config options ([ab00aa4](https://github.com/OXY2DEV/markview.nvim/commit/ab00aa4fb1270e55ecc18039a062c2ccd6d02d48))
+* **doctext:** Added `task` renderer ([46587f5](https://github.com/OXY2DEV/markview.nvim/commit/46587f58654933ea3f12d8ac1c289eee29287902))
+* **doctext:** Added configuration for `doctext` ([9c4a9a4](https://github.com/OXY2DEV/markview.nvim/commit/9c4a9a4de1f488e2d5777dfd9dc8531d47f40e10))
+* **doctext:** Added issue support ([46587f5](https://github.com/OXY2DEV/markview.nvim/commit/46587f58654933ea3f12d8ac1c289eee29287902))
+* **doctext:** Added mention support ([46587f5](https://github.com/OXY2DEV/markview.nvim/commit/46587f58654933ea3f12d8ac1c289eee29287902))
+* Fancy comments ([9935a98](https://github.com/OXY2DEV/markview.nvim/commit/9935a986432f0736319f14ed87a6fb10f78859a3))
+* **parsers:** Added `doctext` parser ([cd202c2](https://github.com/OXY2DEV/markview.nvim/commit/cd202c27e61239af5b95d6a6b984f40f1d98340c))
+
+
+### Bug Fixes
+
+* **asciidoc, asciidoc_inline:** Added option maps ([5c5b4b7](https://github.com/OXY2DEV/markview.nvim/commit/5c5b4b7f8150d918251cc923026b1d0f5f8fdc0d))
+* **asciidoc, checkboxes:** `scope_hl` is implemented ([50d672a](https://github.com/OXY2DEV/markview.nvim/commit/50d672a188d4a07ac00f6a155571160dcf6e3032))
+* **asciidoc, list_items:** Item index is now correctly parsed ([508b6b9](https://github.com/OXY2DEV/markview.nvim/commit/508b6b969f74972cee181592004ddba2cf5f5a6b))
+* **asciidoc:** Fixed incorrect type definitions ([6e22829](https://github.com/OXY2DEV/markview.nvim/commit/6e228298c72a3b5f813c342a0f171fe2ac8d4450))
+* **asciidoc:** Typo fixes and corrected `hl` handling ([86e2643](https://github.com/OXY2DEV/markview.nvim/commit/86e2643106a29d71403f0fad6a93b1f18df510db))
+* **asciidoc:** Updated base config ([afe02ad](https://github.com/OXY2DEV/markview.nvim/commit/afe02adb1bba682c0887bae9dfac309ac9d52d79))
+* **config, condition:** Parity between `can_attach()` & `buf_handle()` ([d92f4d3](https://github.com/OXY2DEV/markview.nvim/commit/d92f4d3fdef5b1e80011dd42ef72a008d901b3ab))
+* correct typo and function call in hybridToggle action ([18fc148](https://github.com/OXY2DEV/markview.nvim/commit/18fc148c83925919d94f3fc8e5c74f2d108b9b44))
+* correct typo and function call in hybridToggle action ([9864ca2](https://github.com/OXY2DEV/markview.nvim/commit/9864ca29e146fc1d55ce2bae34f5c1b9034b3bb7))
+* **doctext:** `@` in mentions are now hidden ([0d815a8](https://github.com/OXY2DEV/markview.nvim/commit/0d815a8c73d8da9aae19731a984ab84f12097953))
+* **filetypes:** Proerly handle `nil` values ([c99341c](https://github.com/OXY2DEV/markview.nvim/commit/c99341c143a22579605e3dafeff2e821d1f75a44))
+* **lazy:** Try attaching to buffers if lazy loaded ([633e627](https://github.com/OXY2DEV/markview.nvim/commit/633e627f82011dc888ea4444a98c98bd783951b0))
+* no longer overriding blink-cmp per_filetype sources ([a185a64](https://github.com/OXY2DEV/markview.nvim/commit/a185a643e301d023f6364ffe60da41607ba82733))
+* **parsers, asciidoc_inline:** Reduce unnecessary recursion when parsing ([c81472c](https://github.com/OXY2DEV/markview.nvim/commit/c81472c16e2ac93d14517d59b9da386adafd4a15))
+* **renderer, asciidoc, tostring:** Fixed escape char matches ([766fda4](https://github.com/OXY2DEV/markview.nvim/commit/766fda4f9e87d2450b296d74bfe9aab89a3e4675))
+* **renderer, typst, code_block:** Added wrap support ([5465846](https://github.com/OXY2DEV/markview.nvim/commit/5465846fcec3d5222369b0565b952b8d46fec9be)), closes [#470](https://github.com/OXY2DEV/markview.nvim/issues/470)
+* **renderer, visual_text:** Visual text isn't applied if parser is ([8f20e21](https://github.com/OXY2DEV/markview.nvim/commit/8f20e21cfcf238927f47ded082cb83be02fe52e5)), closes [#455](https://github.com/OXY2DEV/markview.nvim/issues/455)
+* **renderers, asciidoc_inline:** Fixed bug with icon not showing ([cead72e](https://github.com/OXY2DEV/markview.nvim/commit/cead72e29b26c2502e4d3074bec9c7ef977189d4))
+* **renderers, asciidoc_inline:** Fixed conceal for `bold` & `italic`s ([97a024b](https://github.com/OXY2DEV/markview.nvim/commit/97a024bd37b8e0b13419b676971e9b7723d36be1))
+* **renderers, asciidoc, document_titles:** Correctly handle conceal ([33e897d](https://github.com/OXY2DEV/markview.nvim/commit/33e897d8404b1fb97cb8aec3648a6bb36b7230be))
+* **yaml:** Disable rendering of YAML in code blocks ([9e852c2](https://github.com/OXY2DEV/markview.nvim/commit/9e852c299351fc2110e763edc7fc899358ee112e)), closes [#455](https://github.com/OXY2DEV/markview.nvim/issues/455)
+
 ## [28.0.0](https://github.com/OXY2DEV/markview.nvim/compare/v27.0.0...v28.0.0) (2025-12-23)
 
 
