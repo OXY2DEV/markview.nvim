@@ -149,7 +149,9 @@ typst.code_block = function (buffer, item)
 		return;
 	end
 
-	if config.style == "simple" then
+	local win = utils.buf_getwin(buffer);
+
+	if not win or config.style == "simple" or item.uses_tab or ( vim.o.wrap == true or vim.wo[win].wrap == true ) then
 		vim.api.nvim_buf_set_extmark(buffer, typst.ns, range.row_start, range.col_start, {
 			undo_restore = false, invalidate = true,
 
@@ -1579,6 +1581,7 @@ typst.render = function (buffer, content)
 	local custom = spec.get({ "renderers" }, { fallback = {} });
 
 	for _, item in ipairs(content or {}) do
+
 		local success, err;
 
 		if custom[item.class] then

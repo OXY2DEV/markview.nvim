@@ -8,6 +8,8 @@
 ---
 ---@field text string[]
 ---@field range markview.parsed.range
+---
+---@field uses_tab boolean Does the lock contain any `tab`s inside it?
 
 ------------------------------------------------------------------------------
 

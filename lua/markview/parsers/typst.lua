@@ -54,8 +54,19 @@ typst.code = function (buffer, TSNode, text, range)
 			range = range
 		});
 	else
+		local uses_tab = false;
+
+		for _, line in ipairs(text) do
+			if string.match(line, "\t") then
+				uses_tab = true;
+				break;
+			end
+		end
+
 		typst.insert({
 			class = "typst_code_block",
+
+			uses_tab = uses_tab,
 
 			text = text,
 			range = range

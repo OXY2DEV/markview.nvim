@@ -47,7 +47,7 @@ code_blocks                                    *markview.nvim-typst.code_blocks*
 	---@field sign? string Sign for the code block.
 	---@field sign_hl? string Highlight group for the sign.
 	---@field style
-	---| "simple" Only highlights the lines inside this block.
+	---| "simple" Only highlights the lines inside this block. This will be used if a `wrap` is enabled or if `tab` is used in the text.
 	---| "block" Creates a box around the code block.
 	---@field text string Text to use as the label.
 	---@field text_direction
