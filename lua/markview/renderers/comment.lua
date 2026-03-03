@@ -671,14 +671,16 @@ comment.code_block = function (buffer, item)
 
 		--- Render bottom
 		local end_delim_conceal_from = range.end_delim[2] + #string.match(item.delimiters[2], "^%s*");
+		-- fix(#471): Add border to end of the line to prevent changing cursor position when scrolling. 
+		local border_from = range.col_start + #item.text[#item.text];
 
 		vim.api.nvim_buf_set_extmark(buffer, comment.ns, range.row_end, end_delim_conceal_from, {
 			undo_restore = false, invalidate = true,
-			end_col = range.col_start + #item.text[#item.text],
+			end_col = border_from,
 			conceal = ""
 		});
 
-		vim.api.nvim_buf_set_extmark(buffer, comment.ns, range.row_end, end_delim_conceal_from, {
+		vim.api.nvim_buf_set_extmark(buffer, comment.ns, range.row_end, border_from, {
 			undo_restore = false, invalidate = true,
 
 			virt_text_pos = "inline",
