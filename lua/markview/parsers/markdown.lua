@@ -695,23 +695,41 @@ local function lpeg_processor(line)
 
 	local cont = vim.lpeg.C(
 		( esc_pipe + not_pipe )^1
-	)
+	);
+	local empty_cont = vim.lpeg.C(
+		( esc_pipe + not_pipe )^1
+	);
 
 	local init_col = pipe * cont * pipe;
 	local end_col = cont * pipe^-1;
+	local empty_col = empty_cont * pipe;
 
-	local ROW = vim.lpeg.Ct( init_col * end_col^0 );
+	local ROW = vim.lpeg.Ct( init_col * (empty_col + end_col)^0 );
 
 	local RESULT = ROW:match(line);
 	local _o = {};
 	local y = 0;
 
-	for _, col in ipairs(RESULT or {}) do
+	for c, col in ipairs(RESULT or {}) do
 		---|fS
 
 		if col == "|" then
 			table.insert(_o, {
 				class = "separator",
+
+				text = col,
+
+				col_start = y,
+				col_end = y + #col,
+			});
+		elseif string.match(col, "%s+") and RESULT[c + 1] == "|" then
+			--[[
+				NOTE: An empty column must be followed by a pipe(`|`).
+
+				See: #473 for the first case.
+			]]
+			table.insert(_o, {
+				class = "column",
 
 				text = col,
 
