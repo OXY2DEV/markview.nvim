@@ -1,5 +1,17 @@
 # Changelog
 
+## [28.2.0](https://github.com/OXY2DEV/markview.nvim/compare/v28.1.0...v28.2.0) (2026-03-07)
+
+
+### Features
+
+* **latex:** Allow rendering of symbols directly part of `subscript`/`superscript` ([239feb7](https://github.com/OXY2DEV/markview.nvim/commit/239feb70ed1cfc26e2c91b32590fd63f7b015599)), closes [#475](https://github.com/OXY2DEV/markview.nvim/issues/475)
+
+
+### Bug Fixes
+
+* **parsers, markdown, table:** Allow empty columns ([fdc8bac](https://github.com/OXY2DEV/markview.nvim/commit/fdc8bac74550f2ac847578cb74c7ad99b3421bc2)), closes [#473](https://github.com/OXY2DEV/markview.nvim/issues/473)
+
 ## [28.1.0](https://github.com/OXY2DEV/markview.nvim/compare/v28.0.0...v28.1.0) (2026-03-04)
 
 
