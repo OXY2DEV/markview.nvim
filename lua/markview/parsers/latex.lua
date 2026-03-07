@@ -157,6 +157,50 @@ latex.command = function (buffer, TSNode, text, range)
 	});
 end
 
+--- LaTeX symbol with style(e.g. `a_\alpha`).
+---@param _ integer
+---@param TSNode table
+---@param text string[]
+---@param range markview.parsed.range
+---@param style "subscripts" | "superscripts"
+latex.styled_command = function (_, TSNode, text, range, style)
+	local name = text[1]:sub(2);
+
+	if within_text_mode(TSNode) then
+		return;
+	elseif
+		name:len() == 2 or
+		name:match("^\\math")
+	then
+		return;
+	end
+
+	latex.insert({
+		class = "latex_symbol",
+		name = name,
+		style = style,
+
+		text = text,
+		range = range
+	});
+end
+
+---@param buffer integer
+---@param TSNode table
+---@param text string[]
+---@param range markview.parsed.range
+latex.subscript_command = function (buffer, TSNode, text, range)
+	latex.styled_command(buffer, TSNode, text, range, "subscripts");
+end
+
+---@param buffer integer
+---@param TSNode table
+---@param text string[]
+---@param range markview.parsed.range
+latex.superscript_command = function (buffer, TSNode, text, range)
+	latex.styled_command(buffer, TSNode, text, range, "superscripts");
+end
+
 --- LaTeX escaped character parser.
 ---@param TSNode table
 ---@param text string[]
@@ -515,6 +559,12 @@ latex.parse = function (buffer, TSTree, from, to)
 			(command_name)
 			(curly_group)+
 			) @latex.command)
+
+		((subscript
+			subscript: (command_name) @latex.subscript_command))
+
+		((superscript
+			superscript: (command_name) @latex.superscript_command))
 
 		((generic_command
 			.

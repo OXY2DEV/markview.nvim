@@ -449,7 +449,11 @@ latex.subscript = function (buffer, item)
 				end_col = range.col_end,
 				conceal = "",
 			});
-		elseif symbols.subscripts[item.text[1]:sub(2)] then
+		elseif symbols.subscripts[item.text[1]:sub(3)] then
+			if item.preview then
+				table.insert(latex.cache.style_regions.subscripts, item);
+			end
+
 			vim.api.nvim_buf_set_extmark(buffer, latex.ns, range.row_start, range.col_start, {
 				undo_restore = false, invalidate = true,
 				end_col = range.col_start + 1,
@@ -562,7 +566,11 @@ latex.superscript = function (buffer, item)
 				end_col = range.col_end,
 				conceal = "",
 			});
-		elseif symbols.superscripts[item.text[1]:sub(2)] then
+		elseif symbols.superscripts[item.text[1]:sub(3)] then
+			if item.preview then
+				table.insert(latex.cache.style_regions.superscripts, item);
+			end
+
 			vim.api.nvim_buf_set_extmark(buffer, latex.ns, range.row_start, range.col_start, {
 				undo_restore = false, invalidate = true,
 				end_col = range.col_start + 1,

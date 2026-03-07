@@ -43,6 +43,8 @@ Some math in a line, $1+2=3$.
 $$
 a_s
 b_{some text + \gamma}
+c_\gamma
+d_\delta
 $$
 
 ; Superscripts
@@ -50,6 +52,8 @@ $$
 $$
 c^5
 d^{Some other text + \alpha}
+c^\gamma
+d^\pounds
 $$
 
 ; Symbols
