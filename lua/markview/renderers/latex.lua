@@ -4,6 +4,22 @@ local symbols = require("markview.symbols");
 local spec = require("markview.spec");
 local utils = require("markview.utils");
 
+---@param text string?
+---@return string?
+local function normalize_style_symbol(text)
+	if type(text) ~= "string" or text == "" then
+		return nil;
+	end
+
+	local key = text:sub(2);
+
+	if key:match("^\\") then
+		key = key:sub(2);
+	end
+
+	return key ~= "" and key or nil;
+end
+
 --- Cached values.
 latex.cache = {
 	font_regions = {},
@@ -449,20 +465,28 @@ latex.subscript = function (buffer, item)
 				end_col = range.col_end,
 				conceal = "",
 			});
-		elseif symbols.subscripts[item.text[1]:sub(2)] then
-			vim.api.nvim_buf_set_extmark(buffer, latex.ns, range.row_start, range.col_start, {
-				undo_restore = false, invalidate = true,
-				end_col = range.col_start + 1,
-				conceal = ""
-			});
+		else
+			local symbol_key = normalize_style_symbol(item.text[1]);
+			local symbol_text = symbol_key and (
+				symbols.subscripts[symbol_key] or
+				symbols.entries[symbol_key]
+			);
 
-			vim.api.nvim_buf_set_extmark(buffer, latex.ns, range.row_start, range.col_start + 1, {
-				undo_restore = false, invalidate = true,
-				virt_text_pos = "overlay",
-				virt_text = { { symbols.subscripts[item.text[1]:sub(2)], utils.set_hl(hl) } },
+			if symbol_text then
+				vim.api.nvim_buf_set_extmark(buffer, latex.ns, range.row_start, range.col_start, {
+					undo_restore = false, invalidate = true,
+					end_col = range.col_start + 1,
+					conceal = ""
+				});
 
-				hl_mode = "combine"
-			});
+				vim.api.nvim_buf_set_extmark(buffer, latex.ns, range.row_start, range.col_start + 1, {
+					undo_restore = false, invalidate = true,
+					virt_text_pos = "overlay",
+					virt_text = { { symbol_text, utils.set_hl(hl) } },
+
+					hl_mode = "combine"
+				});
+			end
 		end
 	end
 
@@ -562,20 +586,28 @@ latex.superscript = function (buffer, item)
 				end_col = range.col_end,
 				conceal = "",
 			});
-		elseif symbols.superscripts[item.text[1]:sub(2)] then
-			vim.api.nvim_buf_set_extmark(buffer, latex.ns, range.row_start, range.col_start, {
-				undo_restore = false, invalidate = true,
-				end_col = range.col_start + 1,
-				conceal = ""
-			});
+		else
+			local symbol_key = normalize_style_symbol(item.text[1]);
+			local symbol_text = symbol_key and (
+				symbols.superscripts[symbol_key] or
+				symbols.entries[symbol_key]
+			);
 
-			vim.api.nvim_buf_set_extmark(buffer, latex.ns, range.row_start, range.col_start + 1, {
-				undo_restore = false, invalidate = true,
-				virt_text_pos = "overlay",
-				virt_text = { { symbols.superscripts[item.text[1]:sub(2)], utils.set_hl(hl) } },
+			if symbol_text then
+				vim.api.nvim_buf_set_extmark(buffer, latex.ns, range.row_start, range.col_start, {
+					undo_restore = false, invalidate = true,
+					end_col = range.col_start + 1,
+					conceal = ""
+				});
 
-				hl_mode = "combine"
-			});
+				vim.api.nvim_buf_set_extmark(buffer, latex.ns, range.row_start, range.col_start + 1, {
+					undo_restore = false, invalidate = true,
+					virt_text_pos = "overlay",
+					virt_text = { { symbol_text, utils.set_hl(hl) } },
+
+					hl_mode = "combine"
+				});
+			end
 		end
 	end
 

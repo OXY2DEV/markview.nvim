@@ -1,5 +1,6 @@
 --- HTML parser for `markview.nvim`
 local latex = {};
+local symbols = require("markview.symbols");
 
 --- `string.gsub()` with support for multiple patterns.
 ---@param text string
@@ -13,6 +14,29 @@ local function bulk_gsub (text, gsubs)
 	end
 
 	return _o;
+end
+
+---@param symbol_map table<string, string>
+---@return string[]
+local function style_symbol_commands(symbol_map)
+	local commands = {};
+
+	for name, _ in pairs(symbol_map or {}) do
+		if type(name) == "string" and #name > 1 and name:match("^[A-Za-z]+$") then
+			table.insert(commands, "\\" .. name);
+		end
+	end
+
+	table.sort(commands, function (a, b)
+		return #a > #b;
+	end);
+
+	return commands;
+end
+
+---@return string[]
+local function previewable_symbol_commands()
+	return style_symbol_commands(symbols.entries);
 end
 
 --- Checks if the given node is inside of `\text{}`.
@@ -304,23 +328,7 @@ latex.subscript = function (_, TSNode, text, range)
 	local node = TSNode;
 	local level, preview = 0, true;
 
-	local supported_symbols = {
-		"\\beta",
-		"\\gamma",
-		"\\rho",
-		"\\phi",
-		"\\chi",
-
-		-- See OZU2DEV/markview#379
-		"\\epsilon",
-		"\\omicron",
-		"\\alpha",
-		"\\eta",
-		"\\nu",
-		"\\rho",
-		"\\upsilon",
-		"\\sigma",
-	}
+	local supported_symbols = previewable_symbol_commands();
 
 	for _, line in ipairs(text) do
 		if bulk_gsub(line, supported_symbols):match("%\\") then
@@ -359,26 +367,7 @@ latex.superscript = function (_, TSNode, text, range)
 	local node = TSNode;
 	local level, preview = 0, true;
 
-	local supported_symbols = {
-		"\\alpha",
-		"\\beta",
-		"\\gamma",
-		"\\delta",
-		"\\epsilon",
-		"\\theta",
-		"\\iota",
-		"\\Phi",
-		"\\varphi",
-		"\\chi",
-
-		-- See OZU2DEV/markview#379
-		"\\omicron",
-		"\\eta",
-		"\\nu",
-		"\\rho",
-		"\\upsilon",
-		"\\sigma",
-	}
+	local supported_symbols = previewable_symbol_commands();
 
 	for _, line in ipairs(text) do
 		if bulk_gsub(line, supported_symbols):match("%\\") then
