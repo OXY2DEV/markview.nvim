@@ -151,7 +151,7 @@ markdown.output = function (str, buffer)
 			str = str:gsub(
 				concat({
 					"`",
-					vim.pesc(inline_code),
+					inline_code,
 					"`"
 				}),
 				concat({
@@ -171,27 +171,27 @@ markdown.output = function (str, buffer)
 				}
 			});
 
-			str = str:gsub(
-				concat({
-					"`",
-					inline_code,
-					"`"
-				}),
-				concat({
-					_codes.corner_left or "",
-					_codes.padding_left or "",
-					string.rep("X", vim.fn.strdisplaywidth(inline_code)),
-					_codes.padding_right or "",
-					_codes.corner_left or ""
-				})
-			);
-
-			decorations = decorations + vim.fn.strdisplaywidth(table.concat({
+		str = str:gsub(
+			concat({
+				"`",
+				inline_code,
+				"`"
+			}),
+			concat({
 				_codes.corner_left or "",
 				_codes.padding_left or "",
+				string.rep("X", vim.fn.strdisplaywidth(inline_code)),
 				_codes.padding_right or "",
-				_codes.corner_left or ""
-			}));
+				_codes.corner_right or ""
+			})
+		);
+
+		decorations = decorations + vim.fn.strdisplaywidth(table.concat({
+			_codes.corner_left or "",
+			_codes.padding_left or "",
+			_codes.padding_right or "",
+			_codes.corner_right or ""
+		}));
 		end
 	end
 
@@ -242,6 +242,18 @@ markdown.output = function (str, buffer)
 	end
 
 	for italic in str:gmatch("%_(.-)%_") do
+		local full = "_" .. italic .. "_";
+		local s, e = str:find(full, 1, true);
+
+		if s then
+			local before_char = s > 1 and str:sub(s - 1, s - 1) or "";
+			local after_char = e < #str and str:sub(e + 1, e + 1) or "";
+
+			if before_char:match("%w") or after_char:match("%w") then
+				goto continue_italic
+			end
+		end
+
 		str = str:gsub(
 			concat({
 				"_",
@@ -253,6 +265,8 @@ markdown.output = function (str, buffer)
 			}),
 			1
 		);
+
+		::continue_italic::
 	end
 
 	for striked in str:gmatch("%~%~(.-)%~%~") do
@@ -359,7 +373,7 @@ markdown.output = function (str, buffer)
 				_hls.icon or "",
 				string.rep("X", vim.fn.strdisplaywidth(highlight)),
 				_hls.padding_right or "",
-				_hls.corner_left or ""
+				_hls.corner_right or ""
 			})
 		);
 
@@ -368,7 +382,7 @@ markdown.output = function (str, buffer)
 			_hls.padding_left or "",
 			_hls.icon or "",
 			_hls.padding_right or "",
-			_hls.corner_left or ""
+			_hls.corner_right or ""
 		}));
 
 		::continue::
@@ -834,7 +848,7 @@ markdown.output = function (str, buffer)
 				"Y",
 				string.rep("X", domain:len()),
 				_email.padding_right or "",
-				_email.corner_left or ""
+				_email.corner_right or ""
 			})
 		);
 
@@ -843,7 +857,7 @@ markdown.output = function (str, buffer)
 			_email.padding_left or "",
 			_email.icon or "",
 			_email.padding_right or "",
-			_email.corner_left or ""
+			_email.corner_right or ""
 		}));
 	end
 
@@ -882,7 +896,7 @@ markdown.output = function (str, buffer)
 				_uri.icon or "",
 				string.rep("X", address:len()),
 				_uri.padding_right or "",
-				_uri.corner_left or ""
+				_uri.corner_right or ""
 			})
 		);
 
@@ -891,7 +905,7 @@ markdown.output = function (str, buffer)
 			_uri.padding_left or "",
 			_uri.icon or "",
 			_uri.padding_right or "",
-			_uri.corner_left or ""
+			_uri.corner_right or ""
 		}));
 
 	    ::continue::
