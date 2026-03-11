@@ -1,3 +1,4 @@
+---@type markview.config.markdown_inline
 return {
 	enable = true,
 
