@@ -253,6 +253,11 @@ end
 --- Setup function for markview.
 ---@param config markview.config?
 spec.setup = function (config)
+	if package.loaded["markview.renderers.markdown.tostring"] then
+		-- NOTE: Only update the cache used by `tostring()` when config is updated.
+		require("markview.renderers.markdown.tostring").update_cache();
+	end
+
 	spec.config = vim.tbl_deep_extend("force", spec.config, config or {});
 end
 
