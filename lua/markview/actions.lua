@@ -140,9 +140,16 @@ actions.render = function (_buffer, _state, _config)
 	local renderer = require("markview.renderer");
 	local spec = require("markview.spec");
 
-	spec.tmp_setup(_config);
-
 	local buffer = _buffer or vim.api.nvim_get_current_buf();
+
+	-- Persist per-buffer config: store when provided, retrieve when absent
+	if _config then
+		vim.b[buffer].__markview_config = _config;
+	elseif not _config then
+		_config = vim.b[buffer].__markview_config;
+	end
+
+	spec.tmp_setup(_config);
 
 	local state = require("markview.state");
 	local buf_state = _state or state.get_buffer_state(buffer, true);
