@@ -1,4 +1,5 @@
 local actions = {};
+local buffer_configs = {};
 
 ---|fS "chunk: Hybrid mode related stuff"
 
@@ -142,11 +143,11 @@ actions.render = function (_buffer, _state, _config)
 
 	local buffer = _buffer or vim.api.nvim_get_current_buf();
 
-	-- Persist per-buffer config: store when provided, retrieve when absent
-	if _config then
-		vim.b[buffer].__markview_config = _config;
-	elseif not _config then
-		_config = vim.b[buffer].__markview_config;
+	-- Persist per-buffer config in Lua-only state: store when provided, retrieve when absent
+	if _config ~= nil then
+		buffer_configs[buffer] = _config;
+	else
+		_config = buffer_configs[buffer];
 	end
 
 	spec.tmp_setup(_config);
