@@ -248,6 +248,20 @@ autocmds.bufHandle = function (args)
 
 	require("markview.actions").attach(buf);
 
+	--[[
+		FIX: Apply query for `codecompanion.nvim`
+
+		Codecompanion causes queries to be overwritten. So, we set the queries again for those buffers.
+		Closes #480
+	]]
+	if ft == "codecompanion" then
+		vim.schedule(function ()
+			if vim.api.nvim_buf_is_valid(buf) then
+				require("markview.actions").set_query(buf);
+			end
+		end);
+	end
+
 	---|fE
 end
 
