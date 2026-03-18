@@ -2489,6 +2489,13 @@ markdown.table = function (buffer, item)
 
 		item.__continuation_vt = continuation_vt;
 
+		--- Right border info for the first screen row of wrapping lines.
+		--- The concealed right pipe ends up on the continuation line, so
+		--- the first screen row needs an explicit right border overlay.
+		local right_border, right_hl = get_border("row", 3);
+		item.__right_border_vt = { { right_border, right_hl } };
+		item.__table_width = utils.virt_len(continuation_vt);
+
 		--- Register for post_render so __table runs after inline extmarks.
 		table.insert(markdown.cache, item);
 	end
@@ -2531,6 +2538,18 @@ markdown.__table = function (buffer, item)
 				local line_len = #(vim.api.nvim_buf_get_lines(buffer, row, row + 1, false)[1] or "");
 				local lnum = row + 1;
 				local first_screen_row = vim.fn.screenpos(win, lnum, 1).row;
+
+				--- Place right border on first screen row.
+				--- The concealed right pipe wraps to a continuation line,
+				--- leaving the first screen row without a right border.
+				if item.__right_border_vt and item.__table_width then
+					vim.api.nvim_buf_set_extmark(buffer, markdown.ns, row, 0, {
+						undo_restore = false, invalidate = true,
+						virt_text = item.__right_border_vt,
+						virt_text_win_col = item.__table_width - 1,
+						hl_mode = "combine",
+					});
+				end
 
 				for w = 1, height.all - 1 do
 					local target_row = first_screen_row + w;
