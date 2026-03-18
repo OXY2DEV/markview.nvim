@@ -1711,23 +1711,21 @@ markdown.table = function (buffer, item)
 
 			table.insert(tmp, {
 				top,
-				is_wrapped and "@punctuation.special.markdown" or utils.set_hl(top_hl)
+				utils.set_hl(top_hl)
 			});
 
-			if is_wrapped == false then
-				vim.api.nvim_buf_set_extmark(buffer, markdown.ns, range.row_start, range.col_start + part.col_start, {
-					undo_restore = false, invalidate = true,
-					end_col = range.col_start + part.col_end,
-					conceal = "",
+			vim.api.nvim_buf_set_extmark(buffer, markdown.ns, range.row_start, range.col_start + part.col_start, {
+				undo_restore = false, invalidate = true,
+				end_col = range.col_start + part.col_end,
+				conceal = "",
 
-					virt_text_pos = "inline",
-					virt_text = {
-						{ border, border_hl }
-					},
+				virt_text_pos = "inline",
+				virt_text = {
+					{ border, border_hl }
+				},
 
-					hl_mode = "combine"
-				})
-			end
+				hl_mode = "combine"
+			})
 
 
 			if p == #item.header and config.block_decorator == true then
@@ -1763,7 +1761,7 @@ markdown.table = function (buffer, item)
 
 			table.insert(tmp, {
 				top,
-				is_wrapped and "@punctuation.special.markdown" or utils.set_hl(top_hl)
+				utils.set_hl(top_hl)
 			});
 
 			vim.api.nvim_buf_set_extmark(buffer, markdown.ns, range.row_start, range.col_start + part.col_start, {
@@ -1775,7 +1773,7 @@ markdown.table = function (buffer, item)
 				virt_text = {
 					{
 						border,
-						is_wrapped and "@punctuation.special.markdown" or utils.set_hl(border_hl)
+						utils.set_hl(border_hl)
 					}
 				},
 
@@ -1847,7 +1845,7 @@ markdown.table = function (buffer, item)
 
 			table.insert(tmp, {
 				string.rep(top, column_width),
-				is_wrapped and "@punctuation.special.markdown" or utils.set_hl(top_hl)
+				utils.set_hl(top_hl)
 			});
 
 			if visible_width < column_width then
@@ -1904,10 +1902,6 @@ markdown.table = function (buffer, item)
 		local y = range.col_start + sep.col_start;
 
 		if sep.class == "separator" then
-			if is_wrapped == true then
-				goto continue;
-			end
-
 			local border, border_hl = get_border("separator", 4);
 
 			if s == 1 then
@@ -1935,7 +1929,7 @@ markdown.table = function (buffer, item)
 				undo_restore = false, invalidate = true,
 				virt_text_pos = "inline",
 				virt_text = {
-					is_wrapped == true and { "|", "@punctuation.special.markdown" } or { border, border_hl }
+					{ border, border_hl }
 				},
 
 				right_gravity = s ~= 1,
@@ -1948,23 +1942,7 @@ markdown.table = function (buffer, item)
 			local width = vim.fn.strdisplaywidth(sep.text);
 			local left = col_widths[c] - width;
 
-			if is_wrapped == true then
-				if left > 0 then
-					vim.api.nvim_buf_set_extmark(buffer, markdown.ns, x, (range.col_start + sep.col_end) - 1, {
-						undo_restore = false, invalidate = true,
-
-						virt_text_pos = "inline",
-						virt_text = {
-							{
-								string.rep("-", left),
-								"@punctuation.special.markdown"
-							}
-						},
-
-						hl_mode = "combine"
-					});
-				end
-			elseif item.alignments[c] == "default" then
+			if item.alignments[c] == "default" then
 				if left > 0 then
 					vim.api.nvim_buf_set_extmark(buffer, markdown.ns, x, y, {
 						undo_restore = false, invalidate = true,
@@ -2178,37 +2156,32 @@ markdown.table = function (buffer, item)
 					border, border_hl = get_border("row", 3);
 				end
 
-				if is_wrapped == false then
-					vim.api.nvim_buf_set_extmark(buffer, markdown.ns, range.row_start + 1 + r, range.col_start + part.col_start, {
-						undo_restore = false, invalidate = true,
-						end_col = range.col_start + part.col_end,
-						conceal = "",
+				vim.api.nvim_buf_set_extmark(buffer, markdown.ns, range.row_start + 1 + r, range.col_start + part.col_start, {
+					undo_restore = false, invalidate = true,
+					end_col = range.col_start + part.col_end,
+					conceal = "",
 
-						virt_text_pos = "inline",
-						virt_text = {
-							{ border, border_hl }
-						},
+					virt_text_pos = "inline",
+					virt_text = {
+						{ border, border_hl }
+					},
 
-						hl_mode = "combine"
-					})
-				end
+					hl_mode = "combine"
+				})
 			elseif part.class == "missing_seperator" then
 				local border, border_hl = get_border("row", r == 1 and 1 or 3);
 
 				vim.api.nvim_buf_set_extmark(buffer, markdown.ns, range.row_start + 1 + r, range.col_start + part.col_start, {
 					undo_restore = false, invalidate = true,
 					virt_text_pos = "inline",
-					virt_text = {
-						is_wrapped and {
-							"|",
-							"@punctuation.special.markdown"
-						} or {
-							border,
-							utils.set_hl(border_hl)
-						}
-					},
+				virt_text = {
+					{
+						border,
+						utils.set_hl(border_hl)
+					}
+				},
 
-					right_gravity = r ~= 1,
+				right_gravity = r ~= 1,
 					hl_mode = "combine"
 				})
 			elseif part.class == "column" then
@@ -2310,23 +2283,21 @@ markdown.table = function (buffer, item)
 
 			table.insert(tmp, {
 				bottom,
-				is_wrapped and "@punctuation.special.markdown" or utils.set_hl(bottom_hl)
+				utils.set_hl(bottom_hl)
 			});
 
-			if is_wrapped == false then
-				vim.api.nvim_buf_set_extmark(buffer, markdown.ns, range.row_end - 1, range.col_start + part.col_start, {
-					undo_restore = false, invalidate = true,
-					end_col = range.col_start + part.col_end,
-					conceal = "",
+			vim.api.nvim_buf_set_extmark(buffer, markdown.ns, range.row_end - 1, range.col_start + part.col_start, {
+				undo_restore = false, invalidate = true,
+				end_col = range.col_start + part.col_end,
+				conceal = "",
 
-					virt_text_pos = "inline",
-					virt_text = {
-						{ border, border_hl }
-					},
+				virt_text_pos = "inline",
+				virt_text = {
+					{ border, border_hl }
+				},
 
-					hl_mode = "combine"
-				});
-			end
+				hl_mode = "combine"
+			});
 
 			if p == #item.header and config.block_decorator == true then
 				local next_line = range.row_end == vim.api.nvim_buf_line_count(buffer) and 0 or #vim.api.nvim_buf_get_lines(buffer, range.row_end, range.row_end + 1, false)[1];
@@ -2359,7 +2330,7 @@ markdown.table = function (buffer, item)
 
 			table.insert(tmp, {
 				bottom,
-				is_wrapped == true and "@punctuation.special.markdown" or utils.set_hl(bottom_hl)
+				utils.set_hl(bottom_hl)
 			});
 
 			vim.api.nvim_buf_set_extmark(buffer, markdown.ns, range.row_end - 1, range.col_start + part.col_start, {
@@ -2369,10 +2340,7 @@ markdown.table = function (buffer, item)
 
 				virt_text_pos = "inline",
 				virt_text = {
-					is_wrapped and {
-						"|",
-						"@punctuation.special.markdown"
-					} or {
+					{
 						border,
 						utils.set_hl(border_hl)
 					}
@@ -2440,7 +2408,7 @@ markdown.table = function (buffer, item)
 
 			table.insert(tmp, {
 				string.rep(bottom, column_width),
-				is_wrapped and "@punctuation.special.markdown" or utils.set_hl(bottom_hl)
+				utils.set_hl(bottom_hl)
 			});
 
 			if visible_width < column_width then
