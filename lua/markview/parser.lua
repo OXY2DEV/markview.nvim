@@ -23,6 +23,10 @@ parser.create_ignore_range = function (language, items)
 		for _, item in ipairs(items["markdown_code_block"] or {}) do
 			table.insert(_r, { item.range.row_start, item.range.row_end })
 		end
+	elseif language == "asciidoc" then
+		for _, item in ipairs(items["asciidoc_code_block"] or {}) do
+			table.insert(_r, { item.range.row_start, item.range.row_end })
+		end
 	elseif language == "typst" then
 		-- Do not parse things inside raw block.
 		for _, item in ipairs(items["typst_raw_block"] or {}) do
