@@ -2493,6 +2493,105 @@ markdown.table = function (buffer, item)
 			c = c + 1;
 		end
 	end
+
+	--- Store data needed for wrap continuation borders.
+	--- The actual placement is deferred to `markdown.__table` (post_render),
+	--- which runs after all renderers (including markdown_inline) have
+	--- placed their extmarks. This ensures `nvim_win_text_height` reflects
+	--- the true visual line height including inline conceal/padding.
+	if is_wrapped == true then
+		--- Build continuation line virtual text from col_widths.
+		--- Pattern: │<spaces>│<spaces>│
+		local continuation_vt = {};
+		local left_border, left_hl = get_border("row", 1);
+
+		table.insert(continuation_vt, { left_border, left_hl });
+
+		for col_c = 1, #col_widths do
+			table.insert(continuation_vt, { string.rep(" ", col_widths[col_c]) });
+
+			if col_c < #col_widths then
+				local mid_border, mid_hl = get_border("row", 2);
+				table.insert(continuation_vt, { mid_border, mid_hl });
+			else
+				local right_border, right_hl = get_border("row", 3);
+				table.insert(continuation_vt, { right_border, right_hl });
+			end
+		end
+
+		item.__continuation_vt = continuation_vt;
+
+		--- Register for post_render so __table runs after inline extmarks.
+		table.insert(markdown.cache, item);
+	end
+end
+
+
+ -----------------------------------------------------------------------------------------
+
+
+--- Places table border characters on wrap continuation lines (post_render).
+---
+--- Runs after all renderers (including markdown_inline) have placed their
+--- extmarks, so `nvim_win_text_height` accurately reflects the visual line
+--- height. Uses binary search with `screenpos` for precise wrap boundary
+--- positions.
+---@param buffer integer
+---@param item markview.parsed.markdown.tables
+markdown.__table = function (buffer, item)
+	local continuation_vt = item.__continuation_vt;
+
+	if not continuation_vt then
+		return;
+	end
+
+	local win = utils.buf_getwin(buffer);
+
+	if not win then
+		return;
+	end
+
+	local range = item.range;
+
+	vim.api.nvim_win_call(win, function()
+		for row = range.row_start, range.row_end - 1 do
+			local height = vim.api.nvim_win_text_height(win, {
+				start_row = row, end_row = row
+			});
+
+			if height.all > 1 then
+				local line_len = #(vim.api.nvim_buf_get_lines(buffer, row, row + 1, false)[1] or "");
+				local lnum = row + 1;
+				local first_screen_row = vim.fn.screenpos(win, lnum, 1).row;
+
+				for w = 1, height.all - 1 do
+					local target_row = first_screen_row + w;
+
+					--- Binary search for the first byte on `target_row`.
+					local lo, hi = 1, line_len;
+
+					while lo < hi do
+						local mid = math.floor((lo + hi) / 2);
+
+						if vim.fn.screenpos(win, lnum, mid).row < target_row then
+							lo = mid + 1;
+						else
+							hi = mid;
+						end
+					end
+
+					if lo <= line_len then
+						vim.api.nvim_buf_set_extmark(buffer, markdown.ns, row, lo - 1, {
+							undo_restore = false, invalidate = true,
+							virt_text = continuation_vt,
+							virt_text_win_col = 0,
+							hl_mode = "combine",
+						});
+					end
+				end
+			end
+		end
+	end);
 end
 
 
