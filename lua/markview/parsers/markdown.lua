@@ -672,6 +672,29 @@ local function overlap (row_start)
 	return top_border, border_overlap;
 end
 
+---|fS "feat: LPeg parser for table rows"
+
+local lpeg = vim.lpeg;
+
+local pipe = lpeg.C("|");
+local not_pipe = lpeg.P(1) - lpeg.P("|");
+local esc_pipe = lpeg.P("\\|");
+
+local cont = lpeg.C(
+	( esc_pipe + not_pipe )^1
+);
+local empty_cont = lpeg.C(
+	( esc_pipe + not_pipe )^1
+);
+
+local init_col = pipe * cont * pipe;
+local end_col = cont * pipe^-1;
+local empty_col = empty_cont * pipe;
+
+local ROW = lpeg.Ct( init_col * (empty_col + end_col)^0 );
+
+---|fE
+
 --[[
 LPeg grammar for markdown table rows.
 
@@ -688,23 +711,6 @@ local function lpeg_processor(line)
 
 	line = line:gsub("^%s*", "");
 	-- line = line:gsub("\\|", "  ");
-
-	local pipe = vim.lpeg.C("|");
-	local not_pipe = vim.lpeg.P(1) - vim.lpeg.P("|");
-	local esc_pipe = vim.lpeg.P("\\|");
-
-	local cont = vim.lpeg.C(
-		( esc_pipe + not_pipe )^1
-	);
-	local empty_cont = vim.lpeg.C(
-		( esc_pipe + not_pipe )^1
-	);
-
-	local init_col = pipe * cont * pipe;
-	local end_col = cont * pipe^-1;
-	local empty_col = empty_cont * pipe;
-
-	local ROW = vim.lpeg.Ct( init_col * (empty_col + end_col)^0 );
 
 	local RESULT = ROW:match(line);
 	local _o = {};
@@ -865,7 +871,7 @@ markdown.table = function (_, _, text, range)
 
 	--- Line processor.
 	local function line_processor (line)
-		if vim.lpeg then
+		if lpeg then
 			local succes, res = pcall(lpeg_processor, line);
 
 			if succes == false then
