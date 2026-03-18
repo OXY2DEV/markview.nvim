@@ -1746,7 +1746,7 @@ markdown.table = function (buffer, item)
 						hl_mode = "combine"
 					})
 				elseif item.top_border == true and range.row_start > 0 then
-					vim.api.nvim_buf_set_extmark(buffer, markdown.ns, range.row_start - 1, math.min(range.col_start, prev_line), {
+					item.__top_border_id = vim.api.nvim_buf_set_extmark(buffer, markdown.ns, range.row_start - 1, math.min(range.col_start, prev_line), {
 						undo_restore = false, invalidate = true,
 						virt_text_pos = "inline",
 						virt_text = tmp,
@@ -2316,7 +2316,7 @@ markdown.table = function (buffer, item)
 						hl_mode = "combine"
 					})
 				elseif range.row_end <= vim.api.nvim_buf_line_count(buffer) and item.bottom_border == true then
-					vim.api.nvim_buf_set_extmark(buffer, markdown.ns, range.row_end, math.min(next_line, range.col_start), {
+					item.__bottom_border_id = vim.api.nvim_buf_set_extmark(buffer, markdown.ns, range.row_end, math.min(next_line, range.col_start), {
 						virt_text_pos = "inline",
 						virt_text = tmp,
 
@@ -2367,7 +2367,7 @@ markdown.table = function (buffer, item)
 						hl_mode = "combine"
 					})
 				elseif range.row_end <= vim.api.nvim_buf_line_count(buffer) and item.bottom_border == true then
-					vim.api.nvim_buf_set_extmark(buffer, markdown.ns, range.row_end, math.min(next_line, range.col_start), {
+					item.__bottom_border_id = vim.api.nvim_buf_set_extmark(buffer, markdown.ns, range.row_end, math.min(next_line, range.col_start), {
 						virt_text_pos = "inline",
 						virt_text = tmp,
 
@@ -2499,21 +2499,126 @@ markdown.table = function (buffer, item)
 		--- Register for post_render so __table runs after inline extmarks.
 		table.insert(markdown.cache, item);
 	end
+
+	--- Register for post_render to fix border indentation when org_indent
+	--- adds extra spacing on the border lines (e.g. tables inside list items).
+	if item.__top_border_id or item.__bottom_border_id then
+		if not item.__continuation_vt then
+			table.insert(markdown.cache, item);
+		end
+	end
 end
 
 
  -----------------------------------------------------------------------------------------
 
 
---- Places table border characters on wrap continuation lines (post_render).
+--- Post-render handler for tables.
 ---
---- Runs after all renderers (including markdown_inline) have placed their
---- extmarks, so `nvim_win_text_height` accurately reflects the visual line
---- height. Uses binary search with `screenpos` for precise wrap boundary
---- positions.
+--- 1. Fixes top/bottom border indentation when org_indent adds extra
+---    spacing on the border lines (e.g. tables inside list items).
+--- 2. Places wrap continuation borders and right-border overlays
+---    (must run after markdown_inline so `nvim_win_text_height` is accurate).
 ---@param buffer integer
 ---@param item markview.parsed.markdown.tables
 markdown.__table = function (buffer, item)
+	local range = item.range;
+
+	--- Fix border indentation by accounting for org_indent marks.
+	--- org_indent may add spacing on the border lines that conflicts
+	--- with the table's own col_start-based indentation.
+	---
+	--- Strategy: compute the target visual indent from a data row, then
+	--- adjust each border's leading spaces based on how much org_indent
+	--- already contributes on the border's line.
+	if item.__top_border_id or item.__bottom_border_id then
+		--- Compute target indent from the first data row's org_indent.
+		local data_org_visual = 0;
+		local data_conceal_end = 0;
+		local data_marks = vim.api.nvim_buf_get_extmarks(buffer, markdown.ns,
+			{ range.row_start, 0 }, { range.row_start, range.col_start }, { details = true });
+
+		for _, m in ipairs(data_marks) do
+			local d = m[4];
+
+			if d.conceal == "" and d.virt_text then
+				local vt_text = "";
+
+				for _, c in ipairs(d.virt_text) do
+					vt_text = vt_text .. (c[1] or "");
+				end
+
+				if vt_text:match("^%s+$") then
+					data_org_visual = data_org_visual + vim.fn.strdisplaywidth(vt_text);
+					data_conceal_end = math.max(data_conceal_end, d.end_col or 0);
+				end
+			end
+		end
+
+		--- Target = org_indent visual width + remaining raw indent.
+		local target_indent = data_org_visual > 0
+			and (data_org_visual + math.max(0, range.col_start - data_conceal_end))
+			or nil;
+
+		if target_indent then
+			for _, key in ipairs({ "__top_border_id", "__bottom_border_id" }) do
+				local mark_id = item[key];
+
+				if not mark_id then
+					goto next_border;
+				end
+
+				local mark = vim.api.nvim_buf_get_extmark_by_id(buffer, markdown.ns, mark_id, { details = true });
+
+				if not mark or not mark[3] or not mark[3].virt_text then
+					goto next_border;
+				end
+
+				local mark_row = mark[1];
+
+				--- Find org_indent marks on the border line.
+				local border_org_visual = 0;
+				local border_marks = vim.api.nvim_buf_get_extmarks(buffer, markdown.ns,
+					{ mark_row, 0 }, { mark_row, range.col_start }, { details = true });
+
+				for _, m in ipairs(border_marks) do
+					local d = m[4];
+
+					if m[1] ~= mark_id and d.conceal == "" and d.virt_text then
+						local vt_text = "";
+
+						for _, c in ipairs(d.virt_text) do
+							vt_text = vt_text .. (c[1] or "");
+						end
+
+						if vt_text:match("^%s+$") then
+							border_org_visual = border_org_visual + vim.fn.strdisplaywidth(vt_text);
+						end
+					end
+				end
+
+				--- Border leading spaces = target - what org_indent already provides.
+				local leading = math.max(0, target_indent - border_org_visual);
+				local vt = mark[3].virt_text;
+
+				if vt[1] and type(vt[1][1]) == "string" and vt[1][1]:match("^%s*$") then
+					vt[1][1] = string.rep(" ", leading);
+				end
+
+				vim.api.nvim_buf_set_extmark(buffer, markdown.ns, mark_row, mark[2], {
+					id = mark_id,
+					undo_restore = false, invalidate = true,
+					virt_text_pos = "inline",
+					virt_text = vt,
+					hl_mode = "combine",
+				});
+
+				::next_border::
+			end
+		end
+	end
+
+	--- Wrap continuation borders.
 	local continuation_vt = item.__continuation_vt;
 
 	if not continuation_vt then
