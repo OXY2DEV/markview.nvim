@@ -631,7 +631,12 @@ local code = lpeg.C( at_valid * lpeg.P("`")^1 * code_content^1 * lpeg.P("`")^1 )
 
 local hyperlink_content = lpeg.P("\\]") + ( 1 - lpeg.P("]") );
 local hyperlink_no_src = lpeg.C( lpeg.P("[") * hyperlink_content^0 * lpeg.P("]") ) / md_str.hyperlink_no_src;
-local src_content = lpeg.P("\\)") + ( 1 - lpeg.S(") \t") );
+-- Supports balanced parentheses in URLs per CommonMark spec §6.7:
+-- https://spec.commonmark.org/0.31.2/#link-destination
+local src_content = lpeg.P{
+	"src";
+	src = lpeg.P("\\)") + (lpeg.P("(") * lpeg.V("src")^0 * lpeg.P(")")) + ( 1 - lpeg.S(") \t") );
+};
 local hyperlink_src = lpeg.C( lpeg.P("[") * hyperlink_content^0 * lpeg.P("](") * src_content^0 * lpeg.P(")") ) / md_str.hyperlink_src;
 local hyperlink = hyperlink_src + hyperlink_no_src;
 
