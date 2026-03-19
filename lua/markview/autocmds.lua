@@ -166,8 +166,10 @@ autocmds.modeChanged = function (args)
 		if args.buf == state.get_splitview_source() then
 			return;
 		elseif p_now then
+			actions.autocmd("on_mode_change", args.buf, vim.fn.win_findbuf(args.buf), vim.fn.mode());
 			actions.render(args.buf);
 		else
+			actions.autocmd("on_mode_change", args.buf, vim.fn.win_findbuf(args.buf), vim.fn.mode());
 			actions.clear(args.buf);
 		end
 
