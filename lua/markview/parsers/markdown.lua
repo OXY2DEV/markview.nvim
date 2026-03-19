@@ -885,7 +885,18 @@ markdown.table = function (_, _, text, range)
 	end
 
 	for l, line in ipairs(text) do
+		--- Strip block_continuation prefixes(e.g. `> `)
+		--- from lines after the first.
+		--- `get_node_text()` only applies col_start to line 1.
+		if l > 1 then
+			line = line:sub(range.col_start + 1);
+		end
+
 		local row_text = line;
+
+		if row_text == "" or row_text:match("^%s*$") then
+			goto continue;
+		end
 
 		if l == 1 then
 			header = line_processor(row_text);
@@ -917,6 +928,8 @@ markdown.table = function (_, _, text, range)
 		else
 			table.insert(rows, line_processor(row_text))
 		end
+
+		::continue::
 	end
 
 	local top_border, border_overlap = overlap(range.row_start);
