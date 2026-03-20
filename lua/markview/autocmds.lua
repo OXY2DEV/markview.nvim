@@ -141,8 +141,12 @@ autocmds.modeChanged = function (args)
 
 	if not args.buf or not state.enabled() or not state.buf_attached(args.buf) then
 		return;
-	elseif not state.get_buffer_state(args.buf, false) then
-		return;
+	else
+		local buf_state = state.get_buffer_state(args.buf, false);
+
+		if not buf_state or not buf_state.enable then
+			return;
+		end
 	end
 
 	local use_delay, ignore = autocmds.use_delay(args.buf, args.event, args);
