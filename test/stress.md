@@ -12,6 +12,27 @@ Here's a stress test for your markdown renderer:
 | `inline code` | ✅ Done | [ref](https://spec.commonmark.org/0.31.2/#code-spans-backtick-strings-and-their-matching-rules-for-inline-code) |
 | Nested lists | 🔧 WIP | [deep](https://docs.github.com/en/get-started/writing-on-github/getting-started-with-writing-and-formatting-on-github/basic-writing-and-formatting-syntax#nested-lists-ordered-and-unordered-mixing-indentation-levels) |
 
+### Inline Conceal Torture
+
+| Kind | Example | With long URL |
+|------|---------|---------------|
+| Hyperlink | [short](https://example.com) | [Neovim API reference](https://neovim.io/doc/user/api.html#nvim_buf_set_extmark()-nvim_buf_del_extmark()-nvim_buf_get_extmarks()-and-related-extmark-functions) |
+| Image | ![icon](https://example.com/icon.svg) | ![screenshot of the full treesitter playground](https://raw.githubusercontent.com/nvim-treesitter/playground/master/assets/screenshot-with-custom-queries-and-hl-groups.png) |
+| URI autolink | <https://example.com> | <https://registry.npmjs.org/@typescript-eslint/eslint-plugin/-/eslint-plugin-8.29.1.tgz#very-long-anchor> |
+| Email autolink | <user@example.com> | <very-long-username-for-testing-purposes@extremely-long-subdomain.mail.example.co.uk> |
+| Inline code | `short` | `vim.api.nvim_buf_set_extmark(buffer, ns, row, col, opts)` |
+| Highlight | ==marked== | ==this is a rather long highlighted span that should test wrapping== |
+| Entity | &amp; and &lt; | &amp; &lt; &gt; &rarr; &larr; &hearts; &infin; &mdash; |
+| Escaped | \* not bold \* | \* \[ \] \( \) \` \~ \\ \# \! |
+| Emoji | :rocket: launch | :tada: :sparkles: :rocket: :fire: :bug: :memo: :bulb: :wrench: |
+| Footnote | see [^1] | see [^long-descriptive-footnote-name-that-tests-width] |
+| Bold + link | **[bold link](https://example.com)** | **[bold link with long URL](https://spec.commonmark.org/0.31.2/#emphasis-and-strong-emphasis-combined-with-links-and-images)** |
+| Code + link | `code` then [link](https://a.co) | `vim.api.nvim_buf_set_extmark()` then [docs](https://neovim.io/doc/user/api.html#nvim_buf_set_extmark()-full-details) |
+| Multi-conceal | **bold** `code` *italic* [lnk](https://x.co) | **bold** `code` *ital* ==hl== [lnk](https://neovim.io/doc/user/api.html#multi-conceal-stress-test-row) :rocket: |
+
+[^1]: A short footnote.
+[^long-descriptive-footnote-name-that-tests-width]: This footnote has a very long reference label to test how concealment handles it in table cells.
+
 ### Alignment Torture
 
 | Left | Center | Right | Mixed |
