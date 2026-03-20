@@ -1567,9 +1567,6 @@ markdown.table = function (buffer, item)
 		rows = {}
 	};
 
-	---@type integer[] Invisible width used for text wrapping in Neovim.
-	local vim_width = {};
-
 	---@type integer Current column number.
 	local c = 1;
 
@@ -1584,14 +1581,6 @@ markdown.table = function (buffer, item)
 				col_widths[c] = o;
 			end
 
-			local vim_col_width = vim.fn.strdisplaywidth(col.text);
-
-			if not vim_width[c] then
-				vim_width[c] = vim_col_width;
-			elseif vim_col_width > vim_width[c] then
-				vim_width[c] = vim_col_width;
-			end
-
 			c = c + 1;
 		end
 	end
@@ -1604,14 +1593,6 @@ markdown.table = function (buffer, item)
 
 			if not col_widths[c] or col_widths[c] < o then
 				col_widths[c] = o;
-			end
-
-			local vim_col_width = vim.fn.strdisplaywidth(col.text);
-
-			if not vim_width[c] then
-				vim_width[c] = vim_col_width;
-			elseif vim_col_width > vim_width[c] then
-				vim_width[c] = vim_col_width;
 			end
 
 			c = c + 1;
@@ -1633,14 +1614,6 @@ markdown.table = function (buffer, item)
 					col_widths[c] = o;
 				end
 
-				local vim_col_width = vim.fn.strdisplaywidth(col.text);
-
-				if not vim_width[c] then
-					vim_width[c] = vim_col_width;
-				elseif vim_col_width > vim_width[c] then
-					vim_width[c] = vim_col_width;
-				end
-
 				c = c + 1;
 			end
 		end
@@ -1648,7 +1621,8 @@ markdown.table = function (buffer, item)
 
 	if is_wrapped == true then
 		local win = utils.buf_getwin(buffer);
-		local width = vim.api.nvim_win_get_width(win);
+		local textoff = vim.fn.getwininfo(win)[1].textoff;
+		local text_width = vim.api.nvim_win_get_width(win) - textoff;
 
 		local table_width = 1;
 
@@ -1656,11 +1630,22 @@ markdown.table = function (buffer, item)
 			table_width = table_width + 1 + col;
 		end
 
-		if table_width >= width * 0.9 then
-			--- Most likely the text was wrapped somewhere.
-			--- TODO, Check if a more accurate(& faster) method exists or not.
+		if table_width >= text_width then
+			--- The rendered table is at least as wide as the usable
+			--- text area, so it will wrap and the border layout would
+			--- be broken.  Bail out of rendering entirely.
 			return;
 		end
+
+		--- NOTE: We intentionally do NOT check the raw (unconcealed)
+		--- line width here.  Neovim's soft-wrap calculation ignores
+		--- conceal, so a line with a long URL may wrap internally
+		--- even though the *rendered* table fits.  Bailing out in
+		--- that case would prevent rendering of any table that
+		--- contains wide inline elements (links, images, …) which
+		--- defeats the purpose of the preview.  Accept the possible
+		--- wrap artefact — a rendered table with a minor visual
+		--- glitch is strictly better than no rendering at all.
 	end
 
 	---@type markview.config.markdown.tables.parts
@@ -2503,6 +2488,7 @@ markdown.table = function (buffer, item)
 		local right_border, right_hl = get_border("row", 3);
 		item.__right_border_vt = { { right_border, right_hl } };
 		item.__table_width = utils.virt_len(continuation_vt);
+		item.__col_widths = col_widths;
 
 		--- Register for post_render so __table runs after inline extmarks.
 		table.insert(markdown.cache, item);
@@ -2641,17 +2627,19 @@ markdown.__table = function (buffer, item)
 
 	local range = item.range;
 
+	local col_widths = item.__col_widths;
+
+	--- Compute the window's text-area width (excluding sign/number columns).
+	local textoff = vim.fn.getwininfo(win)[1].textoff;
+	local text_width = vim.api.nvim_win_get_width(win) - textoff;
+
 	vim.api.nvim_win_call(win, function()
 		for row = range.row_start, range.row_end - 1 do
 			local height = vim.api.nvim_win_text_height(win, {
 				start_row = row, end_row = row
 			});
 
-		if height.all > 1 then
-				local line = vim.api.nvim_buf_get_lines(buffer, row, row + 1, false)[1] or "";
-				local lnum = row + 1;
-				local total_vcol = vim.fn.strdisplaywidth(line);
-
+			if height.all > 1 then
 				--- Place right border on first screen row.
 				--- The concealed right pipe wraps to a continuation line,
 				--- leaving the first screen row without a right border.
@@ -2664,33 +2652,67 @@ markdown.__table = function (buffer, item)
 					});
 				end
 
-				for w = 1, height.all - 1 do
-					--- Binary search for the first vcol on wrap line `w`.
-					local lo, hi = 1, total_vcol;
+				--- Find wrap-break byte positions analytically by walking
+				--- the parsed table structure.  The rendered width of each
+				--- element is known: separators = 1 col (│), columns =
+				--- col_widths[c].  We accumulate display width and record
+				--- the byte at the start of each element that crosses a
+				--- wrap boundary (multiples of text_width).
+				---
+				--- Unlike a binary search over virtual columns, this
+				--- approach is immune to the coordinate-space mismatch
+				--- between virtcol (which ignores extmark conceal) and
+				--- nvim_win_text_height (which accounts for it).  See
+				--- CommonMark §6.7 links inside table cells for a case
+				--- where concealed URLs broke the old binary search.
+				local parts;
+				if row == range.row_start then
+					parts = item.header;
+				elseif row == range.row_start + 1 then
+					parts = item.separator;
+				else
+					local ri = row - (range.row_start + 2) + 1;
+					parts = item.rows[ri];
+				end
 
-					while lo < hi do
-						local mid = math.floor((lo + hi) / 2);
+				if parts and col_widths then
+					local disp = 0;   --- cumulative display columns
+					local wrap_line = 1; --- next wrap line to place
+					local cc = 1;     --- column counter
 
-						if vim.api.nvim_win_text_height(win, {
-							start_row = row, end_row = row,
-							start_vcol = 0, end_vcol = mid,
-						}).all <= w then
-							lo = mid + 1;
+					for _, part in ipairs(parts) do
+						local elem_width;
+						if part.class == "separator" then
+							elem_width = 1;
+						elseif part.class == "column" then
+							elem_width = col_widths[cc] or 0;
+							cc = cc + 1;
 						else
-							hi = mid;
+							goto continue;
 						end
-					end
 
-					--- Convert vcol to byte column.
-					local byte_col = vim.fn.virtcol2col(win, lnum, lo);
+						--- Check if this element spans a wrap boundary.
+						while wrap_line <= height.all - 1
+							and disp + elem_width >= text_width * (wrap_line)
+						do
+							--- The byte at the start of this element is
+							--- guaranteed to be visible (not inside an
+							--- extmark-concealed URL).  Using it as the
+							--- anchor ensures the overlay lands on the
+							--- correct screen row.
+							local anchor = range.col_start + part.col_start;
+							vim.api.nvim_buf_set_extmark(buffer, markdown.ns, row, anchor, {
+								undo_restore = false, invalidate = true,
+								virt_text = continuation_vt,
+								virt_text_win_col = 0,
+								hl_mode = "combine",
+							});
+							wrap_line = wrap_line + 1;
+						end
 
-					if byte_col >= 1 then
-						vim.api.nvim_buf_set_extmark(buffer, markdown.ns, row, byte_col - 1, {
-							undo_restore = false, invalidate = true,
-							virt_text = continuation_vt,
-							virt_text_win_col = 0,
-							hl_mode = "combine",
-						});
+						disp = disp + elem_width;
+
+						::continue::
 					end
 				end
 			end
