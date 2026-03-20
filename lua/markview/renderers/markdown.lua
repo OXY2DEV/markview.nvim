@@ -2488,7 +2488,6 @@ markdown.table = function (buffer, item)
 		local right_border, right_hl = get_border("row", 3);
 		item.__right_border_vt = { { right_border, right_hl } };
 		item.__table_width = utils.virt_len(continuation_vt);
-		item.__col_widths = col_widths;
 
 		--- Register for post_render so __table runs after inline extmarks.
 		table.insert(markdown.cache, item);
@@ -2627,8 +2626,6 @@ markdown.__table = function (buffer, item)
 
 	local range = item.range;
 
-	local col_widths = item.__col_widths;
-
 	--- Compute the window's text-area width (excluding sign/number columns).
 	local textoff = vim.fn.getwininfo(win)[1].textoff;
 	local text_width = vim.api.nvim_win_get_width(win) - textoff;
@@ -2652,67 +2649,50 @@ markdown.__table = function (buffer, item)
 					});
 				end
 
-				--- Find wrap-break byte positions analytically by walking
-				--- the parsed table structure.  The rendered width of each
-				--- element is known: separators = 1 col (│), columns =
-				--- col_widths[c].  We accumulate display width and record
-				--- the byte at the start of each element that crosses a
-				--- wrap boundary (multiples of text_width).
+				--- Find the first byte on each continuation (wrapped)
+				--- screen row via binary search over virtual columns.
 				---
-				--- Unlike a binary search over virtual columns, this
-				--- approach is immune to the coordinate-space mismatch
-				--- between virtcol (which ignores extmark conceal) and
-				--- nvim_win_text_height (which accounts for it).  See
-				--- CommonMark §6.7 links inside table cells for a case
-				--- where concealed URLs broke the old binary search.
-				local parts;
-				if row == range.row_start then
-					parts = item.header;
-				elseif row == range.row_start + 1 then
-					parts = item.separator;
-				else
-					local ri = row - (range.row_start + 2) + 1;
-					parts = item.rows[ri];
-				end
+				--- nvim_win_text_height with start_vcol/end_vcol operates
+				--- in the same coordinate space Neovim uses for wrapping
+				--- (raw text width + inline virt_text, ignoring conceal).
+				--- This makes it the correct predicate for locating wrap
+				--- boundaries — unlike an analytical walk over rendered
+				--- widths, which underestimates when cells contain
+				--- concealed URLs that still count towards wrap width.
+				---
+				--- Upper bound: height.all * text_width is guaranteed to
+				--- exceed the effective wrap width (including any inline
+				--- virt_text additions that push past strdisplaywidth).
+				local lnum = row + 1;
+				local hi_bound = height.all * text_width;
 
-				if parts and col_widths then
-					local disp = 0;   --- cumulative display columns
-					local wrap_line = 1; --- next wrap line to place
-					local cc = 1;     --- column counter
+				for w = 1, height.all - 1 do
+					local lo, hi = 1, hi_bound;
 
-					for _, part in ipairs(parts) do
-						local elem_width;
-						if part.class == "separator" then
-							elem_width = 1;
-						elseif part.class == "column" then
-							elem_width = col_widths[cc] or 0;
-							cc = cc + 1;
+					while lo < hi do
+						local mid = math.floor((lo + hi) / 2);
+
+						if vim.api.nvim_win_text_height(win, {
+							start_row = row, end_row = row,
+							start_vcol = 0, end_vcol = mid,
+						}).all <= w then
+							lo = mid + 1;
 						else
-							goto continue;
+							hi = mid;
 						end
+					end
 
-						--- Check if this element spans a wrap boundary.
-						while wrap_line <= height.all - 1
-							and disp + elem_width >= text_width * (wrap_line)
-						do
-							--- The byte at the start of this element is
-							--- guaranteed to be visible (not inside an
-							--- extmark-concealed URL).  Using it as the
-							--- anchor ensures the overlay lands on the
-							--- correct screen row.
-							local anchor = range.col_start + part.col_start;
-							vim.api.nvim_buf_set_extmark(buffer, markdown.ns, row, anchor, {
-								undo_restore = false, invalidate = true,
-								virt_text = continuation_vt,
-								virt_text_win_col = 0,
-								hl_mode = "combine",
-							});
-							wrap_line = wrap_line + 1;
-						end
+					--- lo is the first vcol on wrap line w+1.
+					--- Convert to a byte column for the extmark anchor.
+					local byte_col = vim.fn.virtcol2col(win, lnum, lo);
 
-						disp = disp + elem_width;
-
-						::continue::
+					if byte_col >= 1 then
+						vim.api.nvim_buf_set_extmark(buffer, markdown.ns, row, byte_col - 1, {
+							undo_restore = false, invalidate = true,
+							virt_text = continuation_vt,
+							virt_text_win_col = 0,
+							hl_mode = "combine",
+						});
 					end
 				end
 			end
