@@ -62,6 +62,7 @@ md_str.update_cache = function ()
 		hyperlinks = spec.get({ "markdown_inline", "hyperlinks" }, { fallback = nil }),
 		images = spec.get({ "markdown_inline", "images" }, { fallback = nil }),
 		inline_codes = spec.get({ "markdown_inline", "inline_codes"}, { fallback = nil }),
+		footnotes = spec.get({ "markdown_inline", "footnotes" }, { fallback = nil }),
 		internal_links = spec.get({ "markdown_inline", "internal_links" }, { fallback = nil }),
 		uri_autolinks = spec.get({ "markdown_inline", "uri_autolinks" }, { fallback = nil }),
 	};
@@ -301,6 +302,46 @@ md_str.internal = function (match)
 	else
 		return removed;
 	end
+
+	---|fE
+end
+
+---@param match string
+---@return string
+md_str.footnote = function (match)
+	---|fS
+
+	local label = string.gsub(match, "^%[%^", ""):gsub("%]$", "");
+
+	if md_str.cached_config and md_str.cached_config.footnotes then
+		---@type markview.config.__inline?
+		local config = require("markview.utils").match(md_str.cached_config.footnotes, label, {
+			eval_args = {
+				md_str.buffer,
+				{
+					class = "inline_footnote",
+					text = { match },
+
+					label = label,
+				}
+			}
+		});
+
+		if config then
+			return table.concat({
+				config.corner_left or "",
+				config.padding_left or "",
+
+				config.icon or "",
+				label,
+
+				config.padding_right or "",
+				config.corner_right or "",
+			}, "");
+		end
+	end
+
+	return label;
 
 	---|fE
 end
@@ -629,6 +670,9 @@ local bold_italic = s_bold_italic + u_bold_italic;
 local code_content = lpeg.P("\\`") + ( 1 - lpeg.P("`") );
 local code = lpeg.C( at_valid * lpeg.P("`")^1 * code_content^1 * lpeg.P("`")^1 ) / md_str.code;
 
+local footnote_label_char = lpeg.R("09", "az", "AZ") + lpeg.S("-_.");
+local footnote = lpeg.C( lpeg.P("[^") * footnote_label_char^1 * lpeg.P("]") ) / md_str.footnote;
+
 local hyperlink_content = lpeg.P("\\]") + ( 1 - lpeg.P("]") );
 local hyperlink_no_src = lpeg.C( lpeg.P("[") * hyperlink_content^0 * lpeg.P("]") ) / md_str.hyperlink_no_src;
 -- Supports balanced parentheses in URLs per CommonMark spec §6.7:
@@ -678,7 +722,7 @@ local token = escape +
 	emoji + entity +
 	hl + block_ref + embed + internal +
 	email + auto +
-	img + hyperlink +
+	footnote + img + hyperlink +
 	code +
 	bold_italic + bold + italic +
 	any;
