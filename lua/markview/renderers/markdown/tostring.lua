@@ -245,6 +245,16 @@ md_str.emoji = function (match)
 	end
 
 	local removed = string.gsub(match, "^:", ""):gsub(":$", "");
+
+	--- Resolve to the actual Unicode emoji so that
+	--- strdisplaywidth() returns the correct on-screen
+	--- width (typically 2) instead of the shortcode name
+	--- length (e.g. "rocket" = 6).
+	local symbols = require("markview.symbols");
+	if symbols.shorthands and symbols.shorthands[removed] then
+		return symbols.shorthands[removed];
+	end
+
 	return removed;
 
 	---|fE
