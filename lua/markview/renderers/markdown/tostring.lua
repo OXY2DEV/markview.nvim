@@ -168,7 +168,7 @@ md_str.bold = function (match)
 		removed = string.gsub(match, "^%_%_", ""):gsub("%_%_$", "");
 	end
 
-	return removed;
+	return md_str.tostring(md_str.buffer, removed, false);
 
 	---|fE
 end
@@ -192,7 +192,8 @@ md_str.bold_italic = function (match)
 		r = math.min(be and #be or 0, af and #af or 0);
 	end
 
-	return vim.fn.strpart(match, r, vim.fn.strchars(match) - (r + r));
+	local removed = vim.fn.strpart(match, r, vim.fn.strchars(match) - (r + r));
+	return md_str.tostring(md_str.buffer, removed, false);
 
 	---|fE
 end
@@ -339,7 +340,7 @@ md_str.italic = function (match)
 		removed = string.gsub(match, "^%_", ""):gsub("%_$", "");
 	end
 
-	return removed;
+	return md_str.tostring(md_str.buffer, removed, false);
 
 	---|fE
 end
