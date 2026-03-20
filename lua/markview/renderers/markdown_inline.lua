@@ -615,6 +615,11 @@ inline.link_hyperlink = function (buffer, item)
 		hl_group = utils.set_hl(config.hl)
 	});
 
+	--- NOTE: hl_mode must NOT be "combine" here.  This extmark conceals
+	--- the URL portion `](https://…)` which can span hundreds of bytes.
+	--- With "combine" the virt_text highlight (e.g. underline) bleeds
+	--- across every concealed byte, producing ghost underlines on the
+	--- phantom screen rows created by soft-wrap of the hidden text.
 	vim.api.nvim_buf_set_extmark(buffer, inline.ns, r_label[3], r_label[4], {
 		undo_restore = false, invalidate = true,
 		end_row = range.row_end,
@@ -626,8 +631,6 @@ inline.link_hyperlink = function (buffer, item)
 			{ config.padding_right or "", utils.set_hl(config.padding_right_hl or config.hl) },
 			{ config.corner_right or "", utils.set_hl(config.corner_right_hl or config.hl) }
 		},
-
-		hl_mode = "combine"
 	});
 
 	if r_label[1] == r_label[3] then
@@ -734,6 +737,8 @@ inline.link_image = function (buffer, item)
 		hl_group = utils.set_hl(config.hl)
 	});
 
+	--- NOTE: hl_mode must NOT be "combine" here — same reason as link_hyperlink.
+	--- See the comment there for full explanation.
 	vim.api.nvim_buf_set_extmark(buffer, inline.ns, r_label[3], r_label[4], {
 		undo_restore = false, invalidate = true,
 		end_row = range.row_end,
@@ -745,8 +750,6 @@ inline.link_image = function (buffer, item)
 			{ config.padding_right or "", utils.set_hl(config.padding_right_hl or config.hl) },
 			{ config.corner_right or "", utils.set_hl(config.corner_right_hl or config.hl) }
 		},
-
-		hl_mode = "combine"
 	});
 
 	if r_label[1] == r_label[3] then
