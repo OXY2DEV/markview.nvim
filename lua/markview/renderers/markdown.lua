@@ -2647,10 +2647,10 @@ markdown.__table = function (buffer, item)
 				start_row = row, end_row = row
 			});
 
-			if height.all > 1 then
-				local line_len = #(vim.api.nvim_buf_get_lines(buffer, row, row + 1, false)[1] or "");
+		if height.all > 1 then
+				local line = vim.api.nvim_buf_get_lines(buffer, row, row + 1, false)[1] or "";
 				local lnum = row + 1;
-				local first_screen_row = vim.fn.screenpos(win, lnum, 1).row;
+				local total_vcol = vim.fn.strdisplaywidth(line);
 
 				--- Place right border on first screen row.
 				--- The concealed right pipe wraps to a continuation line,
@@ -2665,23 +2665,27 @@ markdown.__table = function (buffer, item)
 				end
 
 				for w = 1, height.all - 1 do
-					local target_row = first_screen_row + w;
-
-					--- Binary search for the first byte on `target_row`.
-					local lo, hi = 1, line_len;
+					--- Binary search for the first vcol on wrap line `w`.
+					local lo, hi = 1, total_vcol;
 
 					while lo < hi do
 						local mid = math.floor((lo + hi) / 2);
 
-						if vim.fn.screenpos(win, lnum, mid).row < target_row then
+						if vim.api.nvim_win_text_height(win, {
+							start_row = row, end_row = row,
+							start_vcol = 0, end_vcol = mid,
+						}).all <= w then
 							lo = mid + 1;
 						else
 							hi = mid;
 						end
 					end
 
-					if lo <= line_len then
-						vim.api.nvim_buf_set_extmark(buffer, markdown.ns, row, lo - 1, {
+					--- Convert vcol to byte column.
+					local byte_col = vim.fn.virtcol2col(win, lnum, lo);
+
+					if byte_col >= 1 then
+						vim.api.nvim_buf_set_extmark(buffer, markdown.ns, row, byte_col - 1, {
 							undo_restore = false, invalidate = true,
 							virt_text = continuation_vt,
 							virt_text_win_col = 0,
