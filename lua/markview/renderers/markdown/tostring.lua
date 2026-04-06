@@ -62,6 +62,7 @@ md_str.update_cache = function ()
 		hyperlinks = spec.get({ "markdown_inline", "hyperlinks" }, { fallback = nil }),
 		images = spec.get({ "markdown_inline", "images" }, { fallback = nil }),
 		inline_codes = spec.get({ "markdown_inline", "inline_codes"}, { fallback = nil }),
+		footnotes = spec.get({ "markdown_inline", "footnotes" }, { fallback = nil }),
 		internal_links = spec.get({ "markdown_inline", "internal_links" }, { fallback = nil }),
 		uri_autolinks = spec.get({ "markdown_inline", "uri_autolinks" }, { fallback = nil }),
 	};
@@ -168,7 +169,7 @@ md_str.bold = function (match)
 		removed = string.gsub(match, "^%_%_", ""):gsub("%_%_$", "");
 	end
 
-	return removed;
+	return md_str.tostring(md_str.buffer, removed, false);
 
 	---|fE
 end
@@ -192,7 +193,8 @@ md_str.bold_italic = function (match)
 		r = math.min(be and #be or 0, af and #af or 0);
 	end
 
-	return vim.fn.strpart(match, r, vim.fn.strchars(match) - (r + r));
+	local removed = vim.fn.strpart(match, r, vim.fn.strchars(match) - (r + r));
+	return md_str.tostring(md_str.buffer, removed, false);
 
 	---|fE
 end
@@ -245,6 +247,16 @@ md_str.emoji = function (match)
 	end
 
 	local removed = string.gsub(match, "^:", ""):gsub(":$", "");
+
+	--- Resolve to the actual Unicode emoji so that
+	--- strdisplaywidth() returns the correct on-screen
+	--- width (typically 2) instead of the shortcode name
+	--- length (e.g. "rocket" = 6).
+	local symbols = require("markview.symbols");
+	if symbols.shorthands and symbols.shorthands[removed] then
+		return symbols.shorthands[removed];
+	end
+
 	return removed;
 
 	---|fE
@@ -307,6 +319,46 @@ end
 
 ---@param match string
 ---@return string
+md_str.footnote = function (match)
+	---|fS
+
+	local label = string.gsub(match, "^%[%^", ""):gsub("%]$", "");
+
+	if md_str.cached_config and md_str.cached_config.footnotes then
+		---@type markview.config.__inline?
+		local config = require("markview.utils").match(md_str.cached_config.footnotes, label, {
+			eval_args = {
+				md_str.buffer,
+				{
+					class = "inline_footnote",
+					text = { match },
+
+					label = label,
+				}
+			}
+		});
+
+		if config then
+			return table.concat({
+				config.corner_left or "",
+				config.padding_left or "",
+
+				config.icon or "",
+				label,
+
+				config.padding_right or "",
+				config.corner_right or "",
+			}, "");
+		end
+	end
+
+	return label;
+
+	---|fE
+end
+
+---@param match string
+---@return string
 md_str.escape = function (match)
 	local char = string.match(match, "\\(.)");
 	return char;
@@ -329,7 +381,7 @@ md_str.italic = function (match)
 		removed = string.gsub(match, "^%_", ""):gsub("%_$", "");
 	end
 
-	return removed;
+	return md_str.tostring(md_str.buffer, removed, false);
 
 	---|fE
 end
@@ -629,9 +681,17 @@ local bold_italic = s_bold_italic + u_bold_italic;
 local code_content = lpeg.P("\\`") + ( 1 - lpeg.P("`") );
 local code = lpeg.C( at_valid * lpeg.P("`")^1 * code_content^1 * lpeg.P("`")^1 ) / md_str.code;
 
+local footnote_label_char = lpeg.R("09", "az", "AZ") + lpeg.S("-_.");
+local footnote = lpeg.C( lpeg.P("[^") * footnote_label_char^1 * lpeg.P("]") ) / md_str.footnote;
+
 local hyperlink_content = lpeg.P("\\]") + ( 1 - lpeg.P("]") );
 local hyperlink_no_src = lpeg.C( lpeg.P("[") * hyperlink_content^0 * lpeg.P("]") ) / md_str.hyperlink_no_src;
-local src_content = lpeg.P("\\)") + ( 1 - lpeg.S(") \t") );
+-- Supports balanced parentheses in URLs per CommonMark spec §6.7:
+-- https://spec.commonmark.org/0.31.2/#link-destination
+local src_content = lpeg.P{
+	"src";
+	src = lpeg.P("\\)") + (lpeg.P("(") * lpeg.V("src")^0 * lpeg.P(")")) + ( 1 - lpeg.S(") \t") );
+};
 local hyperlink_src = lpeg.C( lpeg.P("[") * hyperlink_content^0 * lpeg.P("](") * src_content^0 * lpeg.P(")") ) / md_str.hyperlink_src;
 local hyperlink = hyperlink_src + hyperlink_no_src;
 
@@ -673,7 +733,7 @@ local token = escape +
 	emoji + entity +
 	hl + block_ref + embed + internal +
 	email + auto +
-	img + hyperlink +
+	footnote + img + hyperlink +
 	code +
 	bold_italic + bold + italic +
 	any;

@@ -369,14 +369,15 @@ actions.autocmd = function (autocmd, ...)
 		on_splitview_close = { "MarkviewSplitviewClose", { source = args[1], preview_buffer = args[2], preview_window = args[3] } },
 	};
 
-	if not map[autocmd] then
-		return;
-	end
-
 	local spec = require("markview.spec");
 
 	local callbacks = spec.get({ "preview", "callbacks" }, { fallback = nil, ignore_enable = true });
 	pcall(callbacks[autocmd], ...);
+
+	if not map[autocmd] then
+		return;
+	end
+
 	vim.api.nvim_exec_autocmds("User", { pattern = map[autocmd][1], data = map[autocmd][2] });
 
 	require("markview.health").print({

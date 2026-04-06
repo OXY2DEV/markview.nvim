@@ -110,6 +110,47 @@ comment.tag = function (buffer, TSNode, text, range)
 	---|fE
 end
 
+---|fS "feat: LPeg parser for comment"
+
+local lpeg = vim.lpeg;
+
+local function as_wspace   (m) return { kind = "space", value = m }; end
+local function as_comma    (m) return { kind = "comma", value = m }; end
+
+local function as_issue   (m) return { kind = "issue", value = m }; end
+local function as_mention (m) return { kind = "mention", value = m }; end
+local function as_word    (m) return { kind = "word", value = m }; end
+
+local space = lpeg.C( lpeg.S(" \t\n\r") ) / as_wspace;
+local comma = lpeg.C( lpeg.P(",") ) / as_comma;
+
+local walnum = lpeg.R("az", "AZ", "09");
+local non_wspacse = 1 - ( space + comma );
+local word = lpeg.C( walnum * (non_wspacse^0) ) / as_word;
+
+local mention = lpeg.C( lpeg.P("@") * (non_wspacse^1) ) / as_mention;
+
+local num_issue = lpeg.C( lpeg.P("#") * ( lpeg.R("09") ^ 1 ) ) / as_issue;
+
+local invalid_cahrs = space + lpeg.P("#");
+local issue_name = lpeg.R("az", "AZ", "09") * (1 - invalid_cahrs)^0;
+local desc_issue = lpeg.C( issue_name * lpeg.P("#") * ( lpeg.R("09") ^ 1 ) ) / as_issue;
+
+local token = space + comma + desc_issue + num_issue + mention + word;
+
+--[[
+	A scope may contain one or more `token`s separated by `,` & *whitespaces*.
+
+	Valid tokens may be any of,
+
+	- Mentions(`@foo`).
+	- Issue reference(`#48`, `OXY2DEV/markview.nvim#48`).
+	- Keyword(must start with a letter).
+]]
+local scope = lpeg.Ct(token^0);
+
+---|fE
+
 --[[
 Conventional commit style task scope(for the original parser).
 
@@ -123,43 +164,6 @@ feat(scope): Added comment parser.
 ---@param root_range markview.parsed.comment.tasks.range
 comment.tag_scope = function (buffer, _, text, root_range)
 	---|fS
-
-	local lpeg = vim.lpeg;
-
-	local function as_wspace   (m) return { kind = "space", value = m }; end
-	local function as_comma    (m) return { kind = "comma", value = m }; end
-
-	local function as_issue   (m) return { kind = "issue", value = m }; end
-	local function as_mention (m) return { kind = "mention", value = m }; end
-	local function as_word    (m) return { kind = "word", value = m }; end
-
-	local space = lpeg.C( lpeg.S(" \t\n\r") ) / as_wspace;
-	local comma = lpeg.C( lpeg.P(",") ) / as_comma;
-
-	local walnum = lpeg.R("az", "AZ", "09");
-	local non_wspacse = 1 - ( space + comma );
-	local word = lpeg.C( walnum * (non_wspacse^0) ) / as_word;
-
-	local mention = lpeg.C( lpeg.P("@") * (non_wspacse^1) ) / as_mention;
-
-	local num_issue = lpeg.C( lpeg.P("#") * ( lpeg.R("09") ^ 1 ) ) / as_issue;
-
-	local invalid_cahrs = space + lpeg.P("#");
-	local issue_name = lpeg.R("az", "AZ", "09") * (1 - invalid_cahrs)^0;
-	local desc_issue = lpeg.C( issue_name * lpeg.P("#") * ( lpeg.R("09") ^ 1 ) ) / as_issue;
-
-	local token = space + comma + desc_issue + num_issue + mention + word;
-
-	--[[
-		A scope may contain one or more `token`s separated by `,` & *whitespaces*.
-
-		Valid tokens may be any of,
-
-		- Mentions(`@foo`).
-		- Issue reference(`#48`, `OXY2DEV/markview.nvim#48`).
-		- Keyword(must start with a letter).
-	]]
-	local scope = lpeg.Ct(token^0);
 
 	local col_start = root_range[2];
 
