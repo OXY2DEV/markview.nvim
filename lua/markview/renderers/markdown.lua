@@ -207,6 +207,8 @@ markdown.block_quote = function (buffer, item)
 					{ config.icon or "", utils.set_hl(config.icon_hl or config.hl) }
 				},
 
+				line_hl_group = utils.set_hl(config.preview_line_hl or config.line_hl),
+
 				right_gravity = true,
 				hl_mode = "combine",
 			});
@@ -228,6 +230,8 @@ markdown.block_quote = function (buffer, item)
 					{ " " },
 					{ config.preview, utils.set_hl(config.preview_hl or config.hl) }
 				},
+
+				line_hl_group = utils.set_hl(config.preview_line_hl or config.line_hl),
 
 				right_gravity = true,
 				hl_mode = "combine",
@@ -256,13 +260,14 @@ markdown.block_quote = function (buffer, item)
 				end_col = range.col_start + math.min(1, line_len),
 
 				virt_text_pos = "overlay",
-				virt_text = {
+				virt_text = config.border and {
 					{
 						tbl_clamp(config.border, l_index),
 						utils.set_hl(tbl_clamp(config.border_hl, l_index) or config.hl)
 					}
-				},
+				} or nil,
 
+				line_hl_group = utils.set_hl(config.line_hl),
 				hl_mode = "combine",
 			});
 		else
@@ -279,6 +284,7 @@ markdown.block_quote = function (buffer, item)
 					{ " " }
 				},
 
+				line_hl_group = utils.set_hl(config.line_hl),
 				hl_mode = "combine",
 			});
 		end

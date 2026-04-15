@@ -1,4 +1,97 @@
+---@diagnostic disable missing-field
 local presets = {};
+
+---@type table<string, markview.config.markdown.block_quotes>
+presets.block_quotes = {
+	obsidian = {
+		default = {
+			line_hl = "MarkviewPalette0",
+		},
+
+		["ABSTRACT"] = {
+			line_hl = "MarkviewPalette5",
+		},
+		["SUMMARY"] = {
+			line_hl = "MarkviewPalette5",
+		},
+		["TLDR"] = {
+			line_hl = "MarkviewPalette5",
+		},
+		["TODO"] = {
+			line_hl = "MarkviewPalette5",
+		},
+		["INFO"] = {
+			line_hl = "MarkviewPalette5",
+		},
+		["SUCCESS"] = {
+			line_hl = "MarkviewPalette4",
+		},
+		["CHECK"] = {
+			line_hl = "MarkviewPalette4",
+		},
+		["DONE"] = {
+			line_hl = "MarkviewPalette4",
+		},
+		["QUESTION"] = {
+			line_hl = "MarkviewPalette2",
+		},
+		["HELP"] = {
+			line_hl = "MarkviewPalette2",
+		},
+		["FAQ"] = {
+			line_hl = "MarkviewPalette2",
+		},
+		["FAILURE"] = {
+			line_hl = "MarkviewPalette1",
+		},
+		["FAIL"] = {
+			line_hl = "MarkviewPalette1",
+		},
+		["MISSING"] = {
+			line_hl = "MarkviewPalette1",
+		},
+		["DANGER"] = {
+			line_hl = "MarkviewPalette1",
+		},
+		["ERROR"] = {
+			line_hl = "MarkviewPalette1",
+		},
+		["BUG"] = {
+			line_hl = "MarkviewPalette1",
+		},
+		["EXAMPLE"] = {
+			line_hl = "MarkviewPalette3",
+		},
+		["QUOTE"] = {
+			line_hl = "MarkviewPalette0",
+		},
+		["CITE"] = {
+			line_hl = "MarkviewPalette0",
+		},
+		["HINT"] = {
+			line_hl = "MarkviewPalette4",
+		},
+		["ATTENTION"] = {
+			line_hl = "MarkviewPalette2",
+		},
+
+		["NOTE"] = {
+			line_hl = "MarkviewPalette5",
+		},
+		["TIP"] = {
+			line_hl = "MarkviewPalette4",
+		},
+		["IMPORTANT"] = {
+			line_hl = "MarkviewPalette3",
+		},
+		["WARNING"] = {
+			line_hl = "MarkviewPalette2",
+		},
+		["CAUTION"] = {
+			line_hl = "MarkviewPalette1",
+		}
+	},
+};
 
 presets.checkboxes = {
 	legacy = {

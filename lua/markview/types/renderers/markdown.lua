@@ -40,6 +40,9 @@
 ---
 ---@field preview? string Callout/Alert preview string(shown where `>[!string]` was).
 ---@field preview_hl? string Highlight group for the preview.
+---@field preview_line_hl? string Highlight group for the preview line *background*. Uses `line_hl` when not set.
+---
+---@field line_hl? string Highlight group for the line *background*.
 ---
 ---@field title? boolean Should this callout allow titles(`>[!string] <Title>`)? Disabled by default.
 
