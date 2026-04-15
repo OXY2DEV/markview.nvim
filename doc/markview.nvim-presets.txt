@@ -164,6 +164,25 @@ Image {img:18}
 	require("markview").setup(presets.no_nerd_fonts);
 <
 
+--------------------------------------------------------------------------------
+🌆 Obsidian-like colored block quote backgrounds
+
+🌟 Showcase: ~
+
+block_quote backgrounds {img:21}
+
+📚 Usage: ~
+
+>lua
+	local presets = require("markview.presets").block_quotes;
+	
+	require("markview").setup({
+	    markdown = {
+	        block_quotes = presets.obsidian
+	    }
+	});
+<
+
 Images ~
 
 1: https://github.com/OXY2DEV/markview.nvim/blob/images/v25/wiki/presets-headings.glow.png
@@ -186,5 +205,6 @@ Images ~
 18: https://github.com/OXY2DEV/markview.nvim/blob/images/v25/wiki/presets-tables.solid.png
 19: ./images/markview.nvim-nerd_fonts.png
 20: ./images/markview.nvim-no_nerd_fonts.png
+21: ./images/preview/markview.nvim-block_quotes_obsidian.png
 
 vim:ft=help:textwidth=80:tabstop=4:noexpandtab:
