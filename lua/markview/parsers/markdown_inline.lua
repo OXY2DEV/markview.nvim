@@ -119,7 +119,7 @@ end
 
 --- Github like emoji shorthand parser.
 ---@param range markview.parsed.range
-inline.emojis = function (_, TSNode, text, range)
+inline.emoji = function (_, TSNode, text, range)
 	local parent = TSNode:parent();
 
 	while parent do
@@ -210,7 +210,7 @@ end
 ---@param TSNode table
 ---@param text string[]
 ---@param range markview.parsed.range
-inline.highlights = function (_, TSNode, text, range)
+inline.highlight = function (_, TSNode, text, range)
 	local parent = TSNode:parent();
 
 	while parent do
@@ -537,11 +537,11 @@ inline.parse = function (buffer, TSTree, from, to)
 	end
 
 	local scanned_queries = vim.treesitter.query.parse("markdown_inline", [[
-		((inline) @markdown_inline.highlights
-			(#lua-match? @markdown_inline.highlights "==.+=="))
+		((inline) @markdown_inline.highlight
+			(#lua-match? @markdown_inline.highlight "==.+=="))
 
-		((inline) @markdown_inline.emojis
-			(#lua-match? @markdown_inline.emojis ":.+:"))
+		((inline) @markdown_inline.emoji
+			(#lua-match? @markdown_inline.emoji ":.+:"))
 
 		((email_autolink) @markdown_inline.email)
 
