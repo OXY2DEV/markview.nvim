@@ -290,6 +290,7 @@ Extra syntax(needs external parser),
     + Block reference links.
     + Embed file links.
     + Internal links(supports *aliases*).
+    + Tags.
 
 + Wide variety of HTML entity names & codes support.
     + Supported named entities: **786**.

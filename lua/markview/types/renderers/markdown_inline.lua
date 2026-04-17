@@ -19,6 +19,7 @@
 ---@field inline_codes markview.config.markdown_inline.inline_codes Inline code/code span configuration.
 ---@field internal_links markview.config.markdown_inline.internal_links Internal link configuration.
 ---@field uri_autolinks markview.config.markdown_inline.uri_autolinks URI autolink configuration.
+---@field tags markview.config.markdown_inline.tags Obsidian-style tags configuration.
 
 ------------------------------------------------------------------------------
 
@@ -189,4 +190,18 @@
 
 --[[ Options for a specific URI autolink type. ]]
 ---@alias markview.config.markdown_inline.uri_autolinks.opts markview.config.__inline
+
+------------------------------------------------------------------------------
+
+--- Configuration for emails.
+---@class markview.config.markdown_inline.tags
+---
+---@field enable boolean Enable rendering of Obsidian-style tags.
+---
+---@field default markview.config.markdown_inline.tags.opts Default configuration for tags.
+---@field [string] markview.config.markdown_inline.tags.opts Configuration for emails whose name(text after `#`) matches `string`.
+
+
+--[[ Options for a specific email type. ]]
+---@alias markview.config.markdown_inline.tags.opts markview.config.__inline
 

@@ -515,4 +515,15 @@ return {
 			hl = "MarkviewPalette2Fg"
 		},
 	},
+
+	tags = {
+		enable = true,
+
+		default = {
+			padding_left = " ",
+			padding_right = " ",
+
+			hl = "MarkviewPalette7"
+		}
+	},
 };

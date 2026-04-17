@@ -208,6 +208,17 @@
 
 ------------------------------------------------------------------------------
 
+---@class markview.parsed.markdown_inline.tags
+---
+---@field class "inline_tag"
+---
+---@field label string Tag label(text after `#`).
+---
+---@field text string[]
+---@field range markview.parsed.range
+
+------------------------------------------------------------------------------
+
 ---@class markview.parsed.markdown_inline.uri_autolinks
 ---
 ---@field class "inline_link_uri_autolinks"
