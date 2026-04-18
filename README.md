@@ -1,624 +1,109 @@
-<!--markdoc
-    {
-        "generic": {
-            "filename": "doc/markview.nvim.txt",
-            "force_write": true,
-            "header": {
-                "desc": "☄️ A hackable `Markdown`, `LaTeX`, `Typst` etc. previewer.",
-                "tag": "markview.nvim"
-            },
-            "toc": {
-                "entries": [
-                    { "text": "📚 Requirements", "tag": "markview.nvim-requirements" },
-                    { "text": "🎇 Commands", "tag": "markview.nvim-commands" },
-                    { "text": "💡 Configuration", "tag": "markview.nvim-config" },
-                    { "text": "🧭 Usage", "tag": "markview.nvim-usage" },
-                    { "text": "🧩 Extras", "tag": "markview.nvim-extras" },
-                    { "text": "📦 Presets", "tag": "markview.nvim-presets" }
-                ]
-            }
-        },
-        "markdown": {
-            "link_url_modifiers": [
-                [ "^#%-extra%-modules", "|markview.nvim-extras|" ],
-                [ "^#%-presets", "|markview.nvim-presets|" ],
-                [ "/Usage$", "|markview.nvim-usage|" ]
-            ],
-            "list_items": {
-                "marker_minus": "◆",
-                "marker_plus": "◇"
-            },
-            "tags": {
-                "Features$": [ "markview.nvim-features" ],
-                "Requirements$": [ "markview.nvim-requirements" ],
-                "Commands$": [ "markview.nvim-commands" ],
-                "Autocmds$": [ "markview.nvim-autocmds" ],
-                "Highlight groups$": [ "markview.nvim-hl", "markview.nvim-highlights" ],
-                "Presets$": [ "markview.nvim-presets" ],
-                "Extra modules$": [ "markview.nvim-extras" ],
-                "Contributing to the projects$": [ "markview.nvim-contribute" ]
-            }
-        }
-    }
--->
-<!--markdoc_ignore_start-->
+# markview.nvim
 
-<h1 align="center">☄️ Markview.nvim</h1>
+A hackable Markdown, HTML, LaTeX, Typst & YAML **live previewer** for Neovim — renders directly in the editor without external browsers.
 
-<p align="center">
-   A hackable <b>Markdown</b>, <b>HTML</b>, <b>LaTeX</b>, <b>Typst</b> & <b>YAML</b> previewer for Neovim.
-</p>
-<!--markdoc_ignore_end-->
+Forked from [OXY2DEV/markview.nvim](https://github.com/OXY2DEV/markview.nvim) with bug fixes.
 
-<div align="center">
-    <img src="https://github.com/OXY2DEV/markview.nvim/blob/images/v27/markview.nvim-splitview.png">
-</div>
+## Features
 
+- **In-editor rendering** — preview renders as virtual text inside Neovim
+- **Hybrid mode** — edit and preview simultaneously in the same buffer
+- **Splitview** — side-by-side editing and preview in separate windows
+- **Wrap support** — text wrapping without losing rendering features
+- **Multi-format support**:
+  - Markdown (GitHub-flavored, Obsidian/PKM extended)
+  - HTML
+  - LaTeX (math blocks, symbols, 2000+ definitions)
+  - Typst
+  - YAML
+  - AsciiDoc
+- **Dynamic highlights** — automatically adapts to your colorscheme
+- **Tree-sitter powered** — fast and accurate parsing
 
-| `:set wrap` | `:set nowrap` |
-|---------------|----------------|
-| ![wrap](https://github.com/OXY2DEV/markview.nvim/blob/images/v27/markview.nvim-wrap.png) | ![nowrap](https://github.com/OXY2DEV/markview.nvim/blob/images/v27/markview.nvim-nowrap.png) |
+## Preview
 
+| Hybrid Mode | Splitview |
+|-------------|-----------|
+| ![hybrid](https://github.com/OXY2DEV/markview.nvim/blob/images/v27/markview.nvim-hybrid_mode.png) | ![split](https://github.com/OXY2DEV/markview.nvim/blob/images/v27/markview.nvim-splitview.png) |
 
-<div align="center">
-    <img src="https://github.com/OXY2DEV/markview.nvim/blob/images/v27/markview.nvim-splitview_2.png">
-    <img src="https://github.com/OXY2DEV/markview.nvim/blob/images/v27/markview.nvim-hybrid_mode.png">
-    <img src="https://github.com/OXY2DEV/markview.nvim/blob/images/v27/markview.nvim-comment.png">
-    <img src="https://github.com/OXY2DEV/markview.nvim/blob/images/v27/markview.nvim-asciidoc.png">
-</div>
+## Requirements
 
-<div align="center">
-    <a href="https://github.com/OXY2DEV/markview.nvim/wiki/Home">📚 Wiki</a> | <a href="https://github.com/OXY2DEV/markview.nvim/wiki/Extras">🧩 Extras</a> | <a href="https://github.com/OXY2DEV/markview.nvim/wiki/Presets">📦 Presets</a>
-</div>
+- **Neovim** >= 0.10.3
+- **nvim-treesitter** with parsers: `markdown`, `markdown_inline`, `html`, `latex`, `typst`, `yaml`
+- A tree-sitter based colorscheme (recommended)
+- Nerd Fonts (recommended for icons)
 
-## ✨ Features
+## Installation
 
-Core features,
-
-+ Preview `Markdown`, <code>HTML</code>, $LaTeX$, `Typst` & `Asciidoc`(See [integrations#Asciidoc](https://github.com/OXY2DEV/markview.nvim/wiki/Usage#Asciidoc)) within Neovim.
-+ *Hybrid* editing mode! Allowing *editing* & *previewing* at the same time.
-+ *Splitview*! Allows editing & previewing *side-by-side*.
-+ `Wrap` support(markdown only, at the moment)! Allows using text wrapping while not losing *most* rendering features! See [integrations#wrap](https://github.com/OXY2DEV/markview.nvim/wiki/Integrations#-wrap) for fixing visual glitches or [integrations#nowrap](https://github.com/OXY2DEV/markview.nvim/wiki/Integrations#-nowrap) for disabling it.
-+ Highly customisable! You can change almost anything using the config!
-+ Dynamic `highlight groups` that automatically updates with the colorscheme!
-+ `Callout`, `checkbox` completions for `blink.cmp` & `nvim-cmp`.
-+ Works with `tree-sitter injections` too!
-
-<TOC/>
-
-<!--markdoc_ignore_start-->
-## 📚 Table of contents
-
-- [📚 Requirements](#-requirements)
-- [📐 Installation](#-installation)
-- [🎇 Commands](#-commands)
-
-Also see,
-
-- [📚 Wiki](https://github.com/OXY2DEV/markview.nvim/wiki/Home)
-- [💡 Configuration](https://github.com/OXY2DEV/markview.nvim/wiki/Configuration)
-- [🧭 Usage](https://github.com/OXY2DEV/markview.nvim/wiki/Usage)
-- [🧩 Extras](https://github.com/OXY2DEV/markview.nvim/wiki/Extras)
-- [📦 Presets](https://github.com/OXY2DEV/markview.nvim/wiki/Presets)
-
-### 📜 Complete feature-list
-
-<details>
-    <summary>Expand to see complete feature list</summary>
-<!--markdoc_ignore_end-->
-
-#### Asciidoc
-
-<img src="https://github.com/OXY2DEV/markview.nvim/blob/images/v27/markview.nvim-asciidoc.png">
-
-Supported syntax,
-
-+ Admonitions
-+ Checkboxes(also supports custom checkbox states).
-+ Horizontal rules
-+ Literal blocks
-+ Hiding document attributes
-+ Image macros
-+ Keycode macros
-+ List items(ordered & unordered)
-+ Automated TOC(Table of Contents)
-
-#### Asciidoc inline
-
-Supported syntax,
-
-+ Bold
-+ Highlights
-+ Italic
-+ Monospace
-+ URI
-
-#### Fancy comments,
-
-<img src="https://github.com/OXY2DEV/markview.nvim/wiki/images/comment/markview.nvim-comment.injection.png">
-
-> Comments are still experimental! The original parser only supports basic features.
-
-Conventional commit style comments with support for a subset of `markdown` & `vimdoc`. See [integrations#fancy-comments](https://github.com/OXY2DEV/markview.nvim/wiki/Integrations#-fancy-comments) For more info.
-
-Supported syntax,
-
-+ Tasks(e.g. `feat`, `TODO` etc.)
-+ Task scopes.
-
-Extra syntax(needs external parser),
-
-+ `**Bold**`
-+ `*Italic*`
-+ `Code`
-+ `'Quoted_text'`
-+ `"Double quoted text"`
-+ `@mentions`
-+ `issues/reference#52`
-+ `https://example.com`
-+ `|help-section|`
-+ Code blocks
-
-#### HTML,
-
-<img src="https://github.com/OXY2DEV/markview.nvim/blob/images/v25/repo/html-tokyonight_night.png">
-
-+ Customizable previews for `container` & `void` elements.
-+ Supports the following container elements out of the box,
-    + `<a></a>`
-    + `<b></b>`
-    + `<code></code>`
-    + `<em></em>`
-    + `<i></i>`
-    + `<kbd></kbd>`
-    + `<mark></mark>`
-    + `<pre></pre>`
-    + `<s></s>`, `<strike></strike>`, `<del></del>`
-    + `<strong></strong>`
-    + `<sub></sub>`
-    + `<sup></sup>`
-    + `<u></u>`
-
-+ Supports the following void elements out of the box,
-    + `<hr>`
-    + `<br>`
-
-#### LaTeX,
-
-<img src="https://github.com/OXY2DEV/markview.nvim/blob/images/v25/repo/latex-cyberdream.png">
-
-+ Supports basic LaTeX syntax,
-    + Math blocks(typically `$$...$$`) & inline math(typically `$...$`).
-    + Escaped characters.
-    + Math fonts
-    + Math symbols.
-    + `\text{}`.
-
-+ Supports commonly used math commands out of the box,
-    + `\frac{}`
-    + `\sin{}`
-    + `\cos{}`
-    + `\tan{}`
-    + `\sinh{}`
-    + `\cosh{}`
-    + `\tanh{}`
-    + `\csc{}`
-    + `\sec{}`
-    + `\cot{}`
-    + `\csch{}`
-    + `\sech{}`
-    + `\coth{}`
-    + `\arcsin{}`
-    + `\arccos{}`
-    + `\arctan{}`
-    + `\arg{}`
-    + `\deg{}`
-    + `\drt{}`
-    + `\dim{}`
-    + `\exp{}`
-    + `\gcd{}`
-    + `\hom{}`
-    + `\inf{}`
-    + `\ker{}`
-    + `\lg{}`
-    + `\lim{}`
-    + `\liminf{}`
-    + `\limsup{}`
-    + `\ln{}`
-    + `\log{}`
-    + `\min{}`
-    + `\max{}`
-    + `\Pr{}`
-    + `\sup{}`
-    + `\sqrt{}`
-    + `\lvert{}`
-    + `\lVert{}`
-    + `\boxed{}`
-
-+ Supports the following math fonts(requires any *modern* Unicode font),
-    + `default`(Default math font).
-    + `\mathbb{}`
-    + `\mathbf{}`
-    + `\mathbffrak{}`
-    + `\mathbfit{}`
-    + `\nathbfscr{}`
-    + `\mathcal{}`
-    + `\mathfrak{}`
-    + `\mathsf{}`
-    + `\mathsfbf{}`
-    + `\mathsfbfit{}`
-    + `\mathsfit{}`
-    + `\mathtt{}`
-
-+ Supports Unicode based *subscript* & *superscript* texts.
-+ Supports **2056** different math symbol definitions.
-
-#### Markdown,
-
-<img src="https://github.com/OXY2DEV/markview.nvim/blob/images/v25/repo/markdown-catppuccin_mocha.png">
-
-+ Supports basic markdown(Github-flavored) syntax,
-    + Block quotes(with support for `callouts` & titles).
-    + Fenced code blocks.
-    + Headings(`setext` & `atx`).
-    + Horizontal rules.
-    + List items(`+`, `-`, `*`, `n.` & `n)`).
-    + Minus & plus metadata.
-    + Reference link definitions.
-    + Tables.
-    + Checkboxes(supports *minimal-style* checkboxes).
-    + Email links.
-    + Entity references.
-    + Escaped characters.
-    + Footnotes.
-    + Hyperlinks.
-    + Images.
-    + Inline codes/Code spans.
-    + Autolinks
-
-+ `Wrap` support for,
-    + Block quotes & Callouts.
-    + Sections(when `markdown.headings.org_indent` is used).
-    + List items(when `markdown.list_items.<item>.add_padding` is true).
-    + `tables`(limited due to technical limitations).
-
-+ `Org-mode` like indentation for headings.
-
-<img src="https://github.com/OXY2DEV/markview.nvim/blob/images/v25/repo/markdown_inline-nightfly.png">
-
-+ Obsidian/PKM extended syntax support,
-    + Block reference links.
-    + Embed file links.
-    + Internal links(supports *aliases*).
-    + Tags.
-
-+ Wide variety of HTML entity names & codes support.
-    + Supported named entities: **786**.
-    + Supported entity codes
-
-+ Github emoji shorthands support. Supports **1920** shorthands.
-+ Custom configuration based on link patterns.
-
-#### Typst,
-
-<img src="https://github.com/OXY2DEV/markview.nvim/blob/images/v25/repo/typst-kanagawa_wave.png">
-
-+ Supports the following items,
-    + Code blocks.
-    + Code spans.
-    + Escaped characters.
-    + Headings.
-    + Labels.
-    + List items(`-`, `+` & `n.`).
-    + Math blocks.
-    + Math spans.
-    + Raw blocks.
-    + Raw spans.
-    + Reference links.
-    + Subscripts.
-    + Superscripts.
-    + Symbols.
-    + Terms.
-    + URL links.
-
-+ Supports a variety of typst symbols,
-    + Symbol entries: **932**
-    + Symbol shorthands: **40**
-
-+ Supports Unicode based *subscript* & *superscript* texts.
-
-#### YAML,
-
-<img src="https://github.com/OXY2DEV/markview.nvim/blob/images/v25/repo/yaml-material_palenight.png">
-
-+ Custom property icons.
-+ Custom property scope decorations.
-+ Custom icons(/decorations) based on property type & value(e.g. `booleans`).
-
-+ Supports the following properties out of the box,
-    + tags.
-    + aliases.
-    + cssclasses.
-    + publish.
-    + permalink.
-    + description.
-    + images.
-    + cover.
-
----
-
-#### Hybrid mode
-
-
-| Normal hybrid mode | Linewise hybrid mode |
-|--------------------|----------------------|
-| ![hybrid_mode](https://github.com/OXY2DEV/markview.nvim/blob/images/v25/wiki/hybrid_mode.png) | ![linewise_hybrid_mode](https://github.com/OXY2DEV/markview.nvim/blob/images/v25/wiki/linewise_hybrid_mode.png) |
-
-
-+ *Node-based* edit range(default).
-  Clears a range of lines covered by the (named)`TSNode` under the cursor. Useful when editing lists, block quotes, code blocks, tables etc.
-
-+ *Range-based* edit range.
-  Clears the selected number of lines above & below the cursor.
-
-+ Supports multi-window setups.
-
-#### Splitview
-
-+ View previews in a separate window.
-+ Scroll sync between raw file & preview window.
-
-#### Others
-
-Internal Icon provider features,
-
-+ **708** different filetype configuration.
-+ Dynamic highlight groups for matching the colorscheme.
-
-<img src="https://github.com/OXY2DEV/markview.nvim/blob/images/v25/repo/traceback.png">
-
-+ You can use `:Markview traceShow` to see what the plugin has been doing(including how long some of them took).
-+ You can also use `:Markview traceExport` to export these logs.
-<!--markdoc_ignore_start-->
-</details>
-<!--markdoc_ignore_end-->
-
-## 📚 Requirements
-
-System,
-
-- **Neovim:** >= 0.10.3
-
->[!NOTE]
-> It is recommended to use `nowrap`(though there is wrap support in the plugin) & `expandtab`.
-
----
-
-Colorscheme,
-
-- Any *tree-sitter* based colorscheme is recommended.
-
-External icon providers,
-
->[!NOTE]
-> You need to change the config to use the desired icon provider.
-> 
-> ```lua
-> {
->     preview = {
->         icon_provider = "internal", -- "mini" or "devicons"
->     }
-> }
-> ```
-
-- [mini.icons](https://github.com/nvim-mini/mini.icons)
-- [nvim-web-devicons](https://github.com/nvim-tree/nvim-web-devicons)
-
-Parsers,
-
->[!TIP]
-> You can use `nvim-treesitter` to easily install parsers. You can install all the parsers with the following command,
-> 
-> ```vim
-> :TSInstall markdown markdown_inline html latex typst yaml
-> ```
-
->[!IMPORTANT]
-> On windows, you might need `tree-sitter` CLI for the $LaTeX$ parser.
-
-- `markdown`
-- `markdown_inline`
-- `comment`(optional)
-- `html`(optional)
-- `latex`(optional)
-- `typst`(optional)
-- `yaml`(optional)
-- [tree-sitter-asciidoc](https://github.com/cathaysia/tree-sitter-asciidoc)(optional)
-  See [integrations#Asciidoc](https://github.com/OXY2DEV/markview.nvim/wiki/Usage#Asciidoc) to see how to get started.
-
-Fonts,
-
-- Any *modern* Unicode font is required for math symbols.
-- *Nerd fonts* are recommended.
-
->[!TIP]
-> It is recommended to run `:checkhealth markview` after installing the plugin to check if any potential issues exist.
-
-## 📐 Installation
-
-### 🧩 Vim-plug
-
-Add this to your plugin list.
-
-```vim
-Plug 'OXY2DEV/markview.nvim'
-```
-
-### 💤 Lazy.nvim
-
->[!WARNING]
-> Do *not* lazy load this plugin as it is already lazy-loaded. Lazy-loading may cause **more time** for the previews to load when starting Neovim!
-
-The plugin should be loaded *after* your colorscheme to ensure the correct highlight groups are used. See [integrations.transparent_colorschemes](https://github.com/OXY2DEV/markview.nvim/wiki/Integrations#-transparent-colorschemes) if you use a transparent colorscheme and the colors don't look right.
+### Lazy.nvim
 
 ```lua
--- For `plugins/markview.lua` users.
-return {
-    "OXY2DEV/markview.nvim",
-    lazy = false,
-
-    -- Completion for `blink.cmp`
-    -- dependencies = { "saghen/blink.cmp" },
-};
-```
-
-```lua
--- For `plugins.lua` users.
 {
-    "OXY2DEV/markview.nvim",
+    "bumaociyuan/markview.nvim",
     lazy = false,
-
-    -- Completion for `blink.cmp`
-    -- dependencies = { "saghen/blink.cmp" },
-},
+    dependencies = {
+        "nvim-treesitter/nvim-treesitter",
+        -- Optional: for blink.cmp completion
+        -- "saghen/blink.cmp",
+    },
+    opts = {
+        preview = {
+            hybrid_modes = { "n" },  -- enable hybrid mode in normal mode
+        },
+    },
+}
 ```
 
-### 🦠 Mini.deps
-
-```lua
-local MiniDeps = require("mini.deps");
-
-MiniDeps.add({
-    source = "OXY2DEV/markview.nvim",
-
-    -- Completion for `blink.cmp`
-    -- depends = { "saghen/blink.cmp" },
-});
-```
-
-### 🌒 Rocks.nvim
-
->[!WARNING]
-> `luarocks package` may sometimes be a bit behind `main`.
+Install parsers:
 
 ```vim
-:Rocks install markview.nvim
+:TSInstall markdown markdown_inline html latex typst yaml
 ```
 
-### 📥 GitHub release
+## Configuration
 
-Tagged releases can be found in the [release page](https://github.com/OXY2DEV/markview.nvim/releases).
+```lua
+require("markview").setup({
+    preview = {
+        hybrid_modes = { "n", "v" },  -- modes where preview is shown
+    },
+    code_blocks = {
+        style = "language",
+    },
+    headings = {
+        shift_width = 0,
+        heading_1 = { style = "icon", sign = "󰌕 " },
+        heading_2 = { style = "icon", sign = "󰀘 " },
+        heading_3 = { style = "icon", sign = "󰆦 " },
+    },
+    checkboxes = {
+        enable = true,
+        checked = { text = "☑" },
+        unchecked = { text = "☐" },
+    },
+    tables = {
+        enable = true,
+    },
+})
+```
 
->[!NOTE]
-> `Github releases` may sometimes be slightly behind `main`.
+## Commands
 
-## 🪲 Known bugs
+| Command | Description |
+|---------|-------------|
+| `:Markview toggle` | Toggle preview globally |
+| `:Markview enable` | Enable preview globally |
+| `:Markview disable` | Disable preview globally |
+| `:Markview splitToggle` | Toggle splitview |
+| `:Markview HybridToggle` | Toggle hybrid mode |
+| `:Markview traceShow` | Show debug logs |
 
-- `code span`s don't get recognized when on the line after a `code block`(if the line after the `code span` is empty).
-  This is most likely due to some bug in either the `markdown` or the `markdown_inline` parser.
+## Bug Fixes
 
-- Incorrect wrapping when setting `wrap` using `modeline`.
-  This is due to `textoff` being 0(instead of the size of the `statuscolumn`) when entering a buffer.
+This fork includes fixes for:
 
-## 🧭 Usage
+- **#488**: Fixed "attempt to index a nil value" crash when `get_parser()` returns nil (parser.lua)
 
-You can find more usage recipes [here](https://github.com/OXY2DEV/markview.nvim/wiki/Usage).
+## License
 
-## 🎇 Commands
-
-This plugin follows the *sub-commands* approach for creating commands. There is only a single `:Markview` command.
-
-It comes with the following sub-commands,
-
->[!NOTE]
-> When no sub-command name is provided(or an invalid sub-command is used) `:Markview` will run `:Markview Toggle`.
-
-
-| Sub-command      | Arguments           | Description                              |
-|------------------|---------------------|------------------------------------------|
-| `Toggle`         | none                | Toggles preview *globally*.              |
-| `Enable`         | none                | Enables preview *globally*.              |
-| `Disable`        | none                | Disables preview *globally*.             |
-| `toggle`         | **buffer**, integer | Toggles preview for **buffer**.          |
-| `enable`         | **buffer**, integer | Enables preview for **buffer**.          |
-| `disable`        | **buffer**, integer | Disables preview for **buffer**.         |
-| `splitToggle`    | none                | Toggles *splitview*.                     |
-
-
-<!--markdoc_ignore_start-->
-<details>
-    <summary>Advanced commands are given below</summary><!-- --+ -->
-<!--markdoc_ignore_end-->
-Sub-commands related to auto-registering new buffers for previews and/or manually attaching/detaching buffers,
-
-| Sub-command      | Arguments           | Description                              |
-|------------------|---------------------|------------------------------------------|
-| `attach`         | **buffer**, integer | Attaches to **buffer**.                  |
-| `detach`         | **buffer**, integer | Detaches from **buffer**.                |
-| `Start`          | none                | Allows attaching to new buffers.         |
-| `Stop`           | none                | Prevents attaching to new buffers.       |
-
-Sub-commands related to controlling **hybrid_mode**,
-
-| Sub-command      | Arguments           | Description                              |
-|------------------|---------------------|------------------------------------------|
-| `HybridEnable`   | none                | Enables hybrid mode.                     |
-| `HybridDisable`  | none                | Disables hybrid mode.                    |
-| `HybridToggle`   | none                | Toggles hybrid mode.                     |
-| `hybridEnable`   | **buffer**, integer | Enables hybrid mode for **buffer**.      |
-| `hybridDisable`  | **buffer**, integer | Disables hybrid mode for **buffer**.     |
-| `hybridToggle`   | **buffer**, integer | Toggles hybrid mode for **buffer**.      |
-| `linewiseEnable` | none                | Enables linewise hybrid mode.            |
-| `linewiseDisable`| none                | Disables linewise hybrid mode.           |
-| `linewiseToggle` | none                | Toggles linewise hybrid mode.            |
-
-Sub-commands for working with `splitview`,
-
-| Sub-command      | Arguments           | Description                              |
-|------------------|---------------------|------------------------------------------|
-| `splitOpen`      | **buffer**, integer | Opens *splitview* for **buffer**.        |
-| `splitClose`     | none                | Closes any open *splitview*.             |
-| `splitRedraw`    | none                | Updates *splitview* contents.            |
-
-Sub-commands for manual `preview` updates,
-
-| Sub-command      | Arguments           | Description                              |
-|------------------|---------------------|------------------------------------------|
-| `render`         | **buffer**, integer | Renders preview for **buffer**.          |
-| `clear`          | **buffer**, integer | Clears preview for **buffer**.           |
-| `Render`         | none                | Updates preview of all *active* buffers. |
-| `Clear`          | none                | Clears preview of all **active** buffer. |
-
-Sub-commands for `bug report`,
-
-| Sub-command      | Arguments           | Description                               |
-|------------------|---------------------|-------------------------------------------|
-| `traceExport`    | none                | Exports trace logs to `markview_log.txt`. |
-| `traceShow`      | none                | Shows trace logs in a window.             |
-
-<!--markdoc_ignore_start-->
-</details>
-
-<!--markdoc_ignore_end-->
->[!TIP]
-> **buffer** defaults to the current buffer. So, you can run commands on the current buffer without providing the buffer.
-> ```vim
-> :Markview toggle "Toggles preview of the current buffer.
-> ```
-
-## ✅ Contributing to the projects
-
-If you have time and want to make this project better, consider helping me fix any of these issues,
-
-- [ ] Add support for more filetypes in the internal icon provider.
-- [ ] Optimization of `require("markview.renderers.markdown").output()`.
-- [ ] Optimization of the table renderer.
-- [ ] Stricter logic to reduce preview redraws.
-- [X] Make `splitview` update as little content as possible.
-- [X] Make the help files/wiki more beginner friendly.
-
-------
-
-[^1]: The value of the linked group is used **literally**. So, manually changing the link group wouldn't work for this.
-[^2]: The value of `MarkviewCode` is used for the background. So, changing either of the linked group wouldn't affect these.
-
+Same as upstream — see [LICENSE](LICENSE).
