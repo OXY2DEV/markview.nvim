@@ -201,9 +201,7 @@ spec.default = {
 			end
 
 			local success, parser = pcall(vim.treesitter.get_parser, buffer);
-			if success and parser ~= nil then
-				return true;
-			end
+			return success and parser ~= nil;
 		end,
 
 		raw_previews = {},
