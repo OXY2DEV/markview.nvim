@@ -1,5 +1,37 @@
 # Changelog
 
+## [28.2.0](https://github.com/OXY2DEV/markview.nvim/compare/v28.1.0...v28.2.0) (2026-04-24)
+
+
+### Features
+
+* **icons:** add missing filetypes and fix generic fallbacks ([eff7690](https://github.com/OXY2DEV/markview.nvim/commit/eff76903ef7df28f78acf258437268ab9355e38d))
+* **icons:** add missing filetypes and fix generic fallbacks ([8dca41c](https://github.com/OXY2DEV/markview.nvim/commit/8dca41ce7e605d5748e793a0cf6a91635bc3dcc9))
+* **latex:** Allow rendering of symbols directly part of `subscript`/`superscript` ([239feb7](https://github.com/OXY2DEV/markview.nvim/commit/239feb70ed1cfc26e2c91b32590fd63f7b015599)), closes [#475](https://github.com/OXY2DEV/markview.nvim/issues/475)
+* **markdown:** Added support for Obsidian-style tags ([288db27](https://github.com/OXY2DEV/markview.nvim/commit/288db27ed4bf799cafe2d9d607fa967050bd359a)), closes [#491](https://github.com/OXY2DEV/markview.nvim/issues/491)
+* **renderers, markdown, block_quotes:** Allow `block quotes` to use background colors ([563ef9b](https://github.com/OXY2DEV/markview.nvim/commit/563ef9b5e87523f41d887ce10eb5593d8cf14157)), closes [#490](https://github.com/OXY2DEV/markview.nvim/issues/490)
+* **renderers, markdown:** Use LPeg for parsing table columns ([918f3f9](https://github.com/OXY2DEV/markview.nvim/commit/918f3f92e87d28a487af89912d774521a52f9888)), closes [#476](https://github.com/OXY2DEV/markview.nvim/issues/476)
+
+
+### Bug Fixes
+
+* **asciidoc:** Prevent rendering inside source blocks/code blocks ([12e4e62](https://github.com/OXY2DEV/markview.nvim/commit/12e4e62c76bf1f29d05c5e07e9d71f50cb3f0df7))
+* **autocmds:** `set_query()` fix for `codecompanion.nvim` buffers ([542b4b8](https://github.com/OXY2DEV/markview.nvim/commit/542b4b8f18e41df35cfbcd93c6b776e0226f30d0)), closes [#480](https://github.com/OXY2DEV/markview.nvim/issues/480)
+* **autocmds:** Correctly handle `0` in autocmds ([0383545](https://github.com/OXY2DEV/markview.nvim/commit/0383545e06e99ef251a590f13ae77e6e404871c3)), closes [#478](https://github.com/OXY2DEV/markview.nvim/issues/478)
+* **autocmds:** Fixed a bug triggering `on_mode_change` on disabled buffers ([ed989a2](https://github.com/OXY2DEV/markview.nvim/commit/ed989a2036a85ec7e1d41de77bf01d0537b19799))
+* **callbcaks:** Fixed a bug with `on_mode_change` not triggering ([9c17d2b](https://github.com/OXY2DEV/markview.nvim/commit/9c17d2bb5b9892397f2311680f51abf4a9864425))
+* **parser:** Added parser check to prevent crashes on nvim-0.12 ([e27dee8](https://github.com/OXY2DEV/markview.nvim/commit/e27dee8b2a61f89ac3a06deae0264ad1d3f7b62c)), closes [#492](https://github.com/OXY2DEV/markview.nvim/issues/492) [#488](https://github.com/OXY2DEV/markview.nvim/issues/488)
+* **parsers, markdown, table:** Allow empty columns ([fdc8bac](https://github.com/OXY2DEV/markview.nvim/commit/fdc8bac74550f2ac847578cb74c7ad99b3421bc2)), closes [#473](https://github.com/OXY2DEV/markview.nvim/issues/473)
+* **parsers, markdown:** Added checks for getting node text ranges ([aab99eb](https://github.com/OXY2DEV/markview.nvim/commit/aab99ebfd5155cc58d8e4d0e44f4e001e7734728)), closes [#494](https://github.com/OXY2DEV/markview.nvim/issues/494)
+* **tostring:** add footnote pattern to LPeg parser for correct table column widths ([0509437](https://github.com/OXY2DEV/markview.nvim/commit/05094373026e42fb18d5da1c32de4896c4124f97))
+* **tostring:** add footnote pattern to LPeg parser for correct table column widths ([5aac2d8](https://github.com/OXY2DEV/markview.nvim/commit/5aac2d862830172bcf78c570c583fedee7788c74))
+* **tostring:** recurse into nested inline elements inside bold/italic ([1861f95](https://github.com/OXY2DEV/markview.nvim/commit/1861f959599ae03cfd59f56222a542035b0cd947))
+* **tostring:** recurse into nested inline elements inside bold/italic ([75f9a32](https://github.com/OXY2DEV/markview.nvim/commit/75f9a329d3dc28082e7b05695394aa96e28700d4))
+* **tostring:** resolve emoji shorthands to Unicode for correct table column widths ([38a14a4](https://github.com/OXY2DEV/markview.nvim/commit/38a14a450874051463a1493780b93a14d8d4d479))
+* **tostring:** resolve emoji shorthands to Unicode for correct width calculation ([e8606ae](https://github.com/OXY2DEV/markview.nvim/commit/e8606ae6bf9cd80ec4c7ed3f4a9ce0931027cb75))
+* **tostring:** support balanced parentheses in URL link destinations ([5bd30cb](https://github.com/OXY2DEV/markview.nvim/commit/5bd30cba43727988ab0733a0be18f3ab9dcf6aa1))
+* **tostring:** support balanced parentheses in URL link destinations ([0114472](https://github.com/OXY2DEV/markview.nvim/commit/0114472d339ef88173b5b7d739b520786665d8cc))
+
 ## [28.1.0](https://github.com/OXY2DEV/markview.nvim/compare/v28.0.0...v28.1.0) (2026-03-04)
 
 
