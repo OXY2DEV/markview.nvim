@@ -366,7 +366,11 @@ editor.open_editor = function ()
 
 	--- Attaches LSP client.
 	vim.api.nvim_buf_call(editor.buffer, function ()
-		vim.cmd("LspStart");
+		if vim.version.range(">=0.12"):has(vim.version()) then
+			vim.cmd("lsp enable");
+		else
+			vim.cmd("LspStart");
+		end
 	end);
 
 	---_
@@ -550,8 +554,13 @@ editor.update_editor = function ()
 
 	--- Attaches LSP client.
 	vim.api.nvim_buf_call(editor.buffer, function ()
-		vim.cmd("LspStop");
-		vim.cmd("LspStart");
+		if vim.version.range(">=0.12"):has(vim.version()) then
+			vim.cmd("lsp disable");
+			vim.cmd("lsp enable");
+		else
+			vim.cmd("LspStop");
+			vim.cmd("LspStart");
+		end
 	end);
 
 	---_
