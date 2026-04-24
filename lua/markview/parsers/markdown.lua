@@ -997,11 +997,31 @@ markdown.parse = function (buffer, TSTree, from, to)
 			goto continue;
 		end
 
-		---@type string?
-		local capture_text = vim.treesitter.get_node_text(capture_node, buffer);
+		---@type boolean, string?
+		local got_text, capture_text = pcall(vim.treesitter.get_node_text, capture_node, buffer);
 		local r_start, c_start, r_end, c_end = capture_node:range();
 
-		if capture_text == nil then
+		if not got_text or not capture_text then
+			if not got_text then
+				-- NOTE: On `0.12+`, `get_node_text()` may fail
+				--
+				-- This is due to changes in the tree-sitter implementation.
+				-- We should log these for finding the culprit.
+				--
+				-- See #494
+
+				require("markview.health").print({
+					kind = "WARN",
+
+					from = "parsers/markdown.lua",
+					fn = "parse()",
+
+					message = {
+						{ capture_text or "", "DiagnosticWarn" }
+					}
+				});
+			end
+
 			goto continue;
 		end
 
