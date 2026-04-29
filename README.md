@@ -448,7 +448,7 @@ Fonts,
 
 ### 📦 vim.pack
 
-Add this to your init.lua. (Requires Neovim 0.12+)
+Add this to your init.lua. 
 
 ```lua
 vim.pack.add({
