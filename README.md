@@ -446,6 +446,16 @@ Fonts,
 
 ## 📐 Installation
 
+### 📦 vim.pack
+
+Add this to your init.lua. (Requires Neovim 0.12+)
+
+```lua
+vim.pack.add({
+    "https://github.com/OXY2DEV/markview.nvim",
+})
+```
+
 ### 🧩 Vim-plug
 
 Add this to your plugin list.
