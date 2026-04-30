@@ -499,7 +499,11 @@ end
 -- Special cases such as `#1` are not considered tags in **Obsidian**,
 -- but the extra matching required isn't worth the effort in my opinion.
 local tag_text = lpeg.R("az", "AZ", "09") + lpeg.S("_-");
-local tag = lpeg.C(
+
+-- NOTE: Tags in Obsidian can't have non-whitespace text before `#`.
+local boundary = -lpeg.B(1) + lpeg.B(lpeg.S(" \t") );
+
+local tag = lpeg.P(boundary) * lpeg.C(
 	lpeg.Cp() * -- Start byte
 	lpeg.P("#") * tag_text^1 *
 	lpeg.Cp() -- End byte
@@ -520,9 +524,10 @@ inline.tag = function (_, _, text, range)
 		while index < #tags do
 			local match = tags[index];
 			local col_start = _col_start + tags[index + 1] - 1;
-			local col_end = tags[index + 2] - 1;
+			local col_end = _col_start + tags[index + 2] - 1;
 
 			if match and col_start and col_end then
+
 				inline.insert({
 					class = "inline_tag",
 					label = match:gsub("^#", ""),
