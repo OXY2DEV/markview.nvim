@@ -1038,7 +1038,7 @@ end
 --- Render ==tag==.
 ---@param buffer integer
 ---@param item markview.parsed.markdown_inline.tags
-inline.tag = function (buffer, item)
+inline.tag = function (buffer, item, heading_lines)
 	---@type markview.config.markdown_inline.tags?
 	local main_config = spec.get({ "markdown_inline", "tags" }, { fallback = nil });
 	local range = item.range;
@@ -1084,11 +1084,40 @@ inline.tag = function (buffer, item)
 		-- hl_mode = "combine"
 	});
 
-	vim.api.nvim_buf_set_extmark(buffer, inline.ns, range.row_start, range.col_start + 1, {
-		undo_restore = false, invalidate = true,
-		end_col = range.col_end,
-		hl_group = utils.set_hl(config.hl)
-	});
+	if heading_lines[range.row_start] or config.virtual then
+		local text = item.text[1] or "";
+
+		text = string.gsub(text, "^`+", "");
+		text = string.gsub(text, "`+$", "");
+
+		local chars = vim.fn.split(text, "\\zs");
+		local col_offset = 0;
+
+		--[[
+			NOTE: Virtual texts do not wrap with the text.
+
+			So, the text is split into characters and each character gets a mask applied to it.
+		]]
+		for c = 2, #chars do
+			vim.api.nvim_buf_set_extmark(buffer, inline.ns, range.row_start, (range.col_start + 1) + col_offset, {
+				undo_restore = false, invalidate = true,
+
+				virt_text_pos = "overlay",
+				virt_text = {
+					{ chars[c], utils.set_hl(config.hl) }
+				}
+			});
+
+			col_offset = col_offset + #chars[c];
+		end
+	else
+		vim.api.nvim_buf_set_extmark(buffer, inline.ns, range.row_start, range.col_start + 1, {
+			undo_restore = false, invalidate = true,
+			end_row = range.row_end,
+			end_col = range.col_end,
+			hl_group = utils.set_hl(config.hl)
+		});
+	end
 
 	vim.api.nvim_buf_set_extmark(buffer, inline.ns, range.row_start, range.col_end, {
 		undo_restore = false, invalidate = true,
