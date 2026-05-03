@@ -1,5 +1,14 @@
 # Changelog
 
+## [28.2.1](https://github.com/OXY2DEV/markview.nvim/compare/v28.2.0...v28.2.1) (2026-05-03)
+
+
+### Bug Fixes
+
+* **parsers, markdown_inline, tags:** Do not allow non-space characters ([75e952a](https://github.com/OXY2DEV/markview.nvim/commit/75e952a645d4c15507fbd1923c1c84ec50a55e85))
+* **parsers, markdown_inline, tags:** Fixed tag ranges ([75e952a](https://github.com/OXY2DEV/markview.nvim/commit/75e952a645d4c15507fbd1923c1c84ec50a55e85)), closes [#497](https://github.com/OXY2DEV/markview.nvim/issues/497)
+* **renderers, markdown_inline, tags:** Add `virtual` feature ([8b82823](https://github.com/OXY2DEV/markview.nvim/commit/8b82823bbe7b452c5920ab22947e186c6cb067b4)), closes [#497](https://github.com/OXY2DEV/markview.nvim/issues/497)
+
 ## [28.2.0](https://github.com/OXY2DEV/markview.nvim/compare/v28.1.0...v28.2.0) (2026-04-24)
 
 
