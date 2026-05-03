@@ -449,7 +449,7 @@ latex.subscript = function (buffer, item)
 				end_col = range.col_end,
 				conceal = "",
 			});
-		elseif symbols.subscripts[item.text[1]:sub(3)] then
+		elseif symbols.subscripts[item.text[1]:sub(2)] then
 			if item.preview then
 				table.insert(latex.cache.style_regions.subscripts, item);
 			end
@@ -566,7 +566,7 @@ latex.superscript = function (buffer, item)
 				end_col = range.col_end,
 				conceal = "",
 			});
-		elseif symbols.superscripts[item.text[1]:sub(3)] then
+		elseif symbols.superscripts[item.text[1]:sub(2)] then
 			if item.preview then
 				table.insert(latex.cache.style_regions.superscripts, item);
 			end
