@@ -366,6 +366,21 @@ end
 
 ---@param match string
 ---@return string
+md_str.strikethrough = function (match)
+	---|fS
+
+	if string.match(match, "%s+%~%~$") then
+		return match;
+	end
+
+	local removed = string.gsub(match, "^%~%~", ""):gsub("%~%~$", "");
+	return removed;
+
+	---|fE
+end
+
+---@param match string
+---@return string
 md_str.italic = function (match)
 	---|fS
 
@@ -727,11 +742,14 @@ local emoji = lpeg.C( lpeg.P(":") * emoji_char^1 * lpeg.P(":") ) / md_str.emoji;
 local hl_content = lpeg.P("\\=") + ( 1 - lpeg.P("=") );
 local hl = lpeg.C( lpeg.P("==") * hl_content^1 * lpeg.P("==") ) / md_str.highlight;
 
+local strike_content = lpeg.P("\\~") + ( 1 - lpeg.P("~") );
+local strike = lpeg.C( lpeg.P("~~") * strike_content^1 * lpeg.P("~~") ) / md_str.strikethrough;
+
 local any = lpeg.P(1);
 
 local token = escape +
 	emoji + entity +
-	hl + block_ref + embed + internal +
+	hl + strike + block_ref + embed + internal +
 	email + auto +
 	footnote + img + hyperlink +
 	code +
