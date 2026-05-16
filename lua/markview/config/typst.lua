@@ -1,3 +1,4 @@
+---@type markview.config.typst
 return {
 	enable = true,
 
@@ -65,7 +66,11 @@ return {
 			style = "icon",
 
 			icon = "󰎴  ", hl = "MarkviewHeading6",
-		}
+		},
+
+		org_indent = false,
+		org_shift_char = " ",
+		org_shift_width = 1,
 	},
 
 	labels = {

@@ -60,7 +60,7 @@ markdown.atx_heading = function (buffer, TSNode, text, range)
 
 		Each `atx_heading` creates a `section` in the document.
 		By checking the depth of a `section` & it's sibling `section`s
-		we cab determine the level of a heading.
+		we can determine the level of a heading.
 
 		Level format: 1.1.1.1
 		They are calculated like so,

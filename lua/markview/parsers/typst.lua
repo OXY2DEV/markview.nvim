@@ -483,6 +483,42 @@ typst.idet = function (_, TSNode, text, range)
 	});
 end
 
+---@param buffer integer
+---@param TSNode table
+---@param text string[]
+---@param range markview.parsed.typst.sections.range
+typst.section = function (buffer, TSNode, text, range)
+	local heading = TSNode:child(0);
+	local heading_text = vim.treesitter.get_node_text(heading, buffer);
+
+	---@type TSNode?
+	local content = heading:next_sibling();
+	local org_end = range.row_end;
+
+	if content then
+		local child = content:named_child(0);
+
+		while child do
+			if child:type() == "section" then
+				org_end = -1 + child:range();
+				break;
+			end
+
+			child = child:next_named_sibling();
+		end
+	end
+
+	range.org_end = org_end;
+
+	table.insert(typst.content, {
+		class = "typst_section",
+		level = heading_text:match("^%s*(=+)"):len(),
+
+		text = text,
+		range = range
+	});
+end
+
 --- Parser for typst.
 ---@param buffer integer
 ---@param TSTree table
@@ -500,6 +536,9 @@ typst.parse = function (buffer, TSTree, from, to)
 	typst.content = {};
 
 	local scanned_queries = vim.treesitter.query.parse("typst", [[
+		((section
+			(heading)) @typst.section)
+
 		((attach
 			sub: (_) @typst.subscript))
 

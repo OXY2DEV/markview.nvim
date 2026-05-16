@@ -210,6 +210,27 @@
 
 ------------------------------------------------------------------------------
 
+--- Used for Org-indent.
+---@class markview.parsed.typst.sections
+---
+---@field class "typst_section"
+---@field level integer
+---
+---@field text string[]
+---@field range markview.parsed.typst.sections.range
+
+
+---@class markview.parsed.typst.sections.range
+---
+---@field row_start integer
+---@field row_end integer
+---@field col_start integer
+---@field col_end integer
+---
+---@field org_end integer Line where `Org indent` should end.
+
+------------------------------------------------------------------------------
+
 ---@alias markview.parsed.typst
 ---| markview.parsed.typst.code_block
 ---| markview.parsed.typst.code_spans
@@ -222,6 +243,7 @@
 ---| markview.parsed.typst.raw_blocks
 ---| markview.parsed.typst.raw_spans
 ---| markview.parsed.typst.reference_links
+---| markview.parsed.typst.sections
 ---| markview.parsed.typst.strong
 ---| markview.parsed.typst.subscripts
 ---| markview.parsed.typst.superscripts
@@ -251,3 +273,5 @@
 ---@field typst_emphasis markview.parsed.typst.emphasis[]
 ---@field typst_strong markview.parsed.typst.strong[]
 ---@field typst_text markview.parsed.typst.text[]
+---@field typst_section markview.parsed.typst.sections[]
+

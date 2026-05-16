@@ -425,15 +425,21 @@ typst.heading = function (buffer, item)
 			line_hl_group = utils.set_hl(config.hl)
 		});
 	elseif config.style == "icon" then
+		local shift_width = main_config.shift_width or 0;
+		local shift_char = " ";
+
 		vim.api.nvim_buf_set_extmark(buffer, typst.ns, range.row_start, range.col_start, {
 			undo_restore = false, invalidate = true,
 			end_col = range.col_start + item.level + 1,
+
 			conceal = "",
+
 			sign_text = config.sign,
 			sign_hl_group = utils.set_hl(config.sign_hl),
+
 			virt_text_pos = "inline",
 			virt_text = {
-				{ string.rep(" ", item.level * spec.get({ "typst", "headings", "shift_width" }, { fallback = 1 })) },
+				{ string.rep(shift_char, (item.level - 1) * shift_width) },
 				{ config.icon or "", utils.set_hl(config.icon_hl or config.hl) },
 			},
 			line_hl_group = utils.set_hl(config.hl),
@@ -1567,6 +1573,68 @@ typst.text = function (buffer, item)
 		},
 		hl_mode = "combine"
 	});
+end
+
+--- Render org mode like section indentations.
+---@param buffer integer
+---@param item markview.parsed.typst.sections
+typst.section = function (buffer, item)
+	---@type markview.config.typst.headings?
+	local main_config = spec.get({ "typst", "headings" }, { fallback = nil, eval_args = { buffer, item } });
+
+	if main_config == nil then
+		return;
+	elseif main_config.org_indent ~= true then
+		--- Org indent mode disabled.
+		return;
+	end
+
+	local shift_width = main_config.org_shift_width or main_config.shift_width or 0;
+	local shift_char = main_config.org_shift_char or " ";
+
+	local range = item.range;
+
+	for l = range.row_start + 1, range.org_end do
+		vim.api.nvim_buf_set_extmark(buffer, typst.ns, l, 0, {
+			undo_restore = false, invalidate = true,
+
+			virt_text_pos = "inline",
+			virt_text = {
+				{
+					string.rep(
+						shift_char,
+						math.max(
+							0,
+							shift_width * (item.level - 1)
+						)
+					)
+				}
+			},
+
+			right_gravity = false,
+			hl_mode = "combine"
+		});
+	end
+
+	---@type integer, integer Start & end fold level.
+	local foldlevel_s, foldlevel_e;
+
+	vim.api.nvim_buf_call(buffer, function ()
+		foldlevel_s = vim.fn.foldlevel(range.row_start + 1);
+		foldlevel_e = vim.fn.foldlevel(range.row_end + 1);
+	end)
+
+	if foldlevel_s ~= 0 or foldlevel_e ~= 0 then
+		--- Text was folded.
+		return;
+	end
+
+	local win = utils.buf_getwin(buffer);
+
+	if win and main_config.org_indent_wrap == true and vim.wo[win].wrap == true then
+		--- When `wrap` is enabled, run post-processing effects.
+		table.insert(typst.cache, item);
+	end
 end
 
 --- Renders typst previews.

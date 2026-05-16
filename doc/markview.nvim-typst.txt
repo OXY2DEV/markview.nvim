@@ -135,8 +135,13 @@ headings                                          *markview.nvim-typst.headings*
 	---
 	---@field enable boolean Enable rendering of Headings.
 	---
-	---@field shift_width integer Amount of spaces to shift per heading level.
 	---@field [string] headings.typst Heading level configuration(name format: "heading_%d", %d = heading level).
+	---
+	---@field shift_width integer Amount of spaces to add before the text for teach heading level.
+	---
+	---@field org_indent? boolean Enables `Org mode` like section indentation. Disabled by default.
+	---@field org_shift_width? integer Amount of `org_shift_char` to add per heading level.
+	---@field org_shift_char? string Character used for indenting/shifting the sections.
 <
 
 Changes how headings are shown.
