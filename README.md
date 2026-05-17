@@ -326,6 +326,7 @@ Extra syntax(needs external parser),
     + Symbol shorthands: **40**
 
 + Supports Unicode based *subscript* & *superscript* texts.
++ `Org-mode` like indentation for headings.
 
 #### YAML,
 
