@@ -509,7 +509,7 @@ markdown.list_item = function (buffer, TSNode, _, range)
 				table.insert(candidates, (l - 1));
 			elseif line == "" then
 				nested_tolerance = nested_tolerance + 1;
-			elseif line_indent <= nested_indent then
+			elseif line_indent < nested_indent then
 				skip = false;
 				nested_indent = 0;
 
@@ -524,6 +524,12 @@ markdown.list_item = function (buffer, TSNode, _, range)
 				list_tolerance = list_tolerance + 1;
 				table.insert(candidates, (l - 1));
 			else
+				local line_indent = line:match("^%s*"):len();
+
+				if line_indent < #(indent or "") then
+					break;
+				end
+
 				list_tolerance = 0;
 				table.insert(candidates, (l - 1));
 			end
