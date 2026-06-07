@@ -547,6 +547,8 @@ typst.list_item = function (buffer, item)
 			local line = item.text[(l - range.row_start) + 1];
 
 			vim.api.nvim_buf_set_extmark(buffer, typst.ns, l, math.min(#line, range.col_start - item.indent), {
+				-- Use a priority **higher than 125** to overwrite `semantic highlights`(#503)
+				priority = 150,
 				undo_restore = false, invalidate = true,
 				end_col = math.min(#line, range.col_start),
 				conceal = "",
