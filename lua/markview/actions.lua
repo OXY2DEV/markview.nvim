@@ -406,12 +406,25 @@ actions.set_query = function (buffer)
 	end
 
 	--[[
-		NOTE: Check if `buffer` has `markdown` as it's parser language.
+		NOTE: Check if the buffer's current filetype maps to the `markdown` parser.
+
+		`vim.treesitter.get_parser()` may return a previously-attached parser even
+		after the buffer's filetype has changed (e.g. nvim-notify reusing a buffer
+		that was previously rendered as markdown). Relying on it alone causes
+		`vim.treesitter.start()` below to crash because it looks up the parser via
+		the *current* filetype (e.g. "notify"), which has no parser.
 
 		This should avoid,
 		- Invalid buffers(see #456)
 		- Buffers that do not have correct parser.
+		- Buffers whose filetype changed away from markdown (e.g. nvim-notify).
 	]]
+	local ft = vim.bo[buffer].filetype;
+	local lang_for_ft = vim.treesitter.language.get_lang(ft);
+	if lang_for_ft ~= "markdown" then
+		return;
+	end
+
 	local got_parser, parser = pcall(vim.treesitter.get_parser, buffer);
 
 	if not got_parser or (parser and parser:lang() ~= "markdown") then
