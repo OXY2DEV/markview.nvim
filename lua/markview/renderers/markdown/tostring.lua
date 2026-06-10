@@ -255,9 +255,10 @@ md_str.emoji = function (match)
 	local symbols = require("markview.symbols");
 	if symbols.shorthands and symbols.shorthands[removed] then
 		return symbols.shorthands[removed];
+	else
+		-- fix(#505): Return original text if it's not a shorthand
+		return match;
 	end
-
-	return removed;
 
 	---|fE
 end
