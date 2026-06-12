@@ -158,6 +158,7 @@ md_str.bold = function (match)
 	---|fS
 
 	if string.match(match, "%s+%*%*$") or string.match(match, "%s+%_%_$") then
+
 		return match;
 	end
 
@@ -731,12 +732,20 @@ local src_content = lpeg.P{
 	"src";
 	src = lpeg.P("\\)") + (lpeg.P("(") * lpeg.V("src")^0 * lpeg.P(")")) + ( 1 - lpeg.S(") \t") );
 };
-local hyperlink_src = lpeg.C( lpeg.P("[") * hyperlink_content^0 * lpeg.P("](") * src_content^0 * lpeg.P(")") ) / md_str.hyperlink_src;
+
+-- NOTE: Hyperlink & Image sources can have spaces in them
+--
+-- Valid, `[foo]( bar)`
+-- Valid, `[foo](bar )`
+-- Valid, `[foo]( bar )`
+-- Invalid, `[foo](b ar)`
+
+local hyperlink_src = lpeg.C( lpeg.P("[") * hyperlink_content^0 * lpeg.P("](") * space^0 * src_content^0 * space^0 * lpeg.P(")") ) / md_str.hyperlink_src;
 local hyperlink = hyperlink_src + hyperlink_no_src;
 
 local img_content = lpeg.P("\\]") + ( 1 - lpeg.P("]") );
 local img_no_src = lpeg.C( lpeg.P("![") * img_content^0 * lpeg.P("]") ) / md_str.img_no_src;
-local img_src = lpeg.C( lpeg.P("![") * img_content^0 * lpeg.P("](") * src_content^0 * lpeg.P(")") ) / md_str.img_src;
+local img_src = lpeg.C( lpeg.P("![") * img_content^0 * lpeg.P("](") * space^0 * src_content^0 * space^0 * lpeg.P(")") ) / md_str.img_src;
 local img = img_src + img_no_src;
 
 local email_be = lpeg.P("\\@") + ( 1 - lpeg.P("@") );
