@@ -661,21 +661,59 @@ local at_start = lpeg.P(function (_, i) return i == 1; end);
 local after_sp = lpeg.B(lpeg.S(" \t"));
 local at_valid = (at_start + after_sp);
 
+-- CommonMark flanking rules for `*` emphasis.
+--
+-- The `at_valid` guard (start-of-string or after whitespace) used by the
+-- underscore variants treats word-attached `*`/`**` as literal text, e.g.
+-- `I**'ll finish**`. The treesitter renderer, however, follows CommonMark's
+-- left/right-flanking delimiter rules and conceals such markers, so the width
+-- computed here disagreed with what is drawn and table borders drifted right.
+-- These predicates mirror treesitter's flanking decision for `*`.
+--
+-- Underscore (`_`) keeps the `at_valid` guard: CommonMark forbids intra-word
+-- `_` emphasis (e.g. `snake_case`), which `at_valid` already approximates.
+local punct = lpeg.S("!\"#$%&'()*+,-./:;<=>?@[\\]^_`{|}~");
+local space = lpeg.S(" \t");
+local sol = at_start;
+local eol = -lpeg.P(1);
+
+-- A run can OPEN emphasis when it is left-flanking: not followed by whitespace,
+-- and either not followed by punctuation, or preceded by whitespace/punct/start.
+-- `run` is the literal delimiter pattern (e.g. `lpeg.P("**")`); preceded-by is a
+-- zero-width look-behind placed before the run, followed-by a look-ahead after.
+local function flank_open (run)
+	local after_not_space = #(lpeg.P(1) - space);
+	local after_not_punct = #(lpeg.P(1) - space - punct);
+	local before_ws_punct = sol + lpeg.B(space) + lpeg.B(punct);
+
+	return (run * after_not_punct) + (before_ws_punct * run * after_not_space);
+end
+
+-- A run can CLOSE emphasis when it is right-flanking: not preceded by whitespace,
+-- and either not preceded by punctuation, or followed by whitespace/punct/end.
+local function flank_close (run)
+	local before_not_space = lpeg.B(lpeg.P(1) - space);
+	local before_not_punct = lpeg.B(lpeg.P(1) - space - punct);
+	local after_ws_punct = #(space + punct) + eol;
+
+	return (before_not_punct * run) + (before_not_space * run * after_ws_punct);
+end
+
 local s_italic_content = lpeg.P("\\*") + ( 1 - lpeg.P("*") );
 local u_italic_content = lpeg.P("\\_") + ( 1 - lpeg.P("_") );
-local s_italic = lpeg.C( lpeg.P("*") * s_italic_content^1 * lpeg.P("*") ) / md_str.italic;
+local s_italic = lpeg.C( flank_open(lpeg.P("*")) * s_italic_content^1 * flank_close(lpeg.P("*")) ) / md_str.italic;
 local u_italic = lpeg.C( lpeg.P("_") * u_italic_content^1 * lpeg.P("_") ) / md_str.italic;
-local italic = at_valid * (s_italic + u_italic);
+local italic = s_italic + (at_valid * u_italic);
 
 local s_bold_content = lpeg.P("\\*") + ( 1 - lpeg.P("*") );
 local u_bold_content = lpeg.P("\\_") + ( 1 - lpeg.P("_") );
-local s_bold = lpeg.C( lpeg.P("**") * s_bold_content^1 * lpeg.P("**") ) / md_str.bold;
+local s_bold = lpeg.C( flank_open(lpeg.P("**")) * s_bold_content^1 * flank_close(lpeg.P("**")) ) / md_str.bold;
 local u_bold = lpeg.C( lpeg.P("__") * u_bold_content^1 * lpeg.P("__") ) / md_str.bold;
-local bold = at_valid * (s_bold + u_bold);
+local bold = s_bold + (at_valid * u_bold);
 
 local s_bold_italic_content = lpeg.P("\\*") + ( 1 - lpeg.P("*") );
 local u_bold_italic_content = lpeg.P("\\_") + ( 1 - lpeg.P("_") );
-local s_bold_italic = lpeg.C( lpeg.P("*")^3 * s_bold_italic_content^1 * lpeg.P("*")^3 ) / md_str.bold_italic;
+local s_bold_italic = lpeg.C( flank_open(lpeg.P("*")^3) * s_bold_italic_content^1 * flank_close(lpeg.P("*")^3) ) / md_str.bold_italic;
 local u_bold_italic = lpeg.C( lpeg.P("_")^3 * u_bold_italic_content^1 * lpeg.P("_")^3 ) / md_str.bold_italic;
 local bold_italic = s_bold_italic + u_bold_italic;
 
