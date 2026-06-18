@@ -307,7 +307,9 @@ md_str.internal = function (match)
 			config.padding_left or "",
 
 			config.icon or "",
-			md_str.tostring(md_str.buffer, removed, false),
+			-- FIX(#507): Use `alias` when available
+			-- Aliases don't support markdown syntax **yet**.
+			alias ~= nil and alias or md_str.tostring(md_str.buffer, removed, false),
 
 			config.padding_right or "",
 			config.corner_right or "",
