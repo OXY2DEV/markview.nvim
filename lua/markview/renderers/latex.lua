@@ -81,6 +81,57 @@ latex.command = function (buffer, item)
 
 	if not main_config then
 		return;
+	elseif symbols.entries[item.command.name or ""] then
+		--[[
+			FIX(#512): Allow `\<symbol>{}`
+
+			Some LaTeX previewers allow adding *empty groups* after symbols.
+			Add support for this symbol kind.
+
+			NOTE: `@markview.latex.symbols` doesn't handle `{}` groups, so it
+			must be handled here instead.
+
+			NOTE: See if performance is hampered due to this check
+		]]
+
+		local arg = item.args[1] or { range = {}, text = "" };
+
+		---@type markview.config.latex.commands.opts
+		config = {
+			on_command = {
+				conceal = "",
+				virt_text_pos = "inline",
+
+				virt_text = {
+					{ symbols.entries[item.command.name or ""] },
+				},
+
+				hl_mode = "combine",
+			},
+
+			on_args = {
+				{
+					on_before = {
+						end_col = arg.range[2] + 1,
+						conceal = "",
+
+						virt_text_pos = "inline",
+						virt_text = {
+							{ " " },
+						},
+
+						hl_mode = "combine"
+					},
+					after_offset = function (range)
+						return { range[1], range[2], range[3], range[4] - 1 };
+					end,
+					on_after = {
+						end_col = arg.range[4],
+						conceal = "",
+					},
+				}
+			}
+		};
 	else
 		---@type markview.config.latex.commands.opts
 		config = utils.match(main_config, command_name, { default = false, eval_args = { buffer, item } });
