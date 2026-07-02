@@ -83,7 +83,7 @@ latex.command = function (buffer, item)
 		return;
 	else
 		---@type markview.config.latex.commands.opts
-		config = utils.match(main_config, command_name, { default = false });
+		config = utils.match(main_config, command_name, { default = false, eval_args = { buffer, item } });
 
 		if type(config) ~= "table" or vim.tbl_isempty(config) == true then
 			return;
