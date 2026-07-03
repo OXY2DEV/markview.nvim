@@ -65,6 +65,7 @@ md_str.update_cache = function ()
 		footnotes = spec.get({ "markdown_inline", "footnotes" }, { fallback = nil }),
 		internal_links = spec.get({ "markdown_inline", "internal_links" }, { fallback = nil }),
 		uri_autolinks = spec.get({ "markdown_inline", "uri_autolinks" }, { fallback = nil }),
+		tags = spec.get({ "markdown_inline", "tags" }, { fallback = nil }),
 	};
 
 	---|fE
@@ -357,6 +358,50 @@ md_str.footnote = function (match)
 	end
 
 	return label;
+
+	---|fE
+end
+
+---@param match string
+---@return string
+md_str.tag = function (match)
+	---|fS
+
+	local label = string.gsub(match, "^#", "");
+
+	if md_str.cached_config and md_str.cached_config.tags then
+		---@type markview.config.__inline?
+		local config = require("markview.utils").match(md_str.cached_config.tags, label, {
+			eval_args = {
+				md_str.buffer,
+				{
+					class = "inline_tag",
+					text = { match },
+
+					label = label,
+				}
+			}
+		});
+
+		if config then
+			--- NOTE: The tag renderer conceals the leading `#` and adds
+			--- corner/padding/icon around the label. Mirror that here so the
+			--- table column-width calculation matches what is drawn; otherwise a
+			--- tag in a cell drifts the right border by the padding width.
+			return table.concat({
+				config.corner_left or "",
+				config.padding_left or "",
+
+				config.icon or "",
+				label,
+
+				config.padding_right or "",
+				config.corner_right or "",
+			}, "");
+		end
+	end
+
+	return match;
 
 	---|fE
 end
@@ -795,11 +840,19 @@ local hl = lpeg.C( lpeg.P("==") * hl_content^1 * lpeg.P("==") ) / md_str.highlig
 local strike_content = lpeg.P("\\~") + ( 1 - lpeg.P("~") );
 local strike = lpeg.C( lpeg.P("~~") * strike_content^1 * lpeg.P("~~") ) / md_str.strikethrough;
 
+-- Obsidian-style tag: `#` followed by tag characters, only at the start of a
+-- token position (start-of-string or after whitespace, via `at_valid`) and not
+-- part of an internal-link `#^section` (guarded by the trailing `-]]`). Mirrors
+-- the tag parser in `parsers/markdown_inline.lua` so the width computed here
+-- matches what the tag renderer draws (concealed `#` + paddings).
+local tag_char = lpeg.R("09", "az", "AZ") + lpeg.S("_-");
+local tag = lpeg.C( at_valid * lpeg.P("#") * tag_char^1 * -lpeg.P("]]") ) / md_str.tag;
+
 local any = lpeg.P(1);
 
 local token = escape +
 	emoji + entity +
-	hl + strike + block_ref + embed + internal +
+	hl + strike + tag + block_ref + embed + internal +
 	email + auto +
 	footnote + img + hyperlink +
 	code +
