@@ -1573,9 +1573,6 @@ markdown.table = function (buffer, item)
 		rows = {}
 	};
 
-	---@type integer[] Invisible width used for text wrapping in Neovim.
-	local vim_width = {};
-
 	---@type integer Current column number.
 	local c = 1;
 
@@ -1590,14 +1587,6 @@ markdown.table = function (buffer, item)
 				col_widths[c] = o;
 			end
 
-			local vim_col_width = vim.fn.strdisplaywidth(col.text);
-
-			if not vim_width[c] then
-				vim_width[c] = vim_col_width;
-			elseif vim_col_width > vim_width[c] then
-				vim_width[c] = vim_col_width;
-			end
-
 			c = c + 1;
 		end
 	end
@@ -1610,14 +1599,6 @@ markdown.table = function (buffer, item)
 
 			if not col_widths[c] or col_widths[c] < o then
 				col_widths[c] = o;
-			end
-
-			local vim_col_width = vim.fn.strdisplaywidth(col.text);
-
-			if not vim_width[c] then
-				vim_width[c] = vim_col_width;
-			elseif vim_col_width > vim_width[c] then
-				vim_width[c] = vim_col_width;
 			end
 
 			c = c + 1;
@@ -1639,14 +1620,6 @@ markdown.table = function (buffer, item)
 					col_widths[c] = o;
 				end
 
-				local vim_col_width = vim.fn.strdisplaywidth(col.text);
-
-				if not vim_width[c] then
-					vim_width[c] = vim_col_width;
-				elseif vim_col_width > vim_width[c] then
-					vim_width[c] = vim_col_width;
-				end
-
 				c = c + 1;
 			end
 		end
@@ -1654,19 +1627,31 @@ markdown.table = function (buffer, item)
 
 	if is_wrapped == true then
 		local win = utils.buf_getwin(buffer);
-		local width = vim.api.nvim_win_get_width(win);
+		local textoff = vim.fn.getwininfo(win)[1].textoff;
+		local text_width = vim.api.nvim_win_get_width(win) - textoff;
 
 		local table_width = 1;
 
-		for _, col in ipairs(vim_width) do
+		for _, col in ipairs(col_widths) do
 			table_width = table_width + 1 + col;
 		end
 
-		if table_width >= width * 0.9 then
-			--- Most likely the text was wrapped somewhere.
-			--- TODO, Check if a more accurate(& faster) method exists or not.
+		if table_width >= text_width then
+			--- The rendered table is at least as wide as the usable
+			--- text area, so it will wrap and the border layout would
+			--- be broken.  Bail out of rendering entirely.
 			return;
 		end
+
+		--- NOTE: We intentionally do NOT check the raw (unconcealed)
+		--- line width here.  Neovim's soft-wrap calculation ignores
+		--- conceal, so a line with a long URL may wrap internally
+		--- even though the *rendered* table fits.  Bailing out in
+		--- that case would prevent rendering of any table that
+		--- contains wide inline elements (links, images, …) which
+		--- defeats the purpose of the preview.  Accept the possible
+		--- wrap artefact — a rendered table with a minor visual
+		--- glitch is strictly better than no rendering at all.
 	end
 
 	---@type markview.config.markdown.tables.parts
@@ -1717,23 +1702,21 @@ markdown.table = function (buffer, item)
 
 			table.insert(tmp, {
 				top,
-				is_wrapped and "@punctuation.special.markdown" or utils.set_hl(top_hl)
+				utils.set_hl(top_hl)
 			});
 
-			if is_wrapped == false then
-				vim.api.nvim_buf_set_extmark(buffer, markdown.ns, range.row_start, range.col_start + part.col_start, {
-					undo_restore = false, invalidate = true,
-					end_col = range.col_start + part.col_end,
-					conceal = "",
+			vim.api.nvim_buf_set_extmark(buffer, markdown.ns, range.row_start, range.col_start + part.col_start, {
+				undo_restore = false, invalidate = true,
+				end_col = range.col_start + part.col_end,
+				conceal = "",
 
-					virt_text_pos = "inline",
-					virt_text = {
-						{ border, border_hl }
-					},
+				virt_text_pos = "inline",
+				virt_text = {
+					{ border, border_hl }
+				},
 
-					hl_mode = "combine"
-				})
-			end
+				hl_mode = "combine"
+			})
 
 
 			if p == #item.header and config.block_decorator == true then
@@ -1754,7 +1737,7 @@ markdown.table = function (buffer, item)
 						hl_mode = "combine"
 					})
 				elseif item.top_border == true and range.row_start > 0 then
-					vim.api.nvim_buf_set_extmark(buffer, markdown.ns, range.row_start - 1, math.min(range.col_start, prev_line), {
+					item.__top_border_id = vim.api.nvim_buf_set_extmark(buffer, markdown.ns, range.row_start - 1, math.min(range.col_start, prev_line), {
 						undo_restore = false, invalidate = true,
 						virt_text_pos = "inline",
 						virt_text = tmp,
@@ -1769,7 +1752,7 @@ markdown.table = function (buffer, item)
 
 			table.insert(tmp, {
 				top,
-				is_wrapped and "@punctuation.special.markdown" or utils.set_hl(top_hl)
+				utils.set_hl(top_hl)
 			});
 
 			vim.api.nvim_buf_set_extmark(buffer, markdown.ns, range.row_start, range.col_start + part.col_start, {
@@ -1781,7 +1764,7 @@ markdown.table = function (buffer, item)
 				virt_text = {
 					{
 						border,
-						is_wrapped and "@punctuation.special.markdown" or utils.set_hl(border_hl)
+						utils.set_hl(border_hl)
 					}
 				},
 
@@ -1853,7 +1836,7 @@ markdown.table = function (buffer, item)
 
 			table.insert(tmp, {
 				string.rep(top, column_width),
-				is_wrapped and "@punctuation.special.markdown" or utils.set_hl(top_hl)
+				utils.set_hl(top_hl)
 			});
 
 			if visible_width < column_width then
@@ -1865,6 +1848,7 @@ markdown.table = function (buffer, item)
 							{ string.rep(" ", math.max(0, column_width - visible_width)) }
 						},
 
+						right_gravity = false,
 						hl_mode = "combine"
 					});
 				elseif item.alignments[c] == "right" then
@@ -1875,6 +1859,7 @@ markdown.table = function (buffer, item)
 							{ string.rep(" ", math.max(0, column_width - visible_width)) }
 						},
 
+						right_gravity = false,
 						hl_mode = "combine"
 					});
 				else
@@ -1885,6 +1870,7 @@ markdown.table = function (buffer, item)
 							{ string.rep(" ", math.ceil((column_width - visible_width) / 2)) }
 						},
 
+						right_gravity = false,
 						hl_mode = "combine"
 					});
 					vim.api.nvim_buf_set_extmark(buffer, markdown.ns, range.row_start, range.col_start + part.col_end, {
@@ -1894,6 +1880,7 @@ markdown.table = function (buffer, item)
 							{ string.rep(" ", math.floor((column_width - visible_width) / 2)) }
 						},
 
+						right_gravity = false,
 						hl_mode = "combine"
 					});
 				end
@@ -1910,10 +1897,6 @@ markdown.table = function (buffer, item)
 		local y = range.col_start + sep.col_start;
 
 		if sep.class == "separator" then
-			if is_wrapped == true then
-				goto continue;
-			end
-
 			local border, border_hl = get_border("separator", 4);
 
 			if s == 1 then
@@ -1941,7 +1924,7 @@ markdown.table = function (buffer, item)
 				undo_restore = false, invalidate = true,
 				virt_text_pos = "inline",
 				virt_text = {
-					is_wrapped == true and { "|", "@punctuation.special.markdown" } or { border, border_hl }
+					{ border, border_hl }
 				},
 
 				right_gravity = s ~= 1,
@@ -1954,23 +1937,7 @@ markdown.table = function (buffer, item)
 			local width = vim.fn.strdisplaywidth(sep.text);
 			local left = col_widths[c] - width;
 
-			if is_wrapped == true then
-				if left > 0 then
-					vim.api.nvim_buf_set_extmark(buffer, markdown.ns, x, (range.col_start + sep.col_end) - 1, {
-						undo_restore = false, invalidate = true,
-
-						virt_text_pos = "inline",
-						virt_text = {
-							{
-								string.rep("-", left),
-								"@punctuation.special.markdown"
-							}
-						},
-
-						hl_mode = "combine"
-					});
-				end
-			elseif item.alignments[c] == "default" then
+			if item.alignments[c] == "default" then
 				if left > 0 then
 					vim.api.nvim_buf_set_extmark(buffer, markdown.ns, x, y, {
 						undo_restore = false, invalidate = true,
@@ -1995,6 +1962,7 @@ markdown.table = function (buffer, item)
 							{ string.rep(border, left), utils.set_hl(border_hl) },
 						},
 
+						right_gravity = false,
 						hl_mode = "combine"
 					});
 				else
@@ -2042,6 +2010,7 @@ markdown.table = function (buffer, item)
 							{ string.rep(border, left), utils.set_hl(border_hl) },
 						},
 
+						right_gravity = false,
 						hl_mode = "combine"
 					});
 				else
@@ -2090,6 +2059,7 @@ markdown.table = function (buffer, item)
 							{ align, utils.set_hl(align_hl) }
 						},
 
+						right_gravity = false,
 						hl_mode = "combine"
 					});
 				else
@@ -2139,6 +2109,7 @@ markdown.table = function (buffer, item)
 							{ align[2], utils.set_hl(align_hl[2]) }
 						},
 
+						right_gravity = false,
 						hl_mode = "combine"
 					});
 				else
@@ -2184,37 +2155,32 @@ markdown.table = function (buffer, item)
 					border, border_hl = get_border("row", 3);
 				end
 
-				if is_wrapped == false then
-					vim.api.nvim_buf_set_extmark(buffer, markdown.ns, range.row_start + 1 + r, range.col_start + part.col_start, {
-						undo_restore = false, invalidate = true,
-						end_col = range.col_start + part.col_end,
-						conceal = "",
+				vim.api.nvim_buf_set_extmark(buffer, markdown.ns, range.row_start + 1 + r, range.col_start + part.col_start, {
+					undo_restore = false, invalidate = true,
+					end_col = range.col_start + part.col_end,
+					conceal = "",
 
-						virt_text_pos = "inline",
-						virt_text = {
-							{ border, border_hl }
-						},
+					virt_text_pos = "inline",
+					virt_text = {
+						{ border, border_hl }
+					},
 
-						hl_mode = "combine"
-					})
-				end
+					hl_mode = "combine"
+				})
 			elseif part.class == "missing_seperator" then
 				local border, border_hl = get_border("row", r == 1 and 1 or 3);
 
 				vim.api.nvim_buf_set_extmark(buffer, markdown.ns, range.row_start + 1 + r, range.col_start + part.col_start, {
 					undo_restore = false, invalidate = true,
 					virt_text_pos = "inline",
-					virt_text = {
-						is_wrapped and {
-							"|",
-							"@punctuation.special.markdown"
-						} or {
-							border,
-							utils.set_hl(border_hl)
-						}
-					},
+				virt_text = {
+					{
+						border,
+						utils.set_hl(border_hl)
+					}
+				},
 
-					right_gravity = r ~= 1,
+				right_gravity = r ~= 1,
 					hl_mode = "combine"
 				})
 			elseif part.class == "column" then
@@ -2316,23 +2282,21 @@ markdown.table = function (buffer, item)
 
 			table.insert(tmp, {
 				bottom,
-				is_wrapped and "@punctuation.special.markdown" or utils.set_hl(bottom_hl)
+				utils.set_hl(bottom_hl)
 			});
 
-			if is_wrapped == false then
-				vim.api.nvim_buf_set_extmark(buffer, markdown.ns, range.row_end - 1, range.col_start + part.col_start, {
-					undo_restore = false, invalidate = true,
-					end_col = range.col_start + part.col_end,
-					conceal = "",
+			vim.api.nvim_buf_set_extmark(buffer, markdown.ns, range.row_end - 1, range.col_start + part.col_start, {
+				undo_restore = false, invalidate = true,
+				end_col = range.col_start + part.col_end,
+				conceal = "",
 
-					virt_text_pos = "inline",
-					virt_text = {
-						{ border, border_hl }
-					},
+				virt_text_pos = "inline",
+				virt_text = {
+					{ border, border_hl }
+				},
 
-					hl_mode = "combine"
-				});
-			end
+				hl_mode = "combine"
+			});
 
 			if p == #item.header and config.block_decorator == true then
 				local next_line = range.row_end == vim.api.nvim_buf_line_count(buffer) and 0 or #vim.api.nvim_buf_get_lines(buffer, range.row_end, range.row_end + 1, false)[1];
@@ -2351,7 +2315,7 @@ markdown.table = function (buffer, item)
 						hl_mode = "combine"
 					})
 				elseif range.row_end <= vim.api.nvim_buf_line_count(buffer) and item.bottom_border == true then
-					vim.api.nvim_buf_set_extmark(buffer, markdown.ns, range.row_end, math.min(next_line, range.col_start), {
+					item.__bottom_border_id = vim.api.nvim_buf_set_extmark(buffer, markdown.ns, range.row_end, math.min(next_line, range.col_start), {
 						virt_text_pos = "inline",
 						virt_text = tmp,
 
@@ -2365,7 +2329,7 @@ markdown.table = function (buffer, item)
 
 			table.insert(tmp, {
 				bottom,
-				is_wrapped == true and "@punctuation.special.markdown" or utils.set_hl(bottom_hl)
+				utils.set_hl(bottom_hl)
 			});
 
 			vim.api.nvim_buf_set_extmark(buffer, markdown.ns, range.row_end - 1, range.col_start + part.col_start, {
@@ -2375,10 +2339,7 @@ markdown.table = function (buffer, item)
 
 				virt_text_pos = "inline",
 				virt_text = {
-					is_wrapped and {
-						"|",
-						"@punctuation.special.markdown"
-					} or {
+					{
 						border,
 						utils.set_hl(border_hl)
 					}
@@ -2405,7 +2366,7 @@ markdown.table = function (buffer, item)
 						hl_mode = "combine"
 					})
 				elseif range.row_end <= vim.api.nvim_buf_line_count(buffer) and item.bottom_border == true then
-					vim.api.nvim_buf_set_extmark(buffer, markdown.ns, range.row_end, math.min(next_line, range.col_start), {
+					item.__bottom_border_id = vim.api.nvim_buf_set_extmark(buffer, markdown.ns, range.row_end, math.min(next_line, range.col_start), {
 						virt_text_pos = "inline",
 						virt_text = tmp,
 
@@ -2446,7 +2407,7 @@ markdown.table = function (buffer, item)
 
 			table.insert(tmp, {
 				string.rep(bottom, column_width),
-				is_wrapped and "@punctuation.special.markdown" or utils.set_hl(bottom_hl)
+				utils.set_hl(bottom_hl)
 			});
 
 			if visible_width < column_width then
@@ -2499,6 +2460,250 @@ markdown.table = function (buffer, item)
 			c = c + 1;
 		end
 	end
+
+	--- Store data needed for wrap continuation borders.
+	--- The actual placement is deferred to `markdown.__table` (post_render),
+	--- which runs after all renderers (including markdown_inline) have
+	--- placed their extmarks. This ensures `nvim_win_text_height` reflects
+	--- the true visual line height including inline conceal/padding.
+	if is_wrapped == true then
+		--- Build continuation line virtual text from col_widths.
+		--- Pattern: │<spaces>│<spaces>│
+		local continuation_vt = {};
+		local left_border, left_hl = get_border("row", 1);
+
+		table.insert(continuation_vt, { left_border, left_hl });
+
+		for col_c = 1, #col_widths do
+			table.insert(continuation_vt, { string.rep(" ", col_widths[col_c]) });
+
+			if col_c < #col_widths then
+				local mid_border, mid_hl = get_border("row", 2);
+				table.insert(continuation_vt, { mid_border, mid_hl });
+			else
+				local right_border, right_hl = get_border("row", 3);
+				table.insert(continuation_vt, { right_border, right_hl });
+			end
+		end
+
+		item.__continuation_vt = continuation_vt;
+
+		--- Right border info for the first screen row of wrapping lines.
+		--- The concealed right pipe ends up on the continuation line, so
+		--- the first screen row needs an explicit right border overlay.
+		local right_border, right_hl = get_border("row", 3);
+		item.__right_border_vt = { { right_border, right_hl } };
+		item.__table_width = utils.virt_len(continuation_vt);
+
+		--- Register for post_render so __table runs after inline extmarks.
+		table.insert(markdown.cache, item);
+	end
+
+	--- Register for post_render to fix border indentation when org_indent
+	--- adds extra spacing on the border lines (e.g. tables inside list items).
+	if item.__top_border_id or item.__bottom_border_id then
+		if not item.__continuation_vt then
+			table.insert(markdown.cache, item);
+		end
+	end
+end
+
+
+ -----------------------------------------------------------------------------------------
+
+
+--- Post-render handler for tables.
+---
+--- 1. Fixes top/bottom border indentation when org_indent adds extra
+---    spacing on the border lines (e.g. tables inside list items).
+--- 2. Places wrap continuation borders and right-border overlays
+---    (must run after markdown_inline so `nvim_win_text_height` is accurate).
+---@param buffer integer
+---@param item markview.parsed.markdown.tables
+markdown.__table = function (buffer, item)
+	local range = item.range;
+
+	--- Fix border indentation by accounting for org_indent marks.
+	--- org_indent may add spacing on the border lines that conflicts
+	--- with the table's own col_start-based indentation.
+	---
+	--- Strategy: compute the target visual indent from a data row, then
+	--- adjust each border's leading spaces based on how much org_indent
+	--- already contributes on the border's line.
+	if item.__top_border_id or item.__bottom_border_id then
+		--- Compute target indent from the first data row's org_indent.
+		local data_org_visual = 0;
+		local data_conceal_end = 0;
+		local data_marks = vim.api.nvim_buf_get_extmarks(buffer, markdown.ns,
+			{ range.row_start, 0 }, { range.row_start, range.col_start }, { details = true });
+
+		for _, m in ipairs(data_marks) do
+			local d = m[4];
+
+			if d.conceal == "" and d.virt_text then
+				local vt_text = "";
+
+				for _, c in ipairs(d.virt_text) do
+					vt_text = vt_text .. (c[1] or "");
+				end
+
+				if vt_text:match("^%s+$") then
+					data_org_visual = data_org_visual + vim.fn.strdisplaywidth(vt_text);
+					data_conceal_end = math.max(data_conceal_end, d.end_col or 0);
+				end
+			end
+		end
+
+		--- Target = org_indent visual width + remaining raw indent.
+		local target_indent = data_org_visual > 0
+			and (data_org_visual + math.max(0, range.col_start - data_conceal_end))
+			or nil;
+
+		if target_indent then
+			for _, key in ipairs({ "__top_border_id", "__bottom_border_id" }) do
+				local mark_id = item[key];
+
+				if not mark_id then
+					goto next_border;
+				end
+
+				local mark = vim.api.nvim_buf_get_extmark_by_id(buffer, markdown.ns, mark_id, { details = true });
+
+				if not mark or not mark[3] or not mark[3].virt_text then
+					goto next_border;
+				end
+
+				local mark_row = mark[1];
+
+				--- Find org_indent marks on the border line.
+				local border_org_visual = 0;
+				local border_marks = vim.api.nvim_buf_get_extmarks(buffer, markdown.ns,
+					{ mark_row, 0 }, { mark_row, range.col_start }, { details = true });
+
+				for _, m in ipairs(border_marks) do
+					local d = m[4];
+
+					if m[1] ~= mark_id and d.conceal == "" and d.virt_text then
+						local vt_text = "";
+
+						for _, c in ipairs(d.virt_text) do
+							vt_text = vt_text .. (c[1] or "");
+						end
+
+						if vt_text:match("^%s+$") then
+							border_org_visual = border_org_visual + vim.fn.strdisplaywidth(vt_text);
+						end
+					end
+				end
+
+				--- Border leading spaces = target - what org_indent already provides.
+				local leading = math.max(0, target_indent - border_org_visual);
+				local vt = mark[3].virt_text;
+
+				if vt[1] and type(vt[1][1]) == "string" and vt[1][1]:match("^%s*$") then
+					vt[1][1] = string.rep(" ", leading);
+				end
+
+				vim.api.nvim_buf_set_extmark(buffer, markdown.ns, mark_row, mark[2], {
+					id = mark_id,
+					undo_restore = false, invalidate = true,
+					virt_text_pos = "inline",
+					virt_text = vt,
+					hl_mode = "combine",
+				});
+
+				::next_border::
+			end
+		end
+	end
+
+	--- Wrap continuation borders.
+	local continuation_vt = item.__continuation_vt;
+
+	if not continuation_vt then
+		return;
+	end
+
+	local win = utils.buf_getwin(buffer);
+
+	if not win then
+		return;
+	end
+
+	local range = item.range;
+
+	--- Compute the window's text-area width (excluding sign/number columns).
+	local textoff = vim.fn.getwininfo(win)[1].textoff;
+	local text_width = vim.api.nvim_win_get_width(win) - textoff;
+
+	vim.api.nvim_win_call(win, function()
+		for row = range.row_start, range.row_end - 1 do
+			local height = vim.api.nvim_win_text_height(win, {
+				start_row = row, end_row = row
+			});
+
+			if height.all > 1 then
+				--- Place right border on first screen row.
+				--- The concealed right pipe wraps to a continuation line,
+				--- leaving the first screen row without a right border.
+				if item.__right_border_vt and item.__table_width then
+					vim.api.nvim_buf_set_extmark(buffer, markdown.ns, row, 0, {
+						undo_restore = false, invalidate = true,
+						virt_text = item.__right_border_vt,
+						virt_text_win_col = item.__table_width - 1,
+						hl_mode = "combine",
+					});
+				end
+
+				--- Find the first byte on each continuation (wrapped)
+				--- screen row via binary search over virtual columns.
+				---
+				--- nvim_win_text_height with start_vcol/end_vcol operates
+				--- in the same coordinate space Neovim uses for wrapping
+				--- (raw text width + inline virt_text, ignoring conceal).
+				--- This makes it the correct predicate for locating wrap
+				--- boundaries — unlike an analytical walk over rendered
+				--- widths, which underestimates when cells contain
+				--- concealed URLs that still count towards wrap width.
+				---
+				--- Upper bound: height.all * text_width is guaranteed to
+				--- exceed the effective wrap width (including any inline
+				--- virt_text additions that push past strdisplaywidth).
+				local lnum = row + 1;
+				local hi_bound = height.all * text_width;
+
+				for w = 1, height.all - 1 do
+					local lo, hi = 1, hi_bound;
+
+					while lo < hi do
+						local mid = math.floor((lo + hi) / 2);
+
+						if vim.api.nvim_win_text_height(win, {
+							start_row = row, end_row = row,
+							start_vcol = 0, end_vcol = mid,
+						}).all <= w then
+							lo = mid + 1;
+						else
+							hi = mid;
+						end
+					end
+
+					--- lo is the first vcol on wrap line w+1.
+					--- Convert to a byte column for the extmark anchor.
+					local byte_col = vim.fn.virtcol2col(win, lnum, lo);
+
+					if byte_col >= 1 then
+						vim.api.nvim_buf_set_extmark(buffer, markdown.ns, row, byte_col - 1, {
+							undo_restore = false, invalidate = true,
+							virt_text = continuation_vt,
+							virt_text_win_col = 0,
+							hl_mode = "combine",
+						});
+					end
+				end
+			end
+		end
+	end);
 end
 
 
