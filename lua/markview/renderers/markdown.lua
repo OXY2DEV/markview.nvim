@@ -1658,7 +1658,12 @@ markdown.table = function (buffer, item)
 
 		local table_width = 1;
 
-		for _, col in ipairs(vim_width) do
+		--- NOTE: Use the VISIBLE column widths (post-conceal) here, not the raw
+		--- `vim_width`. `vim_width` includes concealed content such as the full
+		--- `](https://…)` of a link, so a table cell with a long URL would make
+		--- `table_width` exceed the window and skip rendering entirely, leaving
+		--- the row with no padding/borders and a badly shifted right border.
+		for _, col in ipairs(col_widths) do
 			table_width = table_width + 1 + col;
 		end
 
