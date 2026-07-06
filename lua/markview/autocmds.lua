@@ -352,6 +352,14 @@ autocmds.cursor = function (args)
 	end
 
 	local function action ()
+		-- The debounce timer + vim.schedule_wrap mean this closure runs on a
+		-- later event-loop tick than the autocmd that queued it. The buffer
+		-- captured in `args.buf` may have been wiped in the meantime (e.g. a
+		-- transient Telescope preview or scratch buffer), leaving a dangling
+		-- id. Re-validate here, before any nvim_buf_* call reaches it.
+		if not args.buf or not vim.api.nvim_buf_is_valid(args.buf) then
+			return;
+		end
 		require("markview.health").print({
 			from = "markview/autocmds.lua",
 			fn = "cursor() -> action()",
