@@ -297,6 +297,7 @@ Demo {img:2}
 	    min_width = 60,
 	    pad_amount = 2,
 	    pad_char = " ",
+	    block_on_wrap = "off",
 	
 	    default = {
 	        block_hl = "MarkviewCode",
@@ -339,6 +340,7 @@ code_blocks: block ~
 	---@field min_width? integer Minimum width of the code block.
 	---@field pad_amount? integer Number of `pad_char`s to add on the left & right side of the code block.
 	---@field pad_char? string Character used as padding.
+	---@field block_on_wrap? "off" | "on" | "adaptive" Behaviour of the `block` style under `wrap`. `"off"`(default) uses `simple`; `"on"` always keeps `block`; `"adaptive"` keeps `block` only when it fits the window.
 	---
 	---@field sign? boolean Enables signs for the code block?
 	---@field sign_hl? string Highlight group for the sign.
@@ -352,8 +354,10 @@ code_blocks: block ~
 Creates a block around the code block.
 
 ▋  Important
-▋ This is disabled if `wrap` is enabled. Or if you used `tab` inside the code
-▋ block.
+▋ When `wrap` is enabled this falls back to the `simple` style, unless
+▋ `block_on_wrap` is set to `"on"` (always block) or `"adaptive"` (block only
+▋ when it fits the window). It is also disabled if you used `tab` inside the
+▋ code block.
 
 code_blocks: simple ~
 

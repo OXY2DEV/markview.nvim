@@ -73,6 +73,15 @@
 ---@field [string] markview.config.markdown.code_blocks.opts
 
 
+--- Controls whether the `block` style is kept when `wrap` is enabled.
+---  - `"off"`      Fall back to the `simple` style (default).
+---  - `"on"`       Always keep the `block` style.
+---  - `"adaptive"` Keep the `block` style only when the block fits the window; else `simple`.
+---@alias markview.config.markdown.code_blocks.block_on_wrap
+---| "off"
+---| "on"
+---| "adaptive"
+---
 ---@class markview.config.markdown.code_blocks.block
 ---
 ---@field enable boolean Enable rendering of code blocks.
@@ -86,6 +95,7 @@
 ---@field min_width? integer Minimum width of the code block.
 ---@field pad_amount? integer Number of `pad_char`s to add on the left & right side of the code block.
 ---@field pad_char? string Character used as padding.
+---@field block_on_wrap? markview.config.markdown.code_blocks.block_on_wrap Controls the `block` style under `wrap`. `"off"`(default) falls back to the `simple` style; `"on"` always keeps the `block` style; `"adaptive"` keeps `block` only when it fits the window (else `simple`).
 ---
 ---@field sign? boolean Enables signs for the code block?
 ---@field sign_hl? string Highlight group for the sign.

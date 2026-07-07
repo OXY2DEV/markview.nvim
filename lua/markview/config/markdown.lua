@@ -215,6 +215,8 @@ return {
 		pad_amount = 2,
 		pad_char = " ",
 
+		block_on_wrap = "off",
+
 		default = {
 			block_hl = "MarkviewCode",
 			pad_hl = "MarkviewCode"

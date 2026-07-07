@@ -371,6 +371,42 @@ markdown.code_block = function (buffer, item)
 		return line_conf;
 	end
 
+	--- Block width & per-line widths, computed lazily and memoized so the
+	--- `adaptive` overflow check and `render_block()` share a single pass.
+	---@type integer?
+	local block_width;
+	---@type integer[]?
+	local line_widths;
+
+	--- Computes `block_width` and `line_widths` once, on first use.
+	---@return integer block_width
+	---@return integer[] line_widths
+	local function compute_widths ()
+		if block_width ~= nil and line_widths ~= nil then
+			return block_width, line_widths;
+		end
+
+		---@cast config markview.config.markdown.code_blocks.block
+		local pad_amount = config.pad_amount or 0;
+		block_width = config.min_width or 60;
+		line_widths = {};
+
+		for l, line in ipairs(item.text) do
+			local final = require("markview.renderers.common.visual_text").get_visual_text(item.language, line);
+
+			if l ~= 1 and l ~= #item.text then
+				local w = vim.fn.strdisplaywidth(final);
+				table.insert(line_widths, w);
+
+				if w > (block_width - (2 * pad_amount)) then
+					block_width = w + (2 * pad_amount);
+				end
+			end
+		end
+
+		return block_width, line_widths;
+	end
+
 	--[[ *Basic* rendering of `code blocks`. ]]
 	local function render_simple()
 		---|fS
@@ -456,24 +492,10 @@ markdown.code_block = function (buffer, item)
 		---|fS "chunk: Calculate various widths"
 
 		local pad_amount = config.pad_amount or 0;
-		local block_width = config.min_width or 60;
-
 		local pad_char = config.pad_char or " ";
 
-		---@type integer[] Visual width of lines.
-		local line_widths = {};
-
-		for l, line in ipairs(item.text) do
-			local final = require("markview.renderers.common.visual_text").get_visual_text(item.language, line);
-
-			if l ~= 1 and l ~= #item.text then
-				table.insert(line_widths, vim.fn.strdisplaywidth(final));
-
-				if vim.fn.strdisplaywidth(final) > (block_width - (2 * pad_amount)) then
-					block_width = vim.fn.strdisplaywidth(final) + (2 * pad_amount);
-				end
-			end
-		end
+		---@type integer, integer[]
+		local block_width, line_widths = compute_widths();
 
 		local label_width = utils.virt_len({ label });
 		---|fE
@@ -705,7 +727,47 @@ markdown.code_block = function (buffer, item)
 		---|fE
 	end
 
-	if not win or config.style == "simple" or item.uses_tab or ( vim.o.wrap == true or vim.wo[win].wrap == true ) then
+	-- Decide between the `block` and `simple` renderers.
+	--
+	-- The `block` renderer pads each line with `inline` virtual text to reach
+	-- `block_width`. With `wrap` enabled that trailing padding wraps onto the
+	-- next screen line, breaking the block. `block_on_wrap` controls what happens
+	-- under `wrap`:
+	--   "off"      (default) always fall back to `render_simple()`.
+	--   "on"       always keep the `block` style.
+	--   "adaptive" keep `block` only when it fits the window; else `simple`.
+	local function wrap_forces_simple ()
+		if vim.o.wrap ~= true and vim.wo[win].wrap ~= true then
+			-- `wrap` is off: the block never wraps, always safe.
+			return false;
+		end
+
+		local mode = config.block_on_wrap or "off";
+
+		if mode == "on" then
+			return false;
+		elseif mode == "adaptive" then
+			-- Fall back to `simple` only if the rendered block would overflow the
+			-- window's text area (and thus wrap). `textoff` already accounts for
+			-- the sign, number and fold columns.
+			local wininfo = vim.fn.getwininfo(win)[1];
+			local usable = wininfo.width - wininfo.textoff;
+			local width = compute_widths();
+
+			-- The fence delimiter rows (```` ```lang ```` / ```` ``` ````) are
+			-- concealed but still counted by the wrap engine, so their raw byte
+			-- width is added *on top of* the `block_width` padding. Account for
+			-- the widest delimiter so those rows do not wrap unnoticed.
+			local delim_extra = math.max(#item.text[1], #item.text[#item.text]);
+
+			return (item.range.col_start + width + delim_extra) > usable;
+		else
+			-- "off" (or any unknown value): always fall back under `wrap`.
+			return true;
+		end
+	end
+
+	if not win or config.style == "simple" or item.uses_tab or wrap_forces_simple() then
 		render_simple();
 	elseif config.style == "block" then
 		render_block()
@@ -747,6 +809,55 @@ markdown.indented_code_block = function (buffer, item)
 	local decorations = filetypes.get("indented");
 	local label = { string.format(" %s%s ", decorations.icon, decorations.name), config.label_hl or decorations.icon_hl };
 
+	-- Widths, computed lazily and memoized so the `adaptive` overflow check and
+	-- `render_block()` share a single pass.
+	---@type integer?
+	local block_width;
+	---@type integer[]?
+	local line_widths;
+	---@type string[]?
+	local text;
+	---@type integer?
+	local pad_width;
+	---@type integer?
+	local label_width;
+
+	--- Computes the block/line widths once, on first use.
+	---@return integer block_width
+	local function compute_widths ()
+		if block_width ~= nil then
+			return block_width;
+		end
+
+		text = vim.api.nvim_buf_get_lines(buffer, range.row_start, range.row_end, false);
+
+		local pad_amount = config.pad_amount --[[@as integer]] or 0;
+		local pad_char = config.pad_char --[[@as string]] or " ";
+		block_width = config.min_width --[[@as integer]] or 60;
+		label_width = utils.virt_len({ label });
+		pad_width = vim.fn.strdisplaywidth(string.rep(pad_char, pad_amount));
+		line_widths = {};
+
+		for l, _ in ipairs(item.text) do
+			local final = string.sub(text[l], range.space_end);
+			local w = vim.fn.strdisplaywidth(final);
+
+			table.insert(line_widths, w);
+
+			if l == 1 then
+				if (pad_amount + w + label_width) > block_width then
+					block_width = pad_amount + w + label_width;
+				end
+			else
+				if (pad_amount + w + pad_amount) > block_width then
+					block_width = pad_amount + w + pad_amount;
+				end
+			end
+		end
+
+		return block_width;
+	end
+
 	--[[ *Basic* rendering of `code blocks`. ]]
 	local function render_simple()
 		---|fS
@@ -784,37 +895,15 @@ markdown.indented_code_block = function (buffer, item)
 
 		---|fS "chunk: Calculate various widths"
 
-		local text = vim.api.nvim_buf_get_lines(buffer, range.row_start, range.row_end, false);
-
 		local pad_amount = config.pad_amount --[[@as integer]] or 0;
-		local block_width = config.min_width --[[@as integer]] or 60;
-
 		local pad_char = config.pad_char --[[@as string]] or " ";
-		local label_width = utils.virt_len({ label });
 
-		local pad_width = vim.fn.strdisplaywidth(
-			string.rep(pad_char, pad_amount)
-		);
-
-		---@type integer[] Visual width of lines.
-		local line_widths = {};
-
-		for l, _ in ipairs(item.text) do
-			local final = string.sub(text[l], range.space_end);
-			local w = vim.fn.strdisplaywidth(final)
-
-			table.insert(line_widths, w);
-
-			if l == 1 then
-				if (pad_amount + w + label_width) > block_width then
-					block_width = pad_amount + w + label_width;
-				end
-			else
-				if (pad_amount + w + pad_amount) > block_width then
-					block_width = pad_amount + w + pad_amount;
-				end
-			end
-		end
+		compute_widths();
+		---@cast text string[]
+		---@cast line_widths integer[]
+		---@cast block_width integer
+		---@cast pad_width integer
+		---@cast label_width integer
 
 		---|fE
 
@@ -897,7 +986,28 @@ markdown.indented_code_block = function (buffer, item)
 	---@type integer Window containing `buffer`.
 	local win = utils.buf_getwin(buffer);
 
-	if not win or config.style == "simple" or ( vim.o.wrap == true or vim.wo[win].wrap == true ) then
+	-- See `markdown.code_block` for the meaning of `block_on_wrap`.
+	local function wrap_forces_simple ()
+		if vim.o.wrap ~= true and vim.wo[win].wrap ~= true then
+			return false;
+		end
+
+		local mode = config.block_on_wrap or "off";
+
+		if mode == "on" then
+			return false;
+		elseif mode == "adaptive" then
+			local wininfo = vim.fn.getwininfo(win)[1];
+			local usable = wininfo.width - wininfo.textoff;
+			local width = compute_widths();
+
+			return (range.col_start + width) > usable;
+		else
+			return true;
+		end
+	end
+
+	if not win or config.style == "simple" or wrap_forces_simple() then
 		render_simple();
 	elseif config.style == "block" then
 		render_block()
