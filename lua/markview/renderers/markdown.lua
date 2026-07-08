@@ -589,7 +589,10 @@ markdown.code_block = function (buffer, item)
 
 		vim.api.nvim_buf_set_extmark(buffer, markdown.ns, range.row_start, top_border.col_start, {
 			virt_text_pos = "inline",
-			virt_text = { label }
+			virt_text = { label },
+
+			sign_text = config.sign == true and decorations.sign or nil,
+			sign_hl_group = utils.set_hl(config.sign_hl or decorations.sign_hl),
 		});
 
 		---|fE
