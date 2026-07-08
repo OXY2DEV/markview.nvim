@@ -1,3 +1,4 @@
+---@type markview.config.markdown
 return {
 	enable = true,
 
@@ -233,7 +234,14 @@ return {
 			pad_hl = "MarkviewCode"
 		},
 
-		style = "block",
+		style = function (buf)
+			if vim.o.wrap then
+				return "simple";
+			end
+
+			local win = require("markview.utils").buf_getwin(buf);
+			return vim.wo[win].wrap == true and "simple" or "block";
+		end,
 		sign = true,
 	},
 
