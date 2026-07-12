@@ -4299,6 +4299,37 @@ symbols.entries = {
 	["ggcurly"] = "⪼",
 	["Top"] = "⫪",
 	["Bot"] = "⫫",
+
+	-- LaTeX2e/amsmath/amssymb commands without a unicode-math name.
+	["bigcirc"] = "○",
+	["circlearrowleft"] = "↺",
+	["circlearrowright"] = "↻",
+	["circledS"] = "Ⓢ",
+	["dotsb"] = "⋯",
+	["dotsc"] = "…",
+	["dotsi"] = "⋯",
+	["dotsm"] = "⋯",
+	["dotso"] = "…",
+	["emptyset"] = "∅",
+	["enspace"] = " ",
+	["gvertneqq"] = "≩︀",
+	["hbar"] = "ħ",
+	["iff"] = "⟺",
+	["impliedby"] = "⟸",
+	["implies"] = "⟹",
+	["land"] = "∧",
+	["ldots"] = "…",
+	["lor"] = "∨",
+	["lvertneqq"] = "≨︀",
+	["nleqslant"] = "⩽̸",
+	["nsubseteqq"] = "⫅̸",
+	["nsupseteqq"] = "⫆̸",
+	["qquad"] = "  ",
+	["quad"] = " ",
+	["thickspace"] = " ",
+	["thinspace"] = " ",
+	["varsubsetneqq"] = "⊊︀",
+	["varsupsetneq"] = "⊋︀",
 };
 
 --- Maps typst symbol names to the symbol.
@@ -6324,6 +6355,10 @@ symbols.fonts = {
 		["9"] = "𝟗"
 	}
 }
+
+-- Unicode has a single script alphabet; `\mathscr` & `\mathcal`
+-- use the same characters.
+symbols.fonts.mathscr = symbols.fonts.mathcal;
 
 ---@param font string
 ---@param text string

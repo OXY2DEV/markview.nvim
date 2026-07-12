@@ -82,61 +82,61 @@ Demo {img:2}
 	---@param cmd_hl? string Highlight group for the command.
 	---@return markview.config.latex.commands.opts
 	local operator = function (name, text_pos, cmd_conceal, cmd_hl)
-		return {
-			condition = function (item)
-				return #item.args == 1;
-			end,
+	    return {
+	        condition = function (item)
+	            return #item.args == 1;
+	        end,
 	
-			on_command = function (item)
-				local symbols = require("markview.symbols");
+	        on_command = function (item)
+	            local symbols = require("markview.symbols");
 	
-				return {
-					end_col = item.range[2] + (cmd_conceal or 1),
-					conceal = "",
+	            return {
+	                end_col = item.range[2] + (cmd_conceal or 1),
+	                conceal = "",
 	
-					virt_text_pos = text_pos or "overlay",
-					virt_text = {
-						{ symbols.tostring("default", name), cmd_hl or "@keyword.function" }
-					},
+	                virt_text_pos = text_pos or "overlay",
+	                virt_text = {
+	                    { symbols.tostring("default", name), cmd_hl or "@keyword.function" }
+	                },
 	
-					hl_mode = "combine"
-				}
-			end,
+	                hl_mode = "combine"
+	            }
+	        end,
 	
-			on_args = {
-				{
-					on_before = function (item)
-						return {
-							end_col = item.range[2] + 1,
+	        on_args = {
+	            {
+	                on_before = function (item)
+	                    return {
+	                        end_col = item.range[2] + 1,
 	
-							virt_text_pos = "overlay",
-							virt_text = {
-								{ "(", "@punctuation.bracket" }
-							},
+	                        virt_text_pos = "overlay",
+	                        virt_text = {
+	                            { "(", "@punctuation.bracket" }
+	                        },
 	
-							hl_mode = "combine"
-						}
-					end,
+	                        hl_mode = "combine"
+	                    }
+	                end,
 	
-					after_offset = function (range)
-						return { range[1], range[2], range[3], range[4] - 1 };
-					end,
+	                after_offset = function (range)
+	                    return { range[1], range[2], range[3], range[4] - 1 };
+	                end,
 	
-					on_after = function (item)
-						return {
-							end_col = item.range[4],
+	                on_after = function (item)
+	                    return {
+	                        end_col = item.range[4],
 	
-							virt_text_pos = "overlay",
-							virt_text = {
-								{ ")", "@punctuation.bracket" }
-							},
+	                        virt_text_pos = "overlay",
+	                        virt_text = {
+	                            { ")", "@punctuation.bracket" }
+	                        },
 	
-							hl_mode = "combine"
-						}
-					end
-				}
-			}
-		};
+	                        hl_mode = "combine"
+	                    }
+	                end
+	            }
+	        }
+	    };
 	end
 	
 	commands = {
@@ -428,6 +428,7 @@ Demo {img:3}
 	    mathbf = { enable = true },
 	    mathbfit = { enable = true },
 	    mathcal = { enable = true },
+	    mathscr = { enable = true },
 	    mathbfscr = { enable = true },
 	    mathfrak = { enable = true },
 	    mathbb = { enable = true },

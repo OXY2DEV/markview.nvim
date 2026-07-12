@@ -318,6 +318,7 @@ return {
 		mathbf = { enable = true },
 		mathbfit = { enable = true },
 		mathcal = { enable = true },
+		mathscr = { enable = true },
 		mathbfscr = { enable = true },
 		mathfrak = { enable = true },
 		mathbb = { enable = true },
