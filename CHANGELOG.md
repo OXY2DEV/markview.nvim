@@ -1,5 +1,29 @@
 # Changelog
 
+## [28.4.0](https://github.com/OXY2DEV/markview.nvim/compare/v28.3.0...v28.4.0) (2026-07-13)
+
+
+### Features
+
+* **latex, symbols:** add missing LaTeX2e/amsmath/amssymb commands ([#522](https://github.com/OXY2DEV/markview.nvim/issues/522)) ([56cba4d](https://github.com/OXY2DEV/markview.nvim/commit/56cba4d9e3ad4c4879bf9a31fe6bec75f808f431))
+* **markdown, code_blocks:** Allow `style` to be dynamically changed ([41ecde1](https://github.com/OXY2DEV/markview.nvim/commit/41ecde17c96941fb5b7c97995a10712738e85efe))
+
+
+### Bug Fixes
+
+* **actions:** guard set_query against stale parser on filetype change ([#513](https://github.com/OXY2DEV/markview.nvim/issues/513)) ([4aede56](https://github.com/OXY2DEV/markview.nvim/commit/4aede56c81e8eccd92a178c07c9cb141c3fc4e61))
+* **autocmds:** guard debounced cursor action against wiped buffer ([#519](https://github.com/OXY2DEV/markview.nvim/issues/519)) ([092c087](https://github.com/OXY2DEV/markview.nvim/commit/092c0872fd2437b3b862d253910981142d2465aa))
+* **latex:** evaluate function-typed command configs ([#511](https://github.com/OXY2DEV/markview.nvim/issues/511)) ([1b6709b](https://github.com/OXY2DEV/markview.nvim/commit/1b6709be9b0e452b8c0df0e9faa177078b0e7865))
+* **renderer, typst:** Fixed list item marker not concealing ([fbe5ec7](https://github.com/OXY2DEV/markview.nvim/commit/fbe5ec7d127ab3435ffd62740a7b27e7fabf42dc)), closes [#503](https://github.com/OXY2DEV/markview.nvim/issues/503)
+* **renderers, latex:** Allow `\<symbol>{}` ([c363dc6](https://github.com/OXY2DEV/markview.nvim/commit/c363dc67ca9549270dc7da8e50b504ba439418dd)), closes [#512](https://github.com/OXY2DEV/markview.nvim/issues/512)
+* **renderers, markdown, code_blocks:** Fixes icons not rendering in block style ([e85f4a3](https://github.com/OXY2DEV/markview.nvim/commit/e85f4a3da9f64c0d1455a748b344fba0e0c66d03))
+* **renderers, markdown, tables:** Fixed handling of `:text:` for non-emoji ([3d8f688](https://github.com/OXY2DEV/markview.nvim/commit/3d8f68812262b516d533acf603c2ecaf72f8edb5)), closes [#505](https://github.com/OXY2DEV/markview.nvim/issues/505)
+* **renderers, markdown, tables:** Fixed incorrect rendering of Obsidian-style links ([301e431](https://github.com/OXY2DEV/markview.nvim/commit/301e431c7b618235f5447d54465c70934bd33668)), closes [#507](https://github.com/OXY2DEV/markview.nvim/issues/507)
+* **tostring:** account for tag decoration in table column width ([#517](https://github.com/OXY2DEV/markview.nvim/issues/517)) ([a2a0715](https://github.com/OXY2DEV/markview.nvim/commit/a2a07154b495367e4d609dd83c73120f1d058c75))
+* **tostring:** Correctly handle spaces in link source ([576e50f](https://github.com/OXY2DEV/markview.nvim/commit/576e50fa99091ff47a9920e1b6ef94b2a7c2f036))
+* **tostring:** handle strikethrough markers in visual width calculation ([#514](https://github.com/OXY2DEV/markview.nvim/issues/514)) ([f92c0fd](https://github.com/OXY2DEV/markview.nvim/commit/f92c0fd6ec2c023a35fbdaf95586149bd62443c4))
+* **tostring:** respect CommonMark flanking for word-attached emphasis ([#506](https://github.com/OXY2DEV/markview.nvim/issues/506)) ([93aab4f](https://github.com/OXY2DEV/markview.nvim/commit/93aab4f3216bbebed1de117ff7a655c704985b43))
+
 ## [28.3.0](https://github.com/OXY2DEV/markview.nvim/compare/v28.2.0...v28.3.0) (2026-05-16)
 
 
