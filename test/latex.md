@@ -31,6 +31,7 @@ Hello LaTeX!
 \mathbffrak{Hello LaTeX!}
 \mathbb{Hello LaTeX!}
 \mathbfscr{Hello LaTeX!}
+\mathscr{Hello LaTeX!}
 \mathrm{Hello LaTeX!}
 $$
 
