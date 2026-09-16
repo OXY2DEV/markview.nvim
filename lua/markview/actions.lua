@@ -549,7 +549,17 @@ actions.attach = function (buffer, _state)
 	local buf_state = state.get_buffer_state(buffer, false);
 
 	if buf_state and buf_state.enable then
-		actions.set_query(buffer);
+		--[[
+			FIX: Avoid `E523`
+
+			It is possible to trigger `set_query()` while Neovim is in a sandbox state.
+			Scheduling should prevent this from happening.
+
+			Closes #528
+		]]
+		vim.schedule(function()
+			actions.set_query(buffer);
+		end);
 
 		actions.autocmd("on_enable", buffer, vim.fn.win_findbuf(buffer))
 		actions.render(buffer);
@@ -560,7 +570,9 @@ actions.attach = function (buffer, _state)
 			actions.autocmd("on_hybrid_disable", buffer, vim.fn.win_findbuf(buffer))
 		end
 	else
-		actions.reset_query(buffer);
+		vim.schedule(function()
+			actions.reset_query(buffer);
+		end);
 		actions.clear(buffer);
 
 		actions.autocmd("on_disable", buffer, vim.fn.win_findbuf(buffer))
