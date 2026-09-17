@@ -614,28 +614,41 @@ markdown.metadata_plus = function (_, _, text, range)
 end
 
 ---@param buffer integer
----@param TSNode table
+---@param TSNode TSNode
 ---@param text string[]
 ---@param range markview.parsed.markdown.sections.range
 markdown.section = function (buffer, TSNode, text, range)
-	local heading = TSNode:child(0);
+	local heading = TSNode:child(0) --[[@as TSNode]];
 	local heading_text = vim.treesitter.get_node_text(heading, buffer);
 
 	---@type TSNode?
 	local next_sibling = heading:next_sibling();
-	local org_end = range.row_end;
+	local found_org_end = false;
 
-	while next_sibling do
-		if vim.list_contains({ "section", "setext_heading" }, next_sibling:type()) then
-			org_end = -1 + next_sibling:range();
+	for child in TSNode:iter_children() do
+		if vim.list_contains({ "section", "setext_heading" }, child:type()) then
+			range.org_end = child:range();
+			found_org_end = true;
 			break;
 		end
-
-		_, _, org_end, _ = next_sibling:range();
-		next_sibling = next_sibling:next_sibling();
 	end
 
-	range.org_end = org_end;
+	if not found_org_end then
+		local org_end = range.row_end;
+
+		while next_sibling do
+			if vim.list_contains({ "section", "setext_heading" }, next_sibling:type()) then
+				org_end = -1 + next_sibling:range();
+				break;
+			end
+
+			_, _, org_end, _ = next_sibling:range();
+			next_sibling = next_sibling:next_sibling();
+		end
+
+		range.org_end = org_end;
+		vim.print(range.org_end)
+	end
 
 	table.insert(markdown.content, {
 		class = "markdown_section",
