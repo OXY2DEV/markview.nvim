@@ -647,7 +647,6 @@ markdown.section = function (buffer, TSNode, text, range)
 		end
 
 		range.org_end = org_end;
-		vim.print(range.org_end)
 	end
 
 	table.insert(markdown.content, {
