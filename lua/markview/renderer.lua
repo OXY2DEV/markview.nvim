@@ -386,6 +386,7 @@ end
 ---@param parsed_content markview.parsed
 renderer.render = function (buffer, parsed_content)
 	---|fS
+	parsed_content = parsed_content or {}
 
 	local _renderers = {
 		asciidoc = require("markview.renderers.asciidoc"),
@@ -426,6 +427,10 @@ renderer.render = function (buffer, parsed_content)
 	});
 
 	---|fE
+
+	if _renderers["latex"] then
+		_renderers["latex"].render(buffer, parsed_content.latex or {});
+	end
 
 	for lang, content in pairs(parsed_content) do
 		---@cast lang string
