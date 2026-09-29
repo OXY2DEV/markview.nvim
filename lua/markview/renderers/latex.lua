@@ -33,48 +33,50 @@ latex.block = function (buffer, item)
 	local ok, math_ffi = pcall(require, "markview.ffi.math");
 	if ok and math_ffi.init() then
 		local raw_latex = table.concat(item.text, "\n");
-		local rendered = math_ffi.to_unicode_block(raw_latex);
-		local rendered_lines = vim.split(rendered, "\n", {});
-		local virt_lines = {};
-		for _, r_line in ipairs(rendered_lines) do
-			table.insert(virt_lines, { { "  " .. r_line, "Special" } });
-		end
-		-- virt_lines must not share the concealed lines (nvim does not draw them there).
-		if range.row_start > 0 then
-			vim.api.nvim_buf_set_extmark(buffer, latex.ns, range.row_start - 1, 0, {
-				undo_restore = false, invalidate = true,
-				virt_lines = virt_lines,
-				virt_lines_above = false,
-				hl_mode = "combine",
-			});
-			vim.api.nvim_buf_set_extmark(buffer, latex.ns, range.row_start, 0, {
-				undo_restore = false, invalidate = true,
-				end_row = range.row_end,
-				end_col = 0,
-				conceal_lines = "",
-			});
-		else
-			local first = table.remove(virt_lines, 1);
-			vim.api.nvim_buf_set_extmark(buffer, latex.ns, 0, 0, {
-				undo_restore = false, invalidate = true,
-				end_col = #(item.text[1] or ""),
-				conceal = "",
-				virt_text = first,
-				virt_text_pos = "overlay",
-				virt_lines = #virt_lines > 0 and virt_lines or nil,
-				virt_lines_above = false,
-				hl_mode = "combine",
-			});
-			if range.row_end > 0 then
-				vim.api.nvim_buf_set_extmark(buffer, latex.ns, 1, 0, {
+		local rendered, fully_supported = math_ffi.to_unicode_block(raw_latex);
+		if fully_supported then
+			local rendered_lines = vim.split(rendered, "\n", {});
+			local virt_lines = {};
+			for _, r_line in ipairs(rendered_lines) do
+				table.insert(virt_lines, { { "  " .. r_line, "Special" } });
+			end
+			-- virt_lines must not share the concealed lines (nvim does not draw them there).
+			if range.row_start > 0 then
+				vim.api.nvim_buf_set_extmark(buffer, latex.ns, range.row_start - 1, 0, {
+					undo_restore = false, invalidate = true,
+					virt_lines = virt_lines,
+					virt_lines_above = false,
+					hl_mode = "combine",
+				});
+				vim.api.nvim_buf_set_extmark(buffer, latex.ns, range.row_start, 0, {
 					undo_restore = false, invalidate = true,
 					end_row = range.row_end,
 					end_col = 0,
 					conceal_lines = "",
 				});
+			else
+				local first = table.remove(virt_lines, 1);
+				vim.api.nvim_buf_set_extmark(buffer, latex.ns, 0, 0, {
+					undo_restore = false, invalidate = true,
+					end_col = #(item.text[1] or ""),
+					conceal = "",
+					virt_text = first,
+					virt_text_pos = "overlay",
+					virt_lines = #virt_lines > 0 and virt_lines or nil,
+					virt_lines_above = false,
+					hl_mode = "combine",
+				});
+				if range.row_end > 0 then
+					vim.api.nvim_buf_set_extmark(buffer, latex.ns, 1, 0, {
+						undo_restore = false, invalidate = true,
+						end_row = range.row_end,
+						end_col = 0,
+						conceal_lines = "",
+					});
+				end
 			end
+			return;
 		end
-		return;
 	end
 
 	vim.api.nvim_buf_set_extmark(buffer, latex.ns, range.row_start, range.col_start, {
@@ -1007,7 +1009,10 @@ latex.render = function (buffer, content)
 					local closer = b_delim == "$$" and "$$" or "\\]";
 					if #trimmed > 2 and trimmed:sub(-#closer) == closer then
 						local raw = trimmed:sub(3, -#closer - 1);
-						place_block_unicode(r, r, math_ffi.to_unicode_block(raw));
+						local rendered, fully_supported = math_ffi.to_unicode_block(raw);
+						if fully_supported then
+							place_block_unicode(r, r, rendered);
+						end
 					else
 						in_block = true;
 						b_start = r;
@@ -1020,7 +1025,10 @@ latex.render = function (buffer, content)
 						local s, e = line:find("%$[^%$]+%$", s_col);
 						if not s then break; end
 						local raw = line:sub(s + 1, e - 1);
-						place_inline_unicode(r, s - 1, e, math_ffi.to_unicode(raw));
+						local rendered, fully_supported = math_ffi.to_unicode(raw);
+						if fully_supported then
+							place_inline_unicode(r, s - 1, e, rendered);
+						end
 						s_col = e + 1;
 					end
 					s_col = 1;
@@ -1028,7 +1036,10 @@ latex.render = function (buffer, content)
 						local s, e = line:find("\\%(.-\\%)", s_col);
 						if not s then break; end
 						local raw = line:sub(s + 2, e - 2);
-						place_inline_unicode(r, s - 1, e, math_ffi.to_unicode(raw));
+						local rendered, fully_supported = math_ffi.to_unicode(raw);
+						if fully_supported then
+							place_inline_unicode(r, s - 1, e, rendered);
+						end
 						s_col = e + 1;
 					end
 				end
@@ -1040,7 +1051,10 @@ latex.render = function (buffer, content)
 						table.insert(b_lines, trimmed:sub(1, -#closer - 1));
 					end
 					local raw = table.concat(b_lines, "\n");
-					place_block_unicode(b_start, r, math_ffi.to_unicode_block(raw));
+					local rendered, fully_supported = math_ffi.to_unicode_block(raw);
+					if fully_supported then
+						place_block_unicode(b_start, r, rendered);
+					end
 				else
 					table.insert(b_lines, line);
 				end
