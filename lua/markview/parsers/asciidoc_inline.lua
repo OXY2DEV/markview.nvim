@@ -51,6 +51,10 @@ asciidoc_inline.bold = function (buffer, TSNode, text, range)
 		end
 	end
 
+	if not delimiters[2] then
+		delimiters[2] = delimiters[1];
+	end
+
 	asciidoc_inline.insert({
 		class = "asciidoc_inline_bold",
 		delimiters = delimiters,
@@ -88,6 +92,10 @@ asciidoc_inline.highlight = function (buffer, TSNode, text, range)
 		end
 	end
 
+	if not delimiters[2] then
+		delimiters[2] = delimiters[1];
+	end
+
 	asciidoc_inline.insert({
 		class = "asciidoc_inline_highlight",
 		delimiters = delimiters,
@@ -123,6 +131,10 @@ asciidoc_inline.italic = function (buffer, TSNode, text, range)
 				delimiters[1] = vim.treesitter.get_node_text(child, buffer, {});
 			end
 		end
+	end
+
+	if not delimiters[2] then
+		delimiters[2] = delimiters[1];
 	end
 
 	asciidoc_inline.insert({
@@ -248,6 +260,10 @@ asciidoc_inline.monospace = function (buffer, TSNode, text, range)
 		end
 	end
 
+	if not delimiters[2] then
+		delimiters[2] = delimiters[1];
+	end
+
 	asciidoc_inline.insert({
 		class = "asciidoc_inline_monospace",
 		delimiters = delimiters,
@@ -333,7 +349,7 @@ asciidoc_inline.parse = function (buffer, TSTree, from, to)
 
 	local can_scan, scanned_queries = pcall(vim.treesitter.query.parse, "asciidoc_inline", [[
 		(emphasis) @asciidoc_inline.bold
-		(ltalic) @asciidoc_inline.italic
+		(italic) @asciidoc_inline.italic
 		(monospace) @asciidoc_inline.monospace
 		(highlight) @asciidoc_inline.highlight
 

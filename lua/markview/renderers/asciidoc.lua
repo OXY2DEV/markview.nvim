@@ -52,8 +52,8 @@ asciidoc.admonition = function (buffer, item)
 		hl_group = utils.set_hl(config.hl)
 	});
 
-	utils.set_extmark(buffer, asciidoc.ns, row_end, col_end - 1, {
-		end_col = col_end,
+	utils.set_extmark(buffer, asciidoc.ns, row_end, col_end, {
+		end_col = col_end + 1,
 		conceal = "",
 
 		virt_text_pos = "inline",
@@ -1311,9 +1311,10 @@ asciidoc.section_title = function (buffer, item)
 	local shift_width = spec.get({ "shift_width" }, { source = main_config, fallback = 1, eval_args = { buffer, item } });
 
 	local range = item.range;
+	local spaces = string.match(item.text[1] or "", "^=+(%s*)") or "";
 
 	utils.set_extmark(buffer, asciidoc.ns, range.row_start, range.col_start, {
-		end_col = range.col_start + #item.marker,
+		end_col = range.col_start + #item.marker + #spaces,
 		conceal = "",
 
 		sign_text = tostring(config.sign or ""),

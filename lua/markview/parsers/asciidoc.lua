@@ -33,23 +33,30 @@ NOTE: Some note.
 ```
 ]]
 ---@param buffer integer
----@param _ TSNode
+---@param node TSNode
 ---@param text string[]
 ---@param range markview.parsed.asciidoc.admonitions.range
-asciidoc.admonition = function (buffer, _, text, range)
+asciidoc.admonition = function (buffer, node, text, range)
 	---|fS
 
-	local before = vim.api.nvim_buf_get_text(buffer, range.row_start, 0, range.row_start, range.col_start, {})[1] or "";
-	local kind = string.match(before, "[A-Z]+$");
-
-	range.kind = {
-		range.row_start,
-		range.col_start - #(kind or ""),
-
-		range.row_start,
-		range.col_start + 1,
+	local kind;
+	local valid = {
+		"admonition_note",
+		"admonition_tip",
+		"admonition_important",
+		"admonition_caution",
+		"admonition_warning",
 	};
-	range.col_start = range.kind[2];
+
+	for child in node:iter_children() do
+		if vim.list_contains(valid, child:type()) then
+			kind = vim.treesitter.get_node_text(child, buffer, {});
+			range.kind = { child:range() };
+			range.col_start = range.kind[2];
+
+			break;
+		end
+	end
 
 	asciidoc.insert({
 		class = "asciidoc_admonition",
@@ -170,12 +177,10 @@ end
 Block quotes.
 
 ```asciidoc
-[quote]
-____
-Some quote.
-
-Some other quote.
-____
+[source,lua]
+----
+vim.print("hi")
+----
 ```
 ]]
 ---@param buffer integer
@@ -188,15 +193,11 @@ asciidoc.code_block = function (buffer, TSNode, text, range)
 	local _lang = TSNode:named_child(0) --[[@as TSNode]];
 	range.language = { _lang:range() };
 
-	local attr_value = _lang:named_child(1);
+	local attr_value = _lang:named_child(2);
 	local lang;
 
-	if attr_value and attr_value:type() == "attr_value" then
-		local attr_text = vim.treesitter.get_node_text(attr_value, buffer, {});
-
-		if string.match(attr_text, "^source,") then
-			lang = string.match(attr_text, "^source,(.+)$")
-		end
+	if attr_value and attr_value:type() == "positional_attr" then
+		lang = vim.treesitter.get_node_text(attr_value, buffer, {});
 	end
 
 	local listing_block = TSNode:named_child(1) --[[@as TSNode]];
@@ -260,7 +261,7 @@ asciidoc.delimited_block = function (buffer, TSNode, text, range)
 	if before and before:type() == "element_attr" then
 		local attr_value = before:named_child(1);
 
-		if attr_value and attr_value:type() == "attr_value" then
+		if attr_value and attr_value:type() == "positional_attr" then
 			local attr_text = vim.treesitter.get_node_text(attr_value, buffer, {});
 
 			if string.match(attr_text, "^[A-Z]+$") then
@@ -797,7 +798,7 @@ asciidoc.parse = function (buffer, TSTree, from, to)
 		(section_block
 			(element_attr
 				(
-					(attr_value) @code_block_marker
+					(positional_attr) @code_block_marker
 					(#lua-match? @code_block_marker "^source")
 				))
 			(listing_block)) @asciidoc.code_block
