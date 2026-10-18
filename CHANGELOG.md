@@ -1,5 +1,12 @@
 # Changelog
 
+## [29.0.1](https://github.com/OXY2DEV/markview.nvim/compare/v29.0.0...v29.0.1) (2026-10-18)
+
+
+### Bug Fixes
+
+* **extras, headings:** Fixed invalid `\n` during text replacement ([ecc5a88](https://github.com/OXY2DEV/markview.nvim/commit/ecc5a8867daa1856f8bcc5fdbceca8f5a5ce5f5d)), closes [#534](https://github.com/OXY2DEV/markview.nvim/issues/534)
+
 ## [29.0.0](https://github.com/OXY2DEV/markview.nvim/compare/v28.3.0...v29.0.0) (2026-10-08)
 
 
