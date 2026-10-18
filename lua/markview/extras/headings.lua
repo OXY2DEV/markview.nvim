@@ -36,6 +36,7 @@ headings.atx = {
 		end
 
 		text = text:gsub("^" .. markers, markers .. "#");
+		text = text:gsub("\n+$", "");
 
 		vim.api.nvim_buf_set_lines(vim.api.nvim_get_current_buf(), range[1], range[3], false, {
 			text
@@ -51,6 +52,7 @@ headings.atx = {
 		end
 
 		text = text:gsub("^" .. markers, vim.fn.strcharpart(markers, 0, vim.fn.strchars(markers) - 1));
+		text = text:gsub("\n+$", "");
 
 		vim.api.nvim_buf_set_lines(vim.api.nvim_get_current_buf(), range[1], range[3], false, {
 			text
