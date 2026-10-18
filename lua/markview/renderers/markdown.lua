@@ -27,6 +27,32 @@ markdown.cache = {};
 ---@type integer Namespace for markdown.
 markdown.ns = vim.api.nvim_create_namespace("markview/markdown");
 
+---@type integer Namespace for marking rendered table rows.
+markdown.table_ns = vim.api.nvim_create_namespace("markview/markdown_table");
+
+--[[
+	NOTE: Concealed text still takes up columns when scrolling horizontally.
+
+	Used by `actions.set_query()` so that `tree-sitter` doesn't conceal markup inside rendered table rows.
+	`markdown.__table()` covers that markup with spaces instead.
+]]
+vim.treesitter.query.add_directive("markview-table-unconceal!", function (match, _, source, _, metadata)
+	if type(source) ~= "number" then
+		return;
+	end
+
+	for _, nodes in pairs(match) do
+		local node = type(nodes) == "table" and nodes[1] or nodes;
+		local row = node:range();
+
+		if #vim.api.nvim_buf_get_extmarks(source, markdown.table_ns, { row, 0 }, { row, -1 }, { limit = 1 }) > 0 then
+			metadata.conceal = nil;
+		end
+
+		return;
+	end
+end, { force = true });
+
 --- Renders atx headings.
 ---@param buffer integer
 ---@param item markview.parsed.markdown.atx_headings
@@ -1599,7 +1625,9 @@ markdown.table = function (buffer, item)
 
 	for _, col in ipairs(item.header) do
 		if col.class == "column" then
-			local _o = require("markview.renderers.markdown.tostring").tostring(buffer, col.text);
+			--- Markup inside table rows is covered with spaces instead of being concealed.
+			--- See `markdown.__table()`.
+			local _o = is_wrapped and require("markview.renderers.markdown.tostring").tostring(buffer, col.text) or col.text;
 			local o = vim.fn.strdisplaywidth(_o);
 
 			table.insert(visible_texts.header, o);
@@ -1648,7 +1676,7 @@ markdown.table = function (buffer, item)
 
 		for _, col in ipairs(row) do
 			if col.class == "column" then
-				local _o = require("markview.renderers.markdown.tostring").tostring(buffer, col.text);
+				local _o = is_wrapped and require("markview.renderers.markdown.tostring").tostring(buffer, col.text) or col.text;
 				local o = vim.fn.strdisplaywidth(_o);
 
 				table.insert(visible_texts.rows[r], o);
@@ -1685,6 +1713,10 @@ markdown.table = function (buffer, item)
 			--- TODO, Check if a more accurate(& faster) method exists or not.
 			return;
 		end
+	end
+
+	if is_wrapped == false then
+		table.insert(markdown.cache, item);
 	end
 
 	---@type markview.config.markdown.tables.parts
@@ -1744,6 +1776,8 @@ markdown.table = function (buffer, item)
 
 					virt_text_pos = "overlay",
 					virt_text_hide = true,
+					-- Drawn after the padding at the same column.
+					priority = 4097,
 					virt_text = {
 						{ border, border_hl }
 					},
@@ -1972,6 +2006,8 @@ markdown.table = function (buffer, item)
 
 				virt_text_pos = "overlay",
 				virt_text_hide = true,
+				-- Drawn after the padding at the same column.
+				priority = 4097,
 				virt_text = {
 					{ border, border_hl }
 				},
@@ -2170,6 +2206,8 @@ markdown.table = function (buffer, item)
 
 						virt_text_pos = "overlay",
 						virt_text_hide = true,
+						-- Drawn after the padding at the same column.
+						priority = 4097,
 						virt_text = {
 							{ border, border_hl }
 						},
@@ -2304,6 +2342,8 @@ markdown.table = function (buffer, item)
 
 					virt_text_pos = "overlay",
 					virt_text_hide = true,
+					-- Drawn after the padding at the same column.
+					priority = 4097,
 					virt_text = {
 						{ border, border_hl }
 					},
@@ -2484,6 +2524,132 @@ end
 
  -----------------------------------------------------------------------------------------
 
+
+--[[
+	Covers markup inside table rows with spaces.
+
+	Concealed text still takes up columns when scrolling horizontally, so a row
+	that conceals more text than the borders drifts out of line.
+]]
+---@param buffer integer
+---@param item markview.parsed.markdown.tables
+markdown.__table = function (buffer, item)
+	local inline = require("markview.renderers.markdown_inline");
+
+	local range = item.range;
+	local row_end = range.row_end - 1;
+
+	---@type table<integer, [ integer, integer ][]> Covered ranges, per row.
+	local covered = {};
+
+	local function is_covered (row, col)
+		for _, R in ipairs(covered[row] or {}) do
+			if col >= R[1] and col < R[2] then
+				return true;
+			end
+		end
+
+		return false;
+	end
+
+	--- Covers `[col, end_col)` of `row` with spaces, one cell at a time.
+	--- `virt_text` is kept when it fits in single-width cells(e.g. entities).
+	local function cover (row, col, end_col, virt_text)
+		local line = vim.api.nvim_buf_get_lines(buffer, row, row + 1, false)[1] or "";
+		local text = string.sub(line, col + 1, end_col);
+		local width = vim.fn.strdisplaywidth(text);
+
+		covered[row] = covered[row] or {};
+		table.insert(covered[row], { col, end_col });
+
+		---@type [ string, string? ][] Text & highlight of each cell.
+		local cells = {};
+		local hl, preview = nil, "";
+
+		for _, chunk in ipairs(virt_text or {}) do
+			for _, char in ipairs(vim.fn.split(chunk[1], "\\zs")) do
+				table.insert(cells, { char, chunk[2] });
+			end
+
+			hl, preview = chunk[2], preview .. chunk[1];
+		end
+
+		if #cells > width or vim.fn.strdisplaywidth(preview) ~= #cells then
+			cells = {};
+		end
+
+		for _ = #cells + 1, width do
+			table.insert(cells, { " ", hl });
+		end
+
+		local c = 1;
+
+		for _, char in ipairs(vim.fn.split(text, "\\zs")) do
+			local char_width = vim.fn.strdisplaywidth(char);
+
+			vim.api.nvim_buf_set_extmark(buffer, markdown.ns, row, col, {
+				undo_restore = false, invalidate = true,
+
+				virt_text_pos = "overlay",
+				virt_text_hide = true,
+				virt_text = { unpack(cells, c, c + char_width - 1) }
+			});
+
+			col = col + #char;
+			c = c + char_width;
+		end
+	end
+
+	for row = range.row_start, row_end do
+		vim.api.nvim_buf_set_extmark(buffer, markdown.table_ns, row, 0, {
+			undo_restore = false, invalidate = true
+		});
+	end
+
+	--- Concealed `markdown_inline` previews are covered with spaces &
+	--- inline virtual texts are removed, as the column widths don't
+	--- include them.
+	for _, mark in ipairs(vim.api.nvim_buf_get_extmarks(buffer, inline.ns, { range.row_start, 0 }, { row_end, -1 }, { details = true })) do
+		local opts = mark[4];
+
+		if opts.conceal and opts.end_col then
+			cover(mark[2], mark[3], opts.end_col, opts.virt_text);
+			vim.api.nvim_buf_del_extmark(buffer, inline.ns, mark[1]);
+		elseif opts.virt_text_pos == "inline" then
+			vim.api.nvim_buf_del_extmark(buffer, inline.ns, mark[1]);
+		end
+	end
+
+	--- Markup that `tree-sitter` would conceal(see `markview-table-unconceal!`).
+	local query = vim.treesitter.query.get("markdown_inline", "highlights");
+	local got_parser, parser = pcall(vim.treesitter.get_parser, buffer);
+
+	if not query or not got_parser or not parser then
+		return;
+	end
+
+	parser:for_each_tree(function (tree, language_tree)
+		if language_tree:lang() ~= "markdown_inline" then
+			return;
+		end
+
+		local root = tree:root();
+		local root_start, _, root_end = root:range();
+
+		if root_end < range.row_start or root_start > row_end then
+			return;
+		end
+
+		for id, node, metadata in query:iter_captures(root, buffer, range.row_start, row_end + 1) do
+			local conceal = metadata.conceal or (metadata[id] and metadata[id].conceal);
+			local row, col, _, end_col = node:range();
+
+			if conceal and row >= range.row_start and row <= row_end and not is_covered(row, col) then
+				cover(row, col, end_col);
+			end
+		end
+	end);
+end
 
 --- Renders wrapped block quotes, callouts & alerts.
 ---@param buffer integer
@@ -2771,6 +2937,8 @@ end
 markdown.clear = function (buffer, from, to, hybrid_mode)
 	---@type boolean
 	local experimental = spec.get({ "experimental", "linewise_ignore_org_indent" }, { fallback = false });
+
+	vim.api.nvim_buf_clear_namespace(buffer, markdown.table_ns, from or 0, to or -1);
 
 	if not experimental or not hybrid_mode then
 		vim.api.nvim_buf_clear_namespace(buffer, markdown.ns, from or 0, to or -1);
