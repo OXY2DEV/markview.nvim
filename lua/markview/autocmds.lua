@@ -318,6 +318,52 @@ autocmds.optionSet = function (args)
 end
 
 ---@diagnostic disable-next-line: undefined-field
+autocmds.resize_timer = vim.uv.new_timer();
+
+--[[ Window resized. ]]
+---@param args vim.api.keyset.create_autocmd.callback_args
+autocmds.resize = function (args)
+	---|fS
+
+	local state = require("markview.state");
+	local actions = require("markview.actions");
+
+	autocmds.resize_timer:stop();
+
+	--[[
+		`wrap` indents are placed at the wrap columns of the width they were
+		rendered at, so every buffer on screen needs to be rendered again for the
+		new width.
+
+		Resizes arrive in bursts(a mouse drag or a per-step terminal resize), so
+		the renders are *debounced* the same way cursor movements are.
+	]]
+	autocmds.resize_timer:start(50, 0, vim.schedule_wrap(function ()
+		if not state.enabled() then
+			return;
+		end
+
+		for _, buffer in ipairs(state.get_enabled_buffers()) do
+			--[[
+				Wrap indents are *window dependent*, so only buffers that are
+				displayed somewhere need to be rendered again.
+			]]
+			if vim.api.nvim_buf_is_valid(buffer) and vim.fn.win_findbuf(buffer)[1] then
+				if buffer == state.get_splitview_source() then
+					actions.splitview_render();
+				elseif actions.in_preview_mode() then
+					actions.render(buffer);
+				else
+					actions.clear(buffer);
+				end
+			end
+		end
+	end));
+
+	---|fE
+end
+
+---@diagnostic disable-next-line: undefined-field
 autocmds.cursor_timer = vim.uv.new_timer();
 
 --[[ Cursor moved. ]]
@@ -505,6 +551,12 @@ autocmds.setup = function ()
 
 	vim.api.nvim_create_autocmd("OptionSet", {
 		callback = autocmds.optionSet
+	});
+
+	vim.api.nvim_create_autocmd({
+		"WinResized", "VimResized"
+	}, {
+		callback = autocmds.resize
 	});
 
 	vim.api.nvim_create_autocmd({
