@@ -430,6 +430,20 @@ autocmds.file_changed = function (args)
 	end
 
 	actions.set_query(args.buf);
+
+	--[[
+		NOTE: Redraw the preview after reloading the buffer.
+
+		`TextChanged` only fires for the *current* buffer. If the buffer was reloaded while it was visible in another window, nothing would redraw it and the old extmarks would remain on the new text.
+
+		The mode only decides the preview of the current buffer(see `modeChanged()`), so other buffers are always rendered.
+	]]
+	if args.buf ~= vim.api.nvim_get_current_buf() or actions.in_preview_mode() then
+		actions.render(args.buf);
+	else
+		actions.clear(args.buf);
+	end
+
 	require("markview.health").print({ kind = "skip", back = true });
 
 	---|fE
