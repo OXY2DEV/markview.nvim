@@ -1,5 +1,13 @@
 # Changelog
 
+## [29.0.1](https://github.com/OXY2DEV/markview.nvim/compare/v29.0.0...v29.0.1) (2026-10-31)
+
+
+### Bug Fixes
+
+* **autocmds:** Redraw preview when a buffer is reloaded from disk ([#537](https://github.com/OXY2DEV/markview.nvim/issues/537)) ([aadb6d8](https://github.com/OXY2DEV/markview.nvim/commit/aadb6d817577d553bbef61e8b9073f1bf4b87e08))
+* **extras, headings:** Fixed invalid `\n` during text replacement ([ecc5a88](https://github.com/OXY2DEV/markview.nvim/commit/ecc5a8867daa1856f8bcc5fdbceca8f5a5ce5f5d)), closes [#534](https://github.com/OXY2DEV/markview.nvim/issues/534)
+
 ## [29.0.0](https://github.com/OXY2DEV/markview.nvim/compare/v28.3.0...v29.0.0) (2026-10-08)
 
 
