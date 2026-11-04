@@ -211,14 +211,14 @@ actions.splitview_setup = function ()
 
 	if not src or state.buf_safe(src) == false then
 		actions.splitClose();
-		return;
+		return false;
 	end
 
 	local win = vim.fn.win_findbuf(src)[1];
 
 	if state.win_safe(win) == false then
 		actions.splitClose();
-		return;
+		return false;
 	end
 
 	local sp_buf = state.get_splitview_buffer();
@@ -235,11 +235,19 @@ actions.splitview_setup = function ()
 
 	vim.wo[sp_win].wrap = vim.wo[win].wrap;
 	vim.wo[sp_win].linebreak = vim.wo[win].linebreak;
+	vim.wo[sp_win].smoothscroll = true;
+	-- The preview follows a screen offset rather than an editing caret.
+	-- An inherited scrolloff can otherwise pull the restored view backwards.
+	vim.wo[sp_win].scrolloff = 0;
 
 	vim.wo[sp_win].number = false;
 	vim.wo[sp_win].relativenumber = false;
+	-- Auto sign columns can appear after heading rendering and shrink the
+	-- text area after table widths were calculated.
+	vim.wo[sp_win].signcolumn = "no";
 	vim.wo[sp_win].list = false;
 	vim.wo[sp_win].winhl = "Normal:Normal";
+	return true;
 
 	---|fE
 end
@@ -250,17 +258,17 @@ actions.splitview_cursor = function ()
 	local state = require("markview.state");
 
 	local buffer = state.get_splitview_source();
-	local window = vim.fn.win_findbuf(buffer)[1];
-
 	if state.buf_safe(buffer) == false then
 		return;
-	elseif not window or state.win_safe(window) == false then
+	end
+	local window = vim.fn.win_findbuf(buffer)[1];
+	if state.win_safe(window) == false then
 		return;
 	end
 
 	local sp_win = state.get_splitview_window({}, false);
 
-	if sp_win then
+	if state.win_safe(sp_win) then
 		require("markview.health").print({
 			from = "markview/actions.lua",
 			fn = "splitview_cursor()",
@@ -269,7 +277,9 @@ actions.splitview_cursor = function ()
 		});
 
 		local cursor = vim.api.nvim_win_get_cursor(window);
-		pcall(vim.api.nvim_win_set_cursor, sp_win, cursor);
+		pcall(vim.api.nvim_win_set_cursor, sp_win,
+			require("markview.splitview_align").cursor(vim.api.nvim_win_get_buf(sp_win), cursor));
+		require("markview.splitview_align").sync_view();
 	end
 
 	---|fE
@@ -297,7 +307,7 @@ actions.splitview_render = function ()
 
 	local spec =require("markview.spec");
 
-	actions.splitview_setup();
+	if not actions.splitview_setup() then return; end
 
 	local max_lines = spec.get({ "preview", "max_buf_lines" }, { fallback = 1000, ignore_enable = true });
 	local line_count = vim.api.nvim_buf_line_count(buffer);
@@ -307,35 +317,34 @@ actions.splitview_render = function ()
 
 	---@type integer, integer
 	local pre_buf, pre_win = state.get_splitview_buffer(), state.get_splitview_window();
-	local pre_cursor = vim.api.nvim_win_get_cursor(pre_win);
-	local pre_line_count = vim.api.nvim_buf_line_count(pre_buf);
-
 	local BR  = actions.get_range(cursor[1], { max_lines, max_lines + 1 }, line_count);
-	local SR = actions.get_range(pre_cursor[1], { max_lines, max_lines + 1 }, pre_line_count);
 
 	local lines = vim.api.nvim_buf_get_lines(buffer, BR[1], BR[2], false);
+	local source_view = vim.api.nvim_win_call(main_win, vim.fn.winsaveview);
+	require("markview.splitview_align").clear(buffer, pre_buf);
 
-	--[[
-		BUG: Mismatch line count between `source buffer` & `preview buffer`.
-
-		When deleting lines from the source buffer the line count will be different between th `source buffer` & the `preview buffer`.
-		This causes lines to not updated correctly in splitview.
-
-		FIX: Use 2 ranges.
-
-		One range is used for getting the lines from the `source buffer`.
-		Another range is used for getting which lines to clear in the `preview buffer`.
-
-		See #408
-	]]
-	vim.api.nvim_buf_set_lines(pre_buf, SR[1], SR[2], false, lines);
-
-	pcall(vim.api.nvim_win_set_cursor, pre_win, cursor);
-
-	actions.render(pre_buf, {
-		enable = true,
-		hybrid_mode = false
-	});
+	-- Preview rows may have been expanded by table wrapping. Rebuild from
+	-- source coordinates instead of treating its cursor/line count as source.
+	actions.clear(pre_buf);
+	vim.api.nvim_buf_set_lines(pre_buf, 0, -1, false, lines);
+	-- Parse the bounded source slice for layouts, then render the expanded
+	-- document once. Source coordinates never come from a mutable parser cache.
+	local source_content = require("markview.parser").parse(pre_buf, 0, -1, true);
+	local tables = require("markview.splitview_tables");
+	local expanded, mapping, decorations = tables.expand(pre_buf, source_content);
+	if #decorations > 0 then
+		vim.api.nvim_buf_set_lines(pre_buf, 0, -1, false, expanded);
+	end
+	local row = mapping[cursor[1] - BR[1] - 1] or 0;
+	pcall(vim.api.nvim_win_set_cursor, pre_win, { row + 1, 0 });
+	actions.render(pre_buf, { enable = true, hybrid_mode = false });
+	tables.highlight(pre_buf, decorations);
+	require("markview.splitview_align").update(main_win, pre_win,
+		source_content, BR[1], 0, #lines, mapping);
+	-- Clearing filler temporarily invalidates topfill/skipcol. Restore the
+	-- source viewport after rebuilding, before synchronizing the other window.
+	vim.api.nvim_win_call(main_win, function() vim.fn.winrestview(source_view); end);
+	actions.splitview_cursor();
 	require("markview.health").print({ kind = "skip", back = true });
 
 	---|fE
@@ -914,7 +923,7 @@ actions.splitOpen = function (buffer)
 
 	state.set_splitview_source(buffer);
 
-	actions.splitview_setup();
+	if not actions.splitview_setup() then return; end
 	actions.clear(buffer);
 
 	actions.autocmd("on_splitview_open", buffer, state.get_splitview_buffer(), state.get_splitview_window());
@@ -937,6 +946,7 @@ actions.splitClose = function ()
 	local sp_win = state.get_splitview_window({}, false);
 
 	actions.autocmd("on_splitview_close", src, sp_buf, sp_win);
+	require("markview.splitview_align").clear(src, sp_buf);
 	pcall(vim.api.nvim_win_close, sp_win, true);
 
 	state.set_splitview_source(nil);

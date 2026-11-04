@@ -311,6 +311,7 @@
 ---@class markview.config.markdown.tables
 ---
 ---@field enable boolean
+---@field wrap boolean Wrap wide tables into virtual lines (Neovim 0.11+). Defaults to true.
 ---@field strict boolean When `true`, leading & trailing whitespaces are not considered part of the cell.
 ---
 ---@field block_decorator boolean Whether to draw top & bottom border.

@@ -34,6 +34,7 @@
 ---@field edit_range? [ integer, integer ] Lines above & below the cursor to not preview in `hybrid mode`.
 ---
 ---@field splitview_winopts? table Window options for the `splitview` window. See `:h nvim.open_win()`.
+---@field splitview_align? boolean Match source/preview object heights using virtual blank lines. Default: true.
 
 
 --- Callback functions for specific events.
