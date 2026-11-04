@@ -33,7 +33,9 @@ autocmds.use_delay = function (buffer, event_name, args)
 
 	local noimmediate_autocmds = { "TextChanged", "TextChangedI" };
 
-	if vim.list_contains(noimmediate_autocmds, event_name) then
+	if event_name == "WinResized" or event_name == "VimResized" then
+		return false;
+	elseif vim.list_contains(noimmediate_autocmds, event_name) then
 		return true;
 	elseif event_name == "CursorMoved" or event_name == "CursorMovedI" then
 		local actions = require("markview.actions");
@@ -197,7 +199,11 @@ autocmds.bufHandle = function (args)
 	local state = require("markview.state");
 	local buf = as_buf(args.buf);
 
-	if not state.enabled() then
+	if buf == state.get_splitview_buffer(false) then
+		-- Split previews are owned/rendered by their source. Attaching them as
+		-- ordinary documents can re-parse already materialized table cells.
+		return;
+	elseif not state.enabled() then
 		return;
 	elseif not state.buf_safe(buf) then
 		return;
@@ -317,8 +323,21 @@ autocmds.optionSet = function (args)
 	---|fE
 end
 
----@diagnostic disable-next-line: undefined-field
-autocmds.cursor_timer = vim.uv.new_timer();
+-- A pending edit in one buffer must survive cursor/resize events in another.
+local cursor_timers, pending = {}, {};
+function autocmds.cursor_timer(buffer)
+	if not cursor_timers[buffer] then cursor_timers[buffer] = vim.uv.new_timer(); end
+	return cursor_timers[buffer];
+end
+
+local function cancel_cursor(buffer, close)
+	pending[buffer] = nil;
+	local timer = cursor_timers[buffer];
+	if timer then
+		timer:stop();
+		if close then timer:close(); cursor_timers[buffer] = nil; end
+	end
+end
 
 --[[ Cursor moved. ]]
 ---@param args vim.api.keyset.create_autocmd.callback_args
@@ -328,10 +347,11 @@ autocmds.cursor = function (args)
 	local state = require("markview.state");
 	local actions = require("markview.actions");
 
-	autocmds.cursor_timer:stop();
 	local splitview_src = state.get_splitview_source();
 
-	if not args.buf or not state.enabled() or not state.buf_attached(args.buf) then
+	if args.buf == state.get_splitview_buffer(false) then
+		return;
+	elseif not args.buf or not state.enabled() or not state.buf_attached(args.buf) then
 		return;
 	elseif args.buf ~= splitview_src then
 		local buf_state = state.get_buffer_state(args.buf, false)
@@ -351,13 +371,17 @@ autocmds.cursor = function (args)
 		return;
 	end
 
+	local token = {};
+	cancel_cursor(args.buf);
+	pending[args.buf] = token;
 	local function action ()
 		-- The debounce timer + vim.schedule_wrap mean this closure runs on a
 		-- later event-loop tick than the autocmd that queued it. The buffer
 		-- captured in `args.buf` may have been wiped in the meantime (e.g. a
 		-- transient Telescope preview or scratch buffer), leaving a dangling
 		-- id. Re-validate here, before any nvim_buf_* call reaches it.
-		if not args.buf or not vim.api.nvim_buf_is_valid(args.buf) then
+		if pending[args.buf] ~= token or not vim.api.nvim_buf_is_valid(args.buf)
+			or not state.enabled() or not state.buf_attached(args.buf) then
 			return;
 		end
 		require("markview.health").print({
@@ -384,7 +408,7 @@ autocmds.cursor = function (args)
 	local delay = require("markview.spec").get({ "preview", "debounce" }, { fallback = 25, ignore_enable = true });
 
 	if use_delay then
-		autocmds.cursor_timer:start(delay, 0, vim.schedule_wrap(action));
+		autocmds.cursor_timer(args.buf):start(delay, 0, vim.schedule_wrap(action));
 	else
 		action();
 	end
@@ -408,7 +432,7 @@ autocmds.file_changed = function (args)
 	local state = require("markview.state");
 	local actions = require("markview.actions");
 
-	autocmds.cursor_timer:stop();
+	cancel_cursor(args.buf);
 
 	if not state.buf_safe(args.buf) then
 		--[[
@@ -438,7 +462,9 @@ autocmds.file_changed = function (args)
 
 		The mode only decides the preview of the current buffer(see `modeChanged()`), so other buffers are always rendered.
 	]]
-	if args.buf ~= vim.api.nvim_get_current_buf() or actions.in_preview_mode() then
+	if args.buf == state.get_splitview_source() then
+		actions.splitview_render();
+	elseif args.buf ~= vim.api.nvim_get_current_buf() or actions.in_preview_mode() then
 		actions.render(args.buf);
 	else
 		actions.clear(args.buf);
@@ -521,6 +547,41 @@ autocmds.setup = function ()
 		callback = autocmds.optionSet
 	});
 
+	local resize_pending = false;
+	vim.api.nvim_create_autocmd({ "WinResized", "VimResized" }, {
+		callback = function (args)
+			if resize_pending then return; end
+			resize_pending = true;
+			vim.schedule(function ()
+				resize_pending = false;
+				local seen = {};
+				for _, win in ipairs(vim.api.nvim_tabpage_list_wins(0)) do
+					local buffer = vim.api.nvim_win_get_buf(win);
+					if not seen[buffer] then
+						seen[buffer] = true;
+						autocmds.cursor({ buf = buffer, event = args.event });
+					end
+				end
+			end);
+		end
+	});
+
+	vim.api.nvim_create_autocmd("WinScrolled", {
+		callback = function(args)
+			local align = require("markview.splitview_align");
+			if align.layout and tonumber(args.match) == align.layout.source_win then
+				-- Wheel input can scroll the source while focus stays in the
+				-- preview. Its old cursor would force winrestview back on redraw.
+				local layout = align.layout;
+				vim.schedule(function()
+					if align.layout == layout then
+						require("markview.actions").splitview_cursor();
+					end
+				end);
+			end
+		end
+	});
+
 	vim.api.nvim_create_autocmd({
 		"BufAdd", "BufEnter",
 		"BufWinEnter"
@@ -532,6 +593,7 @@ autocmds.setup = function ()
 		"BufDelete", "BufWipeout"
 	}, {
 		callback = function(args)
+			cancel_cursor(args.buf, true);
 			require("markview.state").detach(args.buf, true);
 		end
 	});

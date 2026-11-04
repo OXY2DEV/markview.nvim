@@ -630,6 +630,7 @@ return {
 	tables = {
 		enable = true,
 		strict = false,
+		wrap = true,
 
 		block_decorator = true,
 		use_virt_lines = false,

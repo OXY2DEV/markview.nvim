@@ -218,6 +218,7 @@ spec.default = {
 		splitview_winopts = {
 			split = "right"
 		},
+		splitview_align = true,
 	},
 
 	renderers = {},
