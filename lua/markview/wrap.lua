@@ -208,17 +208,42 @@ wrap.fine_wrap = function (buffer, win, row, ns, indent)
 		return;
 	end
 
-	local reallen = vim.fn.strdisplaywidth(
-		vim.api.nvim_buf_get_lines(buffer, row, row + 1, false)[1] or ""
-	);
+	local line = vim.api.nvim_buf_get_lines(buffer, row, row + 1, false)[1] or "";
+
+	--[[
+		IMPORTANT: `wrapcol`(from `virtcol2col()`) is a **byte index**, while
+		`strdisplaywidth()` returns a **display width**.
+
+		And, while `wrap` & `breakindent` are set, Neovim's `strdisplaywidth()` &
+		`virtcol()` are *inflated*(`72` spaces in a `40` column window measure as
+		`104` cells). Comparing one against the other made the
+		*"No enough text after indent"* check miss the last wrap of a line, so an
+		indent was inserted **before the line's last character**,
+
+		```
+		> quoted quoted quote▋ d
+		```
+
+		Both checks below therefore stay in **byte space**(`#line`) & require more
+		than a single character to be left after the wrap point.
+	]]
+	local line_len = #line;
+
+	--- Index(1-based) of the last byte that isn't just trailing whitespace.
+	local last_char = line_len;
+
+	while last_char > 0 and line:sub(last_char, last_char):match("%s") do
+		last_char = last_char - 1;
+	end
+
 	local virtlen = require("markview.utils").virt_len(indent);
 	local wraps = math.ceil(end_vcol / win_width);
 
 	for w = 1, wraps, 1 do
 		local wrapcol = vim.fn.virtcol2col(win, row + 1, (win_width * w) + 1);
 
-		if wrapcol >= end_vcol or wrapcol >= reallen then
-			-- Out of bounds.Or at end of line.
+		if wrapcol > line_len or wrapcol >= last_char then
+			-- Out of bounds. Or only the line's last character is left.
 			break;
 		elseif wrapcol + virtlen >= end_vcol then
 			-- No enough text after indent.
