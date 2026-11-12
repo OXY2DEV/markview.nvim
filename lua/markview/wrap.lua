@@ -168,14 +168,16 @@ wrap.sign_width = function (buffer, ns)
 end
 
 --[[
-Based on the answer from @zeertzjq in neovim/neovim#35964.
+Resolves a window's text-area metrics once, so callers can hoist this out of
+per-row loops. Returns the usable text `width` (window width minus the columns
+reserved by the sign, number and fold columns).
+
+Must be called inside `win` (e.g. via `nvim_win_call`) because the underlying
+functions are window-dependent.
 ]]
----@param buffer integer
 ---@param win integer
----@param row integer
----@param ns integer
----@param indent [ string, string? ][]
-wrap.fine_wrap = function (buffer, win, row, ns, indent)
+---@return integer width
+wrap.win_width = function (win)
 	---|fS
 
 	local wininfo = vim.fn.getwininfo(win)[1];
@@ -201,13 +203,28 @@ wrap.fine_wrap = function (buffer, win, row, ns, indent)
 		textoff = vim.g.markview_sign_width or 2;
 	end
 
-	local win_width = wininfo.width - textoff;
+	return wininfo.width - textoff;
+
+	---|fE
+end
+
+--[[
+Based on the answer from @zeertzjq in neovim/neovim#35964.
+]]
+---@param buffer integer
+---@param win integer
+---@param row integer
+---@param ns integer
+---@param indent [ string, string? ][]
+---@param win_width integer Precomputed usable text width (see `wrap.win_width`).
+wrap.fine_wrap = function (buffer, win, row, ns, indent, win_width)
+	---|fS
+
 	local end_vcol = vim.fn.virtcol({ row + 1, "$" }) - 1;
 
 	if end_vcol <= win_width then
 		return;
 	end
-
 	local reallen = vim.fn.strdisplaywidth(
 		vim.api.nvim_buf_get_lines(buffer, row, row + 1, false)[1] or ""
 	);
@@ -257,21 +274,22 @@ wrap.render = function (buffer, ns)
 	if not win then
 		return;
 	end
+	-- NOTE: The `functions` used inside `fine_wrap` (and `wrap.win_width`) are
+	-- **window-dependent**. They must run inside `win`, otherwise they operate
+	-- on whatever window is currently focused.
+	--
+	-- The window's text-area width is invariant across all rows of a single
+	-- render pass, so it is resolved once here rather than per row (which used
+	-- to allocate a fresh `getwininfo` dict for every wrapped line).
+	vim.api.nvim_win_call(win, function ()
+		local win_width = wrap.win_width(win);
 
-	local function render_line (row, indent)
-		-- NOTE: The `functions` used inside `fine_wrap` are **window-dependent**.
-		-- This means we need to call them inside `win`. Otherwise it will run it on whatever window that is currently focused.
-		vim.api.nvim_win_call(win, function ()
-			wrap.fine_wrap(buffer, win, row, ns, indent);
-		end);
-	end
-
-	for row, indent in pairs(wrap.cache[buffer] or {}) do
-		render_line(row, indent);
-	end
+		for row, indent in pairs(wrap.cache[buffer] or {}) do
+			wrap.fine_wrap(buffer, win, row, ns, indent, win_width);
+		end
+	end);
 
 	wrap.cache[buffer] = {};
-
 	---|fE
 end
 
