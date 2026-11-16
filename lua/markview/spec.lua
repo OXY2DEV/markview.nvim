@@ -197,7 +197,7 @@ spec.default = {
 			});
 
 			if not is_enabled then
-				return;
+				return false;
 			end
 
 			local success, parser = pcall(vim.treesitter.get_parser, buffer);
@@ -280,10 +280,12 @@ spec.get = function (keys, opts)
 		end
 
 		local ok, res = pcall(val, unpack(args or {}));
+
 		if ok then
 			return res;
+		else
+			return nil;
 		end
-		return nil;
 	end
 
 	---@param index integer | string
