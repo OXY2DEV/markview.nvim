@@ -89,22 +89,23 @@ autocmds.should_detach = function (args)
 	---|fS
 
 	local state = require("markview.state");
+	local buf = as_buf(args.buf);
 
-	if not args.buf or not state.enabled() or not state.buf_attached(args.buf) then
+	if not buf or not state.enabled() or not state.buf_attached(buf) then
 		return false;
-	elseif not state.get_buffer_state(args.buf, false) then
+	elseif not state.get_buffer_state(buf, false) then
 		return false;
 	end
 
 	local spec = require("markview.spec");
 
 	---@type string, string
-	local bt, ft = vim.bo[args.buf].buftype, vim.bo[args.buf].filetype;
+	local bt, ft = vim.bo[buf].buftype, vim.bo[buf].filetype;
 
 	local attach_ft = spec.get({ "preview", "filetypes" }, { fallback = {}, ignore_enable = true });
 	local ignore_bt = spec.get({ "preview", "ignore_buftypes" }, { fallback = {}, ignore_enable = true });
 
-	local condition = spec.get({ "preview", "condition" }, { eval_args = { args.buf } });
+	local condition = spec.get({ "preview", "condition" }, { eval_args = { buf }, ignore_enable = true });
 
 	--[[
 		feat: Attaching to buffers.
@@ -289,27 +290,29 @@ autocmds.optionSet = function (args)
 		});
 	end
 
+	local buf = as_buf(args.buf);
+
 	if vim.list_contains({ "filetype", "buftype" }, args.match) then
 		if autocmds.should_detach(args) then
-			require("markview.actions").detach(args.buf);
+			require("markview.actions").detach(buf);
 		else
 			autocmds.bufHandle(args);
 		end
 	elseif vim.list_contains({ "wrap", "linebreak" }, args.match) then
 		local state = require("markview.state");
 
-		if not state.buf_attached(args.buf) then
+		if not state.buf_attached(buf) then
 			return;
 		end
 
 		local actions = require("markview.actions");
-		local buf_state = state.get_buffer_state(args.buf, false);
+		local buf_state = state.get_buffer_state(buf, false);
 
 		if state.enabled() and buf_state and buf_state.enable and actions.in_preview_mode() then
-			if args.buf == state.get_splitview_source() then
+			if buf == state.get_splitview_source() then
 				return;
 			else
-				actions.render(args.buf);
+				actions.render(buf);
 			end
 		end
 	end
