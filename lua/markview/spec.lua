@@ -280,7 +280,12 @@ spec.get = function (keys, opts)
 		end
 
 		local ok, res = pcall(val, unpack(args or {}));
-		return ok and res or nil;
+
+		if ok then
+			return res;
+		else
+			return nil;
+		end
 	end
 
 	---@param index integer | string
