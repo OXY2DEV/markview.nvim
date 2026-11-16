@@ -197,7 +197,7 @@ spec.default = {
 			});
 
 			if not is_enabled then
-				return false;
+				return nil;
 			end
 
 			local success, parser = pcall(vim.treesitter.get_parser, buffer);
