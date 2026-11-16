@@ -1682,6 +1682,10 @@ markdown.table = function (buffer, item)
 		end
 	end
 
+	if require("markview.renderers.markdown.table_wrap").render(buffer, item, config, vim_width) then
+		return;
+	end
+
 	if is_wrapped == true then
 		local win = utils.buf_getwin(buffer);
 		local width = vim.api.nvim_win_get_width(win);
@@ -2819,6 +2823,7 @@ end
 ---@param to integer?
 ---@param hybrid_mode boolean
 markdown.clear = function (buffer, from, to, hybrid_mode)
+	require("markview.renderers.markdown.table_wrap_rows").clear(buffer, from, to);
 	---@type boolean
 	local experimental = spec.get({ "experimental", "linewise_ignore_org_indent" }, { fallback = false });
 

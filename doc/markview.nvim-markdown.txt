@@ -1152,6 +1152,7 @@ tables                                           *markview.nvim-markdown.tables*
 	---@class markview.config.markdown.tables
 	---
 	---@field enable boolean
+	---@field wrap boolean Wrap wide tables into multiple lines (Neovim 0.11+). Default: true.
 	---@field strict boolean When `true`, leading & trailing whitespaces are not considered part of the cell.
 	---
 	---@field block_decorator boolean Whether to draw top & bottom border.
@@ -1166,8 +1167,25 @@ Changes how tables are shown.
 Demo {img:3}
 
 ▋{!IMPORTANT]
-▋ When using `wrap`, tables are partially rendered to prevent text wrapping issues.
-▋ This is not a bug.
+▋ Wide tables are fitted to the window using virtual lines when tables.wrap is
+▋ enabled (the default, requires Neovim 0.11+). Source Markdown is unchanged.
+▋ Cells use display widths for CJK text and preserve column alignment. Inline
+▋ Markdown is converted to preview text; individual inline highlights are not
+▋ reproduced inside wrapped cells. In a single window, source rows remain
+▋ addressable: their native wrapped screen lines are painted with cell text,
+▋ and only the remaining visual rows are virtual. This avoids wheel-up trapping
+▋ against tables with no cursor positions. Source text is unchanged.
+▋ When one buffer is shown in windows with incompatible widths/wrapping options,
+▋ use the original table renderer to avoid sharing incompatible screen layouts.
+▋ Split previews materialize wrapped tables as real rows in the disposable
+▋ preview buffer, with a source-to-preview row map. This allows wheel scrolling
+▋ through tables taller than the window. Source Markdown is never expanded.
+▋ Table layouts are calculated before rendering the expanded document once.
+▋ The preview uses a fixed gutter and scrolloff=0 to keep its viewport stable.
+▋ Set markdown.tables.wrap = false to restore the original table renderer.
+▋ Split previews also align source/preview object heights with virtual blank
+▋ lines in the shorter window. Disable with preview.splitview_align = false.
+▋ Source text is unchanged; padding is removed when the split preview closes.
 
 ╭─────────────────┬──────────────────╮
 │  `wrap = true`    │  `wrap = false`    │
@@ -1179,6 +1197,7 @@ Demo {img:3}
 	tables = {
 	    enable = true,
 	    strict = false,
+	    wrap = true,
 	
 	    block_decorator = true,
 	    use_virt_lines = false,

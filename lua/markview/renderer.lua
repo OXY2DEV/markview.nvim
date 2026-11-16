@@ -463,6 +463,15 @@ renderer.render = function (buffer, parsed_content)
 		end
 	end
 
+	local rows = require("markview.renderers.markdown.table_wrap_rows");
+	local ok, err = pcall(rows.finish, buffer);
+	if not ok then
+		-- Keep the original Markdown readable if a layout cannot be painted.
+		rows.clear(buffer);
+		health.print({ kind = "ERR", from = "renderer.lua", fn = "table rows",
+			message = { { tostring(err), "DiagnosticError" } } });
+	end
+
 	---|fS "chore: Announce end of rendering"
 	local now = vim.uv.hrtime();
 
@@ -492,6 +501,7 @@ end
 ---@param hybrid_mode? boolean
 renderer.clear = function (buffer, from, to, hybrid_mode)
 	---|fS
+	require("markview.splitview_tables").clear(buffer, from, to);
 
 	local _renderers = {
 		asciidoc = require("markview.renderers.asciidoc"),
