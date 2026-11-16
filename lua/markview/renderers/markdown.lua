@@ -27,6 +27,32 @@ markdown.cache = {};
 ---@type integer Namespace for markdown.
 markdown.ns = vim.api.nvim_create_namespace("markview/markdown");
 
+---@type integer Namespace for marking rendered table rows.
+markdown.table_ns = vim.api.nvim_create_namespace("markview/markdown_table");
+
+--[[
+	NOTE: Concealed text still takes up columns when scrolling horizontally.
+
+	Used by `actions.set_query()` so that `tree-sitter` doesn't conceal markup inside rendered table rows.
+	`markdown.__table()` covers that markup with spaces instead.
+]]
+vim.treesitter.query.add_directive("markview-table-unconceal!", function (match, _, source, _, metadata)
+	if type(source) ~= "number" then
+		return;
+	end
+
+	for _, nodes in pairs(match) do
+		local node = type(nodes) == "table" and nodes[1] or nodes;
+		local row = node:range();
+
+		if #vim.api.nvim_buf_get_extmarks(source, markdown.table_ns, { row, 0 }, { row, -1 }, { limit = 1 }) > 0 then
+			metadata.conceal = nil;
+		end
+
+		return;
+	end
+end, { force = true });
+
 --- Renders atx headings.
 ---@param buffer integer
 ---@param item markview.parsed.markdown.atx_headings
@@ -1569,18 +1595,6 @@ markdown.table = function (buffer, item)
 			--- BUG, wrap breaks table rendering.
 			is_wrapped = true;
 		end
-
-		local left_col;
-
-		vim.api.nvim_win_call(win, function ()
-			--- TODO, Find a more performant way to
-			--- get this value.
-			left_col = vim.fn.winsaveview().leftcol;
-		end)
-
-		if type(left_col) == "number" and left_col > range.col_start then
-			return;
-		end
 	end
 
 	---@type boolean
@@ -1611,7 +1625,9 @@ markdown.table = function (buffer, item)
 
 	for _, col in ipairs(item.header) do
 		if col.class == "column" then
-			local _o = require("markview.renderers.markdown.tostring").tostring(buffer, col.text);
+			--- Markup inside table rows is covered with spaces instead of being concealed.
+			--- See `markdown.__table()`.
+			local _o = is_wrapped and require("markview.renderers.markdown.tostring").tostring(buffer, col.text) or col.text;
 			local o = vim.fn.strdisplaywidth(_o);
 
 			table.insert(visible_texts.header, o);
@@ -1660,7 +1676,7 @@ markdown.table = function (buffer, item)
 
 		for _, col in ipairs(row) do
 			if col.class == "column" then
-				local _o = require("markview.renderers.markdown.tostring").tostring(buffer, col.text);
+				local _o = is_wrapped and require("markview.renderers.markdown.tostring").tostring(buffer, col.text) or col.text;
 				local o = vim.fn.strdisplaywidth(_o);
 
 				table.insert(visible_texts.rows[r], o);
@@ -1697,6 +1713,10 @@ markdown.table = function (buffer, item)
 			--- TODO, Check if a more accurate(& faster) method exists or not.
 			return;
 		end
+	end
+
+	if is_wrapped == false then
+		table.insert(markdown.cache, item);
 	end
 
 	---@type markview.config.markdown.tables.parts
@@ -1753,10 +1773,11 @@ markdown.table = function (buffer, item)
 			if is_wrapped == false then
 				vim.api.nvim_buf_set_extmark(buffer, markdown.ns, range.row_start, range.col_start + part.col_start, {
 					undo_restore = false, invalidate = true,
-					end_col = range.col_start + part.col_end,
-					conceal = "",
 
-					virt_text_pos = "inline",
+					virt_text_pos = "overlay",
+					virt_text_hide = true,
+					-- Drawn after the padding at the same column.
+					priority = 4097,
 					virt_text = {
 						{ border, border_hl }
 					},
@@ -1780,6 +1801,7 @@ markdown.table = function (buffer, item)
 						undo_restore = false, invalidate = true,
 						virt_lines_above = true,
 						virt_lines = { tmp },
+						virt_lines_overflow = "scroll",
 
 						hl_mode = "combine"
 					})
@@ -1837,6 +1859,7 @@ markdown.table = function (buffer, item)
 						undo_restore = false, invalidate = true,
 						virt_lines_above = true,
 						virt_lines = { tmp },
+						virt_lines_overflow = "scroll",
 
 						hl_mode = "combine"
 					})
@@ -1855,10 +1878,13 @@ markdown.table = function (buffer, item)
 			local column_width  = col_widths[c];
 
 			if strict then
+				--- Concealed text still takes up columns when scrolling
+				--- horizontally, so only conceal the whitespace that the
+				--- alignment needs removed.
 				local before = string.match(part.text, "^%s*");
 				local after = string.match(part.text, "%s*$");
 
-				if #before > 1 then
+				if #before > 1 and item.alignments[c] ~= "right" then
 					vim.api.nvim_buf_set_extmark(buffer, markdown.ns, range.row_start, range.col_start + part.col_start + 1, {
 						undo_restore = false, invalidate = true,
 						end_col = range.col_start + part.col_start + #before,
@@ -1868,7 +1894,7 @@ markdown.table = function (buffer, item)
 					visible_width = visible_width - (#before - 1);
 				end
 
-				if #after > 1 then
+				if #after > 1 and item.alignments[c] ~= "default" and item.alignments[c] ~= "left" then
 					vim.api.nvim_buf_set_extmark(buffer, markdown.ns, range.row_start, range.col_start + part.col_end - #after, {
 						undo_restore = false, invalidate = true,
 						end_col = range.col_start + part.col_end - 1,
@@ -1935,6 +1961,29 @@ markdown.table = function (buffer, item)
 
 	c = 1;
 
+	--- Overlays `virt_text` one cell at a time, so that
+	--- horizontal scrolling only hides the cells that are
+	--- scrolled out of view.
+	local function overlay (row, col, virt_text)
+		for _, chunk in ipairs(virt_text) do
+			for _, char in ipairs(vim.fn.split(chunk[1], "\\zs")) do
+				vim.api.nvim_buf_set_extmark(buffer, markdown.ns, row, col, {
+					undo_restore = false, invalidate = true,
+
+					virt_text_pos = "overlay",
+					virt_text_hide = true,
+					virt_text = {
+						{ char, chunk[2] }
+					},
+
+					hl_mode = "combine"
+				});
+
+				col = col + vim.fn.strdisplaywidth(char);
+			end
+		end
+	end
+
 	for s, sep in ipairs(item.separator) do
 		local x = range.row_start + 1;
 		local y = range.col_start + sep.col_start;
@@ -1954,10 +2003,11 @@ markdown.table = function (buffer, item)
 
 			vim.api.nvim_buf_set_extmark(buffer, markdown.ns, x, y, {
 				undo_restore = false, invalidate = true,
-				end_col = range.col_start + sep.col_end,
-				conceal = "",
 
-				virt_text_pos = "inline",
+				virt_text_pos = "overlay",
+				virt_text_hide = true,
+				-- Drawn after the padding at the same column.
+				priority = 4097,
 				virt_text = {
 					{ border, border_hl }
 				},
@@ -2002,19 +2052,11 @@ markdown.table = function (buffer, item)
 				end
 			elseif item.alignments[c] == "default" then
 				if left > 0 then
-					vim.api.nvim_buf_set_extmark(buffer, markdown.ns, x, y, {
-						undo_restore = false, invalidate = true,
-						end_col = range.col_start + sep.col_end,
-
-						virt_text_pos = "overlay",
-						virt_text = {
-							{
-								string.rep(border, width),
-								utils.set_hl(border_hl)
-							},
+					overlay(x, y, {
+						{
+							string.rep(border, width),
+							utils.set_hl(border_hl)
 						},
-
-						hl_mode = "combine"
 					});
 
 					vim.api.nvim_buf_set_extmark(buffer, markdown.ns, x, range.col_start + sep.col_end, {
@@ -2028,19 +2070,11 @@ markdown.table = function (buffer, item)
 						hl_mode = "combine"
 					});
 				else
-					vim.api.nvim_buf_set_extmark(buffer, markdown.ns, x, y, {
-						undo_restore = false, invalidate = true,
-						end_col = range.col_start + sep.col_end,
-
-						virt_text_pos = "overlay",
-						virt_text = {
-							{
-								string.rep(border, width),
-								utils.set_hl(border_hl)
-							}
-						},
-
-						hl_mode = "combine"
+					overlay(x, y, {
+						{
+							string.rep(border, width),
+							utils.set_hl(border_hl)
+						}
 					});
 				end
 			elseif item.alignments[c] == "left" then
@@ -2048,20 +2082,12 @@ markdown.table = function (buffer, item)
 				align_hl = hls.align_left;
 
 				if left > 0 then
-					vim.api.nvim_buf_set_extmark(buffer, markdown.ns, x, y, {
-						undo_restore = false, invalidate = true,
-						end_col = range.col_start + sep.col_end,
-
-						virt_text_pos = "overlay",
-						virt_text = {
-							{ align, utils.set_hl(align_hl) },
-							{
-								string.rep(border, width - 1),
-								utils.set_hl(border_hl)
-							},
+					overlay(x, y, {
+						{ align, utils.set_hl(align_hl) },
+						{
+							string.rep(border, width - 1),
+							utils.set_hl(border_hl)
 						},
-
-						hl_mode = "combine"
 					});
 
 					vim.api.nvim_buf_set_extmark(buffer, markdown.ns, x, range.col_start + sep.col_end, {
@@ -2075,20 +2101,12 @@ markdown.table = function (buffer, item)
 						hl_mode = "combine"
 					});
 				else
-					vim.api.nvim_buf_set_extmark(buffer, markdown.ns, x, y, {
-						undo_restore = false, invalidate = true,
-						end_col = range.col_start + sep.col_end,
-
-						virt_text_pos = "overlay",
-						virt_text = {
-							{ align, utils.set_hl(align_hl) },
-							{
-								string.rep(border, width - 1),
-								utils.set_hl(border_hl)
-							}
-						},
-
-						hl_mode = "combine"
+					overlay(x, y, {
+						{ align, utils.set_hl(align_hl) },
+						{
+							string.rep(border, width - 1),
+							utils.set_hl(border_hl)
+						}
 					});
 				end
 			elseif item.alignments[c] == "right" then
@@ -2096,19 +2114,11 @@ markdown.table = function (buffer, item)
 				align_hl = hls.align_right;
 
 				if left > 0 then
-					vim.api.nvim_buf_set_extmark(buffer, markdown.ns, x, y, {
-						undo_restore = false, invalidate = true,
-						end_col = range.col_start + sep.col_end,
-
-						virt_text_pos = "overlay",
-						virt_text = {
-							{
-								string.rep(border, width),
-								utils.set_hl(border_hl)
-							},
+					overlay(x, y, {
+						{
+							string.rep(border, width),
+							utils.set_hl(border_hl)
 						},
-
-						hl_mode = "combine"
 					});
 
 					vim.api.nvim_buf_set_extmark(buffer, markdown.ns, x, range.col_start + sep.col_end, {
@@ -2123,20 +2133,12 @@ markdown.table = function (buffer, item)
 						hl_mode = "combine"
 					});
 				else
-					vim.api.nvim_buf_set_extmark(buffer, markdown.ns, x, y, {
-						undo_restore = false, invalidate = true,
-						end_col = range.col_start + sep.col_end,
-
-						virt_text_pos = "overlay",
-						virt_text = {
-							{
-								string.rep(border, math.max(0, width - 1)),
-								utils.set_hl(border_hl)
-							},
-							{ align, utils.set_hl(align_hl) }
+					overlay(x, y, {
+						{
+							string.rep(border, math.max(0, width - 1)),
+							utils.set_hl(border_hl)
 						},
-
-						hl_mode = "combine"
+						{ align, utils.set_hl(align_hl) }
 					});
 				end
 			elseif item.alignments[c] == "center" then
@@ -2144,20 +2146,12 @@ markdown.table = function (buffer, item)
 				align_hl = hls.align_center or {};
 
 				if left > 0 then
-					vim.api.nvim_buf_set_extmark(buffer, markdown.ns, x, y, {
-						undo_restore = false, invalidate = true,
-						end_col = range.col_start + sep.col_end,
-
-						virt_text_pos = "overlay",
-						virt_text = {
-							{ align[1], utils.set_hl(align_hl[1]) },
-							{
-								string.rep(border, math.max(0, width - 1)),
-								utils.set_hl(border_hl)
-							},
+					overlay(x, y, {
+						{ align[1], utils.set_hl(align_hl[1]) },
+						{
+							string.rep(border, math.max(0, width - 1)),
+							utils.set_hl(border_hl)
 						},
-
-						hl_mode = "combine"
 					});
 
 					vim.api.nvim_buf_set_extmark(buffer, markdown.ns, x, range.col_start + sep.col_end, {
@@ -2172,21 +2166,13 @@ markdown.table = function (buffer, item)
 						hl_mode = "combine"
 					});
 				else
-					vim.api.nvim_buf_set_extmark(buffer, markdown.ns, x, y, {
-						undo_restore = false, invalidate = true,
-						end_col = range.col_start + sep.col_end,
-
-						virt_text_pos = "overlay",
-						virt_text = {
-							{ align[1], utils.set_hl(align_hl[1]) },
-							{
-								string.rep(border, math.max(0, width - 2)),
-								utils.set_hl(border_hl)
-							},
-							{ align[2], utils.set_hl(align_hl[2]) },
+					overlay(x, y, {
+						{ align[1], utils.set_hl(align_hl[1]) },
+						{
+							string.rep(border, math.max(0, width - 2)),
+							utils.set_hl(border_hl)
 						},
-
-						hl_mode = "combine"
+						{ align[2], utils.set_hl(align_hl[2]) },
 					});
 				end
 			end
@@ -2217,10 +2203,11 @@ markdown.table = function (buffer, item)
 				if is_wrapped == false then
 					vim.api.nvim_buf_set_extmark(buffer, markdown.ns, range.row_start + 1 + r, range.col_start + part.col_start, {
 						undo_restore = false, invalidate = true,
-						end_col = range.col_start + part.col_end,
-						conceal = "",
 
-						virt_text_pos = "inline",
+						virt_text_pos = "overlay",
+						virt_text_hide = true,
+						-- Drawn after the padding at the same column.
+						priority = 4097,
 						virt_text = {
 							{ border, border_hl }
 						},
@@ -2255,7 +2242,7 @@ markdown.table = function (buffer, item)
 					local before = string.match(part.text, "^%s*");
 					local after = string.match(part.text, "%s*$");
 
-					if #before > 1 then
+					if #before > 1 and item.alignments[c] ~= "right" then
 						vim.api.nvim_buf_set_extmark(buffer, markdown.ns, range.row_start + (r + 1), range.col_start + part.col_start + 1, {
 							undo_restore = false, invalidate = true,
 							end_col = range.col_start + part.col_start + #before,
@@ -2265,7 +2252,7 @@ markdown.table = function (buffer, item)
 						visible_width = visible_width - (#before - 1);
 					end
 
-					if #after > 1 then
+					if #after > 1 and item.alignments[c] ~= "default" and item.alignments[c] ~= "left" then
 						vim.api.nvim_buf_set_extmark(buffer, markdown.ns, range.row_start + (r + 1), range.col_start + part.col_end - #after, {
 							undo_restore = false, invalidate = true,
 							end_col = range.col_start + part.col_end - 1,
@@ -2352,10 +2339,11 @@ markdown.table = function (buffer, item)
 			if is_wrapped == false then
 				vim.api.nvim_buf_set_extmark(buffer, markdown.ns, range.row_end - 1, range.col_start + part.col_start, {
 					undo_restore = false, invalidate = true,
-					end_col = range.col_start + part.col_end,
-					conceal = "",
 
-					virt_text_pos = "inline",
+					virt_text_pos = "overlay",
+					virt_text_hide = true,
+					-- Drawn after the padding at the same column.
+					priority = 4097,
 					virt_text = {
 						{ border, border_hl }
 					},
@@ -2377,6 +2365,7 @@ markdown.table = function (buffer, item)
 					vim.api.nvim_buf_set_extmark(buffer, markdown.ns, range.row_end, math.min(next_line, range.col_start), {
 						virt_lines_above = true,
 						virt_lines = { tmp },
+						virt_lines_overflow = "scroll",
 
 						hl_mode = "combine"
 					})
@@ -2431,6 +2420,7 @@ markdown.table = function (buffer, item)
 					vim.api.nvim_buf_set_extmark(buffer, markdown.ns, range.row_end, math.min(next_line, range.col_start), {
 						virt_lines_above = true,
 						virt_lines = { tmp },
+						virt_lines_overflow = "scroll",
 
 						hl_mode = "combine"
 					})
@@ -2451,7 +2441,7 @@ markdown.table = function (buffer, item)
 				local before = string.match(part.text, "^%s*");
 				local after = string.match(part.text, "%s*$");
 
-				if #before > 1 then
+				if #before > 1 and item.alignments[c] ~= "right" then
 					vim.api.nvim_buf_set_extmark(buffer, markdown.ns, range.row_end - 1, range.col_start + part.col_start + 1, {
 						undo_restore = false, invalidate = true,
 						end_col = range.col_start + part.col_start + #before,
@@ -2461,7 +2451,7 @@ markdown.table = function (buffer, item)
 					visible_width = visible_width - (#before - 1);
 				end
 
-				if #after > 1 then
+				if #after > 1 and item.alignments[c] ~= "default" and item.alignments[c] ~= "left" then
 					vim.api.nvim_buf_set_extmark(buffer, markdown.ns, range.row_end - 1, range.col_start + part.col_end - #after, {
 						undo_restore = false, invalidate = true,
 						end_col = range.col_start + part.col_end - 1,
@@ -2534,6 +2524,132 @@ end
 
  -----------------------------------------------------------------------------------------
 
+
+--[[
+	Covers markup inside table rows with spaces.
+
+	Concealed text still takes up columns when scrolling horizontally, so a row
+	that conceals more text than the borders drifts out of line.
+]]
+---@param buffer integer
+---@param item markview.parsed.markdown.tables
+markdown.__table = function (buffer, item)
+	local inline = require("markview.renderers.markdown_inline");
+
+	local range = item.range;
+	local row_end = range.row_end - 1;
+
+	---@type table<integer, [ integer, integer ][]> Covered ranges, per row.
+	local covered = {};
+
+	local function is_covered (row, col)
+		for _, R in ipairs(covered[row] or {}) do
+			if col >= R[1] and col < R[2] then
+				return true;
+			end
+		end
+
+		return false;
+	end
+
+	--- Covers `[col, end_col)` of `row` with spaces, one cell at a time.
+	--- `virt_text` is kept when it fits in single-width cells(e.g. entities).
+	local function cover (row, col, end_col, virt_text)
+		local line = vim.api.nvim_buf_get_lines(buffer, row, row + 1, false)[1] or "";
+		local text = string.sub(line, col + 1, end_col);
+		local width = vim.fn.strdisplaywidth(text);
+
+		covered[row] = covered[row] or {};
+		table.insert(covered[row], { col, end_col });
+
+		---@type [ string, string? ][] Text & highlight of each cell.
+		local cells = {};
+		local hl, preview = nil, "";
+
+		for _, chunk in ipairs(virt_text or {}) do
+			for _, char in ipairs(vim.fn.split(chunk[1], "\\zs")) do
+				table.insert(cells, { char, chunk[2] });
+			end
+
+			hl, preview = chunk[2], preview .. chunk[1];
+		end
+
+		if #cells > width or vim.fn.strdisplaywidth(preview) ~= #cells then
+			cells = {};
+		end
+
+		for _ = #cells + 1, width do
+			table.insert(cells, { " ", hl });
+		end
+
+		local c = 1;
+
+		for _, char in ipairs(vim.fn.split(text, "\\zs")) do
+			local char_width = vim.fn.strdisplaywidth(char);
+
+			vim.api.nvim_buf_set_extmark(buffer, markdown.ns, row, col, {
+				undo_restore = false, invalidate = true,
+
+				virt_text_pos = "overlay",
+				virt_text_hide = true,
+				virt_text = { unpack(cells, c, c + char_width - 1) }
+			});
+
+			col = col + #char;
+			c = c + char_width;
+		end
+	end
+
+	for row = range.row_start, row_end do
+		vim.api.nvim_buf_set_extmark(buffer, markdown.table_ns, row, 0, {
+			undo_restore = false, invalidate = true
+		});
+	end
+
+	--- Concealed `markdown_inline` previews are covered with spaces &
+	--- inline virtual texts are removed, as the column widths don't
+	--- include them.
+	for _, mark in ipairs(vim.api.nvim_buf_get_extmarks(buffer, inline.ns, { range.row_start, 0 }, { row_end, -1 }, { details = true })) do
+		local opts = mark[4];
+
+		if opts.conceal and opts.end_col then
+			cover(mark[2], mark[3], opts.end_col, opts.virt_text);
+			vim.api.nvim_buf_del_extmark(buffer, inline.ns, mark[1]);
+		elseif opts.virt_text_pos == "inline" then
+			vim.api.nvim_buf_del_extmark(buffer, inline.ns, mark[1]);
+		end
+	end
+
+	--- Markup that `tree-sitter` would conceal(see `markview-table-unconceal!`).
+	local query = vim.treesitter.query.get("markdown_inline", "highlights");
+	local got_parser, parser = pcall(vim.treesitter.get_parser, buffer);
+
+	if not query or not got_parser or not parser then
+		return;
+	end
+
+	parser:for_each_tree(function (tree, language_tree)
+		if language_tree:lang() ~= "markdown_inline" then
+			return;
+		end
+
+		local root = tree:root();
+		local root_start, _, root_end = root:range();
+
+		if root_end < range.row_start or root_start > row_end then
+			return;
+		end
+
+		for id, node, metadata in query:iter_captures(root, buffer, range.row_start, row_end + 1) do
+			local conceal = metadata.conceal or (metadata[id] and metadata[id].conceal);
+			local row, col, _, end_col = node:range();
+
+			if conceal and row >= range.row_start and row <= row_end and not is_covered(row, col) then
+				cover(row, col, end_col);
+			end
+		end
+	end);
+end
 
 --- Renders wrapped block quotes, callouts & alerts.
 ---@param buffer integer
@@ -2821,6 +2937,8 @@ end
 markdown.clear = function (buffer, from, to, hybrid_mode)
 	---@type boolean
 	local experimental = spec.get({ "experimental", "linewise_ignore_org_indent" }, { fallback = false });
+
+	vim.api.nvim_buf_clear_namespace(buffer, markdown.table_ns, from or 0, to or -1);
 
 	if not experimental or not hybrid_mode then
 		vim.api.nvim_buf_clear_namespace(buffer, markdown.ns, from or 0, to or -1);

@@ -468,8 +468,25 @@ actions.set_query = function (buffer)
 	local updated = string.gsub(default, capture_1, ""):gsub(capture_2, "");
 	vim.treesitter.query.set("markdown", "highlights", updated);
 
+	--[[
+		NOTE: Don't conceal markup inside rendered table rows.
+
+		See `markdown.__table()`.
+	]]
+	require("markview.renderers.markdown");
+
+	local inline_files = vim.treesitter.query.get_files("markdown_inline", "highlights");
+	local inline_query = {};
+
+	for _, file in ipairs(inline_files) do
+		local text = table.concat(vim.fn.readfile(file), "\n");
+		table.insert(inline_query, (string.gsub(text, '%(#set! conceal "[^"]*"%)', "%0 (#markview-table-unconceal!)")));
+	end
+
 	vim.treesitter.stop(buffer);
-	vim.treesitter.start(buffer)
+	vim.treesitter.highlighter.new(parser, {
+		queries = #inline_files > 0 and { markdown_inline = table.concat(inline_query, "\n") } or nil
+	});
 
 	--[[]
 		NOTE: Only set query for `buffer`.
