@@ -1,5 +1,16 @@
 # Changelog
 
+## [29.0.1](https://github.com/OXY2DEV/markview.nvim/compare/v29.0.0...v29.0.1) (2026-11-16)
+
+
+### Bug Fixes
+
+* **autocmds:** Redraw preview when a buffer is reloaded from disk ([#537](https://github.com/OXY2DEV/markview.nvim/issues/537)) ([aadb6d8](https://github.com/OXY2DEV/markview.nvim/commit/aadb6d817577d553bbef61e8b9073f1bf4b87e08))
+* **autocmds:** resolve buffer id via as_buf() in OptionSet and should_detach ([#541](https://github.com/OXY2DEV/markview.nvim/issues/541)) ([9cd60a0](https://github.com/OXY2DEV/markview.nvim/commit/9cd60a0ea05217e390126a5c29e0d2e323cc537f))
+* **extras, headings:** Fixed invalid `\n` during text replacement ([ecc5a88](https://github.com/OXY2DEV/markview.nvim/commit/ecc5a8867daa1856f8bcc5fdbceca8f5a5ce5f5d)), closes [#534](https://github.com/OXY2DEV/markview.nvim/issues/534)
+* **spec, to_static:** Boolean return values are now correctly handled ([#540](https://github.com/OXY2DEV/markview.nvim/issues/540)) ([f246f45](https://github.com/OXY2DEV/markview.nvim/commit/f246f453cbed97dbbd709cef75e3ea4a41dea4b0))
+* **spec:** Fixed return value of `preview.condition` ([a6dbc5a](https://github.com/OXY2DEV/markview.nvim/commit/a6dbc5a4a4828b474c81fbcec11546cbd9000e3b)), closes [#542](https://github.com/OXY2DEV/markview.nvim/issues/542)
+
 ## [29.0.0](https://github.com/OXY2DEV/markview.nvim/compare/v28.3.0...v29.0.0) (2026-10-08)
 
 
