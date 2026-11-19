@@ -107,7 +107,7 @@ Hello *world!*
 ```
 
 ```py
-print("Hello world!");
+print("Hello world!")
 ```
 
 ```ts
